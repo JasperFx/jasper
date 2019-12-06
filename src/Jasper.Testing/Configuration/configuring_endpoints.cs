@@ -4,9 +4,11 @@ using Jasper.Configuration;
 using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
+using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
 using Microsoft.Extensions.Hosting;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Shouldly;
 using Xunit;
 
@@ -43,6 +45,8 @@ namespace Jasper.Testing.Configuration
             return theOptions.Endpoints.As<TransportCollection>()
                 .TryGetEndpoint(uri.ToUri());
         }
+
+        private TcpTransport theTcpTransport => theOptions.Endpoints.As<TransportCollection>().Get<TcpTransport>();
 
         public void Dispose()
         {
@@ -82,6 +86,19 @@ namespace Jasper.Testing.Configuration
             endpoint.IsDurable.ShouldBeTrue();
             endpoint.IsListener.ShouldBeTrue();
 
+        }
+
+        [Fact]
+        public void prefer_listener()
+        {
+            theOptions.Endpoints.ListenAtPort(1111);
+            theOptions.Endpoints.ListenAtPort(2222);
+            theOptions.Endpoints.ListenAtPort(3333).UseForReplies();
+
+
+            findEndpoint("tcp://localhost:1111").IsUsedForReplies.ShouldBeFalse();
+            findEndpoint("tcp://localhost:2222").IsUsedForReplies.ShouldBeFalse();
+            findEndpoint("tcp://localhost:3333").IsUsedForReplies.ShouldBeTrue();
         }
 
         [Fact]
@@ -144,6 +161,36 @@ namespace Jasper.Testing.Configuration
 
             findEndpoint(uriString)
                 .IsListener.ShouldBeTrue();
+        }
+
+
+        [Fact]
+        public void select_reply_endpoint_with_one_listener()
+        {
+            theOptions.Endpoints.ListenAtPort(2222);
+            theOptions.Endpoints.PublishAllMessages().ToPort(3333);
+
+            theTcpTransport.ReplyEndpoint()
+                .Uri.ShouldBe("tcp://localhost:2222".ToUri());
+        }
+
+        [Fact]
+        public void select_reply_endpoint_with_mulitple_listeners_and_one_designated_reply_endpoint()
+        {
+            theOptions.Endpoints.ListenAtPort(2222);
+            theOptions.Endpoints.ListenAtPort(4444).UseForReplies();
+            theOptions.Endpoints.ListenAtPort(5555);
+            theOptions.Endpoints.PublishAllMessages().ToPort(3333);
+
+            theTcpTransport.ReplyEndpoint()
+                .Uri.ShouldBe("tcp://localhost:4444".ToUri());
+        }
+
+        [Fact]
+        public void select_reply_endpoint_with_no_listeners()
+        {
+            theOptions.Endpoints.PublishAllMessages().ToPort(3333);
+            theTcpTransport.ReplyEndpoint().ShouldBeNull();
         }
 
     }

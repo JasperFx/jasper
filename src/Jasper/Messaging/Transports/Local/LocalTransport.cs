@@ -27,6 +27,11 @@ namespace Jasper.Messaging.Transports.Local
             return _queues;
         }
 
+        public Endpoint ReplyEndpoint()
+        {
+            return _queues[TransportConstants.Replies];
+        }
+
         public void Dispose()
         {
             // Nothing really
@@ -62,8 +67,6 @@ namespace Jasper.Messaging.Transports.Local
             return _queues.TryFind(queueName, out var settings) ? settings : null;
         }
 
-
-        Uri ITransport.ReplyUri => TransportConstants.RepliesUri;
 
         Endpoint ITransport.ListenTo(Uri uri)
         {

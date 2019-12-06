@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.Transports;
@@ -20,6 +21,14 @@ namespace Jasper.Testing.Messaging.Transports.Local
             new LocalTransport()
                 .AllQueues().Any(x => x.Name == queueName)
                 .ShouldBeTrue();
+        }
+
+        [Fact]
+        public void reply_endpoint_is_replies()
+        {
+            new LocalTransport()
+                .ReplyEndpoint()
+                .Uri.ShouldBe(TransportConstants.RepliesUri);
         }
 
         [Fact]

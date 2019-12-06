@@ -143,13 +143,17 @@ namespace Jasper.Testing.Configuration
             }
 
             public string Protocol { get; } = "fake";
-            public Uri ReplyUri { get; }
             public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
 
             public void Initialize(IMessagingRoot root)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Endpoint ReplyEndpoint()
             {
                 throw new NotImplementedException();
             }

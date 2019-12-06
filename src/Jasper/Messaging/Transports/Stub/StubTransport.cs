@@ -8,6 +8,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
+using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -51,9 +52,13 @@ namespace Jasper.Messaging.Transports.Stub
 
         public StubTransport()
         {
-            ReplyUri = new Uri("stub://replies");
             Endpoints =
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
+        }
+
+        public Endpoint ReplyEndpoint()
+        {
+            return Endpoints["stub://replies".ToUri()];
         }
 
         public Endpoint TryGetEndpoint(Uri uri)
@@ -97,8 +102,6 @@ namespace Jasper.Messaging.Transports.Stub
 
         public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
 
-
-        public Uri ReplyUri { get; }
 
         private readonly IList<Uri> _listeners = new List<Uri>();
 

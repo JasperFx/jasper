@@ -11,7 +11,7 @@ namespace Jasper.Messaging.Transports
     {
         string Protocol { get; }
 
-        Uri ReplyUri { get; }
+        Endpoint ReplyEndpoint();
 
         Endpoint ListenTo(Uri uri);
 

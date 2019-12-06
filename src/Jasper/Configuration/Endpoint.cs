@@ -56,5 +56,6 @@ namespace Jasper.Configuration
             Uri replyUri);
 
         public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
+        public bool IsUsedForReplies { get; set; }
     }
 }

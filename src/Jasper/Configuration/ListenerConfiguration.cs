@@ -43,5 +43,11 @@ namespace Jasper.Configuration
             configure(_endpoint.ExecutionOptions);
             return this;
         }
+
+        public IListenerConfiguration UseForReplies()
+        {
+            _endpoint.IsUsedForReplies = true;
+            return this;
+        }
     }
 }

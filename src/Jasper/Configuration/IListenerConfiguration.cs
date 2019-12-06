@@ -41,5 +41,10 @@ namespace Jasper.Configuration
         IListenerConfiguration ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure);
 
 
+        /// <summary>
+        /// Mark this listener as the preferred endpoint for replies from other systems
+        /// </summary>
+        /// <returns></returns>
+        IListenerConfiguration UseForReplies();
     }
 }

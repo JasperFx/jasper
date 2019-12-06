@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Configuration;
+using Jasper.Messaging.Runtime;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports
@@ -14,17 +15,35 @@ namespace Jasper.Messaging.Transports
         }
 
         public string Protocol { get; }
-        public Uri ReplyUri { get; protected set; }
 
         public IEnumerable<Endpoint> Endpoints()
         {
             return endpoints();
         }
 
+        public Endpoint ReplyEndpoint()
+        {
+            var listeners = endpoints().Where(x => x.IsListener).ToArray();
+
+
+            switch (listeners.Length)
+            {
+                case 0:
+                    return null;
+
+                case 1:
+                    return listeners.Single();
+
+                default:
+                    return listeners.FirstOrDefault(x => x.IsUsedForReplies) ?? listeners.First();
+            }
+
+        }
+
         public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
             foreach (var endpoint in endpoints().Where(x => x.Subscriptions.Any()))
-                endpoint.StartSending(root, runtime, ReplyUri);
+                endpoint.StartSending(root, runtime, ReplyEndpoint()?.ReplyUri());
         }
 
         public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
