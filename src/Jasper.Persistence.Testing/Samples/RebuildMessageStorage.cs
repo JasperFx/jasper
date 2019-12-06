@@ -1,5 +1,6 @@
 using System;
 using Jasper.Persistence.SqlServer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
@@ -8,14 +9,11 @@ namespace Jasper.Persistence.Testing.Samples
     // SAMPLE: SqlServerPersistedMessageApp
     public class MyJasperApp : JasperOptions
     {
-        public MyJasperApp()
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
         {
             // Enables Sql Server-backed message persistence using
             // a connection string from your application's appsettings.json
-            Settings.PersistMessagesWithSqlServer((c, settings) =>
-            {
-                settings.ConnectionString = c.Configuration["connectionString"];
-            });
+            Extensions.PersistMessagesWithSqlServer(config.GetConnectionString("sqlserver"));
         }
     }
     // ENDSAMPLE

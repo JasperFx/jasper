@@ -40,14 +40,11 @@ namespace Jasper.Persistence.Testing.Marten
     {
         public MartenUsingApp()
         {
-            Settings.Alter<StoreOptions>(_ =>
+            Extensions.UseMarten(o =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.AutoCreateSchemaObjects = AutoCreate.All;
+                o.Connection(Servers.PostgresConnectionString);
+                o.AutoCreateSchemaObjects = AutoCreate.All;
             });
-
-            Extensions.Include<MartenBackedPersistence>();
-
         }
     }
 }

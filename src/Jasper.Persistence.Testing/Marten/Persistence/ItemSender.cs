@@ -10,7 +10,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
     {
         public ItemSender()
         {
-            Extensions.Include<MartenBackedPersistence>();
 
             Endpoints.Publish(x =>
             {
@@ -19,11 +18,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 x.ToPort(2345).Durably();
             });
 
-            Settings.Alter<StoreOptions>(_ =>
+            Extensions.UseMarten(x =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "sender";
+                x.Connection(Servers.PostgresConnectionString);
+                x.DatabaseSchemaName = "sender";
             });
+
 
             Endpoints.ListenAtPort(2567);
 

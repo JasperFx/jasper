@@ -18,9 +18,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             theHost = JasperHost.For(_ =>
             {
-                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                _.Extensions.Include<MartenBackedPersistence>();
-                _.ConfigureMarten(x => { x.PLV8Enabled = false; });
+                _.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.PLV8Enabled = false;
+                });
+
             });
 
 

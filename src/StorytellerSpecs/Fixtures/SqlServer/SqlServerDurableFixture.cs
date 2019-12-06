@@ -56,12 +56,12 @@ create table receiver.item_created
 
         protected override void configureReceiver(JasperOptions receiverOptions)
         {
-            receiverOptions.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+            receiverOptions.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
         }
 
         protected override void configureSender(JasperOptions senderOptions)
         {
-            senderOptions.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
+            senderOptions.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
         }
 
         protected override ItemCreated loadItem(IHost receiver, Guid id)

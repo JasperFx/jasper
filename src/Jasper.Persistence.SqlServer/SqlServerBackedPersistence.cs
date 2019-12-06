@@ -20,7 +20,7 @@ namespace Jasper.Persistence.SqlServer
     {
         public void Configure(JasperOptions options)
         {
-            options.Settings.Require<SqlServerSettings>();
+            options.Services.AddSingleton(Settings);
 
             options.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
 
@@ -34,5 +34,7 @@ namespace Jasper.Persistence.SqlServer
 
             options.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
         }
+
+        public SqlServerSettings Settings { get; } = new SqlServerSettings();
     }
 }

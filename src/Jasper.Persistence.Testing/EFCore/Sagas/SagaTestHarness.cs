@@ -33,7 +33,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
                 _.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString), ServiceLifetime.Scoped);
 

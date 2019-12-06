@@ -25,24 +25,20 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         protected override void configureReceiver(JasperOptions receiverOptions)
         {
-            receiverOptions.Settings.ConfigureMarten(marten =>
+            receiverOptions.Extensions.UseMarten(marten =>
             {
                 marten.Connection(Servers.PostgresConnectionString);
                 marten.DatabaseSchemaName = "outbox_receiver";
             });
-
-            receiverOptions.Extensions.Include<MartenBackedPersistence>();
         }
 
         protected override void configureSender(JasperOptions senderOptions)
         {
-            senderOptions.Settings.ConfigureMarten(marten =>
+            senderOptions.UseMarten(marten =>
             {
                 marten.Connection(Servers.PostgresConnectionString);
                 marten.DatabaseSchemaName = "outbox_sender";
             });
-
-            senderOptions.Extensions.Include<MartenBackedPersistence>();
         }
 
 

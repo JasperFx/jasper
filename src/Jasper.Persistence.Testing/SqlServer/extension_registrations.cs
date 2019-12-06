@@ -16,7 +16,7 @@ namespace Jasper.Persistence.Testing.SqlServer
         public void registrations()
         {
             using (var runtime = JasperHost.For(x =>
-                x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
+                x.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
                 var container = runtime.Get<IContainer>();
 

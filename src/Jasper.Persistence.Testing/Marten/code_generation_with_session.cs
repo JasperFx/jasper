@@ -16,9 +16,7 @@ namespace Jasper.Persistence.Testing.Marten
 
             using (var runtime = JasperHost.For(_ =>
             {
-                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
-
-                _.Extensions.Include<MartenBackedPersistence>();
+                _.Extensions.UseMarten(Servers.PostgresConnectionString);
 
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<THandler>();

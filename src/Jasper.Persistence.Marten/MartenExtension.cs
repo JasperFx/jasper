@@ -1,13 +1,12 @@
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Messaging.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Codegen;
+using Jasper.Persistence.Marten.Persistence.Sagas;
 using Jasper.Persistence.Postgresql;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
-
-// SAMPLE: MartenExtension
-[assembly:JasperModule(typeof(MartenExtension))]
 
 namespace Jasper.Persistence.Marten
 {
@@ -15,10 +14,18 @@ namespace Jasper.Persistence.Marten
     {
         public void Configure(JasperOptions options)
         {
+            options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
+            options.Services.AddSingleton(Options);
+
+            options.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
+
+            var frameProvider = new MartenSagaPersistenceFrameProvider();
+            options.CodeGeneration.SetSagaPersistence(frameProvider);
+            options.CodeGeneration.SetTransactions(frameProvider);
+
             options.Services.AddSingleton<IDocumentStore>(x =>
             {
-                var storeOptions = x.GetService<StoreOptions>();
-                var documentStore = new DocumentStore(storeOptions);
+                var documentStore = new DocumentStore(Options);
                 return documentStore;
             });
 
@@ -30,17 +37,19 @@ namespace Jasper.Persistence.Marten
 
             options.CodeGeneration.Sources.Add(new SessionVariableSource());
 
-            options.Services.AddSingleton(x =>
+            options.Services.AddSingleton(s =>
             {
-                var options = x.GetRequiredService<StoreOptions>();
                 return new PostgresqlSettings
                 {
                     // Super hacky, look away!!!
-                    ConnectionString = options.Tenancy.Default.CreateConnection().ConnectionString,
-                    SchemaName = options.DatabaseSchemaName
+                    ConnectionString = Options.Tenancy?.Default.CreateConnection().ConnectionString,
+                    SchemaName = Options.DatabaseSchemaName
                 };
             });
+
         }
+
+        public StoreOptions Options { get; } = new StoreOptions();
     }
 }
 // ENDSAMPLE

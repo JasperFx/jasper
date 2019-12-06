@@ -21,12 +21,9 @@ namespace Jasper.Persistence.Testing.SqlServer
                     config.AddInMemoryCollection(new Dictionary<string, string>
                         {{"connection", Servers.SqlServerConnectionString}});
                 })
-                .UseJasper(registry =>
+                .UseJasper((context, options) =>
                 {
-                    registry.Settings.PersistMessagesWithSqlServer((c, s) =>
-                    {
-                        s.ConnectionString = c.Configuration["connection"];
-                    });
+                    options.Extensions.PersistMessagesWithSqlServer(context.Configuration["connection"]);
                 });
 
 
@@ -44,7 +41,7 @@ namespace Jasper.Persistence.Testing.SqlServer
         public void bootstrap_with_connection_string()
         {
             using (var runtime = JasperHost.For(x =>
-                x.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
+                x.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString)))
             {
 
                 runtime.Get<SqlServerSettings>()
@@ -59,12 +56,18 @@ namespace Jasper.Persistence.Testing.SqlServer
         public AppUsingSqlServer()
         {
             // If you know the connection string
-            Settings.PersistMessagesWithSqlServer("your connection string", "my_app_schema");
+            Extensions.PersistMessagesWithSqlServer("your connection string", "my_app_schema");
 
-            // Or using application configuration
-            Settings.PersistMessagesWithSqlServer((context, settings) =>
+
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            // In this case, you need to work directly with the SqlServerBackedPersistence
+            // to get access to all the advanced properties of the Sql Server-backed persistence
+            Extensions.Include<SqlServerBackedPersistence>(x =>
             {
-                if (context.HostingEnvironment.IsDevelopment())
+                if (hosting.IsDevelopment())
                 {
                     // if so desired, the context argument gives you
                     // access to both the IConfiguration and IHostingEnvironment
@@ -72,14 +75,15 @@ namespace Jasper.Persistence.Testing.SqlServer
                     // environment specific configuration here
                 }
 
-                settings.ConnectionString = context.Configuration["sqlserver"];
+                x.Settings.ConnectionString = config["sqlserver"];
 
                 // If your application uses a schema besides "dbo"
-                settings.SchemaName = "my_app_schema";
+                x.Settings.SchemaName = "my_app_schema";
 
                 // If you're using a database principal that is NOT "dbo":
-                settings.DatabasePrincipal = "not_dbo";
+                x.Settings.DatabasePrincipal = "not_dbo";
             });
+
         }
     }
 

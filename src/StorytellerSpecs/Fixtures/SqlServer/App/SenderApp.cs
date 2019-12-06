@@ -13,7 +13,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
 
             Endpoints.Publish(x => x.Message<TraceMessage>().To(ReceiverApp.Listener));
 
-            Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
 
             Advanced.ScheduledJobPollingTime = 1.Seconds();
             Advanced.ScheduledJobFirstExecution = 0.Seconds();

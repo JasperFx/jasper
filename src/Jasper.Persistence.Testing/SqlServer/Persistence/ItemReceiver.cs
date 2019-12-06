@@ -11,7 +11,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         public ItemReceiver()
         {
 
-            Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
             Services.AddSingleton<MessageTracker>();
 

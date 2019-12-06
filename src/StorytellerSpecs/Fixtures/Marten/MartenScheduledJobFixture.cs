@@ -108,12 +108,8 @@ namespace StorytellerSpecs.Fixtures.Marten
                 x.IncludeType<ScheduledMessageCatcher>();
             });
 
-            Settings.ConfigureMarten(marten =>
-            {
-                marten.Connection(Servers.PostgresConnectionString);
-            });
+            Extensions.UseMarten(Servers.PostgresConnectionString);
 
-            Extensions.Include<MartenBackedPersistence>();
         }
     }
 

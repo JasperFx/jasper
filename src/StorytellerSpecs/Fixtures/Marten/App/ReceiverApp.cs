@@ -15,13 +15,11 @@ namespace StorytellerSpecs.Fixtures.Marten.App
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
-            Settings.ConfigureMarten(_ =>
+            Extensions.UseMarten(o =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "receiver";
+                o.Connection(Servers.PostgresConnectionString);
+                o.DatabaseSchemaName = "receiver";
             });
-
-            Extensions.Include<MartenBackedPersistence>();
 
             Endpoints.ListenForMessagesFrom(Listener);
         }

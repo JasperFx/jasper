@@ -85,11 +85,10 @@ namespace StorytellerSpecs.Fixtures.Marten
                 {
                     _.ServiceName = Guid.NewGuid().ToString();
 
-                    _.MartenConnectionStringIs(Servers.PostgresConnectionString);
+                    _.Extensions.UseMarten(Servers.PostgresConnectionString);
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
 
-                    _.Extensions.Include<MartenBackedPersistence>();
 
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
                     _.Advanced.ScheduledJobFirstExecution = 30.Minutes();

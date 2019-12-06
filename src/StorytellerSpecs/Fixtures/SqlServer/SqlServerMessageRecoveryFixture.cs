@@ -86,7 +86,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _host = Host.CreateDefaultBuilder()
                 .UseJasper(_ =>
                 {
-                    _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                    _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
                     _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);

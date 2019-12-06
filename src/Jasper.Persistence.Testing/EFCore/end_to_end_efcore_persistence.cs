@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Testing.EFCore
             .UseJasper(registry =>
             {
                 registry.Services.AddSingleton<PassRecorder>();
-                registry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                registry.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
         }
     }

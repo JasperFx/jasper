@@ -107,7 +107,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 x.IncludeType<ScheduledMessageCatcher>();
             });
 
-            Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
         }
     }
 

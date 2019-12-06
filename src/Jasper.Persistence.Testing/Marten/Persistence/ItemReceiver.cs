@@ -11,12 +11,10 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
     {
         public ItemReceiver()
         {
-            Extensions.Include<MartenBackedPersistence>();
-
-            Settings.Alter<StoreOptions>(_ =>
+            Extensions.UseMarten(x =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "receiver";
+                x.Connection(Servers.PostgresConnectionString);
+                x.DatabaseSchemaName = "receiver";
             });
 
             Services.AddSingleton<MessageTracker>();

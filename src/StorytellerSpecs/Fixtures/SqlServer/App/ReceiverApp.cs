@@ -15,7 +15,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
-            Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
             Endpoints.ListenForMessagesFrom(Listener);
         }

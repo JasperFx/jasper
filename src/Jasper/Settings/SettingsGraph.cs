@@ -6,11 +6,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Settings
 {
+
     public interface IHasRegistryParent
     {
         JasperOptions Parent { get; }
     }
 
+    [Obsolete]
     public class SettingsGraph : IHasRegistryParent
     {
         private readonly JasperOptions _parent;

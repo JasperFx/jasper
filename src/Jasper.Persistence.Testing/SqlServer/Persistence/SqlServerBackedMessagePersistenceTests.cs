@@ -27,7 +27,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         {
             theHost = JasperHost.For(_ =>
             {
-                _.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
             theHost.RebuildMessageStorage();

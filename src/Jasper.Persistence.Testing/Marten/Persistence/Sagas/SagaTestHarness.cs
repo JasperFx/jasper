@@ -23,17 +23,17 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
             _host = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
-                _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                _.Extensions.Include<MartenBackedPersistence>();
+
+                _.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.DatabaseSchemaName = "sagas";
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                });
 
                 _.Extensions.Include<MessageTrackingExtension>();
 
-                _.Settings.ConfigureMarten(x =>
-                    {
-                        x.DatabaseSchemaName = "sagas";
-                        x.AutoCreateSchemaObjects = AutoCreate.All;
-                    }
-                );
+
 
                 _.Endpoints.PublishAllMessages().Locally();
 

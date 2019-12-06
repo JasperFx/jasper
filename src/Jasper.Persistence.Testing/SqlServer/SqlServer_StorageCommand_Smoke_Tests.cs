@@ -20,7 +20,7 @@ namespace Jasper.Persistence.Testing.SqlServer
             var args = commandLine.Split(' ');
             (await Host.CreateDefaultBuilder().UseJasper(registry =>
             {
-                registry.Settings.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                registry.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             }).RunJasper(args)).ShouldBe(0);
         }
 

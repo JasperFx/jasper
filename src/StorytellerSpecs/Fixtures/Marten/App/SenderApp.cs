@@ -13,13 +13,11 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Endpoints.Publish(x => x.Message<TraceMessage>().To(ReceiverApp.Listener));
 
-            Settings.ConfigureMarten(_ =>
+            Extensions.UseMarten(_ =>
             {
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
             });
-
-            Extensions.Include<MartenBackedPersistence>();
 
             Advanced.ScheduledJobPollingTime = 1.Seconds();
             Advanced.ScheduledJobFirstExecution = 0.Seconds();

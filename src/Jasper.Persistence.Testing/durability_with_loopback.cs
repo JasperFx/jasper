@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Testing
                 .ToLocalQueue("one")
                 .Durably();
 
-            Settings.PersistMessagesWithMarten(Servers.PostgresConnectionString);
+            Extensions.UseMarten(Servers.PostgresConnectionString);
 
             Settings.Alter<ReceivingSettings>(x => x.Latched = latched);
 

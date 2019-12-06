@@ -18,15 +18,11 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     // SAMPLE: MartenUsingApp
     public class MartenUsingApp : JasperOptions
     {
-        public MartenUsingApp()
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
         {
             // This registers the message persistence as well as
             // configuring Marten inside your application
-            Settings.PersistMessagesWithMarten((context, options) =>
-            {
-                // Configure the Marten StoreOptions
-                options.Connection(context.Configuration.GetConnectionString("database"));
-            });
+            Extensions.UseMarten(config.GetConnectionString("database"));
         }
     }
     // ENDSAMPLE
@@ -144,13 +140,12 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     {
         public SampleApp()
         {
-            Settings.Alter<StoreOptions>(_ => { _.Connection(Servers.PostgresConnectionString); });
 
             Endpoints.PublishAllMessages().Locally();
 
             Services.AddSingleton<UserNames>();
 
-            Extensions.Include<MartenBackedPersistence>();
+            Extensions.UseMarten(Servers.PostgresConnectionString);
             Extensions.Include<MessageTrackingExtension>();
         }
     }
