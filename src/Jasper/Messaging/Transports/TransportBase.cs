@@ -42,8 +42,12 @@ namespace Jasper.Messaging.Transports
 
         public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
+            var replyUri = ReplyEndpoint()?.ReplyUri();
+
             foreach (var endpoint in endpoints().Where(x => x.Subscriptions.Any()))
-                endpoint.StartSending(root, runtime, ReplyEndpoint()?.ReplyUri());
+            {
+                endpoint.StartSending(root, runtime, replyUri);
+            }
         }
 
         public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
