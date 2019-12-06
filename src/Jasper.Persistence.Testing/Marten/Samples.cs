@@ -11,7 +11,7 @@ namespace Jasper.Persistence.Testing.Marten
             // Use this line to activate the Marten-backed
             // message persistence for durable, store and forward
             // messaging
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
 
             // "config" is the ASP.Net Core IConfiguration for the application
             // "options" is the Marten StoreOptions configuration object

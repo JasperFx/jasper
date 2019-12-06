@@ -27,7 +27,7 @@ namespace Jasper.Testing.Messaging.Sagas
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                _.Include<MessageTrackingExtension>();
+                _.Extensions.Include<MessageTrackingExtension>();
 
                 _.Endpoints.PublishAllMessages().To(TransportConstants.LocalUri);
 

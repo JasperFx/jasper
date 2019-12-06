@@ -24,9 +24,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                _.Include<MartenBackedPersistence>();
+                _.Extensions.Include<MartenBackedPersistence>();
 
-                _.Include<MessageTrackingExtension>();
+                _.Extensions.Include<MessageTrackingExtension>();
 
                 _.Settings.ConfigureMarten(x =>
                     {

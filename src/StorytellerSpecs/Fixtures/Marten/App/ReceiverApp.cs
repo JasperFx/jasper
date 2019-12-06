@@ -21,7 +21,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
                 _.DatabaseSchemaName = "receiver";
             });
 
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
 
             Endpoints.ListenForMessagesFrom(Listener);
         }

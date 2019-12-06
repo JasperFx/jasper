@@ -24,10 +24,26 @@ using Newtonsoft.Json;
 
 namespace Jasper
 {
+    public interface IExtensions
+    {
+        /// <summary>
+        ///     Applies the extension to this application
+        /// </summary>
+        /// <param name="extension"></param>
+        void Include(IJasperExtension extension);
+
+        /// <summary>
+        ///     Applies the extension with optional configuration to the application
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <typeparam name="T"></typeparam>
+        void Include<T>(Action<T> configure = null) where T : IJasperExtension, new();
+    }
+
     /// <summary>
     ///     Completely defines and configures a Jasper application
     /// </summary>
-    public partial class JasperOptions
+    public partial class JasperOptions : IExtensions
     {
         protected static Assembly _rememberedCallingAssembly;
 
@@ -66,6 +82,10 @@ namespace Jasper
             deriveServiceName();
         }
 
+        /// <summary>
+        /// Apply Jasper extensions
+        /// </summary>
+        public IExtensions Extensions => this;
 
 
         /// <summary>
@@ -186,7 +206,7 @@ namespace Jasper
         ///     Applies the extension to this application
         /// </summary>
         /// <param name="extension"></param>
-        public void Include(IJasperExtension extension)
+        void IExtensions.Include(IJasperExtension extension)
         {
             ApplyExtensions(new[] {extension});
         }
@@ -196,12 +216,12 @@ namespace Jasper
         /// </summary>
         /// <param name="configure"></param>
         /// <typeparam name="T"></typeparam>
-        public void Include<T>(Action<T> configure = null) where T : IJasperExtension, new()
+        void IExtensions.Include<T>(Action<T> configure = null)
         {
             var extension = new T();
             configure?.Invoke(extension);
 
-            Include(extension);
+            ApplyExtensions(new IJasperExtension[] {extension});
         }
 
         internal ServiceRegistry CombineServices()

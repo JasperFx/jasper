@@ -14,7 +14,7 @@ namespace Jasper.Testing.Bootstrapping
         {
             var registry = new JasperOptions();
             registry.Handlers.DisableConventionalDiscovery();
-            registry.Include<OptionalExtension>();
+            registry.Extensions.Include<OptionalExtension>();
             registry.Services.For<IColorService>().Use<BlueService>();
 
             using (var runtime = JasperHost.For(registry))
@@ -29,7 +29,7 @@ namespace Jasper.Testing.Bootstrapping
         {
             // SAMPLE: explicitly-add-extension
             var registry = new JasperOptions();
-            registry.Include<OptionalExtension>();
+            registry.Extensions.Include<OptionalExtension>();
             // ENDSAMPLE
 
             registry.Handlers.DisableConventionalDiscovery();
@@ -45,10 +45,10 @@ namespace Jasper.Testing.Bootstrapping
         public void will_only_apply_extension_once()
         {
             var registry = new JasperOptions();
-            registry.Include<OptionalExtension>();
-            registry.Include<OptionalExtension>();
-            registry.Include<OptionalExtension>();
-            registry.Include<OptionalExtension>();
+            registry.Extensions.Include<OptionalExtension>();
+            registry.Extensions.Include<OptionalExtension>();
+            registry.Extensions.Include<OptionalExtension>();
+            registry.Extensions.Include<OptionalExtension>();
 
             using (var host = JasperHost.For(registry))
             {

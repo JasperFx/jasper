@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Testing.Marten
             using (var runtime = JasperHost.For(_ =>
             {
                 _.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                _.Include<MartenBackedPersistence>();
+                _.Extensions.Include<MartenBackedPersistence>();
             }))
             {
                 var root = runtime.Get<IMessagingRoot>();

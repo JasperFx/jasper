@@ -19,7 +19,7 @@ namespace Jasper.Persistence.SqlServer
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())
-                parent.Include<SqlServerBackedPersistence>();
+                parent.Extensions.Include<SqlServerBackedPersistence>();
 
             settings.Alter<SqlServerSettings>(x =>
             {
@@ -39,7 +39,7 @@ namespace Jasper.Persistence.SqlServer
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<SqlServerBackedPersistence>().Any())
-                parent.Include<SqlServerBackedPersistence>();
+                parent.Extensions.Include<SqlServerBackedPersistence>();
 
             settings.Alter(configure);
         }

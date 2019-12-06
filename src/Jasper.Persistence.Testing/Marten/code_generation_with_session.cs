@@ -18,7 +18,7 @@ namespace Jasper.Persistence.Testing.Marten
             {
                 _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
 
-                _.Include<MartenBackedPersistence>();
+                _.Extensions.Include<MartenBackedPersistence>();
 
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<THandler>();

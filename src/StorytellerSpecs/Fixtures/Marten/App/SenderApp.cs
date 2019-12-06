@@ -19,7 +19,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
                 _.DatabaseSchemaName = "sender";
             });
 
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
 
             Advanced.ScheduledJobPollingTime = 1.Seconds();
             Advanced.ScheduledJobFirstExecution = 0.Seconds();

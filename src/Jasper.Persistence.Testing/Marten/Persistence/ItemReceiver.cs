@@ -11,7 +11,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
     {
         public ItemReceiver()
         {
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
 
             Settings.Alter<StoreOptions>(_ =>
             {

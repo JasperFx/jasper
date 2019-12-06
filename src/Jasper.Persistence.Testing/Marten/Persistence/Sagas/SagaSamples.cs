@@ -7,7 +7,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
     {
         public MartenSagaApp()
         {
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
         }
     }
 

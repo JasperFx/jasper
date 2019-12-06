@@ -57,13 +57,13 @@ namespace Jasper.Testing.Samples
         public AppWithExtensions()
         {
             // as is
-            Include<CustomJasperExtension>();
+            Extensions.Include<CustomJasperExtension>();
 
             // or
-            Include(new CustomJasperExtension());
+            Extensions.Include(new CustomJasperExtension());
 
             // or use the extension with customizations
-            Include<CustomJasperExtension>(_ => { _.Threshold = 20; });
+            Extensions.Include<CustomJasperExtension>(_ => { _.Threshold = 20; });
         }
     }
     // ENDSAMPLE

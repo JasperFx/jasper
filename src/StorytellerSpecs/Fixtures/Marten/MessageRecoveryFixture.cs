@@ -89,7 +89,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
 
-                    _.Include<MartenBackedPersistence>();
+                    _.Extensions.Include<MartenBackedPersistence>();
 
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
                     _.Advanced.ScheduledJobFirstExecution = 30.Minutes();

@@ -15,7 +15,7 @@ namespace Jasper.Testing.Messaging.Transports.Stub
             var runtime1 = JasperHost.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery().IncludeType<QuestionAndAnswer>();
-                x.Include<MessageTrackingExtension>();
+                x.Extensions.Include<MessageTrackingExtension>();
             });
 
             var tracker = runtime1.Get<MessageHistory>();

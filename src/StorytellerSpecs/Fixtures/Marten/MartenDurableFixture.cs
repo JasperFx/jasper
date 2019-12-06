@@ -31,7 +31,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 marten.DatabaseSchemaName = "outbox_receiver";
             });
 
-            receiverOptions.Include<MartenBackedPersistence>();
+            receiverOptions.Extensions.Include<MartenBackedPersistence>();
         }
 
         protected override void configureSender(JasperOptions senderOptions)
@@ -42,7 +42,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 marten.DatabaseSchemaName = "outbox_sender";
             });
 
-            senderOptions.Include<MartenBackedPersistence>();
+            senderOptions.Extensions.Include<MartenBackedPersistence>();
         }
 
 

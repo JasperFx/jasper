@@ -24,7 +24,7 @@ namespace Jasper.Persistence.Testing.Marten
             var exitCode = await Host.CreateDefaultBuilder().UseJasper(registry =>
             {
                 registry.MartenConnectionStringIs(Servers.PostgresConnectionString);
-                registry.Include<MartenBackedPersistence>();
+                registry.Extensions.Include<MartenBackedPersistence>();
             }).RunJasper(args);
 
             exitCode.ShouldBe(0);

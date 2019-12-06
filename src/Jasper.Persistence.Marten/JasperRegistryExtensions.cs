@@ -46,7 +46,7 @@ namespace Jasper.Persistence.Marten
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<MartenBackedPersistence>().Any())
-                parent.Include<MartenBackedPersistence>();
+                parent.Extensions.Include<MartenBackedPersistence>();
 
             settings.Alter<StoreOptions>(x => { x.Connection(connectionString); });
         }
@@ -62,7 +62,7 @@ namespace Jasper.Persistence.Marten
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<MartenBackedPersistence>().Any())
-                parent.Include<MartenBackedPersistence>();
+                parent.Extensions.Include<MartenBackedPersistence>();
 
             settings.Alter(configure);
         }

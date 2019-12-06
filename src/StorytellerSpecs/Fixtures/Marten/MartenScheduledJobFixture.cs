@@ -113,7 +113,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 marten.Connection(Servers.PostgresConnectionString);
             });
 
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
         }
     }
 

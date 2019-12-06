@@ -10,7 +10,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
     {
         public ItemSender()
         {
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
 
             Endpoints.Publish(x =>
             {

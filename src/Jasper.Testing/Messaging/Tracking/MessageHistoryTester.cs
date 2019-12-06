@@ -96,7 +96,7 @@ namespace Jasper.Testing.Messaging.Tracking
             using (var runtime = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<MessageThatFailsHandler>();
-                _.Include<MessageTrackingExtension>();
+                _.Extensions.Include<MessageTrackingExtension>();
                 _.Endpoints.PublishAllMessages().To(TransportConstants.LocalUri);
             }))
             {

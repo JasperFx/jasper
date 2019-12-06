@@ -85,7 +85,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     {
         public AppUsingMessageTracking()
         {
-            Include<MessageTrackingExtension>();
+            Extensions.Include<MessageTrackingExtension>();
         }
     }
     // ENDSAMPLE
@@ -150,8 +150,8 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
             Services.AddSingleton<UserNames>();
 
-            Include<MartenBackedPersistence>();
-            Include<MessageTrackingExtension>();
+            Extensions.Include<MartenBackedPersistence>();
+            Extensions.Include<MessageTrackingExtension>();
         }
     }
 

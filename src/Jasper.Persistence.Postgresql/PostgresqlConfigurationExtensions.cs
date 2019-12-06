@@ -19,7 +19,7 @@ namespace Jasper.Persistence.Postgresql
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<PostgresqlBackedPersistence>().Any())
-                parent.Include<PostgresqlBackedPersistence>();
+                parent.Extensions.Include<PostgresqlBackedPersistence>();
 
             settings.Alter<PostgresqlSettings>(x =>
             {
@@ -39,7 +39,7 @@ namespace Jasper.Persistence.Postgresql
         {
             var parent = settings.As<IHasRegistryParent>().Parent;
             if (!parent.AppliedExtensions.OfType<PostgresqlBackedPersistence>().Any())
-                parent.Include<PostgresqlBackedPersistence>();
+                parent.Extensions.Include<PostgresqlBackedPersistence>();
 
             settings.Alter(configure);
         }

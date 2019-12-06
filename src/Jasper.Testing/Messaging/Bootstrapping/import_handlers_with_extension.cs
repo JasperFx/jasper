@@ -11,7 +11,7 @@ namespace Jasper.Testing.Messaging.Bootstrapping
         [Fact]
         public void picks_up_on_handlers_from_extension()
         {
-            theOptions.Include<MyExtension>();
+            theOptions.Extensions.Include<MyExtension>();
 
             var handlerChain = (theHandlers()).HandlerFor<ExtensionMessage>().Chain;
             handlerChain.Handlers.Single()

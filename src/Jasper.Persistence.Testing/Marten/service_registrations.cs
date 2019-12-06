@@ -46,7 +46,7 @@ namespace Jasper.Persistence.Testing.Marten
                 _.AutoCreateSchemaObjects = AutoCreate.All;
             });
 
-            Include<MartenBackedPersistence>();
+            Extensions.Include<MartenBackedPersistence>();
 
         }
     }
