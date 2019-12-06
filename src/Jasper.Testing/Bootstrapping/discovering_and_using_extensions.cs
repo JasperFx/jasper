@@ -15,14 +15,6 @@ namespace Jasper.Testing.Bootstrapping
             {
                 runtime.Get<IContainer>().DefaultRegistrationIs<IModuleService, AppsModuleService>();
 
-                // application_settings_alterations_win
-                runtime.Get<ModuleSettings>()
-                    .From.ShouldBe("Application");
-
-                // extension_can_alter_settings
-                var moduleSettings = runtime.Get<ModuleSettings>();
-                moduleSettings
-                    .Count.ShouldBe(100);
             }
         }
     }
@@ -33,8 +25,6 @@ namespace Jasper.Testing.Bootstrapping
         public AppWithOverrides()
         {
             Handlers.DisableConventionalDiscovery();
-
-            Settings.Alter<ModuleSettings>(_ => _.From = "Application");
 
             Services.For<IModuleService>().Use<AppsModuleService>();
         }

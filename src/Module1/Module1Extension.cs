@@ -11,12 +11,6 @@ namespace Module1
         {
             Options = options;
 
-            options.Settings.Alter<ModuleSettings>(_ =>
-            {
-                _.From = "Module1";
-                _.Count = 100;
-            });
-
             options.Services.For<IModuleService>().Use<ServiceFromModule>();
         }
     }
@@ -25,11 +19,6 @@ namespace Module1
     {
     }
 
-    public class ModuleSettings
-    {
-        public string From { get; set; } = "Default";
-        public int Count { get; set; }
-    }
 
     public class ServiceFromModule : IModuleService
     {

@@ -63,7 +63,7 @@ namespace Jasper.Persistence.Testing
 
             Extensions.UseMarten(Servers.PostgresConnectionString);
 
-            Settings.Alter<ReceivingSettings>(x => x.Latched = latched);
+            Services.AddSingleton(new ReceivingSettings {Latched = true});
 
             Services.AddSingleton<MessageTracker>();
         }
