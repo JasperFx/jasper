@@ -330,7 +330,7 @@ namespace Jasper.Messaging
 
         public Task Enqueue<T>(T message, string workerQueue = null)
         {
-            var agent = _root.Runtime.AgentForLocalQueue(workerQueue);
+            var agent = workerQueue != null ? _root.Runtime.AgentForLocalQueue(workerQueue) : _root.Router.LocalQueueByMessageType(typeof(T));
 
             var envelope = new Envelope
             {

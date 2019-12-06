@@ -9,6 +9,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime.Serializers;
 using Jasper.Messaging.Transports;
+using Jasper.Messaging.Transports.Sending;
 using Jasper.Messaging.WorkerQueues;
 using Jasper.Util;
 
@@ -46,6 +47,21 @@ namespace Jasper.Messaging.Runtime.Routing
             _routes = _routes.AddOrUpdate(messageType, routes);
 
             return routes;
+        }
+
+        private ImHashMap<Type, ISendingAgent> _localQueueByType = ImHashMap<Type, ISendingAgent>.Empty;
+
+        public ISendingAgent LocalQueueByMessageType(Type messageType)
+        {
+            if (_localQueueByType.TryFind(messageType, out var agent))
+            {
+                return agent;
+            }
+
+            var route = CreateLocalRoute(messageType);
+            _localQueueByType = _localQueueByType.AddOrUpdate(messageType, route.Sender);
+
+            return route.Sender;
         }
 
         public MessageRoute RouteForDestination(Envelope envelope)
@@ -149,12 +165,24 @@ namespace Jasper.Messaging.Runtime.Routing
 
         public MessageRoute CreateLocalRoute(Type messageType)
         {
-            var destination = TransportConstants.LocalUri;
-            var route = new MessageRoute(messageType, destination, "application/json")
+            if (messageType.HasAttribute<LocalQueueAttribute>())
             {
-                Sender = _runtime.GetOrBuildSendingAgent(destination)
+                var queueName = messageType.GetAttribute<LocalQueueAttribute>().QueueName;
+                var agent = _runtime.AgentForLocalQueue(queueName);
+
+                return new MessageRoute(messageType, agent.Destination, "application/json")
+                {
+                    Sender = agent
+                };
+            }
+
+            var subscribers = _runtime.FindLocalSubscribers(messageType);
+            var sender = subscribers.FirstOrDefault() ?? _runtime.GetOrBuildSendingAgent(TransportConstants.LocalUri);
+
+            return new MessageRoute(messageType, sender.Destination, "application/json")
+            {
+                Sender = _runtime.GetOrBuildSendingAgent(sender.Destination)
             };
-            return route;
         }
 
         public void ApplyMessageTypeSpecificRules(Envelope envelope)

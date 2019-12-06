@@ -93,6 +93,8 @@ namespace Jasper.Messaging.Transports
             return agent;
         }
 
+
+
         public ISendingAgent GetOrBuildSendingAgent(Uri address)
         {
             if (_senders.TryFind(address, out var agent)) return agent;
@@ -158,7 +160,15 @@ namespace Jasper.Messaging.Transports
                 .ToArray();
         }
 
+        public ISendingAgent[] FindLocalSubscribers(Type messageType)
+        {
+            return _subscribers
+                .Where(x => x.Destination.Scheme == TransportConstants.Local)
+                .Where(x => x.ShouldSendMessage(messageType))
+                .Select(x => x.Agent)
+                .ToArray();
 
+        }
 
         public void Dispose()
         {

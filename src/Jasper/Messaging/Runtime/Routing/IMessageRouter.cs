@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Messaging.Transports.Sending;
 
 namespace Jasper.Messaging.Runtime.Routing
 {
@@ -10,5 +11,7 @@ namespace Jasper.Messaging.Runtime.Routing
 
         Envelope[] Route(Envelope envelope);
         void ApplyMessageTypeSpecificRules(Envelope envelope);
+        MessageRoute CreateLocalRoute(Type messageType);
+        ISendingAgent LocalQueueByMessageType(Type messageType);
     }
 }

@@ -116,6 +116,8 @@ namespace Jasper.Messaging.Transports.Local
         {
             if (uri == null) return null;
 
+            if (uri == TransportConstants.LocalUri) return TransportConstants.Default;
+
             if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable) return uri.Host;
 
             var lastSegment = uri.Segments.Skip(1).LastOrDefault();

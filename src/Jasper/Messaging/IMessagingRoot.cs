@@ -29,6 +29,7 @@ namespace Jasper.Messaging
         void AddSubscriber(ISendingAgent replyUri, Subscription[] subscriptions);
 
         ISendingAgent AgentForLocalQueue(string queueName);
+        ISendingAgent[] FindLocalSubscribers(Type messageType);
     }
 
 
