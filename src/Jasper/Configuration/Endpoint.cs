@@ -64,5 +64,6 @@ namespace Jasper.Configuration
 
         public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
         public bool IsUsedForReplies { get; set; }
+
     }
 }

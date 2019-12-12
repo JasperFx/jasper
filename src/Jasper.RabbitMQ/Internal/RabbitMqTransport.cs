@@ -1,44 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Jasper.Configuration;
-using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Sending;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqEndpoint : Endpoint
-    {
-        public override Uri ReplyUri()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Parse(Uri uri)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override ISender CreateSender(IMessagingRoot root)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
     {
-        public RabbitMqTransport() : base("rabbitmq")
+        public const string Protocol = "rabbitmq";
+
+        public RabbitMqTransport() : base(Protocol)
         {
         }
 
