@@ -13,6 +13,7 @@ namespace Jasper.RabbitMQ.Internal
     {
         public string ExchangeName { get; private set; }
         public string RoutingKey { get; private set; }
+        internal RabbitMqTransport Parent { get; set; }
 
         public RabbitMqEndpoint()
         {
