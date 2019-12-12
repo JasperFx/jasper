@@ -1,10 +1,7 @@
-﻿using Jasper;
-using Jasper.Configuration;
-using Jasper.Messaging.Transports;
+﻿using Jasper.Configuration;
 using Jasper.RabbitMQ;
 using Jasper.RabbitMQ.Internal;
-using Jasper.Settings;
-using Microsoft.Extensions.DependencyInjection;
+using LamarCodeGeneration.Util;
 
 [assembly: JasperModule(typeof(RabbitMqTransportExtension))]
 
@@ -14,8 +11,7 @@ namespace Jasper.RabbitMQ
     {
         public void Configure(JasperOptions options)
         {
-            options.Settings.Require<RabbitMqOptions>();
-            options.Services.AddSingleton<ITransport, RabbitMqTransport>();
+            options.Endpoints.As<TransportCollection>().Add(new RabbitMqTransport());
         }
     }
 }

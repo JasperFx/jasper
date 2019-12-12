@@ -14,7 +14,7 @@ namespace IntegrationTests.Samples
         public AppWithRabbitMq()
         {
             // This explicitly registers the Rabbit MQ transport
-            Include<Jasper.RabbitMQ.RabbitMqTransportExtension>();
+            //Include<Jasper.RabbitMQ.RabbitMqTransportExtension>();
         }
     }
     // ENDSAMPLE
@@ -52,15 +52,15 @@ namespace IntegrationTests.Samples
     {
         public MessageSpecificTopicRoutingApp()
         {
-            // Publish all messages to Rabbit Mq using the configured connection
-            // string named 'rabbit' and use the message type name as the published
-            // topic name
-            Publish.AllMessagesTo("rabbitmq://rabbit/topic/*");
-
-
-            // Make a subscription to all topic names that match known, handled message types
-            // in this application using the configured connection string 'rabbit'.
-            Transports.ListenForMessagesFrom("rabbitmq://rabbit/topic/*");
+//            // Publish all messages to Rabbit Mq using the configured connection
+//            // string named 'rabbit' and use the message type name as the published
+//            // topic name
+//            Publish.AllMessagesTo("rabbitmq://rabbit/topic/*");
+//
+//
+//            // Make a subscription to all topic names that match known, handled message types
+//            // in this application using the configured connection string 'rabbit'.
+//            Transports.ListenForMessagesFrom("rabbitmq://rabbit/topic/*");
         }
     }
     // ENDSAMPLE
@@ -72,12 +72,12 @@ namespace IntegrationTests.Samples
         {
             // This adds a connection string to the host "rabbitserver" using
             // the default port
-            Settings
-                .AddRabbitMqHost("rabbitserver");
-
-            Publish.AllMessagesTo("rabbitmq://rabbitserver/queue/outgoing");
-
-            Transports.ListenForMessagesFrom("rabbitmq://rabbitserver/queue/incoming");
+//            Settings
+//                .AddRabbitMqHost("rabbitserver");
+//
+//            Publish.AllMessagesTo("rabbitmq://rabbitserver/queue/outgoing");
+//
+//            Transports.ListenForMessagesFrom("rabbitmq://rabbitserver/queue/incoming");
         }
     }
     // ENDSAMPLE
@@ -87,15 +87,15 @@ namespace IntegrationTests.Samples
     {
         // Both RabbitMqOptions and JasperOptions are registered services in your
         // Jasper application's IoC container, so are available to be injected into Startup.Configure()
-        public void Configure(IConfiguration config, RabbitMqOptions rabbit, JasperOptions jasper)
-        {
-            // This code will add a new Rabbit MQ connection named "rabbit"
-            rabbit.Connections.Add("rabbit", config["RabbitMqConnectionString"]);
-
-            // Listen for messages from the 'queue1' queue at the connection string
-            // configured above
-            jasper.Transports.ListenForMessagesFrom("rabbitmq://rabbit/queue/queue1");
-        }
+//        public void Configure(IConfiguration config, RabbitMqOptions rabbit, JasperOptions jasper)
+//        {
+//            // This code will add a new Rabbit MQ connection named "rabbit"
+//            rabbit.Connections.Add("rabbit", config["RabbitMqConnectionString"]);
+//
+//            // Listen for messages from the 'queue1' queue at the connection string
+//            // configured above
+//            jasper.Transports.ListenForMessagesFrom("rabbitmq://rabbit/queue/queue1");
+//        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -126,26 +126,26 @@ namespace IntegrationTests.Samples
             // to the application's IHostingEnvironment and IConfiguration as well
             // if you prefer putting this into the JasperOptions rather than
             // using Startup.Configure()
-            Settings.ConfigureRabbitMq((options, hosting, config) =>
-            {
-                // Configure a single endpoint
-                options.ConfigureEndpoint("rabbitmq://rabbit/queue/incoming", endpoint =>
-                {
-                    // modify the endpoint
-                });
-
-                // Configure all the endpoints related to a specific connection string
-                options.ConfigureEndpoint("rabbit", endpoint =>
-                {
-                    // Customize the Rabbit MQ ConnectionFactory
-                    endpoint.ConnectionFactory.UserName = config["rabbit.user"];
-                    endpoint.ConnectionFactory.Password = config["rabbit.password"];
-
-
-                    // Override the envelope to message mapping for usage with non-Jasper applications
-                    endpoint.Protocol = new MySpecialProtocol();
-                });
-            });
+//            Settings.ConfigureRabbitMq((options, hosting, config) =>
+//            {
+//                // Configure a single endpoint
+//                options.ConfigureEndpoint("rabbitmq://rabbit/queue/incoming", endpoint =>
+//                {
+//                    // modify the endpoint
+//                });
+//
+//                // Configure all the endpoints related to a specific connection string
+//                options.ConfigureEndpoint("rabbit", endpoint =>
+//                {
+//                    // Customize the Rabbit MQ ConnectionFactory
+//                    endpoint.ConnectionFactory.UserName = config["rabbit.user"];
+//                    endpoint.ConnectionFactory.Password = config["rabbit.password"];
+//
+//
+//                    // Override the envelope to message mapping for usage with non-Jasper applications
+//                    endpoint.Protocol = new MySpecialProtocol();
+//                });
+//            });
         }
     }
 
@@ -153,26 +153,26 @@ namespace IntegrationTests.Samples
 
     public class CustomizedStartup
     {
-        public void Configure(RabbitMqOptions options, IConfiguration config)
-        {
-            // Configure a single endpoint
-            options.ConfigureEndpoint("rabbitmq://rabbit/queue/incoming", endpoint =>
-            {
-                // modify the endpoint
-            });
-
-            // Configure all the endpoints related to a specific connection string
-            options.ConfigureEndpoint("rabbit", endpoint =>
-            {
-                // Customize the Rabbit MQ ConnectionFactory
-                endpoint.ConnectionFactory.UserName = config["rabbit.user"];
-                endpoint.ConnectionFactory.Password = config["rabbit.password"];
-
-
-                // Override the envelope to message mapping for usage with non-Jasper applications
-                endpoint.Protocol = new MySpecialProtocol();
-            });
-        }
+//        public void Configure(RabbitMqOptions options, IConfiguration config)
+//        {
+//            // Configure a single endpoint
+//            options.ConfigureEndpoint("rabbitmq://rabbit/queue/incoming", endpoint =>
+//            {
+//                // modify the endpoint
+//            });
+//
+//            // Configure all the endpoints related to a specific connection string
+//            options.ConfigureEndpoint("rabbit", endpoint =>
+//            {
+//                // Customize the Rabbit MQ ConnectionFactory
+//                endpoint.ConnectionFactory.UserName = config["rabbit.user"];
+//                endpoint.ConnectionFactory.Password = config["rabbit.password"];
+//
+//
+//                // Override the envelope to message mapping for usage with non-Jasper applications
+//                endpoint.Protocol = new MySpecialProtocol();
+//            });
+//        }
     }
     // ENDSAMPLE
 }

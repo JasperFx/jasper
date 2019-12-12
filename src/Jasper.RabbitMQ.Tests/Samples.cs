@@ -12,7 +12,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             // Port is optional if you're using the default RabbitMQ
             // port of 5672, but shown here for completeness
-            Transports.ListenForMessagesFrom("rabbitmq://rabbitserver:5672/messages");
+            //Transports.ListenForMessagesFrom("rabbitmq://rabbitserver:5672/messages");
         }
     }
     // ENDSAMPLE
@@ -22,7 +22,7 @@ namespace Jasper.RabbitMQ.Tests
     {
         public AppPublishingToRabbitMQ()
         {
-            Publish.AllMessagesTo("rabbitmq://rabbitserver:5672/messages");
+            //Publish.AllMessagesTo("rabbitmq://rabbitserver:5672/messages");
         }
     }
     // ENDSAMPLE
@@ -33,21 +33,21 @@ namespace Jasper.RabbitMQ.Tests
     {
         public CustomizedRabbitMQApp()
         {
-            Settings.Alter<RabbitMqOptions>(settings =>
-            {
-                // Retrieve the Jasper "agent" by the full Uri:
-                settings.ConfigureEndpoint("rabbitmq://connection1/queue/queue1", endpoint =>
-                {
-                    // Customize the underlying ConnectionFactory for security mechanisms,
-                    // timeouts, and many other settings
-                    endpoint.ConnectionFactory.ContinuationTimeout = TimeSpan.FromSeconds(5);
-
-
-                    // Customize or change how Jasper maps Envelopes to and from
-                    // the RabbitMQ properties
-                    endpoint.Protocol = new CustomRabbitMqProtocol();
-                });
-            });
+//            Settings.Alter<RabbitMqOptions>(settings =>
+//            {
+//                // Retrieve the Jasper "agent" by the full Uri:
+//                settings.ConfigureEndpoint("rabbitmq://connection1/queue/queue1", endpoint =>
+//                {
+//                    // Customize the underlying ConnectionFactory for security mechanisms,
+//                    // timeouts, and many other settings
+//                    endpoint.ConnectionFactory.ContinuationTimeout = TimeSpan.FromSeconds(5);
+//
+//
+//                    // Customize or change how Jasper maps Envelopes to and from
+//                    // the RabbitMQ properties
+//                    endpoint.Protocol = new CustomRabbitMqProtocol();
+//                });
+//            });
         }
     }
 

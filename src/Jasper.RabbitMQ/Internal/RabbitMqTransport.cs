@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Jasper.Configuration;
 using Jasper.Messaging;
@@ -8,12 +9,28 @@ using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqEndpoint : Endpoint
     {
+        public override Uri ReplyUri()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Parse(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ISender CreateSender(IMessagingRoot root)
         {
             throw new NotImplementedException();
         }
@@ -21,19 +38,23 @@ namespace Jasper.RabbitMQ.Internal
 
     public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
     {
-        public RabbitMqTransport(RabbitMqOptions options) : base("rabbitmq")
+        public RabbitMqTransport() : base("rabbitmq")
         {
         }
 
-        protected override IListener createListener(RabbitMqEndpoint endpoint, IMessagingRoot root)
+        protected override IEnumerable<RabbitMqEndpoint> endpoints()
         {
             throw new NotImplementedException();
         }
 
-        public override ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
+        protected override RabbitMqEndpoint findEndpointByUri(Uri uri)
         {
             throw new NotImplementedException();
         }
+
+        public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
+
+
 
 //        protected override ISender buildSender(TransportUri transportUri, RabbitMqEndpoint endpoint,
 //            CancellationToken cancellation, IMessagingRoot root)
