@@ -11,8 +11,6 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqEndpoint : Endpoint
     {
-        // TODO -- needs Protocol as well
-
         public string ExchangeName { get; private set; }
         public string RoutingKey { get; private set; }
 
@@ -33,12 +31,15 @@ namespace Jasper.RabbitMQ.Internal
             Uri = buildUri();
         }
 
-        private Uri buildUri()
+        internal static Uri ToUri(string exchangeName, string routingKey)
         {
-            return new Uri($"{RabbitMqTransport.Protocol}://{ExchangeName}/{RoutingKey}");
+            return new Uri($"{RabbitMqTransport.Protocol}://{exchangeName}/{routingKey}");
         }
 
-
+        private Uri buildUri()
+        {
+            return ToUri(ExchangeName, RoutingKey);
+        }
 
         public override Uri ReplyUri()
         {
@@ -57,8 +58,6 @@ namespace Jasper.RabbitMQ.Internal
             {
                 throw new ArgumentOutOfRangeException($"This is not a rabbitmq Uri");
             }
-
-
 
             ExchangeName = uri.Host;
             if (ExchangeName.IsEmpty())
