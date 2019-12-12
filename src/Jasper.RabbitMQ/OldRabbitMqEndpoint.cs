@@ -16,13 +16,14 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqEndpoint : ObsoleteExternalEndpoint<IRabbitMqProtocol>
+    /*
+    public class OldRabbitMqEndpoint : Endpoint
     {
         private readonly object _locker = new object();
         private IConnection _connection;
 
 
-        public RabbitMqEndpoint(TransportUri uri, string connectionString) : base(uri, new DefaultRabbitMqProtocol())
+        public OldRabbitMqEndpoint(TransportUri uri, string connectionString) : base(uri, new DefaultRabbitMqProtocol())
         {
             if (uri.Protocol != "rabbitmq")
                 throw new ArgumentOutOfRangeException(nameof(uri), "The protocol must be 'rabbitmq'");
@@ -75,27 +76,12 @@ namespace Jasper.RabbitMQ
             }
         }
 
-        private RabbitMqEndpoint(TransportUri uri, IRabbitMqProtocol protocol, ConnectionFactory factory, string exchangeName, ExchangeType exchangeType) : base(uri, protocol)
+        private OldRabbitMqEndpoint(TransportUri uri, IRabbitMqProtocol protocol, ConnectionFactory factory, string exchangeName, ExchangeType exchangeType) : base(uri, protocol)
         {
             ConnectionFactory = factory;
             ExchangeName = exchangeName;
             ExchangeType = exchangeType;
             TransportUri = uri;
-        }
-
-        public RabbitMqEndpoint[] SpreadForMessageSpecificTopics(string[] topicNames)
-        {
-            if (!Uri.IsMessageSpecificTopic()) throw new InvalidOperationException($"{TransportUri.ToUri()} is not a message specific topic Uri");
-
-
-            return topicNames.Select(topic =>
-            {
-                var uri = TransportUri.CloneForTopic(topic);
-                var endpoint = new RabbitMqEndpoint(uri, Protocol, ConnectionFactory, ExchangeName, ExchangeType);
-                endpoint.AmqpTcpEndpoints.AddRange(AmqpTcpEndpoints);
-
-                return endpoint;
-            }).ToArray();
         }
 
         /// <summary>
@@ -109,11 +95,6 @@ namespace Jasper.RabbitMQ
         public IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; } = new List<AmqpTcpEndpoint>();
 
 
-
-        /// <summary>
-        /// Information about the configured Rabbit MQ endpoint
-        /// </summary>
-        public TransportUri TransportUri { get; }
 
         /// <summary>
         /// The Rabbit MQ exchange name, maybe be null or empty
@@ -152,97 +133,82 @@ namespace Jasper.RabbitMQ
         internal IModel Channel { get; private set; }
 
 
-        internal void Connect()
-        {
-            lock (_locker)
-            {
-                if (State == AgentState.Connected) return;
+//        internal void Connect()
+//        {
+//            lock (_locker)
+//            {
+//                if (State == AgentState.Connected) return;
+//
+//                startNewConnection();
+//
+//                State = AgentState.Connected;
+//            }
+//        }
+//
+//        private void startNewConnection()
+//        {
+//            _connection = AmqpTcpEndpoints.Any()
+//                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
+//                : ConnectionFactory.CreateConnection();
+//
+//
+//
+//            var channel = _connection.CreateModel();
+//            channel.CreateBasicProperties().Persistent = TransportUri.Durable;
+//
+//            if (ExchangeName.IsNotEmpty())
+//            {
+//                channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), TransportUri.Durable);
+//                channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
+//
+//                if (ExchangeType == ExchangeType.Topic)
+//                {
+//                    if (TransportUri.TopicName.IsEmpty())
+//                    {
+//                        throw new InvalidOperationException($"Topic name is required to connect to a topic exchange. Invalid Uri is '{TransportUri.ToUri()}'");
+//                    }
+//
+//                    channel.QueueBind(TransportUri.QueueName, ExchangeName, TransportUri.TopicName);
+//                }
+//                else
+//                {
+//                    channel.QueueBind(TransportUri.QueueName, ExchangeName, TransportUri.RoutingKey ?? "");
+//                }
+//
+//
+//            }
+//            else
+//            {
+//                channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
+//            }
+//
+//            Channel = channel;
+//        }
+//
+//        internal void Stop()
+//        {
+//            lock (_locker)
+//            {
+//                if (State == AgentState.Disconnected) return;
+//
+//                teardownConnection();
+//            }
+//        }
+//
+//        private void teardownConnection()
+//        {
+//            Channel.Abort();
+//            Channel.Dispose();
+//            _connection.Close();
+//            _connection.Dispose();
+//
+//            Channel = null;
+//            _connection = null;
+//
+//            State = AgentState.Disconnected;
+//        }
+//
 
-                startNewConnection();
-
-                State = AgentState.Connected;
-            }
-        }
-
-        private void startNewConnection()
-        {
-            _connection = AmqpTcpEndpoints.Any()
-                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
-                : ConnectionFactory.CreateConnection();
-
-
-
-            var channel = _connection.CreateModel();
-            channel.CreateBasicProperties().Persistent = TransportUri.Durable;
-
-            if (ExchangeName.IsNotEmpty())
-            {
-                channel.ExchangeDeclare(ExchangeName, ExchangeType.ToString().ToLowerInvariant(), TransportUri.Durable);
-                channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
-
-                if (ExchangeType == ExchangeType.Topic)
-                {
-                    if (TransportUri.TopicName.IsEmpty())
-                    {
-                        throw new InvalidOperationException($"Topic name is required to connect to a topic exchange. Invalid Uri is '{TransportUri.ToUri()}'");
-                    }
-
-                    channel.QueueBind(TransportUri.QueueName, ExchangeName, TransportUri.TopicName);
-                }
-                else
-                {
-                    channel.QueueBind(TransportUri.QueueName, ExchangeName, TransportUri.RoutingKey ?? "");
-                }
-
-
-            }
-            else
-            {
-                channel.QueueDeclare(TransportUri.QueueName, TransportUri.Durable, autoDelete: false, exclusive: false);
-            }
-
-            Channel = channel;
-        }
-
-        internal void Stop()
-        {
-            lock (_locker)
-            {
-                if (State == AgentState.Disconnected) return;
-
-                teardownConnection();
-            }
-        }
-
-        private void teardownConnection()
-        {
-            Channel.Abort();
-            Channel.Dispose();
-            _connection.Close();
-            _connection.Dispose();
-
-            Channel = null;
-            _connection = null;
-
-            State = AgentState.Disconnected;
-        }
-
-        public override void Dispose()
-        {
-            Stop();
-        }
-
-        internal ISender CreateSender(ITransportLogger logger, CancellationToken cancellation)
-        {
-            throw new NotImplementedException();
-            //return new RabbitMqSender(logger, this, cancellation);
-        }
-
-        internal IListener CreateListeningAgent(Uri uri, AdvancedSettings options, ITransportLogger logger)
-        {
-            throw new NotImplementedException();
-            //return new RabbitMqListener(uri, logger, Protocol, this);
-        }
 
         internal Task Ping(Action<IModel> action)
         {
@@ -268,4 +234,5 @@ namespace Jasper.RabbitMQ
             return Task.CompletedTask;
         }
     }
+    */
 }

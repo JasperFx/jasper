@@ -2,6 +2,7 @@
 using Jasper.RabbitMQ;
 using Jasper.RabbitMQ.Internal;
 using LamarCodeGeneration.Util;
+using RabbitMQ.Client;
 
 [assembly: JasperModule(typeof(RabbitMqExtension))]
 
