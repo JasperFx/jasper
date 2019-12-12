@@ -6,7 +6,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
 {
-    public static class RabbitMqExtensions
+    public static class RabbitMqTransportExtensions
     {
         private static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
         {

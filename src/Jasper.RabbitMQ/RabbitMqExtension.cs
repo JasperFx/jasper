@@ -3,11 +3,11 @@ using Jasper.RabbitMQ;
 using Jasper.RabbitMQ.Internal;
 using LamarCodeGeneration.Util;
 
-[assembly: JasperModule(typeof(RabbitMqTransportExtension))]
+[assembly: JasperModule(typeof(RabbitMqExtension))]
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqTransportExtension : IJasperExtension
+    public class RabbitMqExtension : IJasperExtension
     {
         public void Configure(JasperOptions options)
         {
