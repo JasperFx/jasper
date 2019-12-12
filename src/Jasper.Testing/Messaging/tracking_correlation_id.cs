@@ -1,73 +1,60 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Messaging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Stub;
-using Microsoft.Extensions.DependencyInjection;
+using Jasper.Messaging.Tracking;
 using Shouldly;
 using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Messaging
 {
-
-
     public class tracking_correlation_id
     {
-        [Fact]
-        public async Task tracking_correlation_id_on_everything()
-        {
-            var catcher = new EnvelopeCatcher();
-
-            var host = JasperHost.For(x =>
-            {
-                x.Handlers.DisableConventionalDiscovery().IncludeType<ExecutedMessageGuy>();
-                x.Endpoints.PublishAllMessages().To("stub://outgoing");
-
-                x.Services.AddSingleton(catcher);
-            });
-
-            try
-            {
-                var context = host.Get<IMessageContext>();
-
-                await context.Invoke(new ExecutedMessage());
-                catcher.Envelopes.Single().CorrelationId.ShouldBe(context.CorrelationId);
-
-                await context.Send(new ExecutedMessage());
-                await context.Publish(new ExecutedMessage());
-                await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
-
-                var envelopes = host.GetAllEnvelopesSent();
-
-                foreach (var envelope in envelopes)
-                {
-                    envelope.CorrelationId.ShouldBe(context.CorrelationId);
-                }
-            }
-            finally
-            {
-                host.Dispose();
-            }
-        }
-
-        public class EnvelopeCatcher
-        {
-            public readonly IList<Envelope> Envelopes = new List<Envelope>();
-        }
-
         public class ExecutedMessage
         {
-
         }
 
         public class ExecutedMessageGuy
         {
-            public static void Handle(ExecutedMessage message, Envelope envelope, EnvelopeCatcher catcher)
+            public static void Handle(ExecutedMessage message)
             {
-                catcher.Envelopes.Add(envelope);
+            }
+        }
+
+        [Fact]
+        public async Task tracking_correlation_id_on_everything()
+        {
+            var host = JasperHost.For(x =>
+            {
+                x.Handlers.DisableConventionalDiscovery().IncludeType<ExecutedMessageGuy>();
+                x.Endpoints.PublishAllMessages().To("local://outgoing");
+
+                x.Extensions.UseMessageTrackingTestingSupport();
+            });
+
+            try
+            {
+                var id2 = Guid.Empty;
+                var session2 = await host.ExecuteAndWait(async context =>
+                {
+                    id2 = context.CorrelationId;
+
+                    await context.Send(new ExecutedMessage());
+                    await context.Publish(new ExecutedMessage());
+                    await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
+                });
+
+                var envelopes = session2
+                    .AllRecordsInOrder(EventType.Sent)
+                    .Select(x => x.Envelope)
+                    .ToArray();
+
+
+                foreach (var envelope in envelopes) envelope.CorrelationId.ShouldBe(id2);
+            }
+            finally
+            {
+                host.Dispose();
             }
         }
     }

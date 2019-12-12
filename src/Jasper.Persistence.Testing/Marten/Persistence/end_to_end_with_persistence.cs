@@ -23,7 +23,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             _output = output;
             theSender = JasperHost.For<ItemSender>();
             theReceiver = JasperHost.For<ItemReceiver>();
-            theTracker = theReceiver.Get<MessageTracker>();
 
             theSender.RebuildMessageStorage();
             theReceiver.RebuildMessageStorage();
@@ -38,7 +37,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         private readonly IHost theSender;
         private readonly IHost theReceiver;
-        private readonly MessageTracker theTracker;
 
 
         [Fact]
@@ -83,13 +81,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 Id = Guid.NewGuid()
             };
 
-            var waiter = theTracker.WaitFor<ItemCreated>();
+            await theReceiver.ExecuteAndWait(c => c.Enqueue(item));
 
-            await theReceiver.Get<IMessagePublisher>().Enqueue(item);
-
-            waiter.Wait(5.Seconds());
-
-            waiter.IsCompleted.ShouldBeTrue();
 
             var documentStore = theReceiver.Get<IDocumentStore>();
             using (var session = documentStore.QuerySession())
@@ -119,13 +112,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 Id = Guid.NewGuid()
             };
 
-            var waiter = theTracker.WaitFor<ItemCreated>();
+            await theSender.TrackActivity().AlsoTrack(theReceiver)
+                .SendMessageAndWait(item);
 
-            await theSender.Send(item);
-
-            waiter.Wait(20.Seconds());
-
-            waiter.IsCompleted.ShouldBeTrue();
 
             using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
             {

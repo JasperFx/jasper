@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Baseline.Dates;
+using Jasper.Messaging.Logging;
 using Lamar;
+using LamarCodeGeneration.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -8,13 +11,29 @@ namespace Jasper.Messaging.Tracking
 {
     public static class JasperHostMessageTrackingExtensions
     {
-        private static void validateMessageTrackerExists(this IHost host)
-        {
-            var history = host.Get<IContainer>().Model.For<MessageHistory>().Default;
 
-            if (history == null || history.Lifetime != ServiceLifetime.Singleton)
-                throw new InvalidOperationException(
-                    $"The {nameof(MessageTrackingExtension)} extension is not applied to this application");
+        internal static MessageTrackingLogger GetTrackingLogger(this IHost host)
+        {
+            var logger = host.Get<IMessageLogger>() as MessageTrackingLogger;
+            if (logger == null)
+            {
+                throw new InvalidOperationException($"The {nameof(MessageTrackingExtension)} extension is not configured for this application");
+            }
+
+            return logger;
+        }
+
+        /// <summary>
+        /// Advanced usage of the 'ExecuteAndWait()' message tracking and coordination for automated testing.
+        /// Use this configuration if you want to coordinate message tracking across multiple Jasper
+        /// applications running in the same process
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static TrackedSessionConfiguration TrackActivity(this IHost host)
+        {
+            var session = new TrackedSession(host);
+            return new TrackedSessionConfiguration(session);
         }
 
         /// <summary>
@@ -25,89 +44,60 @@ namespace Jasper.Messaging.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static async Task SendMessageAndWait<T>(this IHost host, T message,
-            int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
+        public static Task<ITrackedSession> SendMessageAndWait<T>(this IHost host, T message,
+            int timeoutInMilliseconds = 5000)
         {
-            host.validateMessageTrackerExists();
-
-            var history = host.Get<MessageHistory>();
-            await history.WatchAsync(() => host.Get<IMessageContext>().Send(message), timeoutInMilliseconds);
-
-            if (assertNoExceptions) history.AssertNoExceptions();
+            return host.ExecuteAndWait(c => c.Send(message), timeoutInMilliseconds);
         }
 
-
         /// <summary>
-        ///     Invoke a message through IServiceBus.Invoke(msg) and wait until all processing
-        ///     of the original message and cascading messages are complete
+        /// Invoke the given message and wait until all cascading messages
+        /// have completed
         /// </summary>
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this IHost runtime, Func<Task> action,
-            int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
+        public static Task<ITrackedSession> InvokeMessageAndWait(this IHost host, object message,
+            int timeoutInMilliseconds = 5000)
         {
-            runtime.validateMessageTrackerExists();
-
-            var history = runtime.Get<MessageHistory>();
-            await history.WatchAsync(action, timeoutInMilliseconds);
-
-            if (assertNoExceptions) history.AssertNoExceptions();
+            return host.ExecuteAndWait(c => c.Invoke(message), timeoutInMilliseconds);
         }
 
+
         /// <summary>
-        ///     Executes an action and waits until the execution and all cascading messages
+        ///     Executes an action and waits until the execution of all messages and all cascading messages
         ///     have completed
         /// </summary>
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this IHost runtime, Action action,
-            bool assertNoExceptions = false)
+        public static Task<ITrackedSession> ExecuteAndWait(this IHost host, Func<Task> action,
+            int timeoutInMilliseconds = 5000)
         {
-            runtime.validateMessageTrackerExists();
-
-            var history = runtime.Get<MessageHistory>();
-            await history.Watch(action);
-
-            if (assertNoExceptions) history.AssertNoExceptions();
+            return host.ExecuteAndWait(c => action(), timeoutInMilliseconds);
         }
 
         /// <summary>
-        ///     Executes an action and waits until the execution and all cascading messages
+        ///     Executes an action and waits until the execution of all messages and all cascading messages
         ///     have completed
         /// </summary>
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task ExecuteAndWait(this IHost runtime, Func<IMessageContext, Task> action,
-            bool assertNoExceptions = false)
-        {
-            runtime.validateMessageTrackerExists();
+        public async static Task<ITrackedSession> ExecuteAndWait(this IHost host,
+            Func<IMessageContext, Task> action,
+            int timeoutInMilliseconds = 5000)
+            {
+                TrackedSession session = new TrackedSession(host)
+                {
+                    Timeout = timeoutInMilliseconds.Milliseconds(),
+                    Execution = action
+                };
 
-            var history = runtime.Get<MessageHistory>();
-            var context = runtime.Get<IMessageContext>();
-            await history.WatchAsync(() => action(context));
+                await session.ExecuteAndTrack();
 
-            if (assertNoExceptions) history.AssertNoExceptions();
-        }
+                return session;
+            }
 
-        /// <summary>
-        ///     Executes a message and waits until all cascading messages are finished
-        /// </summary>
-        /// <param name="runtime"></param>
-        /// <param name="message"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static async Task InvokeMessageAndWait<T>(this IHost runtime, T message,
-            int timeoutInMilliseconds = 5000, bool assertNoExceptions = false)
-        {
-            runtime.validateMessageTrackerExists();
-
-            var history = runtime.Get<MessageHistory>();
-            await history.WatchAsync(() => runtime.Get<IMessageContext>().Invoke(message));
-
-            if (assertNoExceptions) history.AssertNoExceptions();
-        }
     }
 }

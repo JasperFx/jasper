@@ -14,7 +14,6 @@ namespace Jasper.Testing.Samples
             // Add service registrations with the ASP.Net Core
             // DI abstractions
             Services.AddLogging();
-            Services.AddSingleton(new MessageTracker());
 
             // or mix and match with StructureMap style
             // registrations

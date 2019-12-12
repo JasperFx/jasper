@@ -1,5 +1,6 @@
 ﻿using IntegrationTests;
 using Jasper.Configuration;
+using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Testing.Marten.Persistence.Resiliency;
 using Marten;
@@ -24,6 +25,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 x.DatabaseSchemaName = "sender";
             });
 
+            Extensions.UseMessageTrackingTestingSupport();
 
             Endpoints.ListenAtPort(2567);
 

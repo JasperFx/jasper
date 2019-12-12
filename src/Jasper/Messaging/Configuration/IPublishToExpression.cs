@@ -44,13 +44,6 @@ namespace Jasper.Messaging.Configuration
         ISubscriberConfiguration ToServerAndPort(string hostName, int port);
 
         /// <summary>
-        /// Publish the matching message types to the recording stub
-        /// endpoint with the following queue name
-        /// </summary>
-        /// <param name="queueName"></param>
-        void ToStub(string queueName);
-
-        /// <summary>
         ///     Publishes the matching messages locally to the default
         ///     local queue
         /// </summary>

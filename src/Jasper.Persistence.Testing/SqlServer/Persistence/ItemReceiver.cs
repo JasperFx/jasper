@@ -13,8 +13,6 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
-            Services.AddSingleton<MessageTracker>();
-
             Endpoints.ListenAtPort(2345).Durably();
         }
     }

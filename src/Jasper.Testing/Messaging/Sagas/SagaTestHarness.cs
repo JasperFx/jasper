@@ -13,7 +13,6 @@ namespace Jasper.Testing.Messaging.Sagas
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
     {
-        private MessageHistory _history;
         private IHost _host;
 
         public void Dispose()
@@ -34,7 +33,6 @@ namespace Jasper.Testing.Messaging.Sagas
                 configure(_);
             });
 
-            _history = _host.Get<MessageHistory>();
         }
 
         protected string codeFor<T>()
@@ -49,22 +47,21 @@ namespace Jasper.Testing.Messaging.Sagas
 
         protected async Task invoke<T>(T message)
         {
-            if (_history == null) withApplication();
+            if (_host == null) withApplication();
 
             await _host.Get<IMessagePublisher>().Invoke(message);
         }
 
         protected async Task send<T>(T message)
         {
-            if (_history == null) withApplication();
+            if (_host == null) withApplication();
 
-            await _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message), 60000);
+            await _host.ExecuteAndWait(x => x.Send(message));
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message, e => e.SagaId = sagaId.ToString()),
-                10000);
+            return _host.ExecuteAndWait(c => c.Send(message, e => e.SagaId = sagaId.ToString()));
         }
 
         protected TSagaState LoadState(object id)

@@ -99,11 +99,9 @@ namespace StorytellerSpecs.Fixtures.Marten
     {
         [Transactional]
         public static void Handle(ItemCreated created, IDocumentSession session,
-            Jasper.Messaging.Tracking.MessageTracker tracker,
             Envelope envelope)
         {
             session.Store(created);
-            tracker.Record(created, envelope);
         }
     }
 }

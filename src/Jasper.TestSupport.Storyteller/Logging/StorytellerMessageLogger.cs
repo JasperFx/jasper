@@ -11,14 +11,11 @@ namespace Jasper.TestSupport.Storyteller.Logging
 {
     public class StorytellerMessageLogger : MessageTrackingLogger
     {
-        private readonly MessageHistory _history;
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private ISpecContext _context;
 
-        public StorytellerMessageLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(
-            history, factory, metrics)
+        public StorytellerMessageLogger(ILoggerFactory factory, IMetrics metrics) : base(factory, metrics)
         {
-            _history = history;
             Errors = new BusErrors();
         }
 

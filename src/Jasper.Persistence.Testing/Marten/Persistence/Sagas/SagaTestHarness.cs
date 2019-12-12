@@ -15,7 +15,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : PostgresqlContext, IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState>
     {
-        private readonly MessageHistory _history;
         private readonly IHost _host;
 
         protected SagaTestHarness()
@@ -40,7 +39,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
                 configure(_);
             });
 
-            _history = _host.Get<MessageHistory>();
 
             var store = _host.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
@@ -65,14 +63,14 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 
         protected Task send<T>(T message)
         {
-            return _history.WatchAsync(() => _host.Send(message), 10000);
+            return _host.ExecuteAndWait(x => x.Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message, e => e.SagaId = sagaId.ToString()),
-                10000);
+            return _host.ExecuteAndWait(x => x.Send(message, e => e.SagaId = sagaId.ToString()), 10000);
         }
+
 
         protected async Task<TSagaState> LoadState(Guid id)
         {

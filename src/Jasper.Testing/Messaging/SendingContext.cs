@@ -12,16 +12,16 @@ namespace Jasper.Testing.Messaging
         private readonly JasperOptions senderOptions = new JasperOptions();
         protected IHost theReceiver;
         protected IHost theSender;
-        protected MessageTracker theTracker;
 
         public SendingContext()
         {
-            theTracker = new MessageTracker();
             receiverOptions.Handlers
                 .DisableConventionalDiscovery()
                 .IncludeType<MessageConsumer>();
 
-            receiverOptions.Services.For<MessageTracker>().Use(theTracker);
+            receiverOptions.Extensions.UseMessageTrackingTestingSupport();
+
+            senderOptions.Extensions.UseMessageTrackingTestingSupport();
         }
 
 

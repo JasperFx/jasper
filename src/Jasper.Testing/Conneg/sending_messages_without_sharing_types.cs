@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,14 +14,17 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Jasper.Testing.Conneg
 {
     public class sending_messages_without_sharing_types : IDisposable
     {
-        public sending_messages_without_sharing_types()
+        private readonly ITestOutputHelper _output;
+
+        public sending_messages_without_sharing_types(ITestOutputHelper output)
         {
-            theTracker = new MessageTracker();
+            _output = output;
         }
 
         public void Dispose()
@@ -31,27 +35,27 @@ namespace Jasper.Testing.Conneg
 
         private IHost greenApp;
         private IHost blueApp;
-        private readonly MessageTracker theTracker;
 
         [Fact]
         public async Task send_green_as_text_and_receive_as_blue()
         {
             greenApp = JasperHost.For<GreenApp>();
-            blueApp = JasperHost.For(new BlueApp(theTracker));
+            blueApp = JasperHost.For(new BlueApp());
+
+            var session = await greenApp
+                .TrackActivity()
+                .AlsoTrack(blueApp)
+                .ExecuteAndWait(c =>
+                    c.Send(new GreenMessage {Name = "Magic Johnson"}, _ => _.ContentType = "text/plain"));
 
 
-            theTracker.ShouldBeSameAs(blueApp.Get<MessageTracker>());
+            _output.WriteLine("This is what I'm finding'");
+            foreach (var record in session.AllRecordsInOrder())
+            {
+                _output.WriteLine(record.ToString());
+            }
 
-            var waiter = theTracker.WaitFor<BlueMessage>();
-
-            await greenApp.Get<IMessagePublisher>()
-                .Send(new GreenMessage {Name = "Magic Johnson"}, _ => _.ContentType = "text/plain");
-
-            var envelope = await waiter;
-
-
-            envelope.Message
-                .ShouldBeOfType<BlueMessage>()
+            session.FindSingleTrackedMessageOfType<BlueMessage>()
                 .Name.ShouldBe("Magic Johnson");
         }
 
@@ -59,17 +63,16 @@ namespace Jasper.Testing.Conneg
         public async Task send_green_that_gets_received_as_blue()
         {
             greenApp = JasperHost.For<GreenApp>();
-            blueApp = JasperHost.For(new BlueApp(theTracker));
+            blueApp = JasperHost.For<BlueApp>();
 
-            var waiter = theTracker.WaitFor<BlueMessage>();
+            var session = await greenApp
+                .TrackActivity()
+                .AlsoTrack(blueApp)
+                .ExecuteAndWait(c =>
+                    c.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"}));
 
-            await greenApp.Get<IMessagePublisher>().Send(new GreenMessage {Name = "Kareem Abdul Jabbar"});
 
-            var envelope = await waiter;
-
-
-            envelope.Message
-                .ShouldBeOfType<BlueMessage>()
+            session.FindSingleTrackedMessageOfType<BlueMessage>()
                 .Name.ShouldBe("Kareem Abdul Jabbar");
         }
     }
@@ -111,12 +114,12 @@ namespace Jasper.Testing.Conneg
 
     public class BlueApp : JasperOptions
     {
-        public BlueApp(MessageTracker tracker)
+        public BlueApp()
         {
-            Services.ForSingletonOf<MessageTracker>().Use(tracker);
             Endpoints.ListenAtPort(2555);
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<BlueHandler>();
+            Extensions.UseMessageTrackingTestingSupport();
         }
     }
 
@@ -128,6 +131,8 @@ namespace Jasper.Testing.Conneg
                 .ToPort(2555));
 
             Handlers.DisableConventionalDiscovery();
+
+            Extensions.UseMessageTrackingTestingSupport();
         }
     }
 
@@ -145,9 +150,9 @@ namespace Jasper.Testing.Conneg
 
     public class BlueHandler
     {
-        public static void Consume(Envelope envelope, BlueMessage message, MessageTracker tracker)
+        public static void Consume(BlueMessage message)
         {
-            tracker.Record(message, envelope);
+            Debug.WriteLine("Hey");
         }
     }
 }

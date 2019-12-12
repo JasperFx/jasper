@@ -53,6 +53,7 @@ namespace Jasper
 
         public JasperOptions(string assemblyName)
         {
+            Transports = new TransportCollection(this);
             Services = _applicationServices;
 
             establishApplicationAssembly(assemblyName);
@@ -114,7 +115,7 @@ namespace Jasper
         /// </summary>
         public IEndpoints Endpoints => Transports;
 
-        internal TransportCollection Transports { get; } = new TransportCollection();
+        internal TransportCollection Transports { get; }
 
         internal ServiceRegistry ExtensionServices { get; } = new ExtensionServiceRegistry();
 

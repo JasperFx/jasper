@@ -24,7 +24,6 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
     public abstract class SagaTestHarness<TSagaHandler, TSagaState> : SqlServerContext, IDisposable
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
     {
-        private readonly MessageHistory _history;
         private readonly IHost _host;
 
         protected SagaTestHarness(ITestOutputHelper output)
@@ -46,7 +45,6 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
                 configure(_);
             });
 
-            _history = _host.Get<MessageHistory>();
 
             rebuildSagaStateDatabase();
 
@@ -141,13 +139,12 @@ CREATE TABLE [StringWorkflowState] (
 
         protected Task send<T>(T message)
         {
-            return _history.WatchAsync(() => _host.Send(message), 10000);
+            return _host.ExecuteAndWait(x => x.Send(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _history.WatchAsync(() => _host.Get<IMessagePublisher>().Send(message, e => e.SagaId = sagaId.ToString()),
-                10000);
+            return _host.ExecuteAndWait(x => x.Send(message, e => e.SagaId = sagaId.ToString()), 10000);
         }
 
         protected async Task<TSagaState> LoadState(Guid id)

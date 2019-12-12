@@ -52,8 +52,15 @@ namespace Jasper.Configuration
 
 
         protected internal abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
-        protected internal abstract ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
-            Uri replyUri);
+
+        protected internal ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
+            Uri replyUri)
+        {
+            var sender = root.Settings.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(root);
+            return runtime.AddSubscriber(replyUri, sender, this);
+        }
+
+        protected abstract ISender CreateSender(IMessagingRoot root);
 
         public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
         public bool IsUsedForReplies { get; set; }

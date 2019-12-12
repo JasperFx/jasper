@@ -32,13 +32,12 @@ namespace Jasper.Messaging.Transports.Local
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        protected internal override ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
-            Uri replyUri)
+        protected override ISender CreateSender(IMessagingRoot root)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override string ToString()

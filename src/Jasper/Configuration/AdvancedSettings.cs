@@ -100,5 +100,11 @@ namespace Jasper.Configuration
         /// </summary>
 
         public string ServiceName { get; set; }
+
+        /// <summary>
+        /// This should probably *only* be used in development or testing
+        /// to latch all outgoing message sending
+        /// </summary>
+        public bool StubAllOutgoingExternalSenders { get; set; }
     }
 }

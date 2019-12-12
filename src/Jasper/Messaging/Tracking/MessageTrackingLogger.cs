@@ -11,53 +11,69 @@ namespace Jasper.Messaging.Tracking
     /// </summary>
     public class MessageTrackingLogger : MessageLogger
     {
-        public static readonly string Envelope = "Envelope";
-        public static readonly string Execution = "Execution";
-
-        private readonly MessageHistory _history;
+        private string _serviceName;
 
 
-        public MessageTrackingLogger(MessageHistory history, ILoggerFactory factory, IMetrics metrics) : base(factory,
+        public MessageTrackingLogger(JasperOptions options, ILoggerFactory factory, IMetrics metrics) : base(factory,
             metrics)
         {
-            _history = history;
+            _serviceName = options.ServiceName;
+        }
+
+        public TrackedSession ActiveSession { get; internal set; }
+
+        public override void NoHandlerFor(Envelope envelope)
+        {
+            ActiveSession?.Record(EventType.NoHandlers, envelope, _serviceName);
+            base.NoHandlerFor(envelope);
+        }
+
+        public override void NoRoutesFor(Envelope envelope)
+        {
+            ActiveSession?.Record(EventType.NoRoutes, envelope, _serviceName);
+            base.NoHandlerFor(envelope);
         }
 
         public override void LogException(Exception ex, Guid correlationId = default(Guid),
             string message = "Exception detected:")
         {
-            _history.LogException(ex);
+            ActiveSession?.LogException(ex, _serviceName);
             base.LogException(ex, correlationId, message);
         }
 
+        public override void Received(Envelope envelope)
+        {
+            ActiveSession?.Record(EventType.Received, envelope, _serviceName);
+            base.Received(envelope);
+        }
 
         public override void Sent(Envelope envelope)
         {
-            _history.Start(envelope, Envelope);
+            ActiveSession?.Record(EventType.Sent, envelope, _serviceName);
             base.Sent(envelope);
         }
 
         public override void ExecutionStarted(Envelope envelope)
         {
-            _history.Start(envelope, Execution);
+            ActiveSession?.Record(EventType.ExecutionStarted, envelope, _serviceName);
             base.ExecutionStarted(envelope);
         }
 
         public override void ExecutionFinished(Envelope envelope)
         {
-            _history.Complete(envelope, Execution);
+            ActiveSession?.Record(EventType.ExecutionFinished, envelope, _serviceName);
             base.ExecutionFinished(envelope);
         }
 
         public override void MessageSucceeded(Envelope envelope)
         {
-            _history.Complete(envelope, Envelope);
+            ActiveSession?.Record(EventType.MessageSucceeded, envelope, _serviceName);
             base.MessageSucceeded(envelope);
         }
 
         public override void MessageFailed(Envelope envelope, Exception ex)
         {
-            _history.Complete(envelope, Envelope, ex);
+            ActiveSession?.Record(EventType.Sent, envelope, _serviceName, ex);
             base.MessageFailed(envelope, ex);
         }
     }

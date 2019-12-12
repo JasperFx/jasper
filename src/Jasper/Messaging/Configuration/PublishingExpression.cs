@@ -153,12 +153,6 @@ namespace Jasper.Messaging.Configuration
             return To(uri);
         }
 
-        public void ToStub(string queueName)
-        {
-            // TODO -- get the Uri logic out of here
-            To("stub://" + queueName);
-        }
-
         internal void AttachSubscriptions()
         {
             if (!_endpoints.Any())

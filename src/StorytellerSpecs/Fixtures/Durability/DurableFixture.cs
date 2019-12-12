@@ -10,6 +10,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Persistence;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +24,9 @@ namespace StorytellerSpecs.Fixtures.Durability
     {
         private IHost theReceiver;
         private IHost theSender;
-        private Jasper.Messaging.Tracking.MessageTracker theTracker;
 
         public override void SetUp()
         {
-            theTracker = new Jasper.Messaging.Tracking.MessageTracker();
 
             var receiverPort = PortFinder.FindPort(3340);
             var senderPort = PortFinder.FindPort(3370);
@@ -40,7 +39,6 @@ namespace StorytellerSpecs.Fixtures.Durability
                 .DisableConventionalDiscovery()
                 .IncludeType<CascadeReceiver>()
                 .IncludeType<ScheduledMessageHandler>();
-            senderRegistry.Services.AddSingleton(theTracker);
 
 
 
@@ -73,7 +71,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             receiverRegistry.Endpoints.ListenAtPort(receiverPort).Durably();
 
-            receiverRegistry.Services.AddSingleton(theTracker);
+            receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
 
             configureReceiver(receiverRegistry);
 
@@ -111,18 +109,19 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             var trigger = new TriggerMessage {Name = Guid.NewGuid().ToString()};
 
-            var waiter = theTracker.WaitFor<CascadedMessage>();
+            throw new NotImplementedException();
+            //var waiter = theTracker.WaitFor<CascadedMessage>();
 
             await theSender.Send(trigger);
 
-            var env = await waiter;
+            //var env = await waiter;
 
-            StoryTellerAssert.Fail(env == null, "No return message was detected!");
-
-            var name = env.Message.As<CascadedMessage>().Name;
-            StoryTellerAssert.Fail(name != trigger.Name, "The response did not match the request");
-
-            return true;
+//            StoryTellerAssert.Fail(env == null, "No return message was detected!");
+//
+//            var name = env.Message.As<CascadedMessage>().Name;
+//            StoryTellerAssert.Fail(name != trigger.Name, "The response did not match the request");
+//
+//            return true;
         }
 
         protected abstract ItemCreated loadItem(IHost receiver, Guid id);
@@ -148,11 +147,12 @@ namespace StorytellerSpecs.Fixtures.Durability
                 Id = Guid.NewGuid()
             };
 
-            var waiter = theTracker.WaitFor<ItemCreated>();
+            throw new NotImplementedException();
+            //var waiter = theTracker.WaitFor<ItemCreated>();
 
             await send(c => c.Send(item));
 
-            await waiter;
+            //await waiter;
 
             await Task.Delay(500.Milliseconds());
 
@@ -322,9 +322,8 @@ namespace StorytellerSpecs.Fixtures.Durability
 
     public class CascadeReceiver
     {
-        public void Handle(CascadedMessage message, Jasper.Messaging.Tracking.MessageTracker tracker, Envelope envelope)
+        public void Handle(CascadedMessage message)
         {
-            tracker.Record(message, envelope);
         }
     }
 

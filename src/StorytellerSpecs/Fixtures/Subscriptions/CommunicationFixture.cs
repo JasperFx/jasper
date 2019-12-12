@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
@@ -66,7 +67,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
 
 
         [FormatAs("Send message {messageType} named {name}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
+        public async Task SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
             if (!_initialized)
             {
@@ -74,8 +75,11 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 {
                     var registry = new JasperOptions
                     {
-                        ServiceName = "Publisher"
+                        ServiceName = "Publisher",
+
                     };
+
+                    registry.Extensions.UseMessageTrackingTestingSupport();
 
                     _publisher = _nodes.Add(registry);
                 }
@@ -84,17 +88,13 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 _initialized = true;
             }
 
-            var history = _nodes.History;
 
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() => { _publisher.Send(message).Wait(); });
+            await _publisher.SendMessageAndWait(message);
 
-            waiter.Wait(5.Seconds());
-
-            StoryTellerAssert.Fail(!waiter.IsCompleted, "Messages were never completely tracked");
         }
     }
 
@@ -138,7 +138,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         private readonly IList<IHost> _hosts = new List<IHost>();
 
         public readonly Dictionary<Uri, Uri> Aliases = new Dictionary<Uri, Uri>();
-        public readonly MessageHistory History = new MessageHistory();
 
         public readonly MessageTracker Tracker = new MessageTracker();
 
@@ -150,7 +149,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         public IHost Add(JasperOptions options)
         {
             options.Services.For<MessageTracker>().Use(Tracker);
-            options.Services.For<MessageHistory>().Use(History);
 
             options.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
 

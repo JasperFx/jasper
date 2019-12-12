@@ -134,9 +134,8 @@ create table receiver.item_created
         [Transactional]
         public static async Task Handle(
             ItemCreated created,
-            SqlTransaction tx, // the current transaction
-            Jasper.Messaging.Tracking.MessageTracker tracker,
-            Envelope envelope)
+            SqlTransaction tx // the current transaction
+        )
         {
             // Using some extension method helpers inside of Jasper here
             await tx.CreateCommand("insert into receiver.item_created (id, name) values (@id, @name)")
@@ -144,7 +143,6 @@ create table receiver.item_created
                 .With("name", created.Name)
                 .ExecuteNonQueryAsync();
 
-            tracker.Record(created, envelope);
         }
     }
     // ENDSAMPLE

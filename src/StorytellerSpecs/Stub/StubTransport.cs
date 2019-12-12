@@ -23,27 +23,15 @@ namespace Jasper.Messaging.Transports.Stub
         /// <returns></returns>
         public static StubTransport GetStubTransport(this IHost host)
         {
-            return host.Services.GetRequiredService<IMessagingRoot>().Options.Transports.Get<StubTransport>();
+            return host
+                .Services
+                .GetRequiredService<IMessagingRoot>()
+                .Options
+                .Endpoints
+                .As<TransportCollection>()
+                .Get<StubTransport>();
         }
 
-        /// <summary>
-        ///     Clears all record of messages sent to the stub transport
-        /// </summary>
-        /// <param name="host"></param>
-        public static void ClearStubTransportSentList(this IHost host)
-        {
-            host.GetStubTransport().Endpoints.Each(x => x.Sent.Clear());
-        }
-
-        /// <summary>
-        ///     Retrieves an array of all the envelopes sent through the stub transport
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static Envelope[] GetAllEnvelopesSent(this IHost host)
-        {
-            return host.GetStubTransport().Endpoints.SelectMany(x => x.Sent).ToArray();
-        }
     }
 
     public class StubTransport : ITransport
@@ -84,7 +72,7 @@ namespace Jasper.Messaging.Transports.Stub
 
             foreach (var channel in Endpoints)
             {
-                channel.Start(pipeline);
+                channel.Start(pipeline, root.MessageLogger);
 
                 runtime.AddSubscriber(channel, channel.Subscriptions.ToArray());
             }

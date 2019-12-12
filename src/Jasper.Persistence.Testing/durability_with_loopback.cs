@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using IntegrationTests;
 using Jasper.Messaging.Durability;
 using Jasper.Messaging.ErrorHandling;
@@ -21,34 +22,34 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task should_recover_persisted_messages()
         {
-            using (var runtime1 = JasperHost.For(new DurableSender(true)))
+            using (var host1 = JasperHost.For(new DurableSender(true)))
             {
-                runtime1.RebuildMessageStorage();
+                host1.RebuildMessageStorage();
 
-                await runtime1.Send(new ReceivedMessage());
+                await host1.Send(new ReceivedMessage());
 
-                var counts = await runtime1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
 
-                await runtime1.StopAsync();
+                await host1.StopAsync();
 
                 counts.Incoming.ShouldBe(1);
             }
 
-            using (var runtime1 = JasperHost.For(new DurableSender(true)))
+            using (var host1 = JasperHost.For(new DurableSender(true)))
             {
-                var counts = await runtime1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+
+                var i = 0;
+                while (counts.Incoming != 1 && i < 10)
+                {
+                    await Task.Delay(100.Milliseconds());
+                    counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                }
 
                 counts.Incoming.ShouldBe(1);
 
-                var tracker = runtime1.Get<MessageTracker>();
 
-                var waiter = tracker.WaitFor<ReceivedMessage>();
-
-                runtime1.Get<ReceivingSettings>().Latched = false;
-
-                (await waiter).ShouldNotBeNull();
-
-                await runtime1.StopAsync();
+                await host1.StopAsync();
             }
         }
     }
@@ -65,7 +66,7 @@ namespace Jasper.Persistence.Testing
 
             Services.AddSingleton(new ReceivingSettings {Latched = true});
 
-            Services.AddSingleton<MessageTracker>();
+            Extensions.UseMessageTrackingTestingSupport();
         }
     }
 
@@ -76,11 +77,10 @@ namespace Jasper.Persistence.Testing
 
     public class ReceivedMessageHandler
     {
-        public void Handle(ReceivedMessage message, Envelope envelope, ReceivingSettings settings, MessageTracker tracker)
+        public void Handle(ReceivedMessage message, Envelope envelope, ReceivingSettings settings)
         {
             if (settings.Latched) throw new DivideByZeroException();
 
-            tracker.Record(message, envelope);
         }
 
         public static void Configure(HandlerChain chain)

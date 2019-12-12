@@ -31,23 +31,20 @@ namespace Jasper.Testing.Messaging
             registry.Handlers.IncludeType<MessageConsumer>();
 
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
+            registry.Extensions.UseMessageTrackingTestingSupport();
 
-            var tracker = new MessageTracker();
-            registry.Services.AddSingleton(tracker);
-
-            using (var runtime = JasperHost.For(registry))
+            using (var host = JasperHost.For(registry))
             {
-                var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
                 {
                     Id = Guid.NewGuid()
                 };
 
-                await runtime.Get<IMessageContext>().Enqueue(message);
+                var session = await host.ExecuteAndWait(c => c.Enqueue(message));
 
-                var received = await waiter;
+                var tracked = session.FindSingleTrackedMessageOfType<Message1>();
 
-                received.Message.As<Message1>().Id.ShouldBe(message.Id);
+                tracked.Id.ShouldBe(message.Id);
             }
         }
 
@@ -61,23 +58,20 @@ namespace Jasper.Testing.Messaging
             registry.Handlers.IncludeType<RecordCallHandler>();
             registry.Services.ForSingletonOf<IFakeStore>().Use<FakeStore>();
 
-            var tracker = new MessageTracker();
-            registry.Services.AddSingleton(tracker);
+            registry.Extensions.UseMessageTrackingTestingSupport();
 
-            using (var runtime = JasperHost.For(registry))
+            using (var host = JasperHost.For(registry))
             {
-                var waiter = tracker.WaitFor<Message1>();
                 var message = new Message1
                 {
                     Id = Guid.NewGuid()
                 };
 
-                await runtime.Get<IMessageContext>().Enqueue(message);
+                var session = await host.ExecuteAndWait(c => c.Enqueue(message));
 
-                waiter.Wait(5.Seconds());
-                var received = waiter.Result;
+                var tracked = session.FindSingleTrackedMessageOfType<Message1>();
 
-                received.Message.As<Message1>().Id.ShouldBe(message.Id);
+                tracked.Id.ShouldBe(message.Id);
             }
         }
 

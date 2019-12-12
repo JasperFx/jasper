@@ -17,9 +17,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 x.DatabaseSchemaName = "receiver";
             });
 
-            Services.AddSingleton<MessageTracker>();
-
             Endpoints.ListenAtPort(2345).Durably();
+
+            Extensions.UseMessageTrackingTestingSupport();
 
         }
     }

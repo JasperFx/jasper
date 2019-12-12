@@ -126,7 +126,6 @@ create table if not exists receiver.item_created
         public static async Task Handle(
             ItemCreated created,
             NpgsqlTransaction tx, // the current transaction
-            Jasper.Messaging.Tracking.MessageTracker tracker,
             Envelope envelope)
         {
             // Using some extension method helpers inside of Jasper here
@@ -135,7 +134,6 @@ create table if not exists receiver.item_created
                 .With("name", created.Name)
                 .ExecuteNonQueryAsync();
 
-            tracker.Record(created, envelope);
         }
     }
     // ENDSAMPLE

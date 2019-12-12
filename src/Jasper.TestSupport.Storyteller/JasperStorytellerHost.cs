@@ -46,7 +46,6 @@ namespace Jasper.TestSupport.Storyteller
 
         public readonly CellHandling CellHandling = CellHandling.Basic();
 
-        public readonly MessageHistory MessageHistory = new MessageHistory();
 
         private StorytellerMessageLogger _messageLogger;
 
@@ -62,10 +61,9 @@ namespace Jasper.TestSupport.Storyteller
         {
             Registry = registry;
 
-            Registry.Services.AddSingleton(MessageHistory);
 
             registry.Services.AddSingleton<INodes>(this);
-            registry.Services.AddSingleton<MessageHistory>();
+            registry.Extensions.Include<MessageTrackingExtension>();
 
             registry.Services.ForSingletonOf<IMessageLogger>().Use<StorytellerMessageLogger>();
         }

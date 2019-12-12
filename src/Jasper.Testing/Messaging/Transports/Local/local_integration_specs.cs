@@ -11,7 +11,6 @@ namespace Jasper.Testing.Messaging.Transports.Local
 {
     public class local_integration_specs : IntegrationContext
     {
-        private readonly MessageTracker theTracker = new MessageTracker();
 
         public local_integration_specs(DefaultApp @default) : base(@default)
         {
@@ -24,13 +23,8 @@ namespace Jasper.Testing.Messaging.Transports.Local
                 _.Endpoints.Publish(x => x.Message<Message1>()
                     .ToLocalQueue("incoming"));
 
-                _.Services.AddSingleton(theTracker);
+                _.Extensions.UseMessageTrackingTestingSupport();
 
-                _.Services.Scan(x =>
-                {
-                    x.TheCallingAssembly();
-                    x.WithDefaultConventions();
-                });
             });
         }
 
@@ -40,19 +34,12 @@ namespace Jasper.Testing.Messaging.Transports.Local
         {
             configure();
 
-            var bus = Host.Get<IMessageContext>();
+            var message1 = new Message1();
+            var session = await Host.SendMessageAndWait(message1);
 
-            var waiter = theTracker.WaitFor<Message1>();
 
-            await bus.Send(new Message1());
-
-            await waiter;
-
-            if (!waiter.IsCompleted) throw new Exception("Got no envelope!");
-
-            var envelope = waiter.Result;
-
-            envelope.ShouldNotBeNull();
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
+                .ShouldBeSameAs(message1);
         }
     }
 }

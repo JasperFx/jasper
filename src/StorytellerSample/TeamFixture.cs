@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Messaging.Tracking;
 using Jasper.TestSupport.Storyteller;
 using StorytellerSample.Application;
 using StoryTeller;
@@ -15,7 +16,7 @@ namespace StorytellerSample
             // This method sends a message to the service bus and waits
             // until it can detect that the message has been fully processed
             // on the receiving side or timed out
-            return SendMessageAndWaitForCompletion(new TeamAdded {Name = team});
+            return Host.SendMessageAndWait(new TeamAdded {Name = team});
         }
 
         [FormatAs("On {day}, the score was {homeTeam} {homeScore} vs. {visitorTeam} {visitorScore}")]
@@ -28,13 +29,13 @@ namespace StorytellerSample
                 Visitor = new TeamResult {Name = visitorTeam, Score = visitorScore}
             };
 
-            return SendMessageAndWaitForCompletion(message);
+            return Host.SendMessageAndWait(message);
         }
 
         [FormatAs("Send an un-handled message")]
         public Task SendUnHandledMessage()
         {
-            return SendMessageAndWaitForCompletion(new UnhandledMessage());
+            return Host.SendMessageAndWait(new UnhandledMessage());
         }
     }
 

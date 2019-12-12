@@ -1,0 +1,26 @@
+using System.Threading.Tasks;
+using Jasper.Messaging.Transports.Sending;
+using Jasper.Util;
+using NSubstitute;
+using Xunit;
+
+namespace Jasper.Testing.Messaging.Transports.Sending
+{
+    public class NulloSenderTester
+    {
+        [Fact]
+        public async Task enqueue_automatically_marks_envelope_as_successful()
+        {
+            var sender = new NulloSender("tcp://localhost:3333".ToUri());
+
+            var callback = Substitute.For<ISenderCallback>();
+            sender.Start(callback);
+
+            var env = ObjectMother.Envelope();
+
+            await sender.Enqueue(env);
+
+            callback.Received().Successful(env);
+        }
+    }
+}

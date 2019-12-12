@@ -22,8 +22,7 @@ namespace StorytellerSpecs.Fixtures
         {
             _options = new JasperOptions();
 
-            _options.Services.AddSingleton(new MessageTracker());
-            _options.Services.AddSingleton(new MessageHistory());
+            _options.Extensions.UseMessageTrackingTestingSupport();
 
 
             _options.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();
@@ -35,10 +34,6 @@ namespace StorytellerSpecs.Fixtures
 
             // Goofy, but gets things hooked up here
             runtime.Get<IMessageLogger>().As<StorytellerMessageLogger>().Start(Context);
-
-            var history = runtime.Get<MessageHistory>();
-            var graph = runtime.Get<HandlerGraph>();
-
 
             Context.State.Store(runtime);
         }

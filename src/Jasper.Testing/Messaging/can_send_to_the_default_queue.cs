@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging;
+using Jasper.Messaging.Tracking;
 using Shouldly;
 using TestMessages;
 using Xunit;
@@ -17,14 +19,16 @@ namespace Jasper.Testing.Messaging
 
             StartTheSender(_ => { _.Endpoints.PublishAllMessages().To("tcp://localhost:2270/unknown"); });
 
-            var waiter = theTracker.WaitFor<Message1>();
-
             var message1 = new Message1();
-            await theSender.Get<IMessagePublisher>().Send(message1);
 
-            var envelope = await waiter;
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .SendMessageAndWait(message1);
 
-            envelope.Message.As<Message1>().Id.ShouldBe(message1.Id);
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.Received)
+                .Id.ShouldBe(message1.Id);
+
         }
 
         [Fact]
@@ -34,14 +38,16 @@ namespace Jasper.Testing.Messaging
 
             StartTheSender(_ => { _.Endpoints.PublishAllMessages().To("tcp://localhost:2258"); });
 
-            var waiter = theTracker.WaitFor<Message1>();
-
             var message1 = new Message1();
-            await theSender.Get<IMessagePublisher>().Send(message1);
 
-            var envelope = await waiter;
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .SendMessageAndWait(message1);
 
-            envelope.Message.As<Message1>().Id.ShouldBe(message1.Id);
+
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.Received)
+                .Id.ShouldBe(message1.Id);
         }
     }
 }

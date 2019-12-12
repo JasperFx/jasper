@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Scheduled;
@@ -26,7 +27,6 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
 
         private IHost theSender;
         private readonly Uri theAddress = $"tcp://localhost:{++port}/incoming".ToUri();
-        private readonly MessageTracker theTracker = new MessageTracker();
         private IHost theReceiver;
         private FakeScheduledJobProcessor scheduledJobs;
 
@@ -36,7 +36,7 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
             theSender = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
-                _.Services.AddSingleton(theTracker);
+                _.Extensions.UseMessageTrackingTestingSupport();
             });
 
             var receiver = new JasperOptions();
@@ -51,7 +51,7 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
 
             receiver.Services.For<IScheduledJobProcessor>().Use(scheduledJobs);
 
-            receiver.Services.For<MessageTracker>().Use(theTracker);
+            receiver.Extensions.UseMessageTrackingTestingSupport();
 
             theReceiver = JasperHost.For(receiver);
         }
@@ -61,13 +61,16 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
         {
             getReady();
 
-            var waiter = theTracker.WaitFor<Message2>();
+            var session = await theSender.TrackActivity()
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .ExecuteAndWait(c => c.Send(theAddress, new Message2()));
 
-            await theSender.Get<IMessagePublisher>().Send(theAddress, new Message2());
 
-            var env = await waiter;
 
-            env.Message.ShouldBeOfType<Message2>();
+            session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
+                .ShouldNotBeNull();
+
         }
 
         [Fact]
@@ -75,13 +78,14 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
         {
             getReady();
 
-            var waiter = theTracker.WaitFor<Message1>();
+            var session = await theSender.TrackActivity()
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .ExecuteAndWait(c => c.Send(theAddress, new Message1()));
 
-            await theSender.Get<IMessagePublisher>().Send(theAddress, new Message1());
 
-            var env = await waiter;
-
-            env.Message.ShouldBeOfType<Message1>();
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
+                .ShouldNotBeNull();
         }
 
         [Fact]
@@ -89,13 +93,17 @@ namespace Jasper.Testing.Messaging.Transports.Tcp
         {
             getReady();
 
-            var waiter = theTracker.WaitFor<Message2>();
+            var session = await theSender.TrackActivity()
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .ExecuteAndWait(c => c.Send(theAddress, new Message2()));
 
-            await theSender.Get<IMessagePublisher>().Send(theAddress, new Message2());
 
-            var env = await waiter;
+            var record = session.FindEnvelopesWithMessageType<Message2>(EventType.MessageSucceeded).Single();
+            record
+                .ShouldNotBeNull();
 
-            env.Source.ShouldBe(theSender.Get<JasperOptions>().ServiceName);
+            record.Envelope.Source.ShouldBe(theSender.Get<JasperOptions>().ServiceName);
         }
     }
 }

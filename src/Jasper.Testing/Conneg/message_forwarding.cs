@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Conneg;
@@ -18,15 +19,14 @@ namespace Jasper.Testing.Conneg
         [Fact]
         public async Task send_message_via_forwarding()
         {
-            var tracker = new MessageTracker();
 
 
-            var runtime = JasperHost.For(_ =>
+            var host = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
                 _.Handlers.IncludeType<NewMessageHandler>();
 
-                _.Services.AddSingleton(tracker);
+                _.Extensions.UseMessageTrackingTestingSupport();
 
                 _.Endpoints.Publish(x =>
                 {
@@ -39,21 +39,20 @@ namespace Jasper.Testing.Conneg
 
             try
             {
-                var waiter = tracker.WaitFor<NewMessage>();
+                var session = await host.TrackActivity().IncludeExternalTransports().ExecuteAndWait(c =>
+                    c.Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
+                    {
+                        e.Destination = "tcp://localhost:2345".ToUri();
+                        e.ContentType = "application/json";
+                    }));
 
-                await runtime.Get<IMessagePublisher>().Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
-                {
-                    e.Destination = "tcp://localhost:2345".ToUri();
-                    e.ContentType = "application/json";
-                });
 
-                waiter.Wait(5.Seconds());
-
-                waiter.Result.Message.As<NewMessage>().FullName.ShouldBe("James Worthy");
+                session.FindSingleTrackedMessageOfType<NewMessage>(EventType.MessageSucceeded)
+                    .FullName.ShouldBe("James Worthy");
             }
             finally
             {
-                runtime.Dispose();
+                host.Dispose();
             }
         }
     }
@@ -78,9 +77,8 @@ namespace Jasper.Testing.Conneg
 
     public class NewMessageHandler
     {
-        public void Handle(NewMessage message, MessageTracker tracker, Envelope envelope)
+        public void Handle(NewMessage message)
         {
-            tracker.Record(message, envelope);
         }
     }
 }

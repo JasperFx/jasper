@@ -72,12 +72,9 @@ namespace Jasper.Messaging.Transports.Tcp
             runtime.AddListener(listener, this);
         }
 
-        // TODO -- think you can move more into TransportBase here
-        protected internal override ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
-            Uri replyUri)
+        protected override ISender CreateSender(IMessagingRoot root)
         {
-            var sender = new BatchedSender(Uri, new SocketSenderProtocol(), root.Settings.Cancellation, root.TransportLogger);
-            return runtime.AddSubscriber(replyUri, sender, this);
+            return new BatchedSender(Uri, new SocketSenderProtocol(), root.Settings.Cancellation, root.TransportLogger);
         }
 
         private IListener createListener(IMessagingRoot root)

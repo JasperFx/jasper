@@ -46,34 +46,25 @@ namespace StorytellerSpecs.Fixtures
         }
 
         [FormatAs("Send message {messageType} named {name}")]
-        public void SendMessage([SelectionList("MessageTypes")] string messageType, string name)
+        public async Task SendMessage([SelectionList("MessageTypes")] string messageType, string name)
         {
-            var history = _host.Get<MessageHistory>();
-
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(() => { _host.Get<IMessageContext>().Send(message).Wait(); });
-
-            waiter.Wait(5.Seconds());
-
-            StoryTellerAssert.Fail(!waiter.IsCompleted, "Messages were never completely tracked");
+            await _host.SendMessageAndWait(message);
         }
 
         [FormatAs("Send message {messageType} named {name} directly to {address}")]
-        public void SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
+        public async Task SendMessageDirectly([SelectionList("MessageTypes")] string messageType, string name,
             [SelectionList("Channels")] Uri address)
         {
-            var history = _host.Get<MessageHistory>();
-
             var type = messageTypeFor(messageType);
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            var waiter = history.Watch(async () => { await bus().Send(address, message).ConfigureAwait(false); });
+            await _host.ExecuteAndWait(x => x.Send(address, message));
 
-            waiter.Wait(5.Seconds());
         }
 
         private IMessageContext bus()

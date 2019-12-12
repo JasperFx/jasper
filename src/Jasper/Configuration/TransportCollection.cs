@@ -4,25 +4,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Messaging.Configuration;
-using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
-using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
-using Jasper.Util;
 
 namespace Jasper.Configuration
 {
     public class TransportCollection : IEnumerable<ITransport>, IEndpoints
     {
+        private readonly JasperOptions _parent;
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
-        public TransportCollection()
+        public TransportCollection(JasperOptions parent)
         {
+            _parent = parent;
             Add(new TcpTransport());
-            Add(new StubTransport());
             Add(new LocalTransport());
         }
+
 
         public ITransport TransportForScheme(string scheme)
         {
@@ -132,6 +131,10 @@ namespace Jasper.Configuration
         }
 
         public IListenerConfiguration DefaultLocalQueue => LocalQueue(TransportConstants.Default);
+        public void StubAllExternallyOutgoingEndpoints()
+        {
+            _parent.Advanced.StubAllOutgoingExternalSenders = true;
+        }
 
         public Endpoint[] AllEndpoints()
         {

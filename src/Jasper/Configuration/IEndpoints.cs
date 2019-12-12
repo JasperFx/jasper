@@ -49,5 +49,12 @@ namespace Jasper.Configuration
         /// </summary>
         /// <value></value>
         IListenerConfiguration DefaultLocalQueue { get; }
+
+
+        /// <summary>
+        /// This should probably *only* be used in development or testing
+        /// to latch all outgoing message sending
+        /// </summary>
+        void StubAllExternallyOutgoingEndpoints();
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Messaging;
 using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Stub;
+using Jasper.Messaging.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -22,7 +22,7 @@ namespace Jasper.Testing.Messaging
 
         private IHost theHost;
 
-        private void buildRuntime()
+        private void buildHost()
         {
             theHost = JasperHost.For(_ =>
             {
@@ -31,44 +31,54 @@ namespace Jasper.Testing.Messaging
                 _.Endpoints.Publish(x => x
                     .Message<Message1>()
                     .Message<Message2>()
-                    .ToStub("one"));
+                    .ToLocalQueue("one"));
 
-                _.Endpoints.Publish(x => x.Message<Message2>().ToStub("two"));
+                _.Endpoints.Publish(x => x.Message<Message2>().ToLocalQueue("two"));
+
+                _.Extensions.UseMessageTrackingTestingSupport();
 
             });
         }
 
         [Fact]
-        public void publish_message_with_no_known_subscribers()
+        public async Task publish_message_with_no_known_subscribers()
         {
-            buildRuntime();
-            theHost.Get<IMessagePublisher>().Publish(new Message3());
+            buildHost();
 
-            theHost.GetAllEnvelopesSent().Any().ShouldBeFalse();
+            var session = await theHost.ExecuteAndWait(x => x.Publish(new Message3()));
+
+            session.AllRecordsInOrder().Any(x => x.EventType != EventType.NoRoutes).ShouldBeFalse();
         }
 
         [Fact]
         public async Task publish_with_known_subscribers()
         {
-            buildRuntime();
+            buildHost();
 
-            await theHost.Get<IMessagePublisher>().Publish(new Message1());
-            await theHost.Get<IMessagePublisher>().Publish(new Message2());
+            var session = await theHost.ExecuteAndWait(async c =>
+            {
+                await c.Publish(new Message1());
+                await c.Publish(new Message2());
 
-            var sent = theHost.GetAllEnvelopesSent();
+            });
 
-            sent.Single(x => x.MessageType == typeof(Message1).ToMessageTypeName()).Destination
-                .ShouldBe("stub://one".ToUri());
+            session
+                .FindEnvelopesWithMessageType<Message1>(EventType.Sent)
+                .Single()
+                .Envelope.Destination
+                .ShouldBe("local://one".ToUri());
 
-            sent.Where(x => x.MessageType == typeof(Message2).ToMessageTypeName())
-                .Select(x => x.Destination)
-                .ShouldHaveTheSameElementsAs("stub://one".ToUri(), "stub://two".ToUri());
+            session
+                .FindEnvelopesWithMessageType<Message2>(EventType.Sent)
+                .Select(x => x.Envelope.Destination).OrderBy(x => x.ToString())
+                .ShouldHaveTheSameElementsAs( "local://one".ToUri(), "local://two".ToUri());
+
         }
 
         [Fact]
         public async Task send_message_with_no_known_subscribers()
         {
-            buildRuntime();
+            buildHost();
             await Should.ThrowAsync<NoRoutesException>(async () =>
                 await theHost.Get<IMessagePublisher>().Send(new Message3()));
         }
@@ -77,13 +87,17 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public async Task send_with_known_subscribers()
         {
-            buildRuntime();
-            await theHost.Get<IMessagePublisher>().Send(new Message1());
-            await theHost.Get<IMessagePublisher>().Send(new Message2());
+            buildHost();
 
-            var sent = theHost.GetAllEnvelopesSent();
+            var session = await theHost.ExecuteAndWait(async c =>
+            {
+                await c.Send(new Message1());
+                await c.Send(new Message2());
 
-            sent.Length.ShouldBe(3);
+            });
+
+            session.AllRecordsInOrder(EventType.Sent)
+                .Length.ShouldBe(3);
         }
     }
 }

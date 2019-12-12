@@ -8,7 +8,6 @@ using Jasper.Messaging.Runtime.Routing;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Local;
 using Jasper.Messaging.Transports.Sending;
-using Jasper.Messaging.Transports.Stub;
 using Jasper.Messaging.Transports.Tcp;
 using Jasper.Util;
 using NSubstitute;
@@ -26,7 +25,7 @@ namespace Jasper.Testing.Configuration
             var transport = Substitute.For<ITransport>();
             transport.Protocol.Returns("fake");
 
-            var collection = new TransportCollection {transport};
+            var collection = new TransportCollection(new JasperOptions()) {transport};
 
             collection.ShouldContain(transport);
 
@@ -36,7 +35,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void try_to_get_endpoint_from_invalid_transport()
         {
-            var collection = new TransportCollection();
+            var collection = new TransportCollection(new JasperOptions());
             Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
             {
                 collection.TryGetEndpoint("wrong://server".ToUri());
@@ -44,17 +43,9 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
-        public void stub_is_registered_by_default()
-        {
-            new TransportCollection()
-                .OfType<StubTransport>()
-                .Count().ShouldBe(1);
-        }
-
-        [Fact]
         public void tcp_is_registered_by_default()
         {
-            new TransportCollection()
+            new TransportCollection(new JasperOptions())
                 .OfType<TcpTransport>()
                 .Count().ShouldBe(1);
         }
@@ -62,7 +53,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void local_is_registered_by_default()
         {
-            new TransportCollection()
+            new TransportCollection(new JasperOptions())
                 .OfType<LocalTransport>()
                 .Count().ShouldBe(1);
         }
@@ -70,7 +61,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void retrieve_transport_by_scheme()
         {
-            new TransportCollection()
+            new TransportCollection(new JasperOptions())
                 .TransportForScheme("tcp")
                 .ShouldBeOfType<TcpTransport>();
         }
@@ -78,7 +69,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void retrieve_transport_by_type()
         {
-            new TransportCollection()
+            new TransportCollection(new JasperOptions())
                 .Get<LocalTransport>()
                 .ShouldNotBeNull();
         }
@@ -86,9 +77,9 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void all_endpoints()
         {
-            var collection = new TransportCollection();
+            var collection = new TransportCollection(new JasperOptions());
             collection.ListenAtPort(2222);
-            collection.PublishAllMessages().ToStub("one");
+            collection.PublishAllMessages().ToPort(2223);
 
             // 3 default local queues + the 2 added here
             collection.AllEndpoints()
@@ -98,7 +89,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void publish_mechanism_with_multiple_subscribers()
         {
-            var collection = new TransportCollection();
+            var collection = new TransportCollection(new JasperOptions());
             collection.Publish(x =>
             {
                 x.MessagesFromNamespace("One");
@@ -128,7 +119,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void create_transport_type_if_missing()
         {
-            var collection = new TransportCollection();
+            var collection = new TransportCollection(new JasperOptions());
             var transport = collection.Get<FakeTransport>();
 
             collection.Get<FakeTransport>()

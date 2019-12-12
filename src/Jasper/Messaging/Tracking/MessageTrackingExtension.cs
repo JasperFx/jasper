@@ -13,10 +13,20 @@ namespace Jasper.Messaging.Tracking
     {
         public void Configure(JasperOptions options)
         {
-            options.Services.AddSingleton<MessageHistory>();
-
-
             options.Services.For<IMessageLogger>().Use<MessageTrackingLogger>().Singleton();
+        }
+    }
+
+    public static class MessageTrackingExtensions
+    {
+        /// <summary>
+        /// Add the message tracking support to your application
+        /// for reliable automated testing
+        /// </summary>
+        /// <param name="extensions"></param>
+        public static void UseMessageTrackingTestingSupport(this IExtensions extensions)
+        {
+            extensions.Include<MessageTrackingExtension>();
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_ExecuteAndWaitSync()
         {
-            await theHost.ExecuteAndWait(() => { theHost.Invoke(new CreateUser {Name = "Tom"}); });
+            await theHost.ExecuteAndWait(x => x.Invoke(new CreateUser {Name = "Tom"}));
 
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
@@ -64,7 +64,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_InvokeMessageAndWait()
         {
-            await theHost.InvokeMessageAndWait(new CreateUser {Name = "Bill"});
+            await theHost.ExecuteAndWait(x => x.Invoke(new CreateUser {Name = "Bill"}));
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
             {
@@ -92,9 +92,9 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         // SAMPLE: invoke_a_message_with_tracking
         public async Task invoke_a_message()
         {
-            using (var runtime = JasperHost.For<AppUsingMessageTracking>())
+            using (var host = JasperHost.For<AppUsingMessageTracking>())
             {
-                await runtime.InvokeMessageAndWait(new Message1());
+                await host.ExecuteAndWait(x => x.Invoke(new Message1()));
 
                 // check the change in system state after the original
                 // message and all of its cascading messages
@@ -115,11 +115,10 @@ namespace Jasper.Persistence.Testing.Marten.Sample
                 await runtime.InvokeMessageAndWait(new Message1(),
                     10000);
 
-                // More general usage
+                // More general usage to send a single message and wait
+                // for all activity to complete
                 await runtime.ExecuteAndWait(() => runtime.Send(new Message1()));
 
-                // More general usage, but synchronously
-                await runtime.ExecuteAndWait(() => { runtime.Send(new Message1()); });
 
                 // Using an isolated message context
                 await runtime.ExecuteAndWait(c => c.Send(new Message1()));
@@ -127,8 +126,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
                 // Assert that there were no exceptions during the processing
                 // If there are, this will throw an AggregateException of
                 // all encountered exceptions in the message processing
-                await runtime.ExecuteAndWait(c => c.Send(new Message1()),
-                    true);
+                var session = await runtime.ExecuteAndWait(c => c.Send(new Message1()));
             }
         }
 
