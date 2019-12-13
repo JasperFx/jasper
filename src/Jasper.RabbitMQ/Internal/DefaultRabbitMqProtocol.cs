@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Jasper.Messaging.Runtime;
 using RabbitMQ.Client;
 
@@ -14,8 +15,14 @@ namespace Jasper.RabbitMQ.Internal
                 Data = data,
                 Source = props.AppId,
                 ContentType = props.ContentType,
-                MessageType = props.Type
+                MessageType = props.Type,
+
             };
+
+            if (Guid.TryParse(props.CorrelationId, out var id))
+            {
+                envelope.Id = id;
+            }
 
 
             if (props.Headers != null) envelope.ReadPropertiesFromDictionary(props.Headers);

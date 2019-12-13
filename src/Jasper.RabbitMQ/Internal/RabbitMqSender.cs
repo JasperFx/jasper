@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using RabbitMQ.Client;
 
@@ -20,6 +21,8 @@ namespace Jasper.RabbitMQ.Internal
         private ISenderCallback _callback;
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
+        private string _exchangeName;
+        private string _key;
 
         public RabbitMqSender(ITransportLogger logger, RabbitMqEndpoint endpoint, RabbitMqTransport transport,
             CancellationToken cancellation) : base(transport)
@@ -30,6 +33,9 @@ namespace Jasper.RabbitMQ.Internal
             _transport = transport;
             _cancellation = cancellation;
             Destination = endpoint.Uri;
+
+            _exchangeName = endpoint.ExchangeName == TransportConstants.Default ? "" : endpoint.ExchangeName;
+            _key = endpoint.RoutingKey;
         }
 
 
@@ -107,7 +113,7 @@ namespace Jasper.RabbitMQ.Internal
                 _protocol.WriteFromEnvelope(envelope, props);
                 props.AppId = "Jasper";
 
-                channel.BasicPublish(_endpoint.ExchangeName, _endpoint.RoutingKey, props, envelope.Data);
+                channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
             });
         }
 
@@ -149,7 +155,7 @@ namespace Jasper.RabbitMQ.Internal
 
                 _protocol.WriteFromEnvelope(envelope, props);
 
-                Channel.BasicPublish(_endpoint.ExchangeName, _endpoint.RoutingKey, props, envelope.Data);
+                Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
 
                 await _callback.Successful(envelope);
             }

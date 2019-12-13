@@ -30,6 +30,7 @@ namespace Jasper.RabbitMQ.Internal
 
         internal void Declare(IModel channel)
         {
+            if (DeclaredName == string.Empty) return;
             var exchangeTypeName = ExchangeType.ToString().ToLower();
             channel.ExchangeDeclare(DeclaredName, exchangeTypeName, IsDurable, AutoDelete, Arguments);
         }
@@ -37,6 +38,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public void Teardown(IModel channel)
         {
+            if (DeclaredName == string.Empty) return;
             channel.ExchangeDelete(DeclaredName);
         }
     }

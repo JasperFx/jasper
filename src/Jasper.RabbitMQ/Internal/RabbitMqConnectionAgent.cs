@@ -42,10 +42,10 @@ namespace Jasper.RabbitMQ.Internal
 
         protected void teardownConnection()
         {
-            Channel.Abort();
-            Channel.Dispose();
-            _connection.Close();
-            _connection.Dispose();
+            Channel?.Abort();
+            Channel?.Dispose();
+            _connection?.Close();
+            _connection?.Dispose();
 
             Channel = null;
             _connection = null;

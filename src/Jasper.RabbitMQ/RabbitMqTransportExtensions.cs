@@ -8,21 +8,22 @@ namespace Jasper.RabbitMQ
 {
     public static class RabbitMqTransportExtensions
     {
-        private static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
+        public static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
         {
-            return endpoints.As<TransportCollection>().Get<RabbitMqTransport>();
+            var transports = endpoints.As<TransportCollection>();
+            var transport = transports.Get<RabbitMqTransport>();
+            if (transport == null)
+            {
+                transport = new RabbitMqTransport();
+                transports.Add(transport);
+            }
+
+            return transport;
         }
 
-        public static void RabbitMqConnection(this IEndpoints endpoints, Uri ampqUri)
+        public static void ConfigureRabbitMq(this IEndpoints endpoints, Action<IRabbitMqTransport> configure)
         {
-            var rabbit = endpoints.RabbitMqTransport();
-            rabbit.ConnectionFactory.Uri = ampqUri;
-        }
-
-        public static void RabbitMqConnection(this IEndpoints endpoints, Action<ConnectionFactory> configure)
-        {
-            var rabbit = endpoints.RabbitMqTransport();
-            configure(rabbit.ConnectionFactory);
+            configure(endpoints.RabbitMqTransport());
         }
     }
 }

@@ -18,11 +18,11 @@ namespace Jasper.RabbitMQ.Internal
             channel.QueueDeclare(Name, IsDurable, IsExclusive, AutoDelete, Arguments);
         }
 
-        public bool AutoDelete { get; set; } = true;
+        public bool AutoDelete { get; set; } = false;
 
-        public bool IsExclusive { get; set; } = true;
+        public bool IsExclusive { get; set; } = false;
 
-        public bool IsDurable { get; set; } = false;
+        public bool IsDurable { get; set; } = true;
 
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
 

@@ -26,45 +26,31 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq()
         {
-            throw new NotImplementedException("Redo");
-//            using (var runtime = JasperHost.For<RabbitMqUsingApp>())
-//            {
-//                var tracker = runtime.Get<MessageTracker>();
-//
-//                var watch = tracker.WaitFor<ColorChosen>();
-//
-//                await runtime.Send(new ColorChosen {Name = "Red"});
-//
-//                await watch;
-//
-//                var colors = runtime.Get<ColorHistory>();
-//
-//                colors.Name.ShouldBe("Red");
-//            }
+            using (var host = JasperHost.For<RabbitMqUsingApp>())
+            {
+                await host
+                    .TrackActivity()
+                    .IncludeExternalTransports()
+                    .SendMessageAndWait(new ColorChosen {Name = "Red"});
+
+                var colors = host.Get<ColorHistory>();
+
+                colors.Name.ShouldBe("Red");
+            }
         }
-
-
-
 
 
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_using_connection_string()
         {
-            throw new NotImplementedException("Redo");
-//            using (var runtime = JasperHost.For<RabbitMqUsingApp2>())
-//            {
-//                var tracker = runtime.Get<MessageTracker>();
-//
-//                var watch = tracker.WaitFor<ColorChosen>();
-//
-//                await runtime.Send(new ColorChosen {Name = "Red"});
-//
-//                await watch;
-//
-//                var colors = runtime.Get<ColorHistory>();
-//
-//                colors.Name.ShouldBe("Red");
-//            }
+            using (var host = JasperHost.For<RabbitMqUsingApp2>())
+            {
+                await host.SendMessageAndWait(new ColorChosen {Name = "Red"});
+
+                var colors = host.Get<ColorHistory>();
+
+                colors.Name.ShouldBe("Red");
+            }
         }
 
         [Fact]
@@ -310,7 +296,7 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_named_topic()
         {
-//            throw new NotImplementedException("Redo");
+            throw new NotImplementedException("Redo");
 //            var uri = "rabbitmq://localhost/queue/messages4/topic/special";
 //
 //            var publisher = JasperHost.For(_ =>
@@ -432,18 +418,22 @@ namespace Jasper.RabbitMQ.Tests
     {
         public RabbitMqUsingApp()
         {
-            throw new NotImplementedException("Redo");
-//            Settings.AddRabbitMqHost("localhost");
-//
-//
-//            Transports.ListenForMessagesFrom("rabbitmq://localhost/queue/messages3");
-//
-//            Services.AddSingleton<ColorHistory>();
-//            Services.AddSingleton<MessageTracker>();
-//
-//            Publish.AllMessagesTo("rabbitmq://localhost/queue/messages3");
-//
-//            Include<MessageTrackingExtension>();
+            Extensions.UseMessageTrackingTestingSupport();
+
+            Endpoints.ConfigureRabbitMq(x =>
+            {
+                x.ConnectionFactory.HostName = "localhost";
+                x.DeclareQueue("messages3");
+                x.AutoProvision = true;
+            });
+
+
+            Endpoints.ListenForMessagesFrom("rabbitmq://default/messages3");
+
+            Services.AddSingleton<ColorHistory>();
+
+            Endpoints.PublishAllMessages().To("rabbitmq://default/messages3");
+
         }
     }
 

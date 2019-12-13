@@ -15,7 +15,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
+    public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IRabbitMqTransport
     {
         public const string ProtocolName = "rabbitmq";
 
@@ -92,8 +92,6 @@ namespace Jasper.RabbitMQ.Internal
 
         internal IConnection BuildConnection()
         {
-
-
             return AmqpTcpEndpoints.Any()
                 ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
                 : ConnectionFactory.CreateConnection();
@@ -119,7 +117,11 @@ namespace Jasper.RabbitMQ.Internal
                     {
                         binding.Declare(channel);
                     }
+
+                    channel.Close();
                 }
+
+                connection.Close();
             }
         }
 
@@ -145,8 +147,10 @@ namespace Jasper.RabbitMQ.Internal
                         queue.Teardown(channel);
                     }
 
-
+                    channel.Close();
                 }
+
+                connection.Close();
             }
         }
 
@@ -160,7 +164,11 @@ namespace Jasper.RabbitMQ.Internal
                     {
                         queue.Purge(channel);
                     }
+
+                    channel.Close();
                 }
+
+                connection.Close();
             }
         }
     }

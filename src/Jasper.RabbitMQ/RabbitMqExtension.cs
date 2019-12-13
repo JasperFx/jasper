@@ -12,7 +12,11 @@ namespace Jasper.RabbitMQ
     {
         public void Configure(JasperOptions options)
         {
-            options.Endpoints.As<TransportCollection>().Add(new RabbitMqTransport());
+            // this will force the transport collection
+            // to add Rabbit MQ if it does not alreay
+            // exist
+            options.Endpoints.RabbitMqTransport();
+
         }
     }
 }
