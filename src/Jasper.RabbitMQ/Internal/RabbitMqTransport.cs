@@ -54,12 +54,16 @@ namespace Jasper.RabbitMQ.Internal
 
         public LightweightCache<string, RabbitMqQueue> Queues { get; } = new LightweightCache<string, RabbitMqQueue>(name => new RabbitMqQueue(name));
 
-        private readonly IList<Binding> _bindings = new List<Binding>();
+        public IList<Binding> Bindings { get; } = new List<Binding>();
 
         public void AddBinding(Binding binding)
         {
-            // TODO -- validate the binding properties first
-            _bindings.Add(binding);
+            binding.AssertValid();
+
+            DeclareExchange(binding.ExchangeName);
+            DeclareExchange(binding.QueueName);
+
+            Bindings.Add(binding);
         }
 
         public void DeclareExchange(string exchangeName, Action<RabbitMqExchange> configure = null)
@@ -97,7 +101,7 @@ namespace Jasper.RabbitMQ.Internal
                         queue.Declare(channel);
                     }
 
-                    foreach (var binding in _bindings)
+                    foreach (var binding in Bindings)
                     {
                         binding.Declare(channel);
                     }
@@ -113,7 +117,7 @@ namespace Jasper.RabbitMQ.Internal
                 {
 
 
-                    foreach (var binding in _bindings)
+                    foreach (var binding in Bindings)
                     {
                         binding.Teardown(channel);
                     }
@@ -209,5 +213,12 @@ namespace Jasper.RabbitMQ.Internal
             channel.QueueUnbind(QueueName, ExchangeName, BindingKey, Arguments);
         }
 
+        internal void AssertValid()
+        {
+            if (BindingKey.IsEmpty() || QueueName.IsEmpty() || ExchangeName.IsEmpty())
+            {
+                throw new InvalidOperationException($"{nameof(BindingKey)} properties {nameof(BindingKey)}, {nameof(QueueName)}, and {nameof(ExchangeName)} are all required for this operation");
+            }
+        }
     }
 }
