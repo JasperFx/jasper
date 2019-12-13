@@ -27,14 +27,14 @@ namespace Jasper.RabbitMQ.Tests
             theTransport.DeclareQueue("queue1");
             theTransport.DeclareQueue("queue2");
 
-            theTransport.AddBinding(new Binding
+            theTransport.DeclareBinding(new Binding
             {
                 ExchangeName = "direct1",
                 QueueName = "queue1",
                 BindingKey = "key1"
             });
 
-            theTransport.AddBinding(new Binding
+            theTransport.DeclareBinding(new Binding
             {
                 ExchangeName = "fan1",
                 QueueName = "queue2",

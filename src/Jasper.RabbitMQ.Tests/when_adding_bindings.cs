@@ -21,7 +21,7 @@ namespace Jasper.RabbitMQ.Tests
                 QueueName = "queue3"
             };
 
-            theTransport.AddBinding(theBinding);
+            theTransport.DeclareBinding(theBinding);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             Should.Throw<InvalidOperationException>(() =>
             {
-                theTransport.AddBinding(new Binding
+                theTransport.DeclareBinding(new Binding
                 {
                     QueueName = "a",
                     ExchangeName = "b"
@@ -61,7 +61,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             Should.Throw<InvalidOperationException>(() =>
             {
-                theTransport.AddBinding(new Binding
+                theTransport.DeclareBinding(new Binding
                 {
                     BindingKey = "a",
                     ExchangeName = "b"
@@ -74,7 +74,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             Should.Throw<InvalidOperationException>(() =>
             {
-                theTransport.AddBinding(new Binding
+                theTransport.DeclareBinding(new Binding
                 {
                     BindingKey = "a",
                     QueueName = "b"

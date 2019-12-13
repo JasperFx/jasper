@@ -56,7 +56,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public IList<Binding> Bindings { get; } = new List<Binding>();
 
-        public void AddBinding(Binding binding)
+        public void DeclareBinding(Binding binding)
         {
             binding.AssertValid();
 
@@ -148,76 +148,6 @@ namespace Jasper.RabbitMQ.Internal
                         queue.Purge(channel);
                     }
                 }
-            }
-        }
-    }
-
-    public class RabbitMqQueue
-    {
-        public string Name { get; }
-
-        public RabbitMqQueue(string name)
-        {
-            Name = name;
-        }
-
-        internal void Declare(IModel channel)
-        {
-            channel.QueueDeclare(Name, IsDurable, IsExclusive, AutoDelete, Arguments);
-        }
-
-        public bool AutoDelete { get; set; } = true;
-
-        public bool IsExclusive { get; set; } = true;
-
-        public bool IsDurable { get; set; } = false;
-
-        public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
-
-        public void Teardown(IModel channel)
-        {
-            channel.QueueDeleteNoWait(Name);
-        }
-
-        public void Purge(IModel channel)
-        {
-            try
-            {
-                channel.QueuePurge(Name);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unable to purge queue " + Name);
-                Console.WriteLine(e);
-            }
-        }
-    }
-
-
-
-    public class Binding
-    {
-        public string BindingKey { get; set; }
-        public string QueueName { get; set; }
-        public string ExchangeName { get; set; }
-
-        public IDictionary<string, object> Arguments { get; set; } = new Dictionary<string, object>();
-
-        internal void Declare(IModel channel)
-        {
-            channel.QueueBind(QueueName, ExchangeName, BindingKey, Arguments);
-        }
-
-        public void Teardown(IModel channel)
-        {
-            channel.QueueUnbind(QueueName, ExchangeName, BindingKey, Arguments);
-        }
-
-        internal void AssertValid()
-        {
-            if (BindingKey.IsEmpty() || QueueName.IsEmpty() || ExchangeName.IsEmpty())
-            {
-                throw new InvalidOperationException($"{nameof(BindingKey)} properties {nameof(BindingKey)}, {nameof(QueueName)}, and {nameof(ExchangeName)} are all required for this operation");
             }
         }
     }
