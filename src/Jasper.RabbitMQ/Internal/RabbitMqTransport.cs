@@ -46,13 +46,24 @@ namespace Jasper.RabbitMQ.Internal
             return _endpoints[uri];
         }
 
+        public override void Initialize()
+        {
+            if (AutoProvision)
+            {
+                InitializeAllObjects();
+            }
+        }
+
+        public bool AutoProvision { get; set; } = false;
+
         public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
 
         public IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; } = new List<AmqpTcpEndpoint>();
 
         public LightweightCache<string, RabbitMqExchange> Exchanges { get; }
 
-        public LightweightCache<string, RabbitMqQueue> Queues { get; } = new LightweightCache<string, RabbitMqQueue>(name => new RabbitMqQueue(name));
+        public LightweightCache<string, RabbitMqQueue> Queues { get; }
+            = new LightweightCache<string, RabbitMqQueue>(name => new RabbitMqQueue(name));
 
         public IList<Binding> Bindings { get; } = new List<Binding>();
 
@@ -85,7 +96,7 @@ namespace Jasper.RabbitMQ.Internal
                 : ConnectionFactory.CreateConnection();
         }
 
-        public void DeclareAll()
+        public void InitializeAllObjects()
         {
             using (var connection = BuildConnection())
             {

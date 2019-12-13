@@ -21,6 +21,11 @@ namespace Jasper.Messaging.Transports
             return endpoints();
         }
 
+        public virtual void Initialize()
+        {
+            // Nothing
+        }
+
         public Endpoint ReplyEndpoint()
         {
             var listeners = endpoints().Where(x => x.IsListener).ToArray();

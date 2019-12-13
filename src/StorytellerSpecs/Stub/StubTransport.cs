@@ -59,6 +59,11 @@ namespace Jasper.Messaging.Transports.Stub
             return Endpoints;
         }
 
+        public void Initialize()
+        {
+            // Nothing
+        }
+
         public void Dispose()
         {
 

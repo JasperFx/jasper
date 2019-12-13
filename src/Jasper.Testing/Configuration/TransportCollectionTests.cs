@@ -188,6 +188,11 @@ namespace Jasper.Testing.Configuration
             {
                 throw new NotImplementedException();
             }
+
+            public void Initialize()
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

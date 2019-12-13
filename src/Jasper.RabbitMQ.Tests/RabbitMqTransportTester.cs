@@ -12,5 +12,12 @@ namespace Jasper.RabbitMQ.Tests
             var transport = new RabbitMqTransport();
             transport.ConnectionFactory.AutomaticRecoveryEnabled.ShouldBeTrue();
         }
+
+        [Fact]
+        public void auto_provision_is_false_by_default()
+        {
+            var transport = new RabbitMqTransport();
+            transport.AutoProvision.ShouldBeFalse();
+        }
     }
 }

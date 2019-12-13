@@ -47,20 +47,20 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public void declare_all()
         {
-            theTransport.DeclareAll();
+            theTransport.InitializeAllObjects();
         }
 
         [Fact]
         public void purge_from_all()
         {
-            theTransport.DeclareAll();
+            theTransport.InitializeAllObjects();
             theTransport.PurgeAllQueues();
         }
 
         [Fact]
         public void delete_all()
         {
-            theTransport.DeclareAll();
+            theTransport.InitializeAllObjects();
             theTransport.TeardownAll();
         }
     }
