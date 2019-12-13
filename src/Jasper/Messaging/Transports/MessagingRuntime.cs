@@ -40,7 +40,7 @@ namespace Jasper.Messaging.Transports
         {
             foreach (var transport in _transports)
             {
-                transport.Initialize();
+                transport.Initialize(_root);
             }
 
             foreach (var transport in _transports)

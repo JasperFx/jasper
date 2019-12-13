@@ -59,7 +59,7 @@ namespace Jasper.Messaging.Transports.Stub
             return Endpoints;
         }
 
-        public void Initialize()
+        public void Initialize(IMessagingRoot root)
         {
             // Nothing
         }

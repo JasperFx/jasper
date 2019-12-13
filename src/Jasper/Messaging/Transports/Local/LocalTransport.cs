@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Transports.Local
             return _queues;
         }
 
-        public void Initialize()
+        public void Initialize(IMessagingRoot root)
         {
             // Nothing
         }

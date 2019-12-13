@@ -22,6 +22,6 @@ namespace Jasper.Messaging.Transports
         Endpoint TryGetEndpoint(Uri uri);
 
         IEnumerable<Endpoint> Endpoints();
-        void Initialize();
+        void Initialize(IMessagingRoot root);
     }
 }

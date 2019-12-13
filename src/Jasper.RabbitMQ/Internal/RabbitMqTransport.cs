@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Baseline;
+using Jasper.Messaging;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
@@ -16,11 +17,11 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
     {
-        public const string Protocol = "rabbitmq";
+        public const string ProtocolName = "rabbitmq";
 
         private readonly LightweightCache<Uri, RabbitMqEndpoint> _endpoints;
 
-        public RabbitMqTransport() : base(Protocol)
+        public RabbitMqTransport() : base(ProtocolName)
         {
             _endpoints =
                 new LightweightCache<Uri, RabbitMqEndpoint>(uri =>
@@ -46,7 +47,7 @@ namespace Jasper.RabbitMQ.Internal
             return _endpoints[uri];
         }
 
-        public override void Initialize()
+        public override void Initialize(IMessagingRoot root)
         {
             if (AutoProvision)
             {
@@ -91,6 +92,8 @@ namespace Jasper.RabbitMQ.Internal
 
         internal IConnection BuildConnection()
         {
+
+
             return AmqpTcpEndpoints.Any()
                 ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
                 : ConnectionFactory.CreateConnection();
@@ -126,7 +129,6 @@ namespace Jasper.RabbitMQ.Internal
             {
                 using (var channel = connection.CreateModel())
                 {
-
 
                     foreach (var binding in Bindings)
                     {

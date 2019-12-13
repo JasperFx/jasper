@@ -139,10 +139,6 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public void Initialize(IMessagingRoot root)
-            {
-                throw new NotImplementedException();
-            }
 
             public Endpoint ReplyEndpoint()
             {
@@ -164,10 +160,6 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public void Initialize(IMessagingRoot root, ITransportRuntime runtime)
-            {
-                throw new NotImplementedException();
-            }
 
             public ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
             {
@@ -189,7 +181,7 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public void Initialize()
+            public void Initialize(IMessagingRoot root)
             {
                 throw new NotImplementedException();
             }

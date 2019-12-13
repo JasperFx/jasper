@@ -6,29 +6,23 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqListener : IListener
+    public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
-        private readonly RabbitMqEndpoint _agent;
+        private readonly RabbitMqEndpoint _endpoint;
+        private readonly RabbitMqTransport _transport;
         private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol _mapper;
-        private readonly string _queue;
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;
 
-        public RabbitMqListener(Uri address, ITransportLogger logger, IRabbitMqProtocol mapper,
-            RabbitMqEndpoint agent)
+        public RabbitMqListener(ITransportLogger logger,
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
             _logger = logger;
-            _mapper = mapper;
-            _agent = agent;
-            Address = address;
-            throw new NotImplementedException();
-            //_queue = agent.TransportUri.QueueName;
-        }
-
-        public void Dispose()
-        {
-            _consumer.Dispose();
+            _mapper = endpoint.Protocol;
+            _endpoint = endpoint;
+            _transport = transport;
+            Address = _endpoint.Uri;
         }
 
         public ListeningStatus Status
@@ -36,14 +30,12 @@ namespace Jasper.RabbitMQ.Internal
             get => _consumer != null ? ListeningStatus.Accepting : ListeningStatus.TooBusy;
             set
             {
-                throw new NotImplementedException();
-
                 switch (value)
                 {
                     case ListeningStatus.TooBusy when _consumer != null:
                         _consumer.Dispose();
 
-                        //_agent.Channel.BasicCancel(_consumer.ConsumerTag);
+                        Channel.BasicCancel(_consumer.ConsumerTag);
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
@@ -55,17 +47,17 @@ namespace Jasper.RabbitMQ.Internal
 
         public void Start(IReceiverCallback callback)
         {
-            throw new NotImplementedException();
+            if (callback == null) return;
 
-//            if (callback == null) return;
-//
-//            _callback = callback;
-//            _consumer = new MessageConsumer(callback, _logger, _agent.Channel, _mapper, Address)
-//            {
-//                ConsumerTag = Guid.NewGuid().ToString()
-//            };
-//
-//            _agent.Channel.BasicConsume(_consumer, _queue);
+            Connect();
+
+            _callback = callback;
+            _consumer = new MessageConsumer(callback, _logger, Channel, _mapper, Address)
+            {
+                ConsumerTag = Guid.NewGuid().ToString()
+            };
+
+            Channel.BasicConsume(_consumer, _endpoint.RoutingKey);
         }
 
 

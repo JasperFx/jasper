@@ -21,7 +21,7 @@ namespace Jasper.Messaging.Transports
             return endpoints();
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(IMessagingRoot root)
         {
             // Nothing
         }

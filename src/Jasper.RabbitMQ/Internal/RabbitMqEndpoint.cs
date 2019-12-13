@@ -15,6 +15,8 @@ namespace Jasper.RabbitMQ.Internal
         public string RoutingKey { get; private set; }
         internal RabbitMqTransport Parent { get; set; }
 
+        public IRabbitMqProtocol Protocol { get; set; } = new DefaultRabbitMqProtocol();
+
         public RabbitMqEndpoint()
         {
         }
@@ -34,7 +36,7 @@ namespace Jasper.RabbitMQ.Internal
 
         internal static Uri ToUri(string exchangeName, string routingKey)
         {
-            return new Uri($"{RabbitMqTransport.Protocol}://{exchangeName}/{routingKey}");
+            return new Uri($"{RabbitMqTransport.ProtocolName}://{exchangeName}/{routingKey}");
         }
 
         private Uri buildUri()
@@ -55,7 +57,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public override void Parse(Uri uri)
         {
-            if (uri.Scheme != RabbitMqTransport.Protocol)
+            if (uri.Scheme != RabbitMqTransport.ProtocolName)
             {
                 throw new ArgumentOutOfRangeException($"This is not a rabbitmq Uri");
             }
@@ -80,12 +82,15 @@ namespace Jasper.RabbitMQ.Internal
 
         protected override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
-            throw new NotImplementedException();
+            if (!IsListener) return;
+
+            var listener = new RabbitMqListener(root.TransportLogger, this, Parent);
+            runtime.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            throw new NotImplementedException();
+            return new RabbitMqSender(root.TransportLogger, this, Parent, root.Cancellation);
         }
     }
 }

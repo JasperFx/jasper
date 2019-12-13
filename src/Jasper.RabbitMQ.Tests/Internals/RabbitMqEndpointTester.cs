@@ -8,6 +8,13 @@ namespace Jasper.RabbitMQ.Tests.Internals
     public class RabbitMqEndpointTester
     {
         [Fact]
+        public void default_protocol_is_the_default_protocol()
+        {
+            var endpoint = new RabbitMqEndpoint();
+            endpoint.Protocol.ShouldBeOfType<DefaultRabbitMqProtocol>();
+        }
+
+        [Fact]
         public void parse_non_durable_uri()
         {
             var endpoint = new RabbitMqEndpoint();
