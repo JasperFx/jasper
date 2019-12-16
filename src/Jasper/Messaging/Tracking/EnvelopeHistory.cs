@@ -67,7 +67,7 @@ namespace Jasper.Messaging.Tracking
                 case EventType.Sent:
                     // Not tracking anything outgoing
                     // when it's testing locally
-                    if (envelope.Destination.Scheme != TransportConstants.Local)
+                    if (envelope.Destination.Scheme != TransportConstants.Local || envelope.MessageType == TransportConstants.ScheduledEnvelope)
                     {
                         record.IsComplete = true;
                     }

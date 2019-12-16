@@ -41,170 +41,228 @@ namespace Jasper.RabbitMQ.Tests
 
 
         [Fact]
-        public async Task send_message_to_and_receive_through_rabbitmq_using_connection_string()
-        {
-            using (var host = JasperHost.For<RabbitMqUsingApp2>())
-            {
-                await host.SendMessageAndWait(new ColorChosen {Name = "Red"});
-
-                var colors = host.Get<ColorHistory>();
-
-                colors.Name.ShouldBe("Red");
-            }
-        }
-
-        [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
-            throw new NotImplementedException("Redo");
-//            var uri = "rabbitmq://localhost/durable/queue/messages2";
-//
-//            var publisher = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//                _.Publish.AllMessagesTo(uri);
-//
-//                _.Include<MartenBackedPersistence>();
-//
-//                _.Settings.ConfigureMarten(x =>
-//                {
-//                    x.Connection(Servers.PostgresConnectionString);
-//                    x.AutoCreateSchemaObjects = AutoCreate.All;
-//                });
-//            });
-//
-//            var receiver = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<ColorHistory>();
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//                _.Include<MartenBackedPersistence>();
-//
-//                _.Settings.MartenConnectionStringIs(Servers.PostgresConnectionString);
-//            });
-//
-//            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
-//
-//            try
-//            {
-//                await publisher.Send(new ColorChosen {Name = "Orange"});
-//
-//                await wait;
-//
-//                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
-//            }
-//            finally
-//            {
-//                publisher.Dispose();
-//                receiver.Dispose();
-//            }
+            var uri = "rabbitmq://default/messages2/durable";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue("messages2");
+                    x.AutoProvision = true;
+                });
+
+                _.Endpoints.PublishAllMessages().To(uri);
+
+                _.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                    x.DatabaseSchemaName = "sender";
+                });
+
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue("messages2");
+                    x.AutoProvision = true;
+                });
+
+                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+
+                _.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                    x.DatabaseSchemaName = "receiver";
+                });
+            });
+
+            publisher.RebuildMessageStorage();
+            receiver.RebuildMessageStorage();
+
+
+            try
+            {
+
+                await publisher
+                    .TrackActivity()
+                    .AlsoTrack(receiver)
+                    .SendMessageAndWait(new ColorChosen {Name = "Orange"});
+
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
         }
 
 
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_routing_key()
         {
-            throw new NotImplementedException("Redo");
-//            var uri = "rabbitmq://localhost/queue/messages5/routingkey/key2";
-//
-//            var publisher = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//                _.Publish.AllMessagesTo(uri);
-//
-//            });
-//
-//            var receiver = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<ColorHistory>();
-//                _.Services.AddSingleton<MessageTracker>();
-//            });
-//
-//            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
-//
-//            try
-//            {
-//                await publisher.Send(new ColorChosen {Name = "Orange"});
-//
-//                await wait;
-//
-//                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
-//            }
-//            finally
-//            {
-//                publisher.Dispose();
-//                receiver.Dispose();
-//            }
+            var queueName = "messages5";
+
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue(queueName);
+                    x.DeclareExchange("exchange1");
+                    x.DeclareBinding(new Binding
+                    {
+                        ExchangeName = "exchange1",
+                        BindingKey = "key2",
+                        QueueName =  queueName
+                    });
+
+                    x.AutoProvision = true;
+                });
+
+                _.Endpoints.PublishAllMessages().To("rabbitmq://exchange1/key2");
+
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue("messages5");
+                    x.DeclareExchange("exchange1");
+                    x.DeclareBinding(new Binding
+                    {
+                        ExchangeName = "exchange1",
+                        BindingKey = "key2",
+                        QueueName =  queueName
+                    });
+
+                    x.AutoProvision = true;
+                });
+
+                _.Services.AddSingleton<ColorHistory>();
+
+                _.Endpoints.ListenForMessagesFrom($"rabbitmq://exchange1/{queueName}");
+            });
+
+            try
+            {
+                await publisher
+                    .TrackActivity()
+                    .AlsoTrack(receiver)
+                    .SendMessageAndWait(new ColorChosen {Name = "Orange"});
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
         }
 
 
         [Fact]
         public async Task schedule_send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
-            throw new NotImplementedException("Redo");
-//            var uri = "rabbitmq://localhost:5672/durable/queue/messages11";
-//
-//            var publisher = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//
-//                _.Publish.AllMessagesTo(uri);
-//
-//                _.Include<MartenBackedPersistence>();
-//
-//                _.Settings.ConfigureMarten(x =>
-//                {
-//                    x.DatabaseSchemaName = "rabbit_sender";
-//                    x.Connection(Servers.PostgresConnectionString);
-//                    x.AutoCreateSchemaObjects = AutoCreate.All;
-//                });
-//            });
-//
-//            publisher.RebuildMessageStorage();
-//
-//            var receiver = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<ColorHistory>();
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//                _.Include<MartenBackedPersistence>();
-//
-//                _.Settings.ConfigureMarten(x =>
-//                {
-//                    x.DatabaseSchemaName = "rabbit_receiver";
-//                    x.Connection(Servers.PostgresConnectionString);
-//                    x.AutoCreateSchemaObjects = AutoCreate.All;
-//                });
-//            });
-//
-//            receiver.RebuildMessageStorage();
-//
-//            var wait = receiver.Get<MessageTracker>().WaitFor<ColorChosen>();
-//
-//            try
-//            {
-//                await publisher.Get<IMessagePublisher>().ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds());
-//
-//                await wait;
-//
-//                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
-//            }
-//            finally
-//            {
-//                publisher.Dispose();
-//                receiver.Dispose();
-//            }
+            var uri = "rabbitmq://default/messages11/durable";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.ServiceName = "Publisher";
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue("messages11");
+
+
+                    x.AutoProvision = true;
+                });
+
+
+                _.Endpoints.PublishAllMessages().To(uri);
+
+
+
+                _.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                    x.DatabaseSchemaName = "rabbit_sender";
+                });
+            });
+
+            publisher.RebuildMessageStorage();
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.ServiceName = "Receiver";
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue("messages11");
+
+
+                    x.AutoProvision = true;
+                });
+
+
+
+                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+
+                _.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                    x.DatabaseSchemaName = "rabbit_receiver";
+                });
+            });
+
+            receiver.RebuildMessageStorage();
+
+
+
+            try
+            {
+                await publisher.ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
+
+                // Forcing the receiver to wait until something happens
+                await receiver.ExecuteAndWait(c => Task.CompletedTask, 10000);
+
+                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
         }
 
 
@@ -296,46 +354,69 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_named_topic()
         {
-            throw new NotImplementedException("Redo");
-//            var uri = "rabbitmq://localhost/queue/messages4/topic/special";
-//
-//            var publisher = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//                _.Publish.AllMessagesTo(uri);
-//                _.Handlers.DisableConventionalDiscovery();
-//
-//            });
-//
-//            var receiver = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//                _.Handlers.DisableConventionalDiscovery().IncludeType<TracksMessage<SpecialTopic>>();
-//
-//            });
-//
-//            var wait = receiver.Get<MessageTracker>().WaitFor<SpecialTopic>();
-//
-//            try
-//            {
-//                var message = new SpecialTopic();
-//                await publisher.Send(message);
-//
-//                var received = await wait;
-//                received.Message.ShouldBeOfType<SpecialTopic>()
-//                    .Id.ShouldBe(message.Id);
-//
-//
-//            }
-//            finally
-//            {
-//                publisher.Dispose();
-//                receiver.Dispose();
-//            }
+
+            var uri = "rabbitmq://topics/special";
+
+            var queueName = "messages4";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareExchange("topics", ex => { ex.ExchangeType = ExchangeType.Topic; });
+                    x.DeclareQueue("messages4");
+                    x.DeclareBinding(new Binding
+                    {
+                        BindingKey = "special",
+                        ExchangeName = "topics",
+                        QueueName = queueName
+                    });
+
+                    x.AutoProvision = true;
+                });
+
+                _.Endpoints.PublishAllMessages().To("rabbitmq://topics/special");
+                _.Handlers.DisableConventionalDiscovery();
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+            });
+
+            var receiver = JasperHost.For(_ =>
+            {
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                });
+
+                _.Endpoints.ListenForMessagesFrom($"rabbitmq://topics/{queueName}".ToUri());
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Handlers.DisableConventionalDiscovery().IncludeType<SpecialTopicGuy>();
+
+            });
+
+
+
+            try
+            {
+                var message = new SpecialTopic();
+                var session = await publisher.TrackActivity().AlsoTrack(receiver).SendMessageAndWait(message);
+
+
+                var received = session.FindSingleTrackedMessageOfType<SpecialTopic>(EventType.MessageSucceeded);
+                received
+                    .Id.ShouldBe(message.Id);
+
+
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver.Dispose();
+            }
         }
 
 
@@ -343,74 +424,15 @@ namespace Jasper.RabbitMQ.Tests
 
 
 
-        [Fact]
-        public async Task send_message_to_and_receive_through_rabbitmq_with_wildcard_topics()
+
+    }
+
+    public class SpecialTopicGuy
+    {
+        public void Handle(SpecialTopic topic)
         {
-            throw new NotImplementedException("Redo");
-//            var uriString = "rabbitmq://localhost/queue/messages8/topic/*";
-//            var publisher = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//                _.Publish.AllMessagesTo(uriString);
-//                _.Handlers.DisableConventionalDiscovery();
-//
-//            });
-//
-//            var receiver1 = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//                _.Transports.ListenForMessagesFrom(uriString);
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//                _.Handlers.DisableConventionalDiscovery()
-//                    .IncludeType<TracksMessage<TopicA>>()
-//                    .IncludeType<TracksMessage<TopicB>>();
-//
-//            });
-//
-//            var receiver2 = JasperHost.For(_ =>
-//            {
-//                _.Settings.AddRabbitMqHost("localhost");
-//
-//                _.Transports.ListenForMessagesFrom(uriString);
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//                _.Handlers.DisableConventionalDiscovery()
-//                    .IncludeType<TracksMessage<TopicC>>();
-//
-//            });
-//
-//            var waitForA = receiver1.Get<MessageTracker>().WaitFor<TopicA>();
-//            var waitForB = receiver1.Get<MessageTracker>().WaitFor<TopicB>();
-//            var waitForC = receiver2.Get<MessageTracker>().WaitFor<TopicC>();
-//
-//            try
-//            {
-//                var topicA = new TopicA();
-//                var topicB = new TopicB();
-//                var topicC = new TopicC();
-//
-//                await publisher.Send(topicA);
-//                await publisher.Send(topicB);
-//                await publisher.Send(topicC);
-//
-//                var receivedA = (await waitForA).Message.ShouldBeOfType<TopicA>();
-//                var receivedB = (await waitForB).Message.ShouldBeOfType<TopicB>();
-//                var receivedC = (await waitForC).Message.ShouldBeOfType<TopicC>();
-//
-//            }
-//            finally
-//            {
-//                publisher.Dispose();
-//                receiver1.Dispose();
-//                receiver2.Dispose();
-//            }
+
         }
-
-
-
-
     }
 
 
@@ -434,30 +456,6 @@ namespace Jasper.RabbitMQ.Tests
 
             Endpoints.PublishAllMessages().To("rabbitmq://default/messages3");
 
-        }
-    }
-
-    public class RabbitMqUsingApp2 : JasperOptions
-    {
-        public RabbitMqUsingApp2()
-        {
-            throw new NotImplementedException("Redo");
-//            Settings.AddRabbitMqHost("localhost");
-//
-//            Settings.Alter<RabbitMqOptions>(settings =>
-//            {
-//                settings.Connections.Add("messages3", "host=localhost");
-//                settings.Connections.Add("replies", "host=localhost");
-//            });
-//
-//            Transports.ListenForMessagesFrom("rabbitmq://messages3/queue/messages3");
-//
-//            Services.AddSingleton<ColorHistory>();
-//            Services.AddSingleton<MessageTracker>();
-//
-//            Publish.AllMessagesTo("rabbitmq://messages3/queue/messages3");
-//
-//            Include<MessageTrackingExtension>();
         }
     }
 

@@ -148,7 +148,7 @@ namespace Jasper.Messaging.Runtime
         }
 
 
-        internal bool IsPing()
+        public bool IsPing()
         {
             return MessageType == PingMessageType;
         }

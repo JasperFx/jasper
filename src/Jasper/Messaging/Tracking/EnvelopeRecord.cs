@@ -23,7 +23,8 @@ namespace Jasper.Messaging.Tracking
 
         public override string ToString()
         {
-            return $"Id: {Envelope.Id}, {nameof(SessionTime)}: {SessionTime}, {nameof(EventType)}: {EventType}, MessageType: {Envelope.MessageType}";
+            var icon = IsComplete ? "+" : "-";
+            return $"{icon} Service: {ServiceName}, Id: {Envelope.Id}, {nameof(SessionTime)}: {SessionTime}, {nameof(EventType)}: {EventType}, MessageType: {Envelope.MessageType}";
         }
 
 

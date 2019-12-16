@@ -69,7 +69,9 @@ namespace Jasper.Messaging
 
                     if (!subscriber.SupportsNativeScheduledSend)
                     {
+                        // TODO -- this could be better memoized to avoid repeated lookups
                         outgoing[i] = outgoing[i].ForScheduledSend(subscriber);
+                        outgoing[i].Sender = _root.Runtime.GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
                     }
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Baseline;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
@@ -109,6 +110,12 @@ namespace Jasper.RabbitMQ.Internal
                     _logger.LogException(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
                     _channel.BasicAck(deliveryTag, false);
 
+                    return;
+                }
+
+                if (envelope.IsPing())
+                {
+                    _channel.BasicAck(deliveryTag, false);
                     return;
                 }
 
