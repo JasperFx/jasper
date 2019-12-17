@@ -25,5 +25,7 @@ namespace Jasper.RabbitMQ
         {
             configure(endpoints.RabbitMqTransport());
         }
+
+
     }
 }

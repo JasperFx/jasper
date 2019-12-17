@@ -3,7 +3,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Jasper.Configuration
 {
-    public interface IListenerConfiguration
+    public interface IListenerConfiguration<T>
     {
         /// <summary>
         ///     Specify the maximum number of threads that this worker queue
@@ -11,26 +11,26 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="maximumParallelHandlers"></param>
         /// <returns></returns>
-        IListenerConfiguration MaximumThreads(int maximumParallelHandlers);
+        T MaximumThreads(int maximumParallelHandlers);
 
         /// <summary>
         ///     Forces this worker queue to use no more than one thread
         /// </summary>
         /// <returns></returns>
-        IListenerConfiguration Sequential();
+        T Sequential();
 
         /// <summary>
         ///     Force any messages enqueued to this worker queue to be durable
         /// </summary>
         /// <returns></returns>
-        IListenerConfiguration Durably();
+        T Durably();
 
         /// <summary>
         /// By default, messages on this worker queue will not be persisted until
         /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        IListenerConfiguration Lightweight();
+        T Lightweight();
 
 
         /// <summary>
@@ -38,13 +38,18 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
-        IListenerConfiguration ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure);
+        T ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure);
 
 
         /// <summary>
         /// Mark this listener as the preferred endpoint for replies from other systems
         /// </summary>
         /// <returns></returns>
-        IListenerConfiguration UseForReplies();
+        T UseForReplies();
+    }
+
+    public interface IListenerConfiguration : IListenerConfiguration<IListenerConfiguration>
+    {
+
     }
 }

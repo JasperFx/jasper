@@ -19,7 +19,8 @@ namespace Jasper.Messaging.Scheduled
                 Destination = TransportConstants.DurableLocalUri,
                 Status = TransportConstants.Scheduled,
                 OwnerId = TransportConstants.AnyNode,
-                Sender = sender
+                Sender = sender,
+                Data = envelope.Serialize()
             };
         }
     }

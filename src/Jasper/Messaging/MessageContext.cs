@@ -408,7 +408,7 @@ namespace Jasper.Messaging
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(x => _root.Runtime.GetOrBuildSendingAgent(x.Destination).IsDurable).ToArray());
+                await Transaction.Persist(outgoing.Where(isDurable).ToArray());
 
                 _outstanding.AddRange(outgoing);
             }
@@ -419,6 +419,14 @@ namespace Jasper.Messaging
                     await outgoingEnvelope.Send();
                 }
             }
+        }
+
+        private bool isDurable(Envelope envelope)
+        {
+            // SUPER HACK-y
+            if (envelope.Callback is InvocationCallback) return false;
+
+            return envelope.Sender?.IsDurable ?? _root.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
         }
 
         private void trackEnvelopeCorrelation(Envelope[] outgoing)

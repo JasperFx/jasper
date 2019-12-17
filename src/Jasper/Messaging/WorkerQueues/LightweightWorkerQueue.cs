@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
@@ -34,7 +35,10 @@ namespace Jasper.Messaging.WorkerQueues
             {
                 try
                 {
-                    envelope.ContentType = envelope.ContentType ?? "application/json";
+                    if (envelope.ContentType.IsEmpty())
+                    {
+                        envelope.ContentType = "application/json";
+                    }
 
                     await Pipeline.Invoke(envelope);
                 }

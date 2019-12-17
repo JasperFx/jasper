@@ -1,9 +1,17 @@
 using System;
 using System.Threading.Tasks.Dataflow;
+using LamarCodeGeneration.Util;
 
 namespace Jasper.Configuration
 {
-    public class ListenerConfiguration : IListenerConfiguration
+    public class ListenerConfiguration : ListenerConfiguration<IListenerConfiguration>, IListenerConfiguration
+    {
+        public ListenerConfiguration(Endpoint endpoint) : base(endpoint)
+        {
+        }
+    }
+
+    public class ListenerConfiguration<TSelf> : IListenerConfiguration<TSelf> where TSelf : IListenerConfiguration<TSelf>
     {
         private readonly Endpoint _endpoint;
 
@@ -13,41 +21,41 @@ namespace Jasper.Configuration
             endpoint.IsListener = true;
         }
 
-        IListenerConfiguration IListenerConfiguration.MaximumThreads(int maximumParallelHandlers)
+        public TSelf MaximumThreads(int maximumParallelHandlers)
         {
             _endpoint.ExecutionOptions.MaxDegreeOfParallelism = maximumParallelHandlers;
-            return this;
+            return this.As<TSelf>();
         }
 
-        IListenerConfiguration IListenerConfiguration.Sequential()
+        public TSelf Sequential()
         {
             _endpoint.ExecutionOptions.MaxDegreeOfParallelism = 1;
             _endpoint.ExecutionOptions.EnsureOrdered = true;
-            return this;
+            return this.As<TSelf>();
         }
 
-        IListenerConfiguration IListenerConfiguration.Durably()
+        public TSelf Durably()
         {
             _endpoint.IsDurable = true;
-            return this;
+            return this.As<TSelf>();
         }
 
-        IListenerConfiguration IListenerConfiguration.Lightweight()
+        public TSelf Lightweight()
         {
             _endpoint.IsDurable = false;
-            return this;
+            return this.As<TSelf>();
         }
 
-        public IListenerConfiguration ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure)
+        public TSelf ConfigureExecution(Action<ExecutionDataflowBlockOptions> configure)
         {
             configure(_endpoint.ExecutionOptions);
-            return this;
+            return this.As<TSelf>();
         }
 
-        public IListenerConfiguration UseForReplies()
+        public TSelf UseForReplies()
         {
             _endpoint.IsUsedForReplies = true;
-            return this;
+            return this.As<TSelf>();
         }
     }
 }

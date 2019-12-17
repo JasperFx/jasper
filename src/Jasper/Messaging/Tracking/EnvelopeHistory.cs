@@ -139,7 +139,7 @@ namespace Jasper.Messaging.Tracking
                 case EventType.MessageFailed:
                 case EventType.MessageSucceeded:
                     // The message is complete
-                    foreach (var envelopeRecord in _records.Where(x => x.UniqueNodeId == record.UniqueNodeId))
+                    foreach (var envelopeRecord in _records.ToArray().Where(x => x.UniqueNodeId == record.UniqueNodeId))
                     {
                         envelopeRecord.IsComplete = true;
                     }
@@ -163,7 +163,7 @@ namespace Jasper.Messaging.Tracking
         private void markLastCompleted(EventType eventType, int uniqueNodeId)
         {
             var record = _records.LastOrDefault(x => x.EventType == eventType && x.UniqueNodeId == uniqueNodeId);
-            record.IsComplete = true;
+            if (record != null) record.IsComplete = true;
         }
 
 

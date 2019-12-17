@@ -21,7 +21,7 @@ namespace Jasper.Messaging.Tracking
         /// </summary>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public TrackedSessionConfiguration WaitFor(TimeSpan timeout)
+        public TrackedSessionConfiguration Timeout(TimeSpan timeout)
         {
             _session.Timeout = timeout;
             return this;

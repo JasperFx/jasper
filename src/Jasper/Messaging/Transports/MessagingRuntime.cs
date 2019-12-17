@@ -103,6 +103,8 @@ namespace Jasper.Messaging.Transports
 
         public ISendingAgent GetOrBuildSendingAgent(Uri address)
         {
+            if (address == null) throw new ArgumentNullException(nameof(address));
+
             if (_senders.TryFind(address, out var agent)) return agent;
 
             lock (_channelLock)

@@ -189,6 +189,8 @@ namespace Jasper.RabbitMQ.Tests
 
             var publisher = JasperHost.For(_ =>
             {
+                _.Advanced.ScheduledJobFirstExecution = 1.Seconds();
+                _.Advanced.ScheduledJobPollingTime = 1.Seconds();
                 _.ServiceName = "Publisher";
 
                 _.Extensions.UseMessageTrackingTestingSupport();
@@ -251,10 +253,12 @@ namespace Jasper.RabbitMQ.Tests
 
             try
             {
-                await publisher.ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
-
-                // Forcing the receiver to wait until something happens
-                await receiver.ExecuteAndWait(c => Task.CompletedTask, 10000);
+                await publisher
+                    .TrackActivity()
+                    .AlsoTrack(receiver)
+                    .WaitForMessageToBeReceivedAt<ColorChosen>(receiver)
+                    .Timeout(15.Seconds())
+                    .ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
 
                 receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
             }

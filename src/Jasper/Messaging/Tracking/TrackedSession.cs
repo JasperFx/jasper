@@ -53,7 +53,7 @@ namespace Jasper.Messaging.Tracking
 
         public void AssertNoExceptionsWereThrown()
         {
-            if (_exceptions.Any()) throw new AggregateException(_exceptions);
+            if (_exceptions.ToArray().Any()) throw new AggregateException(_exceptions);
         }
 
         public void AssertNotTimedOut()
