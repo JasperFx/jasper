@@ -55,8 +55,7 @@ namespace Jasper.Messaging.Transports.Sending
 
         protected override Task storeAndForward(Envelope envelope)
         {
-            // Same thing here
-            return EnqueueOutgoing(envelope);
+            return _sender.Enqueue(envelope);
         }
 
         public override bool IsDurable { get; } = false;

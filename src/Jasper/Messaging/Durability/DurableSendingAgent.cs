@@ -94,7 +94,7 @@ namespace Jasper.Messaging.Durability
         {
             await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
-            await EnqueueOutgoing(envelope);
+            await _sender.Enqueue(envelope);
         }
 
     }

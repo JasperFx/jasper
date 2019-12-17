@@ -25,7 +25,7 @@ namespace Jasper.Messaging.Tracking
         public override string ToString()
         {
             var icon = IsComplete ? "+" : "-";
-            return $"{icon} Service: {ServiceName}, Id: {Envelope.Id}, {nameof(SessionTime)}: {SessionTime}, {nameof(EventType)}: {EventType}, MessageType: {Envelope.MessageType}";
+            return $"{icon} Service: {ServiceName}, Id: {Envelope.Id}, {nameof(SessionTime)}: {SessionTime}, {nameof(EventType)}: {EventType}, MessageType: {Envelope.MessageType} at node #{UniqueNodeId} --> {IsComplete}";
         }
 
 

@@ -42,6 +42,7 @@ namespace Jasper.Messaging.Tracking
             }
         }
 
+
         /// <summary>
         /// Tracks activity for coordinating the testing of a single Jasper
         /// application
@@ -131,14 +132,14 @@ namespace Jasper.Messaging.Tracking
 
 
                 case EventType.ExecutionFinished:
-                    markLastCompleted(EventType.ExecutionStarted);
+                    markLastCompleted(EventType.ExecutionStarted, record.UniqueNodeId);
                     record.IsComplete = true;
                     break;
 
                 case EventType.MessageFailed:
                 case EventType.MessageSucceeded:
                     // The message is complete
-                    foreach (var envelopeRecord in _records)
+                    foreach (var envelopeRecord in _records.Where(x => x.UniqueNodeId == record.UniqueNodeId))
                     {
                         envelopeRecord.IsComplete = true;
                     }
@@ -158,6 +159,13 @@ namespace Jasper.Messaging.Tracking
 
             _records.Add(record);
         }
+
+        private void markLastCompleted(EventType eventType, int uniqueNodeId)
+        {
+            var record = _records.LastOrDefault(x => x.EventType == eventType && x.UniqueNodeId == uniqueNodeId);
+            record.IsComplete = true;
+        }
+
 
         public bool IsComplete()
         {

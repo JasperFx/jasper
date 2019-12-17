@@ -15,23 +15,21 @@ namespace Jasper.Messaging.Tracking
 {
     public class WaitForMessage<T> : ITrackedCondition
     {
-        private readonly TaskCompletionSource<T> _source = new TaskCompletionSource<T>();
         private bool _isCompleted;
 
-        public void Record(Envelope envelope, EventType eventType, string serviceName)
+        public void Record(EnvelopeRecord record)
         {
-            if (eventType != EventType.MessageSucceeded && eventType != EventType.MessageFailed) return;
+            if (record.EventType != EventType.MessageSucceeded && record.EventType != EventType.MessageFailed) return;
 
-            if (envelope.Message is T message)
+            if (record.Envelope.Message is T message)
             {
-                if (ServiceName.IsNotEmpty() && ServiceName != serviceName) return;
+                if (UniqueNodeId != 0 && UniqueNodeId != record.UniqueNodeId) return;
 
                 _isCompleted = true;
-                _source.TrySetResult(message);
             }
         }
 
-        public string ServiceName { get; set; }
+        public int UniqueNodeId { get; set; }
 
 
 
@@ -43,7 +41,7 @@ namespace Jasper.Messaging.Tracking
 
     public interface ITrackedCondition
     {
-        void Record(Envelope envelope, EventType eventType, string serviceName);
+        void Record(EnvelopeRecord record);
         bool IsCompleted();
     }
 

@@ -50,7 +50,6 @@ namespace Jasper.Messaging.Transports.Local
         public Task EnqueueOutgoing(Envelope envelope)
         {
             _messageLogger.Sent(envelope);
-            envelope.Callback = new DurableCallback(envelope, this, _persistence, _logger);
 
             return Enqueue(envelope);
         }
@@ -73,7 +72,7 @@ namespace Jasper.Messaging.Transports.Local
 
             if (envelope.Status == TransportConstants.Incoming)
             {
-                await EnqueueOutgoing(envelope);
+                await Enqueue(envelope);
             }
         }
 

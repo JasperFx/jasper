@@ -112,7 +112,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 Id = Guid.NewGuid()
             };
 
-            await theSender.TrackActivity().AlsoTrack(theReceiver)
+            await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                // In case there are trash, leftover persisted messages
+                .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(item);
 
 
