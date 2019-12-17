@@ -31,7 +31,12 @@ namespace Jasper.Testing.Messaging.Tracking
         {
             var time = 100;
             var history = new EnvelopeHistory(env1.Id);
-            foreach (var eventType in events) history.RecordLocally(eventType, env1, ++time, "Jasper");
+
+            foreach (var eventType in events)
+            {
+                var record = new EnvelopeRecord(eventType, env1, ++time, null);
+                history.RecordLocally(record);
+            }
 
             history.IsComplete().ShouldBe(isComplete);
         }
@@ -43,7 +48,7 @@ namespace Jasper.Testing.Messaging.Tracking
 
             env1.Destination.Scheme.ShouldBe(TransportConstants.Local);
 
-            history.RecordLocally(EventType.Sent, env1, 110, "Jasper");
+            history.RecordLocally(new EnvelopeRecord(EventType.Sent, env1, 110, null));
             history.IsComplete().ShouldBeFalse();
         }
 
@@ -54,7 +59,7 @@ namespace Jasper.Testing.Messaging.Tracking
             env1.Destination = "tcp://localhost:4444".ToUri();
 
 
-            history.RecordLocally(EventType.Sent, env1, 110, "Jasper");
+            history.RecordLocally(new EnvelopeRecord(EventType.Sent, env1, 110, null));
             history.IsComplete().ShouldBeTrue();
         }
 
@@ -71,7 +76,7 @@ namespace Jasper.Testing.Messaging.Tracking
         {
             var time = 100;
             var history = new EnvelopeHistory(env1.Id);
-            foreach (var eventType in events) history.RecordLocally(eventType, env1, ++time, "Jasper");
+            foreach (var eventType in events) history.RecordLocally(new EnvelopeRecord(eventType, env1, ++time, null));
 
             history.IsComplete().ShouldBe(isComplete);
         }
@@ -80,13 +85,15 @@ namespace Jasper.Testing.Messaging.Tracking
         public async Task complete_with_one_message()
         {
             var session = new TrackedSession(null);
-            session.Record(EventType.Received, env1);
-            session.Record(EventType.ExecutionStarted, env1);
-            session.Record(EventType.ExecutionFinished, env1);
+
+
+            session.Record(EventType.Received, env1, "jasper", 1);
+            session.Record(EventType.ExecutionStarted, env1, "jasper", 1);
+            session.Record(EventType.ExecutionFinished, env1, "jasper", 1);
 
             session.Status.ShouldBe(TrackingStatus.Active);
 
-            session.Record(EventType.MessageSucceeded, env1);
+            session.Record(EventType.MessageSucceeded, env1, "jasper", 1);
 
             await session.Track();
 
@@ -98,21 +105,21 @@ namespace Jasper.Testing.Messaging.Tracking
         {
             var session = new TrackedSession(null);
 
-            session.Record(EventType.Received, env1);
-            session.Record(EventType.ExecutionStarted, env1);
-            session.Record(EventType.ExecutionFinished, env1);
+            session.Record(EventType.Received, env1, "jasper", 1);
+            session.Record(EventType.ExecutionStarted, env1, "jasper", 1);
+            session.Record(EventType.ExecutionFinished, env1, "jasper", 1);
 
             session.Status.ShouldBe(TrackingStatus.Active);
 
-            session.Record(EventType.Received, env2);
-            session.Record(EventType.ExecutionStarted, env2);
-            session.Record(EventType.ExecutionFinished, env2);
+            session.Record(EventType.Received, env2, "jasper", 1);
+            session.Record(EventType.ExecutionStarted, env2, "jasper", 1);
+            session.Record(EventType.ExecutionFinished, env2, "jasper", 1);
 
-            session.Record(EventType.MessageSucceeded, env1);
+            session.Record(EventType.MessageSucceeded, env1, "jasper", 1);
 
             session.Status.ShouldBe(TrackingStatus.Active);
 
-            session.Record(EventType.MessageSucceeded, env2);
+            session.Record(EventType.MessageSucceeded, env2, "jasper", 1);
 
             await session.Track();
 

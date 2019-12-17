@@ -18,7 +18,6 @@ namespace Jasper.Messaging.Tracking
 
         public Guid EnvelopeId { get; }
 
-        public Envelope LastEnvelope => _records.LastOrDefault()?.Envelope;
 
         public object Message
         {
@@ -27,11 +26,6 @@ namespace Jasper.Messaging.Tracking
                 return _records
                     .FirstOrDefault(x => x.Envelope.Message != null)?.Envelope.Message;
             }
-        }
-
-        public IEnumerable<EnvelopeRecord> AllRecords()
-        {
-            return _records.OrderBy(x => x.SessionTime);
         }
 
         private EnvelopeRecord lastOf(EventType eventType)
@@ -57,22 +51,19 @@ namespace Jasper.Messaging.Tracking
         /// <param name="sessionTime"></param>
         /// <param name="serviceName"></param>
         /// <param name="exception"></param>
-        public void RecordLocally(EventType eventType, Envelope envelope, long sessionTime, string serviceName,
-            Exception exception = null)
+        public void RecordLocally(EnvelopeRecord record)
         {
-            var record = new EnvelopeRecord(eventType, envelope, sessionTime, exception) {ServiceName = serviceName};
-
-            switch (eventType)
+            switch (record.EventType)
             {
                 case EventType.Sent:
                     // Not tracking anything outgoing
                     // when it's testing locally
-                    if (envelope.Destination.Scheme != TransportConstants.Local || envelope.MessageType == TransportConstants.ScheduledEnvelope)
+                    if (record.Envelope.Destination.Scheme != TransportConstants.Local || record.Envelope.MessageType == TransportConstants.ScheduledEnvelope)
                     {
                         record.IsComplete = true;
                     }
 
-                    if (envelope.Status == TransportConstants.Scheduled)
+                    if (record.Envelope.Status == TransportConstants.Scheduled)
                     {
                         record.IsComplete = true;
                     }
@@ -80,7 +71,7 @@ namespace Jasper.Messaging.Tracking
                     break;
 
                 case EventType.Received:
-                    if (envelope.Destination.Scheme == TransportConstants.Local)
+                    if (record.Envelope.Destination.Scheme == TransportConstants.Local)
                     {
                         markLastCompleted(EventType.Sent);
                     }
@@ -113,21 +104,19 @@ namespace Jasper.Messaging.Tracking
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);
+                    throw new ArgumentOutOfRangeException(nameof(record.EventType), record.EventType, null);
             }
 
             _records.Add(record);
         }
 
-        public void RecordCrossApplication(EventType eventType, Envelope envelope, long sessionTime, string serviceName,
-            Exception exception)
+        public void RecordCrossApplication(EnvelopeRecord record)
         {
-            var record = new EnvelopeRecord(eventType, envelope, sessionTime, exception) {ServiceName = serviceName};
 
-            switch (eventType)
+            switch (record.EventType)
             {
                 case EventType.Sent:
-                    if (envelope.Status == TransportConstants.Scheduled)
+                    if (record.Envelope.Status == TransportConstants.Scheduled)
                     {
                         record.IsComplete = true;
                     }
@@ -164,7 +153,7 @@ namespace Jasper.Messaging.Tracking
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);
+                    throw new ArgumentOutOfRangeException(nameof(record.EventType), record.EventType, null);
             }
 
             _records.Add(record);

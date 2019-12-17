@@ -18,7 +18,7 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task throw_if_any_exceptions_happy_path()
         {
-            theSession.Record(EventType.Sent, theEnvelope);
+            theSession.Record(EventType.Sent, theEnvelope, "", 1);
             await theSession.Track();
             theSession.AssertNoExceptionsWereThrown();
         }
@@ -26,8 +26,8 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task throw_if_any_exceptions_sad_path()
         {
-            theSession.Record(EventType.ExecutionStarted, theEnvelope);
-            theSession.Record(EventType.ExecutionFinished, theEnvelope, ex:new DivideByZeroException());
+            theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
+            theSession.Record(EventType.ExecutionFinished, theEnvelope, "", 1, ex: new DivideByZeroException());
             await theSession.Track();
 
             Should.Throw<AggregateException>(() => theSession.AssertNoExceptionsWereThrown());
@@ -36,8 +36,8 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task throw_if_any_exceptions_and_completed_happy_path()
         {
-            theSession.Record(EventType.ExecutionStarted, theEnvelope);
-            theSession.Record(EventType.ExecutionFinished, theEnvelope);
+            theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
+            theSession.Record(EventType.ExecutionFinished, theEnvelope, "", 1);
             await theSession.Track();
             theSession.AssertNoExceptionsWereThrown();
             theSession.AssertNotTimedOut();
@@ -46,8 +46,8 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task throw_if_any_exceptions_and_completed_sad_path_with_exceptions()
         {
-            theSession.Record(EventType.ExecutionStarted, theEnvelope);
-            theSession.Record(EventType.ExecutionFinished, theEnvelope, ex:new DivideByZeroException());
+            theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
+            theSession.Record(EventType.ExecutionFinished, theEnvelope, "", 1, ex: new DivideByZeroException());
             await theSession.Track();
 
             Should.Throw<AggregateException>(() =>
@@ -60,7 +60,7 @@ namespace Jasper.Testing.Messaging.Tracking
         [Fact]
         public async Task throw_if_any_exceptions_and_completed_sad_path_with_never_completed()
         {
-            theSession.Record(EventType.ExecutionStarted, theEnvelope);
+            theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
             await theSession.Track();
 
             Should.Throw<TimeoutException>(() =>

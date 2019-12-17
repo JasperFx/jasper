@@ -13,10 +13,46 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Tracking
 {
+    public class WaitForMessage<T> : ITrackedCondition
+    {
+        private readonly TaskCompletionSource<T> _source = new TaskCompletionSource<T>();
+        private bool _isCompleted;
+
+        public void Record(Envelope envelope, EventType eventType, string serviceName)
+        {
+            if (eventType != EventType.MessageSucceeded && eventType != EventType.MessageFailed) return;
+
+            if (envelope.Message is T message)
+            {
+                if (ServiceName.IsNotEmpty() && ServiceName != serviceName) return;
+
+                _isCompleted = true;
+                _source.TrySetResult(message);
+            }
+        }
+
+        public string ServiceName { get; set; }
+
+
+
+        public bool IsCompleted()
+        {
+            return _isCompleted;
+        }
+    }
+
+    public interface ITrackedCondition
+    {
+        void Record(Envelope envelope, EventType eventType, string serviceName);
+        bool IsCompleted();
+    }
+
     public class TrackedSession : ITrackedSession
     {
         private readonly Cache<Guid, EnvelopeHistory> _envelopes
             = new Cache<Guid, EnvelopeHistory>(id => new EnvelopeHistory(id));
+
+        private readonly IList<ITrackedCondition> _conditions = new List<ITrackedCondition>();
 
         private readonly IList<Exception> _exceptions = new List<Exception>();
 
@@ -216,17 +252,24 @@ namespace Jasper.Messaging.Tracking
             });
         }
 
-        public void Record(EventType eventType, Envelope envelope, string serviceName = "Jasper", Exception ex = null)
+        public void Record(EventType eventType, Envelope envelope, string serviceName, int uniqueNodeId,
+            Exception ex = null)
         {
             var history = _envelopes[envelope.Id];
 
+            var record = new EnvelopeRecord(eventType, envelope, _stopwatch.ElapsedMilliseconds, ex)
+            {
+                ServiceName = serviceName,
+                UniqueNodeId = uniqueNodeId
+            };
+
             if (AlwaysTrackExternalTransports || _otherHosts.Any())
             {
-                history.RecordCrossApplication(eventType, envelope, _stopwatch.ElapsedMilliseconds, serviceName, ex);
+                history.RecordCrossApplication(record);
             }
             else
             {
-                history.RecordLocally(eventType, envelope, _stopwatch.ElapsedMilliseconds, serviceName, ex);
+                history.RecordLocally(record);
             }
 
             if (ex != null) _exceptions.Add(ex);
@@ -236,7 +279,9 @@ namespace Jasper.Messaging.Tracking
 
         public bool IsCompleted()
         {
-            return _envelopes.All(x => x.IsComplete());
+            if (!_envelopes.All(x => x.IsComplete())) return false;
+
+            return !_conditions.Any() || _conditions.All(x => x.IsCompleted());
         }
 
         public void LogException(Exception exception, string serviceName)

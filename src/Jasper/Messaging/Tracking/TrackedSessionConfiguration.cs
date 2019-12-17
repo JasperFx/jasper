@@ -31,9 +31,13 @@ namespace Jasper.Messaging.Tracking
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
-        public TrackedSessionConfiguration AlsoTrack(IHost host)
+        public TrackedSessionConfiguration AlsoTrack(params IHost[] hosts)
         {
-            _session.WatchOther(host);
+            foreach (var host in hosts)
+            {
+                _session.WatchOther(host);
+            }
+
             return this;
         }
 

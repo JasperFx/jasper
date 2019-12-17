@@ -269,82 +269,94 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task use_fan_out_exchange()
         {
-            throw new NotImplementedException("Redo");
-//            var uri = "rabbitmq://localhost/queue/messages";
-//
-//            var publisher = JasperHost.For(_ =>
-//            {
-//                _.Settings.ConfigureRabbitMq(settings =>
-//                {
-//                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
-//                });
-//
-//                _.Publish.AllMessagesTo(uri);
-//
-//            });
-//
-//            var receiver1 = JasperHost.For(_ =>
-//            {
-//                _.Settings.ConfigureRabbitMq(settings =>
-//                {
-//                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
-//                });
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<ColorHistory>();
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//            });
-//
-//            var receiver2 = JasperHost.For(_ =>
-//            {
-//                _.Settings.ConfigureRabbitMq(settings =>
-//                {
-//                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
-//                });
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<ColorHistory>();
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//            });
-//
-//            var receiver3 = JasperHost.For(_ =>
-//            {
-//                _.Settings.ConfigureRabbitMq(settings =>
-//                {
-//                    settings.Connections.Add("localhost", "host=localhost;ExchangeType=fanout;ExchangeName=north");
-//                });
-//
-//                _.Transports.ListenForMessagesFrom(uri);
-//                _.Services.AddSingleton<ColorHistory>();
-//                _.Services.AddSingleton<MessageTracker>();
-//
-//            });
-//
-//            var wait1 = receiver1.Get<MessageTracker>().WaitFor<ColorChosen>();
-//            var wait2 = receiver2.Get<MessageTracker>().WaitFor<ColorChosen>();
-//            var wait3 = receiver3.Get<MessageTracker>().WaitFor<ColorChosen>();
-//
-//            try
-//            {
-//                await publisher.Send(new ColorChosen {Name = "Purple"});
-//
-//                await wait1;
-//                //await wait2;
-//                //await wait3;
-//
-//                receiver1.Get<ColorHistory>().Name.ShouldBe("Purple");
-//                //receiver2.Get<ColorHistory>().Name.ShouldBe("Purple");
-//                //receiver3.Get<ColorHistory>().Name.ShouldBe("Purple");
-//            }
-//            finally
-//            {
-//                publisher.Dispose();
-//                receiver1.Dispose();
-//                receiver2.Dispose();
-//                receiver3.Dispose();
-//            }
+            var uri = "rabbitmq://fanout/messages12";
+            var exchangeName = "fanout";
+            var queueName = "messages12";
+            var bindingKey = "fankey";
+
+            var publisher = JasperHost.For(_ =>
+            {
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareExchange(exchangeName, ex => ex.ExchangeType = ExchangeType.Fanout);
+                    x.DeclareQueue(queueName);
+                    x.DeclareBinding(new Binding
+                    {
+                        BindingKey = bindingKey,
+                        QueueName = queueName,
+                        ExchangeName = exchangeName
+                    });
+
+                    x.AutoProvision = true;
+                });
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+
+                _.Endpoints.PublishAllMessages().To("rabbitmq://fanout/fankey");
+
+            });
+
+            var receiver1 = JasperHost.For(_ =>
+            {
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                });
+
+
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+            });
+
+            var receiver2 = JasperHost.For(_ =>
+            {
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                });
+
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+            });
+
+            var receiver3 = JasperHost.For(_ =>
+            {
+                _.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                });
+
+
+                _.Extensions.UseMessageTrackingTestingSupport();
+                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Services.AddSingleton<ColorHistory>();
+            });
+
+
+            try
+            {
+                var session = publisher
+                    .TrackActivity()
+                    .AlsoTrack(receiver1, receiver2, receiver3)
+                    .SendMessageAndWait(new ColorChosen {Name = "Purple"});
+
+
+                receiver1.Get<ColorHistory>().Name.ShouldBe("Purple");
+                receiver2.Get<ColorHistory>().Name.ShouldBe("Purple");
+                receiver3.Get<ColorHistory>().Name.ShouldBe("Purple");
+            }
+            finally
+            {
+                publisher.Dispose();
+                receiver1.Dispose();
+                receiver2.Dispose();
+                receiver3.Dispose();
+            }
         }
 
 
