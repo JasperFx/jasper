@@ -169,7 +169,7 @@ namespace Jasper.Messaging.Tracking
 
         public bool IsComplete()
         {
-            return _records.All(x => x.IsComplete);
+            return _records.ToArray().All(x => x.IsComplete);
         }
 
         public IEnumerable<EnvelopeRecord> Records => _records;
@@ -177,7 +177,7 @@ namespace Jasper.Messaging.Tracking
 
         public bool Has(EventType eventType)
         {
-            return _records.Any(x => x.EventType == eventType);
+            return _records.ToArray().Any(x => x.EventType == eventType);
         }
 
         public object MessageFor(EventType eventType)

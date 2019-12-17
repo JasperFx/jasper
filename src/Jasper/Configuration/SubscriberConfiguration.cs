@@ -1,24 +1,35 @@
+using LamarCodeGeneration.Util;
+
 namespace Jasper.Configuration
 {
-    public class SubscriberConfiguration : ISubscriberConfiguration
+    public class SubscriberConfiguration<T, TEndpoint> : ISubscriberConfiguration<T> where TEndpoint : Endpoint where T : ISubscriberConfiguration<T>
     {
-        private readonly Endpoint _endpoint;
+        protected readonly TEndpoint _endpoint;
 
-        public SubscriberConfiguration(Endpoint endpoint)
+        public SubscriberConfiguration(TEndpoint endpoint)
         {
             _endpoint = endpoint;
         }
 
-        public ISubscriberConfiguration Durably()
+        protected TEndpoint Endpoint => _endpoint;
+
+        public T Durably()
         {
             _endpoint.IsDurable = true;
-            return this;
+            return this.As<T>();
         }
 
-        public ISubscriberConfiguration Lightweight()
+        public T Lightweight()
         {
             _endpoint.IsDurable = false;
-            return this;
+            return this.As<T>();
+        }
+    }
+
+    public class SubscriberConfiguration : SubscriberConfiguration<ISubscriberConfiguration, Endpoint>, ISubscriberConfiguration
+    {
+        public SubscriberConfiguration(Endpoint endpoint) : base(endpoint)
+        {
         }
     }
 }
