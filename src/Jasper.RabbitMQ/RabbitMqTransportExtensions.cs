@@ -26,6 +26,52 @@ namespace Jasper.RabbitMQ
             configure(endpoints.RabbitMqTransport());
         }
 
+        public static RabbitMqListenerConfiguration ListenAtRabbitQueue(this IEndpoints endpoints, string queueName)
+        {
+            throw new NotImplementedException();
+        }
 
+        public static RabbitMqSubscriberConfiguration ToRabbit(string routingKey, string exchangeName = "")
+        {
+            throw new NotImplementedException();
+        }
     }
+
+    public class RabbitMqSubscriberConfiguration : SubscriberConfiguration<RabbitMqSubscriberConfiguration, RabbitMqEndpoint>
+    {
+        public RabbitMqSubscriberConfiguration(RabbitMqEndpoint endpoint) : base(endpoint)
+        {
+        }
+
+        public RabbitMqSubscriberConfiguration Protocol<T>() where T : IRabbitMqProtocol, new()
+        {
+            return Protocol(new T());
+        }
+
+        public RabbitMqSubscriberConfiguration Protocol(IRabbitMqProtocol protocol)
+        {
+            _endpoint.Protocol = protocol;
+            return this;
+        }
+    }
+
+    public class RabbitMqListenerConfiguration : ListenerConfiguration<RabbitMqListenerConfiguration, RabbitMqEndpoint>
+    {
+        public RabbitMqListenerConfiguration(RabbitMqEndpoint endpoint) : base(endpoint)
+        {
+        }
+
+        public RabbitMqListenerConfiguration Protocol<T>() where T : IRabbitMqProtocol, new()
+        {
+            return Protocol(new T());
+        }
+
+        public RabbitMqListenerConfiguration Protocol(IRabbitMqProtocol protocol)
+        {
+            endpoint.Protocol = protocol;
+            return this;
+        }
+    }
+
+
 }

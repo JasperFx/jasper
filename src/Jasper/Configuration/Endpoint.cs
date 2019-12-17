@@ -18,7 +18,6 @@ namespace Jasper.Configuration
         protected Endpoint(Uri uri)
         {
             Parse(uri);
-            Uri = uri;
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace Jasper.Configuration
         /// <summary>
         /// The actual address of the listener, including the transport scheme
         /// </summary>
-        public Uri Uri { get; protected set; }
+        public abstract Uri Uri { get; }
 
         /// <summary>
         /// Mark whether or not the receiver for this listener should use

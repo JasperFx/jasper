@@ -23,8 +23,9 @@ namespace Jasper.Messaging.Transports.Tcp
             HostName = hostName;
             Port = port;
 
-            Uri = ToUri(port, hostName);
         }
+
+        public override Uri Uri => ToUri(Port, HostName);
 
         public static Uri ToUri(int port, string hostName = "localhost")
         {
@@ -55,8 +56,6 @@ namespace Jasper.Messaging.Transports.Tcp
 
             HostName = uri.Host;
             Port = uri.Port;
-
-            Uri = ToUri(Port, HostName);
 
             if (uri.IsDurable())
             {

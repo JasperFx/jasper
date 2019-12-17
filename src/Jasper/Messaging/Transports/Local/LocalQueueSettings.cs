@@ -11,13 +11,14 @@ namespace Jasper.Messaging.Transports.Local
         public LocalQueueSettings(string name)
         {
             Name = name.ToLowerInvariant();
-            Uri = $"local://{name}".ToUri();
         }
 
         public LocalQueueSettings(Uri uri) : base(uri)
         {
 
         }
+
+        public override Uri Uri => $"local://{Name}".ToUri();
 
         public override void Parse(Uri uri)
         {

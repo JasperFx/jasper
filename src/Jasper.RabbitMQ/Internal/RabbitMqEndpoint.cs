@@ -11,8 +11,14 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqEndpoint : Endpoint
     {
-        public string ExchangeName { get; private set; }
-        public string RoutingKey { get; private set; }
+        public const string Queue = "queue";
+        public const string Exchange = "exchange";
+        public const string Routing = "routing";
+
+        public string ExchangeName { get; set; }
+        public string RoutingKey { get; set; }
+
+        public string QueueName { get; set; }
         internal RabbitMqTransport Parent { get; set; }
 
         public IRabbitMqProtocol Protocol { get; set; } = new DefaultRabbitMqProtocol();
@@ -21,18 +27,8 @@ namespace Jasper.RabbitMQ.Internal
         {
         }
 
-        public RabbitMqEndpoint(string exchangeName, string routingKey)
-        {
-            ExchangeName = exchangeName;
-            if (ExchangeName.IsEmpty())
-            {
-                ExchangeName = TransportConstants.Default;
-            }
+        public override Uri Uri { get; }
 
-            RoutingKey = routingKey;
-
-            Uri = buildUri();
-        }
 
         internal static Uri ToUri(string exchangeName, string routingKey)
         {
@@ -70,7 +66,6 @@ namespace Jasper.RabbitMQ.Internal
 
             RoutingKey = uri.Segments.First(x => x != "/").Trim('/');
 
-            Uri = buildUri();
 
             if (TransportConstants.Durable.EqualsIgnoreCase(uri.Segments.LastOrDefault()))
             {

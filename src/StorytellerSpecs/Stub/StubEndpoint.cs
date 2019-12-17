@@ -6,6 +6,7 @@ using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Messaging.Transports.Sending;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Stub
 {
@@ -32,6 +33,8 @@ namespace Jasper.Messaging.Transports.Stub
             _pipeline = pipeline;
             _logger = logger;
         }
+
+        public override Uri Uri => $"stub://{Name}".ToUri();
 
         public override Uri ReplyUri()
         {
