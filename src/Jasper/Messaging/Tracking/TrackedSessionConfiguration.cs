@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Tracking
@@ -61,6 +62,18 @@ namespace Jasper.Messaging.Tracking
         public TrackedSessionConfiguration DoNotAssertOnExceptionsDetected()
         {
             _session.AssertNoExceptions = false;
+            return this;
+        }
+
+        public TrackedSessionConfiguration WaitForMessageToBeReceivedAt<T>(IHost host)
+        {
+            var condition = new WaitForMessage<T>
+            {
+                UniqueNodeId = host.Services.GetRequiredService<IMessagingRoot>().Settings.UniqueNodeId
+            };
+
+            _session.AddCondition(condition);
+
             return this;
         }
 

@@ -13,38 +13,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Messaging.Tracking
 {
-    public class WaitForMessage<T> : ITrackedCondition
-    {
-        private bool _isCompleted;
-
-        public void Record(EnvelopeRecord record)
-        {
-            if (record.EventType != EventType.MessageSucceeded && record.EventType != EventType.MessageFailed) return;
-
-            if (record.Envelope.Message is T message)
-            {
-                if (UniqueNodeId != 0 && UniqueNodeId != record.UniqueNodeId) return;
-
-                _isCompleted = true;
-            }
-        }
-
-        public int UniqueNodeId { get; set; }
-
-
-
-        public bool IsCompleted()
-        {
-            return _isCompleted;
-        }
-    }
-
-    public interface ITrackedCondition
-    {
-        void Record(EnvelopeRecord record);
-        bool IsCompleted();
-    }
-
     public class TrackedSession : ITrackedSession
     {
         private readonly Cache<Guid, EnvelopeHistory> _envelopes
@@ -62,7 +30,7 @@ namespace Jasper.Messaging.Tracking
         private TrackingStatus _status = TrackingStatus.Active;
 
         private readonly IList<MessageTrackingLogger> _otherHosts = new List<MessageTrackingLogger>();
-        private MessageTrackingLogger _primaryLogger;
+        private readonly MessageTrackingLogger _primaryLogger;
 
         public TrackedSession(IHost host)
         {
@@ -91,7 +59,15 @@ namespace Jasper.Messaging.Tracking
         public void AssertNotTimedOut()
         {
             if (Status == TrackingStatus.TimedOut)
-                throw new TimeoutException($"This {nameof(TrackedSession)} timed out before all activity completed.\nActivity detected:\n{AllRecordsInOrder().Select(x => x.ToString()).Join("\n")}");
+            {
+                var message = $"This {nameof(TrackedSession)} timed out before all activity completed.\nActivity detected:\n{AllRecordsInOrder().Select(x => x.ToString()).Join("\n")}";
+                if (_conditions.Any())
+                {
+                    message += $"\nConditions:\n{_conditions.Select(x => $"{x} ({x.IsCompleted()})").Join("\n")}";
+                }
+
+                throw new TimeoutException(message);
+            }
         }
 
 
@@ -270,6 +246,11 @@ namespace Jasper.Messaging.Tracking
                 history.RecordLocally(record);
             }
 
+            foreach (var condition in _conditions)
+            {
+                condition.Record(record);
+            }
+
             if (ex != null) _exceptions.Add(ex);
 
             if (IsCompleted()) Status = TrackingStatus.Completed;
@@ -285,6 +266,11 @@ namespace Jasper.Messaging.Tracking
         public void LogException(Exception exception, string serviceName)
         {
             _exceptions.Add(exception);
+        }
+
+        public void AddCondition(ITrackedCondition condition)
+        {
+            _conditions.Add(condition);
         }
     }
 }

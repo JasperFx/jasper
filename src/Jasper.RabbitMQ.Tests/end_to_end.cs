@@ -269,10 +269,11 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task use_fan_out_exchange()
         {
-            var uri = "rabbitmq://fanout/messages12";
             var exchangeName = "fanout";
-            var queueName = "messages12";
-            var bindingKey = "fankey";
+            var queueName1 = "messages12";
+            var queueName2 = "messages13";
+            var queueName3 = "messages14";
+
 
             var publisher = JasperHost.For(_ =>
             {
@@ -280,11 +281,27 @@ namespace Jasper.RabbitMQ.Tests
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareExchange(exchangeName, ex => ex.ExchangeType = ExchangeType.Fanout);
-                    x.DeclareQueue(queueName);
+                    x.DeclareQueue(queueName1);
+                    x.DeclareQueue(queueName2);
+                    x.DeclareQueue(queueName3);
                     x.DeclareBinding(new Binding
                     {
-                        BindingKey = bindingKey,
-                        QueueName = queueName,
+                        BindingKey = "key1",
+                        QueueName = queueName1,
+                        ExchangeName = exchangeName
+                    });
+
+                    x.DeclareBinding(new Binding
+                    {
+                        BindingKey = "key1",
+                        QueueName = queueName2,
+                        ExchangeName = exchangeName
+                    });
+
+                    x.DeclareBinding(new Binding
+                    {
+                        BindingKey = "key3",
+                        QueueName = queueName3,
                         ExchangeName = exchangeName
                     });
 
@@ -307,7 +324,7 @@ namespace Jasper.RabbitMQ.Tests
 
 
                 _.Extensions.UseMessageTrackingTestingSupport();
-                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Endpoints.ListenForMessagesFrom("rabbitmq://fanout/messages12");
                 _.Services.AddSingleton<ColorHistory>();
             });
 
@@ -320,7 +337,7 @@ namespace Jasper.RabbitMQ.Tests
 
 
                 _.Extensions.UseMessageTrackingTestingSupport();
-                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Endpoints.ListenForMessagesFrom("rabbitmq://fanout/messages13");
                 _.Services.AddSingleton<ColorHistory>();
             });
 
@@ -333,16 +350,19 @@ namespace Jasper.RabbitMQ.Tests
 
 
                 _.Extensions.UseMessageTrackingTestingSupport();
-                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Endpoints.ListenForMessagesFrom("rabbitmq://fanout/messages14");
                 _.Services.AddSingleton<ColorHistory>();
             });
 
 
             try
             {
-                var session = publisher
+                var session = await publisher
                     .TrackActivity()
                     .AlsoTrack(receiver1, receiver2, receiver3)
+                    .WaitForMessageToBeReceivedAt<ColorChosen>(receiver1)
+                    .WaitForMessageToBeReceivedAt<ColorChosen>(receiver2)
+                    .WaitForMessageToBeReceivedAt<ColorChosen>(receiver3)
                     .SendMessageAndWait(new ColorChosen {Name = "Purple"});
 
 
