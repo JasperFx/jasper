@@ -1,12 +1,9 @@
 ﻿using Jasper.Configuration;
-using Jasper.RabbitMQ;
 using Jasper.RabbitMQ.Internal;
-using LamarCodeGeneration.Util;
-using RabbitMQ.Client;
 
 [assembly: JasperModule(typeof(RabbitMqExtension))]
 
-namespace Jasper.RabbitMQ
+namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqExtension : IJasperExtension
     {

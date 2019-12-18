@@ -3,7 +3,6 @@ using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.RabbitMQ.Internal;
 using LamarCodeGeneration.Util;
-using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 

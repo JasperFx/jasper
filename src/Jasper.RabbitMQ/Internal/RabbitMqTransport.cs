@@ -165,6 +165,14 @@ namespace Jasper.RabbitMQ.Internal
                         queue.Purge(channel);
                     }
 
+                    var others = _endpoints.Select(x => x.QueueName).Where(x => !x.IsNotEmpty())
+                        .Where(x => Queues.All(q => q.Name != x)).ToArray();
+
+                    foreach (var other in others)
+                    {
+                        channel.QueuePurge(other);
+                    }
+
                     channel.Close();
                 }
 

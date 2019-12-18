@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Baseline;
 using RabbitMQ.Client;
 
-namespace Jasper.RabbitMQ.Internal
+namespace Jasper.RabbitMQ
 {
     public class Binding
     {

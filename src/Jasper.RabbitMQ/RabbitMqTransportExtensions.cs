@@ -9,7 +9,13 @@ namespace Jasper.RabbitMQ
 {
     public static class RabbitMqTransportExtensions
     {
-        public static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
+        /// <summary>
+        /// Quick access to the Rabbit MQ Transport within this application.
+        /// This is for advanced usage
+        /// </summary>
+        /// <param name="endpoints"></param>
+        /// <returns></returns>
+        internal static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
         {
             var transports = endpoints.As<TransportCollection>();
             var transport = transports.Get<RabbitMqTransport>();
@@ -22,11 +28,23 @@ namespace Jasper.RabbitMQ
             return transport;
         }
 
+        /// <summary>
+        /// Configure connection and authentication information about the Rabbit MQ usage
+        /// within this Jasper application
+        /// </summary>
+        /// <param name="endpoints"></param>
+        /// <param name="configure"></param>
         public static void ConfigureRabbitMq(this IEndpoints endpoints, Action<IRabbitMqTransport> configure)
         {
             configure(endpoints.RabbitMqTransport());
         }
 
+        /// <summary>
+        /// Listen for incoming messages at the designated Rabbit MQ queue by name
+        /// </summary>
+        /// <param name="endpoints"></param>
+        /// <param name="queueName">The name of the Rabbit MQ queue</param>
+        /// <returns></returns>
         public static RabbitMqListenerConfiguration ListenToRabbitQueue(this IEndpoints endpoints, string queueName)
         {
             var endpoint = endpoints.RabbitMqTransport().EndpointForQueue(queueName);
@@ -34,6 +52,14 @@ namespace Jasper.RabbitMQ
             return new RabbitMqListenerConfiguration(endpoint);
         }
 
+        /// <summary>
+        /// Publish matching messages to Rabbit MQ using the named routing key or queue name and
+        /// optionally an exchange
+        /// </summary>
+        /// <param name="publishing"></param>
+        /// <param name="routingKeyOrQueue">This is used as the routing key when publishing. Can be either a binding key or a queue name or a static topic name if the exchange is topic-based</param>
+        /// <param name="exchangeName">Optional, you only need to supply this if you are using a non-default exchange</param>
+        /// <returns></returns>
         public static RabbitMqSubscriberConfiguration ToRabbit(this IPublishToExpression publishing, string routingKeyOrQueue, string exchangeName = "")
         {
             var transports = publishing.As<PublishingExpression>().Parent;
@@ -46,6 +72,13 @@ namespace Jasper.RabbitMQ
             return new RabbitMqSubscriberConfiguration(endpoint);
         }
 
+        /// <summary>
+        /// Publish matching messages to Rabbit MQ to the designated exchange. This is
+        /// appropriate for "fanout" exchanges where Rabbit MQ ignores the routing key
+        /// </summary>
+        /// <param name="publishing"></param>
+        /// <param name="exchangeName">The Rabbit MQ exchange name</param>
+        /// <returns></returns>
         public static RabbitMqSubscriberConfiguration ToRabbitExchange(this IPublishToExpression publishing, string exchangeName)
         {
             var transports = publishing.As<PublishingExpression>().Parent;
