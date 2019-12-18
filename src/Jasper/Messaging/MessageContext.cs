@@ -54,6 +54,7 @@ namespace Jasper.Messaging
         public IEnvelopeTransaction Transaction { get; private set; }
 
 
+
         public async Task<Guid> SendEnvelope(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));

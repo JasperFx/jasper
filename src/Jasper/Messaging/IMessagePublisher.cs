@@ -88,5 +88,11 @@ namespace Jasper.Messaging
         Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null);
 
 
+        /// <summary>
+        /// Advanced publishing if you need absolute control over how a message is sent
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <returns></returns>
+        Task<Guid> SendEnvelope(Envelope envelope);
     }
 }
