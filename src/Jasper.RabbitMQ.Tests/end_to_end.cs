@@ -56,7 +56,10 @@ namespace Jasper.RabbitMQ.Tests
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints.PublishAllMessages().To(uri);
+                _.Endpoints
+                    .PublishAllMessages()
+                    .ToRabbit("messages2")
+                    .Durably();
 
                 _.Extensions.UseMarten(x =>
                 {
@@ -78,7 +81,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Endpoints.ListenToRabbitQueue("messages2");
                 _.Services.AddSingleton<ColorHistory>();
 
                 _.Extensions.UseMarten(x =>
@@ -116,7 +119,7 @@ namespace Jasper.RabbitMQ.Tests
         public async Task send_message_to_and_receive_through_rabbitmq_with_routing_key()
         {
             var queueName = "messages5";
-
+            var exchangeName = "exchange1";
 
             var publisher = JasperHost.For(_ =>
             {
@@ -126,10 +129,10 @@ namespace Jasper.RabbitMQ.Tests
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
-                    x.DeclareExchange("exchange1");
+                    x.DeclareExchange(exchangeName);
                     x.DeclareBinding(new Binding
                     {
-                        ExchangeName = "exchange1",
+                        ExchangeName = exchangeName,
                         BindingKey = "key2",
                         QueueName =  queueName
                     });
@@ -137,7 +140,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints.PublishAllMessages().To("rabbitmq://exchange1/key2");
+                _.Endpoints.PublishAllMessages().ToRabbit("key2", exchangeName);
 
             });
 
@@ -149,10 +152,10 @@ namespace Jasper.RabbitMQ.Tests
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue("messages5");
-                    x.DeclareExchange("exchange1");
+                    x.DeclareExchange(exchangeName);
                     x.DeclareBinding(new Binding
                     {
-                        ExchangeName = "exchange1",
+                        ExchangeName = exchangeName,
                         BindingKey = "key2",
                         QueueName =  queueName
                     });
@@ -162,7 +165,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 _.Services.AddSingleton<ColorHistory>();
 
-                _.Endpoints.ListenForMessagesFrom($"rabbitmq://exchange1/{queueName}");
+                _.Endpoints.ListenToRabbitQueue(queueName);
             });
 
             try
@@ -205,7 +208,7 @@ namespace Jasper.RabbitMQ.Tests
                 });
 
 
-                _.Endpoints.PublishAllMessages().To(uri);
+                _.Endpoints.PublishAllMessages().ToRabbit("messages11").Durably();
 
 
 
@@ -228,15 +231,11 @@ namespace Jasper.RabbitMQ.Tests
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages11");
-
-
-                    x.AutoProvision = true;
                 });
 
 
 
-                _.Endpoints.ListenForMessagesFrom(uri);
+                _.Endpoints.ListenToRabbitQueue("messages11");
                 _.Services.AddSingleton<ColorHistory>();
 
                 _.Extensions.UseMarten(x =>
@@ -304,7 +303,7 @@ namespace Jasper.RabbitMQ.Tests
 
                     x.DeclareBinding(new Binding
                     {
-                        BindingKey = "key3",
+                        BindingKey = "key1",
                         QueueName = queueName3,
                         ExchangeName = exchangeName
                     });
@@ -314,7 +313,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 _.Extensions.UseMessageTrackingTestingSupport();
 
-                _.Endpoints.PublishAllMessages().To("rabbitmq://fanout/fankey");
+                _.Endpoints.PublishAllMessages().ToRabbitExchange("fanout");
 
             });
 
@@ -328,7 +327,7 @@ namespace Jasper.RabbitMQ.Tests
 
 
                 _.Extensions.UseMessageTrackingTestingSupport();
-                _.Endpoints.ListenForMessagesFrom("rabbitmq://fanout/messages12");
+                _.Endpoints.ListenToRabbitQueue(queueName1);
                 _.Services.AddSingleton<ColorHistory>();
             });
 
@@ -341,7 +340,7 @@ namespace Jasper.RabbitMQ.Tests
 
 
                 _.Extensions.UseMessageTrackingTestingSupport();
-                _.Endpoints.ListenForMessagesFrom("rabbitmq://fanout/messages13");
+                _.Endpoints.ListenToRabbitQueue(queueName2);
                 _.Services.AddSingleton<ColorHistory>();
             });
 
@@ -354,7 +353,8 @@ namespace Jasper.RabbitMQ.Tests
 
 
                 _.Extensions.UseMessageTrackingTestingSupport();
-                _.Endpoints.ListenForMessagesFrom("rabbitmq://fanout/messages14");
+                _.Endpoints.ListenToRabbitQueue(queueName3);
+
                 _.Services.AddSingleton<ColorHistory>();
             });
 
@@ -391,8 +391,6 @@ namespace Jasper.RabbitMQ.Tests
         public async Task send_message_to_and_receive_through_rabbitmq_with_named_topic()
         {
 
-            var uri = "rabbitmq://topics/special";
-
             var queueName = "messages4";
 
             var publisher = JasperHost.For(_ =>
@@ -412,7 +410,8 @@ namespace Jasper.RabbitMQ.Tests
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints.PublishAllMessages().To("rabbitmq://topics/special");
+                _.Endpoints.PublishAllMessages().ToRabbit("special", "topics");
+
                 _.Handlers.DisableConventionalDiscovery();
 
                 _.Extensions.UseMessageTrackingTestingSupport();
@@ -426,7 +425,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.ConnectionFactory.HostName = "localhost";
                 });
 
-                _.Endpoints.ListenForMessagesFrom($"rabbitmq://topics/{queueName}".ToUri());
+                _.Endpoints.ListenToRabbitQueue(queueName);
 
                 _.Extensions.UseMessageTrackingTestingSupport();
 
@@ -485,12 +484,11 @@ namespace Jasper.RabbitMQ.Tests
                 x.AutoProvision = true;
             });
 
-
-            Endpoints.ListenForMessagesFrom("rabbitmq://default/messages3");
+            Endpoints.ListenToRabbitQueue("messages3");
 
             Services.AddSingleton<ColorHistory>();
 
-            Endpoints.PublishAllMessages().To("rabbitmq://default/messages3");
+            Endpoints.PublishAllMessages().ToRabbit("messages3");
 
         }
     }

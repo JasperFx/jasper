@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using ImTools;
 using Jasper.Configuration;
 using Jasper.Messaging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Sending;
 using Jasper.Util;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.RabbitMQ.Internal
 {
@@ -15,7 +18,7 @@ namespace Jasper.RabbitMQ.Internal
         public const string Exchange = "exchange";
         public const string Routing = "routing";
 
-        public string ExchangeName { get; set; }
+        public string ExchangeName { get; set; } = string.Empty;
         public string RoutingKey { get; set; }
 
         public string QueueName { get; set; }
@@ -27,28 +30,44 @@ namespace Jasper.RabbitMQ.Internal
         {
         }
 
-        public override Uri Uri { get; }
-
-
-        internal static Uri ToUri(string exchangeName, string routingKey)
+        public override Uri Uri
         {
-            return new Uri($"{RabbitMqTransport.ProtocolName}://{exchangeName}/{routingKey}");
+            get
+            {
+                var list = new List<string>();
+
+                if (QueueName.IsNotEmpty())
+                {
+                    list.Add(Queue);
+                    list.Add(QueueName.ToLowerInvariant());
+                }
+                else
+                {
+                    if (ExchangeName.IsNotEmpty())
+                    {
+                        list.Add(Exchange);
+                        list.Add(ExchangeName.ToLowerInvariant());
+                    }
+
+                    if (RoutingKey.IsNotEmpty())
+                    {
+                        list.Add(Routing);
+                        list.Add(RoutingKey.ToLowerInvariant());
+                    }
+                }
+
+
+
+                var uri = $"{RabbitMqTransport.ProtocolName}://{list.Join("/")}".ToUri();
+
+                return uri;
+            }
         }
 
-        private Uri buildUri()
-        {
-            return ToUri(ExchangeName, RoutingKey);
-        }
 
         public override Uri ReplyUri()
         {
-            var uri = buildUri();
-            if (!IsDurable)
-            {
-                return uri;
-            }
-
-            return $"{uri}/durable".ToUri();
+            return IsDurable ? $"{Uri}/durable".ToUri() : Uri;
         }
 
         public override void Parse(Uri uri)
@@ -58,18 +77,41 @@ namespace Jasper.RabbitMQ.Internal
                 throw new ArgumentOutOfRangeException($"This is not a rabbitmq Uri");
             }
 
-            ExchangeName = uri.Host;
-            if (ExchangeName.IsEmpty())
+            var raw = uri.Segments.Where(x => x != "/").Select(x => x.Trim('/'));
+            var segments = new Queue<string>();
+            segments.Enqueue(uri.Host);
+            foreach (var segment in raw)
             {
-                ExchangeName = TransportConstants.Default;
+                segments.Enqueue(segment);
             }
 
-            RoutingKey = uri.Segments.First(x => x != "/").Trim('/');
 
-
-            if (TransportConstants.Durable.EqualsIgnoreCase(uri.Segments.LastOrDefault()))
+            while (segments.Any())
             {
-                IsDurable = true;
+                if (segments.Peek().EqualsIgnoreCase(Exchange))
+                {
+                    segments.Dequeue();
+                    ExchangeName = segments.Dequeue();
+                }
+                else if (segments.Peek().EqualsIgnoreCase(Queue))
+                {
+                    segments.Dequeue();
+                    QueueName = segments.Dequeue();
+                }
+                else if (segments.Peek().EqualsIgnoreCase(Routing))
+                {
+                    segments.Dequeue();
+                    RoutingKey = segments.Dequeue();
+                }
+                else if (segments.Peek().EqualsIgnoreCase(TransportConstants.Durable))
+                {
+                    segments.Dequeue();
+                    IsDurable = true;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The Uri '{uri}' is invalid for a Rabbit MQ endpoint");
+                }
             }
 
 

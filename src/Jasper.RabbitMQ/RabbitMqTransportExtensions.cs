@@ -1,6 +1,7 @@
 using System;
 using Baseline;
 using Jasper.Configuration;
+using Jasper.Messaging.Configuration;
 using Jasper.RabbitMQ.Internal;
 using RabbitMQ.Client;
 
@@ -26,52 +27,35 @@ namespace Jasper.RabbitMQ
             configure(endpoints.RabbitMqTransport());
         }
 
-        public static RabbitMqListenerConfiguration ListenAtRabbitQueue(this IEndpoints endpoints, string queueName)
+        public static RabbitMqListenerConfiguration ListenToRabbitQueue(this IEndpoints endpoints, string queueName)
         {
-            throw new NotImplementedException();
+            var endpoint = endpoints.RabbitMqTransport().EndpointForQueue(queueName);
+            endpoint.IsListener = true;
+            return new RabbitMqListenerConfiguration(endpoint);
         }
 
-        public static RabbitMqSubscriberConfiguration ToRabbit(string routingKey, string exchangeName = "")
+        public static RabbitMqSubscriberConfiguration ToRabbit(this IPublishToExpression publishing, string routingKeyOrQueue, string exchangeName = "")
         {
-            throw new NotImplementedException();
-        }
-    }
+            var transports = publishing.As<PublishingExpression>().Parent;
+            var transport = transports.Get<RabbitMqTransport>();
+            var endpoint =  transport.EndpointFor(routingKeyOrQueue, exchangeName);
 
-    public class RabbitMqSubscriberConfiguration : SubscriberConfiguration<RabbitMqSubscriberConfiguration, RabbitMqEndpoint>
-    {
-        public RabbitMqSubscriberConfiguration(RabbitMqEndpoint endpoint) : base(endpoint)
-        {
-        }
+            // This is necessary unfortunately to hook up the subscription rules
+            publishing.To(endpoint.Uri);
 
-        public RabbitMqSubscriberConfiguration Protocol<T>() where T : IRabbitMqProtocol, new()
-        {
-            return Protocol(new T());
+            return new RabbitMqSubscriberConfiguration(endpoint);
         }
 
-        public RabbitMqSubscriberConfiguration Protocol(IRabbitMqProtocol protocol)
+        public static RabbitMqSubscriberConfiguration ToRabbitExchange(this IPublishToExpression publishing, string exchangeName)
         {
-            _endpoint.Protocol = protocol;
-            return this;
-        }
-    }
+            var transports = publishing.As<PublishingExpression>().Parent;
+            var transport = transports.Get<RabbitMqTransport>();
+            var endpoint =  transport.EndpointForExchange(exchangeName);
 
-    public class RabbitMqListenerConfiguration : ListenerConfiguration<RabbitMqListenerConfiguration, RabbitMqEndpoint>
-    {
-        public RabbitMqListenerConfiguration(RabbitMqEndpoint endpoint) : base(endpoint)
-        {
-        }
+            // This is necessary unfortunately to hook up the subscription rules
+            publishing.To(endpoint.Uri);
 
-        public RabbitMqListenerConfiguration Protocol<T>() where T : IRabbitMqProtocol, new()
-        {
-            return Protocol(new T());
-        }
-
-        public RabbitMqListenerConfiguration Protocol(IRabbitMqProtocol protocol)
-        {
-            endpoint.Protocol = protocol;
-            return this;
+            return new RabbitMqSubscriberConfiguration(endpoint);
         }
     }
-
-
 }

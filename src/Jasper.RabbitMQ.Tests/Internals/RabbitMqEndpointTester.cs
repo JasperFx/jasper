@@ -74,9 +74,10 @@ namespace Jasper.RabbitMQ.Tests.Internals
         {
             new RabbitMqEndpoint
                 {
-                    QueueName = "foo"
+                    QueueName = "foo",
+                    IsDurable = true
                 }
-                .Uri.ShouldBe(new Uri("rabbitmq://queue/foo/durable"));
+                .ReplyUri().ShouldBe(new Uri("rabbitmq://queue/foo/durable"));
         }
 
         [Fact]
@@ -108,7 +109,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
                 ExchangeName = "ex1",
                 RoutingKey = "key1",
                 IsDurable = true
-            }.ReplyUri().ShouldBe(new Uri("rabbitmq://ex1/key1/durable"));
+            }.ReplyUri().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1/durable"));
 
 
         }

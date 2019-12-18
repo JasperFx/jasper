@@ -9,21 +9,24 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
-        private readonly RabbitMqEndpoint _endpoint;
         private readonly RabbitMqTransport _transport;
         private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol _mapper;
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;
+        private string _exchangeName;
+        private string _routingKey;
 
         public RabbitMqListener(ITransportLogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
             _logger = logger;
             _mapper = endpoint.Protocol;
-            _endpoint = endpoint;
             _transport = transport;
-            Address = _endpoint.Uri;
+            Address = endpoint.Uri;
+
+            _exchangeName = endpoint.ExchangeName ?? "";
+            _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 
         public ListeningStatus Status
@@ -58,7 +61,7 @@ namespace Jasper.RabbitMQ.Internal
                 ConsumerTag = Guid.NewGuid().ToString()
             };
 
-            Channel.BasicConsume(_consumer, _endpoint.RoutingKey);
+            Channel.BasicConsume(_consumer, _routingKey);
         }
 
 

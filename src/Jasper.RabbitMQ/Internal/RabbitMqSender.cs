@@ -13,29 +13,28 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqSender : RabbitMqConnectionAgent, ISender
     {
-        private readonly RabbitMqEndpoint _endpoint;
-        private readonly RabbitMqTransport _transport;
         private readonly CancellationToken _cancellation;
         private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol _protocol;
         private ISenderCallback _callback;
         private ActionBlock<Envelope> _sending;
         private ActionBlock<Envelope> _serialization;
-        private string _exchangeName;
-        private string _key;
+        private readonly string _exchangeName;
+        private readonly string _key;
+        private readonly bool _isDurable;
 
         public RabbitMqSender(ITransportLogger logger, RabbitMqEndpoint endpoint, RabbitMqTransport transport,
             CancellationToken cancellation) : base(transport)
         {
             _protocol = endpoint.Protocol;
             _logger = logger;
-            _endpoint = endpoint;
-            _transport = transport;
             _cancellation = cancellation;
             Destination = endpoint.Uri;
 
+            _isDurable = endpoint.IsDurable;
+
             _exchangeName = endpoint.ExchangeName == TransportConstants.Default ? "" : endpoint.ExchangeName;
-            _key = endpoint.RoutingKey;
+            _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 
 
@@ -151,7 +150,7 @@ namespace Jasper.RabbitMQ.Internal
             try
             {
                 var props = Channel.CreateBasicProperties();
-                props.Persistent = _endpoint.IsDurable;
+                props.Persistent = _isDurable;
 
                 _protocol.WriteFromEnvelope(envelope, props);
 

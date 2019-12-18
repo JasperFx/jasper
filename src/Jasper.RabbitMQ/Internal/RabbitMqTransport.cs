@@ -171,5 +171,30 @@ namespace Jasper.RabbitMQ.Internal
                 connection.Close();
             }
         }
+
+        public RabbitMqEndpoint EndpointForQueue(string queueName)
+        {
+            // Yeah, it's super inefficient, but it only happens once or twice
+            // when bootstrapping'
+            var temp = new RabbitMqEndpoint {QueueName = queueName};
+            return findEndpointByUri(temp.Uri);
+        }
+
+        public RabbitMqEndpoint EndpointFor(string routingKey, string exchangeName)
+        {
+            var temp = new RabbitMqEndpoint
+            {
+                RoutingKey = routingKey,
+                ExchangeName = exchangeName
+            };
+
+            return findEndpointByUri(temp.Uri);
+        }
+
+        public RabbitMqEndpoint EndpointForExchange(string exchangeName)
+        {
+            var temp = new RabbitMqEndpoint{ExchangeName = exchangeName};
+            return findEndpointByUri(temp.Uri);
+        }
     }
 }

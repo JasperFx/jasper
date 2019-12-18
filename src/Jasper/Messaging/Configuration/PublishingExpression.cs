@@ -14,16 +14,16 @@ namespace Jasper.Messaging.Configuration
 {
     public class PublishingExpression : IPublishToExpression
     {
-        private readonly TransportCollection _parent;
-
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
         private readonly IList<Endpoint> _endpoints = new List<Endpoint>();
 
         internal PublishingExpression(TransportCollection parent)
         {
-            _parent = parent;
+            Parent = parent;
         }
+
+        public TransportCollection Parent { get; }
 
         internal bool AutoAddSubscriptions { get; set; }
 
@@ -75,7 +75,7 @@ namespace Jasper.Messaging.Configuration
         /// <returns></returns>
         public ISubscriberConfiguration To(Uri uri)
         {
-            var endpoint = _parent.GetOrCreateEndpoint(uri);
+            var endpoint = Parent.GetOrCreateEndpoint(uri);
 
             _endpoints.Add(endpoint);
 
@@ -104,7 +104,7 @@ namespace Jasper.Messaging.Configuration
         public IListenerConfiguration Locally()
         {
 
-            var settings = _parent.Get<LocalTransport>().QueueFor(TransportConstants.Default);
+            var settings = Parent.Get<LocalTransport>().QueueFor(TransportConstants.Default);
             settings.Subscriptions.AddRange(_subscriptions);
 
             return new ListenerConfiguration(settings);
@@ -129,7 +129,7 @@ namespace Jasper.Messaging.Configuration
         /// <returns></returns>
         public IListenerConfiguration ToLocalQueue(string queueName)
         {
-            var settings = _parent.Get<LocalTransport>().QueueFor(queueName);
+            var settings = Parent.Get<LocalTransport>().QueueFor(queueName);
 
             if (AutoAddSubscriptions)
             {
