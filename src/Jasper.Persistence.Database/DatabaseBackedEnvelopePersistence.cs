@@ -90,8 +90,6 @@ values
 
         public Task StoreIncoming(Envelope envelope)
         {
-            envelope.EnsureData();
-
             return DatabaseSettings.CreateCommand(_storeIncoming)
                 .With("id", envelope.Id)
                 .With("status", envelope.Status)
@@ -128,8 +126,6 @@ values
 
         public Task StoreOutgoing(Envelope envelope, int ownerId)
         {
-            envelope.EnsureData();
-
             return DatabaseSettings.CreateCommand(_insertOutgoingSql)
                 .With("id", envelope.Id)
                 .With("owner", ownerId)
@@ -169,8 +165,6 @@ values
 
             foreach (var envelope in envelopes)
             {
-                envelope.EnsureData();
-
                 var id = builder.AddParameter(envelope.Id);
                 var status = builder.AddParameter(envelope.Status);
                 var owner = builder.AddParameter(envelope.OwnerId);
@@ -198,8 +192,6 @@ values
 
             foreach (var envelope in envelopes)
             {
-                envelope.EnsureData();
-
                 var id = builder.AddParameter(envelope.Id);
                 var destination = builder.AddParameter(envelope.Destination.ToString());
                 var deliverBy = builder.AddParameter(envelope.DeliverBy);

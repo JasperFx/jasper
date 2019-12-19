@@ -153,12 +153,11 @@ namespace Jasper.Messaging.Runtime
             return MessageType == PingMessageType;
         }
 
-        // TODO -- hide from public consumption
         /// <summary>
         ///     Used internally to ensure that the contained message has been serialized
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        public void EnsureData()
+        internal void EnsureData()
         {
             if (Data != null) return;
 

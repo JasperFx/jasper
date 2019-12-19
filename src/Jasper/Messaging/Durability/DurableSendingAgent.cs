@@ -75,7 +75,11 @@ namespace Jasper.Messaging.Durability
             var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
             Queued = new List<Envelope>();
 
-            foreach (var envelope in toRetry) await _sender.Enqueue(envelope);
+            foreach (var envelope in toRetry)
+            {
+                envelope.EnsureData();
+                await _sender.Enqueue(envelope);
+            }
         }
 
         public override Task Successful(OutgoingMessageBatch outgoing)
@@ -92,6 +96,7 @@ namespace Jasper.Messaging.Durability
 
         protected override async Task storeAndForward(Envelope envelope)
         {
+            envelope.EnsureData();
             await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
             await _sender.Enqueue(envelope);

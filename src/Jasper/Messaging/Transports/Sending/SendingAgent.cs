@@ -90,6 +90,7 @@ namespace Jasper.Messaging.Transports.Sending
             {
                 foreach (var envelope in batch.Messages)
                 {
+                    envelope.EnsureData();
 #pragma warning disable 4014
                     _sender.Enqueue(envelope);
 #pragma warning restore 4014

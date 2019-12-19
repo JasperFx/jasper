@@ -37,8 +37,11 @@ namespace Jasper.Messaging.Transports.Sending
             Queued.Clear();
 
             foreach (var envelope in toRetry)
+            {
+                envelope.EnsureData();
                 // It's perfectly okay to not wait on the task here
                 _sender.Enqueue(envelope);
+            }
 
             return Task.CompletedTask;
         }
@@ -55,6 +58,7 @@ namespace Jasper.Messaging.Transports.Sending
 
         protected override Task storeAndForward(Envelope envelope)
         {
+            envelope.EnsureData();
             return _sender.Enqueue(envelope);
         }
 

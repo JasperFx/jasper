@@ -21,7 +21,6 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 
         public void ConfigureCommand(CommandBuilder builder)
         {
-            Envelope.EnsureData();
             var bytes = Envelope.Serialize();
 
             var id = builder.AddParameter(Envelope.Id, NpgsqlDbType.Uuid);

@@ -60,6 +60,7 @@ namespace Jasper.Messaging.Runtime
 
         public byte[] Serialize()
         {
+            EnsureData();
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {

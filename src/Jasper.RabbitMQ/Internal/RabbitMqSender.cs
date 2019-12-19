@@ -18,7 +18,6 @@ namespace Jasper.RabbitMQ.Internal
         private readonly IRabbitMqProtocol _protocol;
         private ISenderCallback _callback;
         private ActionBlock<Envelope> _sending;
-        private ActionBlock<Envelope> _serialization;
         private readonly string _exchangeName;
         private readonly string _key;
         private readonly bool _isDurable;
@@ -45,19 +44,6 @@ namespace Jasper.RabbitMQ.Internal
 
             _callback = callback;
 
-            _serialization = new ActionBlock<Envelope>(e =>
-            {
-                try
-                {
-                    e.EnsureData();
-                    _sending.Post(e);
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogException(exception, e.Id, "Serialization Failure!");
-                }
-            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellation});
-
             _sending = new ActionBlock<Envelope>(send, new ExecutionDataflowBlockOptions
             {
                 CancellationToken = _cancellation
@@ -66,7 +52,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public Task Enqueue(Envelope envelope)
         {
-            _serialization.Post(envelope);
+            _sending.Post(envelope);
 
             return Task.CompletedTask;
         }
@@ -83,7 +69,6 @@ namespace Jasper.RabbitMQ.Internal
             Stop();
 
             _sending.Complete();
-            _serialization.Complete();
 
 
             _logger.CircuitBroken(Destination);
