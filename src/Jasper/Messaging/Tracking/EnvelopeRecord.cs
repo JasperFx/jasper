@@ -1,5 +1,6 @@
 using System;
 using Jasper.Messaging.Runtime;
+using LamarCodeGeneration.Util;
 
 namespace Jasper.Messaging.Tracking
 {
@@ -16,7 +17,10 @@ namespace Jasper.Messaging.Tracking
             SessionTime = sessionTime;
             Exception = exception;
             EventType = eventType;
+            AttemptNumber = envelope.Attempts;
         }
+
+        public int AttemptNumber { get; }
 
         public bool IsComplete { get; internal set; }
         public string ServiceName { get; set; }

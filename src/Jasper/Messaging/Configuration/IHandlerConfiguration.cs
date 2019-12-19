@@ -34,6 +34,22 @@ namespace Jasper.Messaging.Configuration
         /// <param name="policy"></param>
         void GlobalPolicy(IHandlerPolicy policy);
 
+        /// <summary>
+        /// Make configurations to the message handling for one
+        /// specific message type T
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <typeparam name="T"></typeparam>
+        void ConfigureHandlerForMessage<T>(Action<HandlerChain> configure);
+
+
+        /// <summary>
+        /// Make configurations to the message handling for one
+        /// specific message type specified by messageType
+        /// </summary>
+        /// <param name="messageType"></param>
+        /// <param name="configure"></param>
+        void ConfigureHandlerForMessage(Type messageType, Action<HandlerChain> configure);
     }
 
 

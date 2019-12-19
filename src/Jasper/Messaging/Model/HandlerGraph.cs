@@ -147,6 +147,11 @@ namespace Jasper.Messaging.Model
 
             var forwarders = container.GetInstance<Forwarders>();
             AddForwarders(forwarders);
+
+            foreach (var configuration in _configurations)
+            {
+                configuration();
+            }
         }
 
         public void Group()
@@ -261,6 +266,26 @@ namespace Jasper.Messaging.Model
         public void GlobalPolicy(IHandlerPolicy policy)
         {
             _globals.Add(policy);
+        }
+
+        private readonly IList<Action> _configurations = new List<Action>();
+
+        public void ConfigureHandlerForMessage<T>(Action<HandlerChain> configure)
+        {
+            ConfigureHandlerForMessage(typeof(T), configure);
+        }
+
+        public void ConfigureHandlerForMessage(Type messageType, Action<HandlerChain> configure)
+        {
+            _configurations.Add(() =>
+            {
+                var chain = ChainFor(messageType);
+                if (chain != null)
+                {
+                    configure(chain);
+                }
+            });
+
         }
     }
 }

@@ -10,12 +10,16 @@ namespace Jasper.TestSupport.Storyteller.Logging
             Time = time;
             Message = message;
             ServiceName = serviceName;
+
+            AttemptNumber = envelope.Attempts;
         }
 
         public Envelope Envelope { get; }
         public long Time { get; }
         public string Message { get; }
         public string ServiceName { get; }
+
+        public int AttemptNumber { get;  }
 
         public string ExceptionText { get; set; }
     }
