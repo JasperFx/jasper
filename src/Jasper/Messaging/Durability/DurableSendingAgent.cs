@@ -77,7 +77,6 @@ namespace Jasper.Messaging.Durability
 
             foreach (var envelope in toRetry)
             {
-                envelope.EnsureData();
                 await _sender.Enqueue(envelope);
             }
         }
@@ -96,7 +95,6 @@ namespace Jasper.Messaging.Durability
 
         protected override async Task storeAndForward(Envelope envelope)
         {
-            envelope.EnsureData();
             await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
             await _sender.Enqueue(envelope);

@@ -53,7 +53,6 @@ namespace Jasper.Messaging.Transports.Sending
                 {
                     try
                     {
-                        e.EnsureData();
                         await _batching.SendAsync(e);
                     }
                     catch (Exception ex)

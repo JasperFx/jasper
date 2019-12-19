@@ -60,7 +60,6 @@ namespace Jasper.Messaging.Runtime
 
         public byte[] Serialize()
         {
-            EnsureData();
             using (var stream = new MemoryStream())
             using (var writer = new BinaryWriter(stream))
             {
@@ -89,8 +88,6 @@ namespace Jasper.Messaging.Runtime
                     headerData.CopyTo(writer.BaseStream);
                 }
             }
-
-            EnsureData();
 
             writer.Write(Data.Length);
             writer.Write(Data);

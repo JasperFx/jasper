@@ -153,22 +153,6 @@ namespace Jasper.Messaging.Runtime
             return MessageType == PingMessageType;
         }
 
-        /// <summary>
-        ///     Used internally to ensure that the contained message has been serialized
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        internal void EnsureData()
-        {
-            if (Data != null) return;
-
-            if (_message == null)
-                throw new InvalidOperationException("Cannot ensure data is present when there is no message");
-
-            if (writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
-
-            Data = writer.Write(_message);
-        }
-
 
         /// <summary>
         ///     Create an Envelope for the given callback and raw data

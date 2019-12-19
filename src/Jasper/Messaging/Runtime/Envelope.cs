@@ -34,6 +34,7 @@ namespace Jasper.Messaging.Runtime
 
 
         private object _message;
+        private byte[] _data;
 
         public Envelope()
         {
@@ -50,7 +51,25 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     The raw, serialized message data
         /// </summary>
-        public byte[] Data { get; set; }
+        public byte[] Data
+        {
+            get
+            {
+                if (_data == null)
+                {
+                    if (_message == null)
+                        throw new InvalidOperationException("Cannot ensure data is present when there is no message");
+
+                    if (writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+
+                    _data = writer.Write(_message);
+                }
+
+                return _data;
+
+            }
+            set => _data = value;
+        }
 
         /// <summary>
         ///     The actual message to be sent or being received

@@ -8,8 +8,6 @@ namespace Jasper.Messaging.Scheduled
     {
         public static Envelope ForScheduledSend(this Envelope envelope, ISendingAgent sender)
         {
-            envelope.EnsureData();
-
             return new Envelope(envelope, EnvelopeReaderWriter.Instance)
             {
                 Message = envelope,

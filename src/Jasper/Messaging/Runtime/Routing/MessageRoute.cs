@@ -54,8 +54,6 @@ namespace Jasper.Messaging.Runtime.Routing
             sending.Id = CombGuidIdGeneration.NewGuid();
             sending.CorrelationId = envelope.Id;
 
-            sending.Data = envelope.Data;
-
             sending.ReplyUri = envelope.ReplyUri ?? Sender.ReplyUri;
 
             sending.ContentType = envelope.ContentType ?? ContentType;
