@@ -2,8 +2,8 @@
 
 -> id = 6061b23d-c646-4b9a-ac5c-0e35ce9b60df
 -> lifecycle = Regression
--> max-retries = 0
--> last-updated = 2017-12-11T20:46:42.3207650Z
+-> max-retries = 3
+-> last-updated = 2019-12-19T19:12:40.6597500Z
 -> tags = 
 
 [MessageRecovery]

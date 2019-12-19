@@ -40,7 +40,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 .IncludeType<CascadeReceiver>()
                 .IncludeType<ScheduledMessageHandler>();
 
-
+            senderRegistry.Extensions.UseMessageTrackingTestingSupport();
 
             senderRegistry.Endpoints.Publish(x =>
             {
@@ -63,6 +63,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
 
             var receiverRegistry = new JasperOptions();
+            receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
             receiverRegistry.Handlers.DisableConventionalDiscovery()
                 .IncludeType<TTriggerHandler>()
                 .IncludeType<TItemCreatedHandler>()
@@ -109,19 +110,13 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             var trigger = new TriggerMessage {Name = Guid.NewGuid().ToString()};
 
-            throw new NotImplementedException();
-            //var waiter = theTracker.WaitFor<CascadedMessage>();
+            await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .WaitForMessageToBeReceivedAt<CascadedMessage>(theSender)
+                .SendMessageAndWait(trigger);
 
-            await theSender.Send(trigger);
-
-            //var env = await waiter;
-
-//            StoryTellerAssert.Fail(env == null, "No return message was detected!");
-//
-//            var name = env.Message.As<CascadedMessage>().Name;
-//            StoryTellerAssert.Fail(name != trigger.Name, "The response did not match the request");
-//
-//            return true;
+            return true;
         }
 
         protected abstract ItemCreated loadItem(IHost receiver, Guid id);
@@ -147,12 +142,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 Id = Guid.NewGuid()
             };
 
-            throw new NotImplementedException();
-            //var waiter = theTracker.WaitFor<ItemCreated>();
-
-            await send(c => c.Send(item));
-
-            //await waiter;
+            await theSender.TrackActivity().AlsoTrack(theReceiver).SendMessageAndWait(item);
 
             await Task.Delay(500.Milliseconds());
 
