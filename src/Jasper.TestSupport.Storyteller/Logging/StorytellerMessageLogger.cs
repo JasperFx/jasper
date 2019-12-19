@@ -14,7 +14,7 @@ namespace Jasper.TestSupport.Storyteller.Logging
         private readonly List<EnvelopeRecord> _records = new List<EnvelopeRecord>();
         private ISpecContext _context;
 
-        public StorytellerMessageLogger(ILoggerFactory factory, IMetrics metrics) : base(factory, metrics)
+        public StorytellerMessageLogger(ILoggerFactory factory, IMetrics metrics, JasperOptions options) : base(options, factory, metrics)
         {
             Errors = new BusErrors();
         }

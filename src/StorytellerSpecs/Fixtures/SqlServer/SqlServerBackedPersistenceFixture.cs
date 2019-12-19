@@ -40,7 +40,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         public override void SetUp()
         {
             _messageLogger =
-                new StorytellerMessageLogger(new LoggerFactory(), new NulloMetrics());
+                new StorytellerMessageLogger(new LoggerFactory(), new NulloMetrics(), new JasperOptions());
 
             _messageLogger.Start(Context);
 
