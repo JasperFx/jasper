@@ -37,7 +37,6 @@ namespace Jasper.Persistence.SqlServer.Schema
 
         public static string ToCreationScript(string schema)
         {
-            // TODO -- more here
             return toScript("Creation.sql", schema);
         }
 
@@ -158,7 +157,6 @@ namespace Jasper.Persistence.SqlServer.Schema
         {
             var writer = new StringWriter();
 
-            // TODO -- move this to an embedded file ot make it easier
             writer.WriteLine(
                 $@"
 IF EXISTS (SELECT name FROM sys.schemas WHERE name = N'{_settings.SchemaName}')

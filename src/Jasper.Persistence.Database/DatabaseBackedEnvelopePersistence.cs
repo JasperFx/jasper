@@ -226,7 +226,6 @@ values
             envelope.Status = TransportConstants.Scheduled;
             envelope.OwnerId = TransportConstants.AnyNode;
 
-            // TODO -- will be special latewr
             return StoreIncoming(envelope);
         }
 

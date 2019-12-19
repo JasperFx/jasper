@@ -42,7 +42,7 @@ namespace Jasper.TestSupport.Storyteller.Logging
             headers.WriteEnvelopeProperty(envelope, x => x.CorrelationId);
             headers.WriteEnvelopeProperty(envelope, x => x.CausationId);
 
-            // TODO -- come back and add saga id
+            headers.WriteEnvelopeProperty(envelope, x => x.SagaId);
 
             headers.WriteEnvelopeProperty(envelope, x => x.Destination);
             headers.WriteEnvelopeProperty(envelope, x => x.AcceptedContentTypes);

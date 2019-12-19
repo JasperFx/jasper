@@ -59,7 +59,6 @@ namespace Jasper.Persistence
             }
 
 
-            // TODO -- set the SagaId on message context?
             Next?.GenerateCode(method, writer);
         }
 

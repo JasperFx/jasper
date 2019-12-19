@@ -174,7 +174,7 @@ namespace Jasper.Messaging
                     TransportLogger);
                 Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);
-                // TODO -- use the cancellation token from the app!
+
                 await Durability.StartAsync(Options.Advanced.Cancellation);
             }
         }

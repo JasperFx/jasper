@@ -249,7 +249,6 @@ namespace Jasper.Messaging.Model
             return this;
         }
 
-        // TODO -- have a Local option later
         /// <summary>
         ///     Applies a handler policy to all known message handlers
         /// </summary>

@@ -37,7 +37,7 @@ namespace Jasper.Conneg.Json
         public byte[] Write(object model)
         {
             var serializer = _serializerPool.Get();
-            var bytes = _bytePool.Rent(_bufferSize); // TODO -- should this be configurable?
+            var bytes = _bytePool.Rent(_bufferSize);
             var stream = new MemoryStream(bytes);
 
             try
@@ -46,9 +46,9 @@ namespace Jasper.Conneg.Json
                 using (var jsonWriter = new JsonTextWriter(textWriter)
                 {
                     ArrayPool = _jsonCharPool,
-                    CloseOutput = false
+                    CloseOutput = false,
+                    AutoCompleteOnClose = false
 
-                    //AutoCompleteOnClose = false // TODO -- put this in if we upgrad Newtonsoft
                 })
                 {
                     serializer.Serialize(jsonWriter, model);

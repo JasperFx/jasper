@@ -219,7 +219,6 @@ namespace Jasper.Persistence.Postgresql.Schema
             {
                 await conn.OpenAsync();
 
-                // TODO -- hokey w/ the hard coding here
                 return await conn.CreateCommand($"select body, '{TransportConstants.Outgoing}', owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
             }
         }

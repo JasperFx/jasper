@@ -113,7 +113,6 @@ namespace Jasper.Messaging.Durability
 
                 await storage.Session.Begin();
 
-                // TODO -- these need to be moved to a dead letter queue!
                 await storage.Outgoing.DeleteByDestination(destination);
                 await storage.Session.Commit();
 

@@ -69,7 +69,6 @@ namespace Jasper.Messaging.Runtime
             }
         }
 
-        // TODO -- should we be using some kind of memory pooling here?
         private void writeSingle(BinaryWriter writer)
         {
             writer.Write(SentAt.ToBinary());

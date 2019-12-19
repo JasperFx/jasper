@@ -59,7 +59,6 @@ namespace Jasper.Messaging.Configuration
 
             _assemblies.Add(options.ApplicationAssembly);
 
-            // TODO -- need to expose the module assemblies off of this
 
             var types = await TypeRepository.FindTypes(_assemblies,
                     TypeClassification.Concretes | TypeClassification.Closed, type => _typeFilters.Matches(type))
