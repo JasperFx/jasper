@@ -219,6 +219,9 @@ namespace Jasper.Messaging.Durability
         {
             if (_disabled) return;
 
+            await _nodeReassignmentTimer.DisposeAsync();
+            await _scheduledJobTimer.DisposeAsync();
+
             _worker.Complete();
 
             await _worker.Completion;

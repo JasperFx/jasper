@@ -1,6 +1,7 @@
 ﻿using System;
 using Baseline;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Tracking;
@@ -23,6 +24,7 @@ namespace StorytellerSpecs.Fixtures
             _options = new JasperOptions();
 
             _options.Extensions.UseMessageTrackingTestingSupport();
+            _options.Endpoints.As<TransportCollection>().Add(new StubTransport());
 
 
             _options.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();
@@ -45,9 +47,6 @@ namespace StorytellerSpecs.Fixtures
             var type = messageTypeFor(messageType);
 
             _options.Endpoints.Publish(x => x.Message(type).To(channel));
-
-            // Just makes the test harness listen for things
-            _options.Endpoints.ListenForMessagesFrom(channel);
         }
 
         [FormatAs("When a Message1 is received, it cascades a matching Message2")]

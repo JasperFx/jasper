@@ -24,6 +24,12 @@ namespace Jasper.Messaging.Tracking
 
         public TrackedSession ActiveSession { get; internal set; }
 
+        public override void MovedToErrorQueue(Envelope envelope, Exception ex)
+        {
+            ActiveSession?.Record(EventType.MovedToErrorQueue, envelope, _serviceName, _uniqueNodeId);
+            base.MovedToErrorQueue(envelope, ex);
+        }
+
         public override void NoHandlerFor(Envelope envelope)
         {
             ActiveSession?.Record(EventType.NoHandlers, envelope, _serviceName, _uniqueNodeId);

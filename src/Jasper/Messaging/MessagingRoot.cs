@@ -70,6 +70,8 @@ namespace Jasper.Messaging
                 StopAsync(Settings.Cancellation).GetAwaiter().GetResult();
             }
 
+            Settings.Cancel();
+
             Runtime.Dispose();
 
             ScheduledJobs.Dispose();

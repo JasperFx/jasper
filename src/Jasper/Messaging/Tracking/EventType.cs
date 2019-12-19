@@ -9,6 +9,7 @@ namespace Jasper.Messaging.Tracking
         MessageSucceeded,
         MessageFailed,
         NoHandlers,
-        NoRoutes
+        NoRoutes,
+        MovedToErrorQueue
     }
 }

@@ -94,6 +94,7 @@ namespace Jasper.Messaging.Tracking
                 case EventType.NoRoutes:
                 case EventType.MessageFailed:
                 case EventType.MessageSucceeded:
+                case EventType.MovedToErrorQueue:
                     // The message is complete
                     foreach (var envelopeRecord in _records)
                     {
@@ -136,6 +137,7 @@ namespace Jasper.Messaging.Tracking
                     record.IsComplete = true;
                     break;
 
+                case EventType.MovedToErrorQueue:
                 case EventType.MessageFailed:
                 case EventType.MessageSucceeded:
                     // The message is complete

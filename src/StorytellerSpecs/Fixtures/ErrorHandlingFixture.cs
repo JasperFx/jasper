@@ -10,6 +10,7 @@ using Jasper.Messaging;
 using Jasper.Messaging.ErrorHandling;
 using Jasper.Messaging.Model;
 using Jasper.Messaging.Runtime;
+using Jasper.Messaging.Tracking;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.Util;
@@ -108,14 +109,17 @@ namespace StorytellerSpecs.Fixtures
         {
             _tracker = new AttemptTracker();
 
-            var registry = new JasperOptions();
-            registry.Endpoints.ListenForMessagesFrom("stub://1".ToUri());
-            registry.Services.AddSingleton(_tracker);
+            var options = new JasperOptions();
+            options.Extensions.UseMessageTrackingTestingSupport();
+            options.Endpoints.As<TransportCollection>().Add(new StubTransport());
 
-            registry.Endpoints.Publish(x => x.Message<ErrorCausingMessage>()
-                .To("stub://1".ToUri()));
+            options.Services.AddSingleton(_tracker);
 
-            _host = JasperHost.For(registry);
+            options.Endpoints.Publish(x => x.Message<ErrorCausingMessage>()
+                .To("local://1".ToUri()));
+
+
+            _host = JasperHost.For(options);
 
             _transport = _host.GetStubTransport();
 
