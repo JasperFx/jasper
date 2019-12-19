@@ -21,6 +21,7 @@ namespace StorytellerSpecs.Fixtures
     public class SendMessageFixture : BusFixture
     {
         private IHost _host;
+        private ITrackedSession _session;
 
         public SendMessageFixture()
         {
@@ -52,7 +53,7 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            await _host.SendMessageAndWait(message);
+            _session = await _host.TrackActivity().IncludeExternalTransports().SendMessageAndWait(message);
         }
 
         [FormatAs("Send message {messageType} named {name} directly to {address}")]
@@ -63,13 +64,8 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            await _host.ExecuteAndWait(x => x.Send(address, message));
+            _session = await _host.TrackActivity().IncludeExternalTransports().ExecuteAndWait(x => x.Send(address, message));
 
-        }
-
-        private IMessageContext bus()
-        {
-            return _host.Get<IMessageContext>();
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -80,12 +76,9 @@ namespace StorytellerSpecs.Fixtures
 
         private IList<MessageRecord> sent()
         {
-            return _host.Get<MessageTracker>().Records.Select(x =>
-            {
-                x.ReceivedAt = x.ReceivedAt.ToString().Replace("127.0.0.1", "localhost").ToUri();
+            return _session.AllRecordsInOrder(EventType.Received).Select(x =>
+                new MessageRecord(x.ServiceName, x.Envelope.Destination, (Message) x.Envelope.Message)).ToList();
 
-                return x;
-            }).ToList();
         }
 
 
@@ -114,8 +107,8 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _host.Get<IMessageContext>();
-            await sender.Publish(envelope);
+            _session = await _host.TrackActivity().DoNotAssertOnExceptionsDetected().IncludeExternalTransports()
+                .ExecuteAndWait(x => x.SendEnvelope(envelope));
         }
 
         public override void TearDown()

@@ -114,9 +114,5 @@ namespace Jasper.TestSupport.Storyteller.Logging
             base.MovedToErrorQueue(envelope, ex);
         }
 
-        public override void DiscardedEnvelope(Envelope envelope)
-        {
-            base.DiscardedEnvelope(envelope);
-        }
     }
 }
