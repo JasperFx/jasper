@@ -83,7 +83,7 @@ namespace Jasper.Testing.Configuration
 
             // 3 default local queues + the 2 added here
             collection.AllEndpoints()
-                .Length.ShouldBe(5);
+                .Length.ShouldBe(6);
         }
 
         [Fact]

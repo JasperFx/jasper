@@ -93,5 +93,9 @@ namespace Jasper.Testing.Messaging
         {
             throw new NotImplementedException();
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

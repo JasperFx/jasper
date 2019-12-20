@@ -20,6 +20,8 @@ namespace Jasper.Messaging.Transports.Local
             _queues.FillDefault(TransportConstants.Retries);
             _queues.FillDefault(TransportConstants.Default);
             _queues.FillDefault(TransportConstants.Replies);
+
+            _queues[TransportConstants.Durable].IsDurable = true;
         }
 
         public IEnumerable<LocalQueueSettings> AllQueues()
