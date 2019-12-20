@@ -54,8 +54,8 @@ namespace StorytellerSpecs.Fixtures.Marten
             _owners["Fourth Node"] = -13335;
 
             Lists["channels"].AddValues("stub://one", "stub://two", "stub://three");
-            Lists["status"].AddValues(TransportConstants.Incoming, TransportConstants.Outgoing,
-                TransportConstants.Scheduled);
+            Lists["status"].AddValues(EnvelopeStatus.Incoming.ToString(), EnvelopeStatus.Outgoing.ToString(),
+                EnvelopeStatus.Scheduled.ToString());
 
             Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
         }
@@ -84,6 +84,8 @@ namespace StorytellerSpecs.Fixtures.Marten
                 .UseJasper(_ =>
                 {
                     _.ServiceName = Guid.NewGuid().ToString();
+
+                    _.Endpoints.As<TransportCollection>().Add(new StubTransport());
 
                     _.Extensions.UseMarten(Servers.PostgresConnectionString);
 
@@ -129,7 +131,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             Uri Destination,
             [Default("NULL")] DateTime? ExecutionTime,
             [Default("TODAY+1")] DateTime DeliverBy,
-            [SelectionList("status")] string Status,
+            [SelectionList("status")] EnvelopeStatus Status,
             [SelectionList("owners")] string Owner)
         {
             var ownerId = _owners[Owner];
@@ -228,7 +230,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             using (var session = theStore.LightweightSession())
             {
                 foreach (var envelope in _envelopes)
-                    if (envelope.Status == TransportConstants.Outgoing)
+                    if (envelope.Status == EnvelopeStatus.Outgoing)
                         session.StoreOutgoing(_settings, envelope, envelope.OwnerId);
                     else
                         session.StoreIncoming(_settings, envelope);
@@ -238,7 +240,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             var agent = DurabilityAgent.ForHost(_host);
 
-            var action = _host.Services.GetService<T>();
+            var action = _host.Get<T>();
             await agent.Execute(action);
         }
 

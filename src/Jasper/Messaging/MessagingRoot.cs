@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Messaging
 {
-    public class MessagingRoot : IDisposable, IMessagingRoot, IHostedService
+    public class MessagingRoot : IMessagingRoot, IHostedService
     {
         private readonly IContainer _container;
 
