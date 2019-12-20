@@ -106,7 +106,7 @@ namespace Jasper
 
         public static T Get<T>(this IHost host)
         {
-            return host.Services.GetRequiredService<T>();
+            return host.Services.As<IContainer>().GetInstance<T>();
         }
 
         public static object Get(this IHost host, Type serviceType)

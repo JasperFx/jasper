@@ -61,16 +61,16 @@ namespace Jasper.Messaging.Transports.Local
 
             // TODO -- have to watch this one
             envelope.Status = envelope.IsDelayed(DateTime.UtcNow)
-                ? TransportConstants.Scheduled
-                : TransportConstants.Incoming;
+                ? EnvelopeStatus.Scheduled
+                : EnvelopeStatus.Incoming;
 
-            envelope.OwnerId = envelope.Status == TransportConstants.Incoming
+            envelope.OwnerId = envelope.Status == EnvelopeStatus.Incoming
                 ? _settings.UniqueNodeId
                 : TransportConstants.AnyNode;
 
             await _persistence.StoreIncoming(envelope);
 
-            if (envelope.Status == TransportConstants.Incoming)
+            if (envelope.Status == EnvelopeStatus.Incoming)
             {
                 await Enqueue(envelope);
             }

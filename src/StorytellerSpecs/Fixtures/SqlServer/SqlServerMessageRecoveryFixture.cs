@@ -21,6 +21,7 @@ using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
@@ -55,8 +56,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _owners["Fourth Node"] = -13335;
 
             Lists["channels"].AddValues("stub://one", "stub://two", "stub://three");
-            Lists["status"].AddValues(TransportConstants.Incoming, TransportConstants.Outgoing,
-                TransportConstants.Scheduled);
+            Lists["status"].AddValues(EnvelopeStatus.Incoming.ToString(), EnvelopeStatus.Outgoing.ToString(),
+                EnvelopeStatus.Scheduled.ToString());
 
             Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
         }
@@ -87,6 +88,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 .UseJasper(_ =>
                 {
                     _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+
+                    _.Endpoints.As<TransportCollection>().Add(new StubTransport());
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
                     _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
@@ -126,7 +129,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             Uri Destination,
             [Default("NULL")] DateTime? ExecutionTime,
             [Default("TODAY+1")] DateTime DeliverBy,
-            [SelectionList("status")] string Status,
+            [SelectionList("status")] EnvelopeStatus Status,
             [SelectionList("owners")] string Owner)
         {
             var ownerId = _owners[Owner];
@@ -223,17 +226,17 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
+            var persistor = _host.Get<SqlServerEnvelopePersistence>();
 
             foreach (var envelope in _envelopes)
-                if (envelope.Status == TransportConstants.Outgoing)
+                if (envelope.Status == EnvelopeStatus.Outgoing)
                     await persistor.StoreOutgoing(envelope, envelope.OwnerId);
                 else
                     await persistor.StoreIncoming(envelope);
 
             var agent = DurabilityAgent.ForHost(_host);
 
-            var action = _host.Services.GetService<T>();
+            var action = _host.Get<T>();
             await agent.Execute(action);
         }
 
@@ -315,37 +318,37 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public Task ScheduleExecution(Envelope envelope)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         void IWorkerQueue.StartListening(IListener listener)
         {
-            throw new NotImplementedException();
+            // Nothing
         }
 
         Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(ReceivedStatus.Successful);
         }
 
         Task IReceiverCallback.Acknowledged(Envelope[] messages)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         void IDisposable.Dispose()
         {
-            throw new NotImplementedException();
+
         }
 
         Uri IListeningWorkerQueue.Address => _address;

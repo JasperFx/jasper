@@ -168,7 +168,7 @@ namespace Jasper.Testing.Messaging.Runtime
 
             envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
 
-            envelope.Status.ShouldBe(TransportConstants.Incoming);
+            envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
             envelope.OwnerId.ShouldBe(uniqueNodeId);
 
             envelope.ReceivedAt.ShouldBe(uri);
@@ -186,7 +186,7 @@ namespace Jasper.Testing.Messaging.Runtime
 
             envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
 
-            envelope.Status.ShouldBe(TransportConstants.Incoming);
+            envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
             envelope.OwnerId.ShouldBe(uniqueNodeId);
 
             envelope.ReceivedAt.ShouldBe(uri);
@@ -203,7 +203,7 @@ namespace Jasper.Testing.Messaging.Runtime
 
             envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
 
-            envelope.Status.ShouldBe(TransportConstants.Scheduled);
+            envelope.Status.ShouldBe(EnvelopeStatus.Scheduled);
             envelope.OwnerId.ShouldBe(TransportConstants.AnyNode);
 
             envelope.ReceivedAt.ShouldBe(uri);

@@ -42,7 +42,7 @@ namespace Jasper.Messaging.Transports.Sending
 
         private void setDefaults(Envelope envelope)
         {
-            envelope.Status = TransportConstants.Outgoing;
+            envelope.Status = EnvelopeStatus.Outgoing;
             envelope.OwnerId = _settings.UniqueNodeId;
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
         }

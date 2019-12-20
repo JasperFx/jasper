@@ -70,22 +70,23 @@ namespace Jasper.Messaging.Transports.Stub
 
         public Task Enqueue(Envelope envelope)
         {
-            return _pipeline.Invoke(envelope);
+            Sent.Add(envelope);
+            return _pipeline?.Invoke(envelope) ?? Task.CompletedTask;
         }
 
         public Task LatchAndDrain()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public void Unlatch()
         {
-            throw new NotImplementedException();
+            Latched = false;
         }
 
         public Task Ping()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Uri Destination { get; }

@@ -49,7 +49,7 @@ namespace Jasper.Testing.Messaging
         [Fact]
         public void status_should_be_scheduled()
         {
-            theScheduledEnvelope.Status.ShouldBe(TransportConstants.Scheduled);
+            theScheduledEnvelope.Status.ShouldBe(EnvelopeStatus.Scheduled);
         }
 
         [Fact]

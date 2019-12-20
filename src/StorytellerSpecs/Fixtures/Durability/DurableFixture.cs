@@ -362,7 +362,6 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         public void Consume(ScheduledMessage message)
         {
-            Console.WriteLine("Got me a ScheduledMessage");
             ReceivedMessages.Add(message);
             _source?.TrySetResult(message);
         }

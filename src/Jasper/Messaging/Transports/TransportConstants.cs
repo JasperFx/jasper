@@ -10,11 +10,6 @@ namespace Jasper.Messaging.Transports
         public static readonly int OutgoingMessageLockId = "recover-outgoing-messages".GetDeterministicHashCode();
         public static readonly int ReassignmentLockId = "jasper-reassign-envelopes".GetDeterministicHashCode();
 
-        public const string Topic = "topic";
-        public const string Queue = "queue";
-        public const string Subscription = "subscription";
-        public const string Routing = "routingkey";
-
         public const string SerializedEnvelope = "binary/envelope";
         public const string ScheduledEnvelope = "scheduled-envelope";
 
@@ -31,10 +26,6 @@ namespace Jasper.Messaging.Transports
 
         public static readonly Uri DurableLocalUri = "local://durable/durable".ToUri();
         public static readonly Uri LocalUri = "local://".ToUri();
-
-        public static readonly string Scheduled = "Scheduled";
-        public static readonly string Incoming = "Incoming";
-        public static readonly string Outgoing = "Outgoing";
 
         public static readonly int AnyNode = 0;
     }

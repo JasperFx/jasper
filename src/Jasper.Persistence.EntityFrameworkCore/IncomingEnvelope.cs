@@ -24,7 +24,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
         public Guid Id { get; set; }
         public int OwnerId { get; set; }
 
-        public string Status { get; set; }
+        public EnvelopeStatus Status { get; set; }
         public DateTimeOffset? ExecutionTime { get; set; }
         public int Attempts { get; set; }
         public byte[] Body { get; set; }

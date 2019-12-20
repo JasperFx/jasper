@@ -23,6 +23,12 @@ namespace Jasper.Configuration
         }
 
         /// <summary>
+        /// Default is false. Turn this on to see when every polling DurablityAgent
+        /// action executes. Warning, it's a LOT of noise
+        /// </summary>
+        public bool VerboseDurabilityAgentLogging { get; set; } = false;
+
+        /// <summary>
         /// Duration of time to wait before attempting to "ping" a transport
         /// in an attempt to resume a broken sending circuit
         /// </summary>

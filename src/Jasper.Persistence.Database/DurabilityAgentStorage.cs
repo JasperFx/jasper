@@ -30,7 +30,7 @@ namespace Jasper.Persistence.Database
             Outgoing = buildDurableOutgoing(transaction, databaseSettings, settings);
 
             _findReadyToExecuteJobs =
-                $"select body from {databaseSettings.SchemaName}.{IncomingTable} where status = '{TransportConstants.Scheduled}' and execution_time <= @time";
+                $"select body from {databaseSettings.SchemaName}.{IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time";
 
             _cancellation = settings.Cancellation;
         }

@@ -8,6 +8,13 @@ using Jasper.Util;
 
 namespace Jasper.Messaging.Runtime
 {
+    public enum EnvelopeStatus
+    {
+        Outgoing,
+        Scheduled,
+        Incoming
+    }
+
     // Why is this a partial you ask?
     // The elements in this file are all things that only matter
     // inside the Jasper runtime so we can keep it out of the WireProtocol
@@ -21,8 +28,8 @@ namespace Jasper.Messaging.Runtime
                 envelope.MarkReceived(uri, now, currentNodeId);
             }
 
-            scheduled = messages.Where(x => x.Status == TransportConstants.Scheduled).ToArray();
-            incoming = messages.Where(x => x.Status == TransportConstants.Incoming).ToArray();
+            scheduled = messages.Where(x => x.Status == EnvelopeStatus.Scheduled).ToArray();
+            incoming = messages.Where(x => x.Status == EnvelopeStatus.Incoming).ToArray();
         }
 
         public void MarkReceived(Uri uri, DateTime now, int currentNodeId)
@@ -31,12 +38,12 @@ namespace Jasper.Messaging.Runtime
 
             if (IsDelayed(now))
             {
-                Status = TransportConstants.Scheduled;
+                Status = EnvelopeStatus.Scheduled;
                 OwnerId = TransportConstants.AnyNode;
             }
             else
             {
-                Status = TransportConstants.Incoming;
+                Status = EnvelopeStatus.Incoming;
                 OwnerId = currentNodeId;
             }
         }
@@ -63,11 +70,10 @@ namespace Jasper.Messaging.Runtime
         internal object Response { get; set; }
 
 
-        // TODO -- maybe hide these?
         /// <summary>
         ///     Status according to the message persistence
         /// </summary>
-        public string Status { get; set; }
+        public EnvelopeStatus Status { get; set; }
 
         /// <summary>
         ///     Node owner of this message. 0 denotes that no node owns this message

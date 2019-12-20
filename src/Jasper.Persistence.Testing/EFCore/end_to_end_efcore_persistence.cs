@@ -89,7 +89,7 @@ namespace Jasper.Persistence.Testing.EFCore
                 OwnerId = 5,
                 ExecutionTime = DateTime.Today.AddDays(1),
                 DeliverBy = new DateTimeOffset(DateTime.Today),
-                Status = TransportConstants.Scheduled,
+                Status = EnvelopeStatus.Scheduled,
                 Attempts = 2
             };
 

@@ -31,7 +31,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
-            theEnvelope.Status = TransportConstants.Scheduled;
+            theEnvelope.Status = EnvelopeStatus.Scheduled;
 
             var persistence = theHost.Get<IEnvelopePersistence>();
 
@@ -59,7 +59,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         [Fact]
         public void should_be_in_scheduled_status()
         {
-            persisted.Status.ShouldBe(TransportConstants.Scheduled);
+            persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
         }
 
         [Fact]

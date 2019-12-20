@@ -86,6 +86,9 @@ namespace Jasper.Configuration
 
             MessagingRootService(x => x.Router);
             MessagingRootService(x => x.ScheduledJobs);
+            MessagingRootService(x => x.Runtime);
+            For<AdvancedSettings>().Use(x => x.GetInstance<JasperOptions>().Advanced);
+
 
             For<IMessageContext>().Use<MessageContext>();
 

@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Database
                     }
                     else if (reader.FieldCount == 3)
                     {
-                        envelope.Status = await reader.GetFieldValueAsync<string>(1, cancellation);
+                        envelope.Status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(1, cancellation));
                         envelope.OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation);
                     }
 
@@ -50,7 +50,7 @@ namespace Jasper.Persistence.Database
                 {
                     var bytes = reader.GetFieldValue<byte[]>(0);
                     var envelope = Envelope.Deserialize(bytes);
-                    envelope.Status = reader.GetFieldValue<string>(1);
+                    envelope.Status = Enum.Parse<EnvelopeStatus>(reader.GetFieldValue<string>(1));
                     envelope.OwnerId = reader.GetFieldValue<int>(2);
 
 

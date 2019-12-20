@@ -126,6 +126,7 @@ namespace Jasper.Persistence.Database
 
         public void Dispose()
         {
+            Connection.Close();
             Transaction?.Dispose();
             Connection?.Dispose();
         }

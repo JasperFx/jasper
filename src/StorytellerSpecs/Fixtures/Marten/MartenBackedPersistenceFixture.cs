@@ -236,16 +236,20 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
         [FormatAs("Receiver node {name} stops")]
-        public void StopReceiver(string name)
+        public async Task StopReceiver(string name)
         {
-            _receivers[name].Dispose();
+            var receiver = _receivers[name];
+            await receiver.StopAsync();
+            receiver.Dispose();
             _receivers.Remove(name);
         }
 
         [FormatAs("Sender node {name} stops")]
-        public void StopSender(string name)
+        public async Task StopSender(string name)
         {
-            _senders[name].Dispose();
+            var sender = _senders[name];
+            await sender.StopAsync();
+            sender.Dispose();
             _senders.Remove(name);
         }
     }

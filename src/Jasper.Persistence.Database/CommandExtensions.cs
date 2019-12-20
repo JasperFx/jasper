@@ -160,6 +160,8 @@ namespace Jasper.Persistence.Database
 
         public static async Task ExecuteOnce(this DbCommand command, CancellationToken cancellation)
         {
+            if (cancellation.IsCancellationRequested) return;
+
             var conn = command.Connection;
             try
             {

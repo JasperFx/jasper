@@ -55,7 +55,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         [Fact]
         public void should_be_in_scheduled_status()
         {
-            persisted.Status.ShouldBe(TransportConstants.Scheduled);
+            persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
         }
 
         [Fact]

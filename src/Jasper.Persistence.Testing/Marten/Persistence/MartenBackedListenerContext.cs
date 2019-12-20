@@ -31,7 +31,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var envelope = notScheduledEnvelope();
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Incoming);
+            persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
@@ -44,7 +44,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var envelope = scheduledButExpiredEnvelope();
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Incoming);
+            persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
@@ -57,7 +57,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var envelope = scheduledEnvelope();
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Scheduled);
+            persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
             persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
             persisted.ReceivedAt.ShouldBe(theUri);
 

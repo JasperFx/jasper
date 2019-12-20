@@ -25,7 +25,7 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 
             var id = builder.AddParameter(Envelope.Id, NpgsqlDbType.Uuid);
             var owner = builder.AddParameter(Envelope.OwnerId, NpgsqlDbType.Integer);
-            var status = builder.AddParameter(Envelope.Status, NpgsqlDbType.Varchar);
+            var status = builder.AddParameter(Envelope.Status.ToString(), NpgsqlDbType.Varchar);
             var executionTime =
                 builder.AddParameter(
                     Envelope.ExecutionTime,

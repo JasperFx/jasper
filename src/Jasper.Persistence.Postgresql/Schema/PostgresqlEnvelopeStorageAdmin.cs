@@ -152,12 +152,12 @@ namespace Jasper.Persistence.Postgresql.Schema
                 {
                     while (await reader.ReadAsync())
                     {
-                        var status = await reader.GetFieldValueAsync<string>(0);
+                        var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
                         var count = await reader.GetFieldValueAsync<int>(1);
 
-                        if (status == TransportConstants.Incoming)
+                        if (status == EnvelopeStatus.Incoming)
                             counts.Incoming = count;
-                        else if (status == TransportConstants.Scheduled) counts.Scheduled = count;
+                        else if (status == EnvelopeStatus.Scheduled) counts.Scheduled = count;
                     }
                 }
 
@@ -219,7 +219,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, '{TransportConstants.Outgoing}', owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, '{EnvelopeStatus.Outgoing}', owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
             }
         }
 

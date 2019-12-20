@@ -42,7 +42,7 @@ namespace Jasper.Persistence.Database
         public Task ScheduleJob(Envelope envelope)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
-            envelope.Status = TransportConstants.Scheduled;
+            envelope.Status = EnvelopeStatus.Scheduled;
 
             return _persistence.StoreIncoming(_tx, new[] {envelope});
         }

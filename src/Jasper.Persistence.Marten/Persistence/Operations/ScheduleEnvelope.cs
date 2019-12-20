@@ -26,7 +26,7 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
             var attempts = builder.AddParameter(_envelope.Attempts, NpgsqlDbType.Integer);
 
             builder.Append(
-                $"update {_table} set execution_time = :{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = :{attempts.ParameterName} where id = :{id.ParameterName}");
+                $"update {_table} set execution_time = :{time.ParameterName}, status = \'{EnvelopeStatus.Scheduled}\', attempts = :{attempts.ParameterName} where id = :{id.ParameterName}");
         }
 
         public Type DocumentType => typeof(Envelope);

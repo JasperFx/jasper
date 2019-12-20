@@ -73,7 +73,7 @@ values
                 var attempts = builder.AddParameter(envelope.Attempts);
 
                 builder.Append(
-                    $"update {DatabaseSettings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{TransportConstants.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
+                    $"update {DatabaseSettings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{EnvelopeStatus.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
             }
 
             return builder.ApplyAndExecuteOnce(_cancellation);
@@ -92,7 +92,7 @@ values
         {
             return DatabaseSettings.CreateCommand(_storeIncoming)
                 .With("id", envelope.Id)
-                .With("status", envelope.Status)
+                .With("status", envelope.Status.ToString())
                 .With("owner", envelope.OwnerId)
                 .With("attempts", envelope.Attempts)
                 .With("time", envelope.ExecutionTime)
@@ -166,7 +166,7 @@ values
             foreach (var envelope in envelopes)
             {
                 var id = builder.AddParameter(envelope.Id);
-                var status = builder.AddParameter(envelope.Status);
+                var status = builder.AddParameter(envelope.Status.ToString());
                 var owner = builder.AddParameter(envelope.OwnerId);
                 var attempts = builder.AddParameter(envelope.Attempts);
                 var time = builder.AddParameter(envelope.ExecutionTime);
@@ -215,7 +215,7 @@ values
 
         public Task ScheduleJob(Envelope envelope)
         {
-            envelope.Status = TransportConstants.Scheduled;
+            envelope.Status = EnvelopeStatus.Scheduled;
             envelope.OwnerId = TransportConstants.AnyNode;
 
             return StoreIncoming(envelope);
@@ -242,7 +242,7 @@ values
 
                 return conn
                     .CreateCommand(
-                        $"select body, '{TransportConstants.Outgoing}', owner_id, NULL from {DatabaseSettings.SchemaName}.{OutgoingTable}")
+                        $"select body, '{EnvelopeStatus.Outgoing}', owner_id, NULL from {DatabaseSettings.SchemaName}.{OutgoingTable}")
                     .LoadEnvelopes();
             }
         }

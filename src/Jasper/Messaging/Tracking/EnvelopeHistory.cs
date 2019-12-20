@@ -64,7 +64,7 @@ namespace Jasper.Messaging.Tracking
                         record.IsComplete = true;
                     }
 
-                    if (record.Envelope.Status == TransportConstants.Scheduled)
+                    if (record.Envelope.Status == EnvelopeStatus.Scheduled)
                     {
                         record.IsComplete = true;
                     }
@@ -118,7 +118,7 @@ namespace Jasper.Messaging.Tracking
             switch (record.EventType)
             {
                 case EventType.Sent:
-                    if (record.Envelope.Status == TransportConstants.Scheduled)
+                    if (record.Envelope.Status == EnvelopeStatus.Scheduled)
                     {
                         record.IsComplete = true;
                     }

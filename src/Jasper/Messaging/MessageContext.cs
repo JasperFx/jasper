@@ -237,14 +237,11 @@ namespace Jasper.Messaging
                 Destination = TransportConstants.DurableLocalUri
             };
 
-            if (envelope.Data == null || envelope.Data.Length == 0)
-            {
-                var writer = _root.Serialization.JsonWriterFor(message.GetType());
-                envelope.Data = writer.Write(message);
-                envelope.ContentType = writer.ContentType;
-            }
+            var writer = _root.Serialization.JsonWriterFor(message.GetType());
+            envelope.Data = writer.Write(message);
+            envelope.ContentType = writer.ContentType;
 
-            envelope.Status = TransportConstants.Scheduled;
+            envelope.Status = EnvelopeStatus.Scheduled;
             envelope.OwnerId = TransportConstants.AnyNode;
 
             return ScheduleEnvelope(envelope).ContinueWith(_ => envelope.Id);
@@ -260,7 +257,7 @@ namespace Jasper.Messaging
 
 
             envelope.OwnerId = TransportConstants.AnyNode;
-            envelope.Status = TransportConstants.Scheduled;
+            envelope.Status = EnvelopeStatus.Scheduled;
 
             if (Persistence is NulloEnvelopePersistence)
             {
@@ -360,7 +357,7 @@ namespace Jasper.Messaging
             {
                 Message = message,
                 ExecutionTime = time.ToUniversalTime(),
-                Status = TransportConstants.Scheduled
+                Status = EnvelopeStatus.Scheduled
             });
         }
 

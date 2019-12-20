@@ -5,6 +5,7 @@ using Jasper.Configuration;
 using Jasper.Messaging.Logging;
 using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
+using Jasper.Util;
 
 namespace Jasper.Messaging.Durability
 {

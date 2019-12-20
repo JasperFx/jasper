@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Messaging.Runtime;
 using Jasper.Messaging.Transports;
 using Shouldly;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var envelope = notScheduledEnvelope();
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Incoming);
+            persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
@@ -27,7 +28,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var envelope = scheduledButExpiredEnvelope();
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Incoming);
+            persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
             persisted.ReceivedAt.ShouldBe(theUri);
 
@@ -40,7 +41,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var envelope = scheduledEnvelope();
             var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(TransportConstants.Scheduled);
+            persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
             persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
             persisted.ReceivedAt.ShouldBe(theUri);
 

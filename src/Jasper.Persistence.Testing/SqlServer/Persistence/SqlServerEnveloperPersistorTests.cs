@@ -36,7 +36,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Outgoing;
+                envelope.Status = EnvelopeStatus.Outgoing;
 
                 list.Add(envelope);
             }
@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -88,7 +88,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Outgoing;
+                envelope.Status = EnvelopeStatus.Outgoing;
 
                 list.Add(envelope);
             }
@@ -115,7 +115,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Outgoing;
+                envelope.Status = EnvelopeStatus.Outgoing;
 
                 list.Add(envelope);
             }
@@ -148,7 +148,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -161,7 +161,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 7; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Scheduled;
+                envelope.Status = EnvelopeStatus.Scheduled;
 
                 list.Add(envelope);
             }
@@ -174,7 +174,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 3; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Outgoing;
+                envelope.Status = EnvelopeStatus.Outgoing;
 
                 list.Add(envelope);
             }
@@ -193,7 +193,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         public async Task increment_the_attempt_count_of_incoming_envelope()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.Status = TransportConstants.Incoming;
+            envelope.Status = EnvelopeStatus.Incoming;
 
             await ThePersistence.StoreIncoming(envelope);
 
@@ -214,7 +214,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -253,7 +253,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -286,7 +286,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -302,8 +302,8 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             await ThePersistence.ScheduleExecution(new[] {list[5], list[7], list[9]});
 
             var stored = ThePersistence.AllIncomingEnvelopes();
-            stored.Count(x => x.Status == TransportConstants.Incoming).ShouldBe(7);
-            stored.Count(x => x.Status == TransportConstants.Scheduled).ShouldBe(3);
+            stored.Count(x => x.Status == EnvelopeStatus.Incoming).ShouldBe(7);
+            stored.Count(x => x.Status == EnvelopeStatus.Scheduled).ShouldBe(3);
 
             stored.Single(x => x.Id == list[5].Id).ExecutionTime.HasValue.ShouldBeTrue();
             stored.Single(x => x.Id == list[7].Id).ExecutionTime.HasValue.ShouldBeTrue();
@@ -314,7 +314,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         public async Task store_a_single_incoming_envelope()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.Status = TransportConstants.Incoming;
+            envelope.Status = EnvelopeStatus.Incoming;
 
             await ThePersistence.StoreIncoming(envelope);
 
@@ -329,7 +329,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         public async Task store_a_single_outgoing_envelope()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.Status = TransportConstants.Outgoing;
+            envelope.Status = EnvelopeStatus.Outgoing;
 
             await ThePersistence.StoreOutgoing(envelope, 5890);
 
@@ -348,7 +348,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -369,7 +369,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Outgoing;
+                envelope.Status = EnvelopeStatus.Outgoing;
 
                 list.Add(envelope);
             }

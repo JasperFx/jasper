@@ -38,7 +38,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             for (var i = 0; i < 10; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Incoming;
+                envelope.Status = EnvelopeStatus.Incoming;
 
                 list.Add(envelope);
             }
@@ -51,7 +51,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             for (var i = 0; i < 7; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Scheduled;
+                envelope.Status = EnvelopeStatus.Scheduled;
 
                 list.Add(envelope);
             }
@@ -64,7 +64,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             for (var i = 0; i < 3; i++)
             {
                 var envelope = ObjectMother.Envelope();
-                envelope.Status = TransportConstants.Outgoing;
+                envelope.Status = EnvelopeStatus.Outgoing;
 
                 list.Add(envelope);
             }

@@ -33,7 +33,7 @@ namespace Jasper.Messaging
     }
 
 
-    public interface IMessagingRoot
+    public interface IMessagingRoot : IDisposable
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IMessageRouter Router { get; }

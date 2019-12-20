@@ -60,7 +60,7 @@ namespace Jasper.Messaging.Durability
         {
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.ExecutionTime = time;
-            envelope.Status = TransportConstants.Scheduled;
+            envelope.Status = EnvelopeStatus.Scheduled;
 
             return _policy.ExecuteAsync(() => _persistence.ScheduleExecution(new[] {envelope}));
         }

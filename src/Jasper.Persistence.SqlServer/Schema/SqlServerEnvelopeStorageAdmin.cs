@@ -202,12 +202,12 @@ GO
                 {
                     while (await reader.ReadAsync())
                     {
-                        var status = await reader.GetFieldValueAsync<string>(0);
+                        var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
                         var count = await reader.GetFieldValueAsync<int>(1);
 
-                        if (status == TransportConstants.Incoming)
+                        if (status == EnvelopeStatus.Incoming)
                             counts.Incoming = count;
-                        else if (status == TransportConstants.Scheduled) counts.Scheduled = count;
+                        else if (status == EnvelopeStatus.Scheduled) counts.Scheduled = count;
                     }
                 }
 

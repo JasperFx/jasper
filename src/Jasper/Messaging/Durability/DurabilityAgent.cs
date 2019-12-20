@@ -90,6 +90,9 @@ namespace Jasper.Messaging.Durability
         // This was built mostly for testing
         public Task Execute(IMessagingAction action)
         {
+            // this is a side effect of the agent being shut down
+            if (action == null) return Task.CompletedTask;
+
             if (_hasStarted)
             {
                 var wrapper = new MessageActionWrapper(action);
@@ -183,7 +186,11 @@ namespace Jasper.Messaging.Durability
             {
                 try
                 {
-                    _trace.LogDebug("Running " + action.Description);
+
+                    if (_settings.VerboseDurabilityAgentLogging)
+                    {
+                        _trace.LogDebug("Running " + action.Description);
+                    }
                     await action.Execute(_storage, this);
                 }
                 catch (Exception e)

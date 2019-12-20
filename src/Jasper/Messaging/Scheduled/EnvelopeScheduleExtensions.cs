@@ -15,7 +15,7 @@ namespace Jasper.Messaging.Scheduled
                 ExecutionTime = envelope.ExecutionTime,
                 ContentType = TransportConstants.SerializedEnvelope,
                 Destination = TransportConstants.DurableLocalUri,
-                Status = TransportConstants.Scheduled,
+                Status = EnvelopeStatus.Scheduled,
                 OwnerId = TransportConstants.AnyNode,
                 Sender = sender,
                 Data = envelope.Serialize()
