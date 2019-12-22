@@ -197,7 +197,15 @@ namespace Jasper.Messaging
         {
             foreach (var envelope in Outstanding)
             {
-                await envelope.QuickSend();
+                try
+                {
+                    await envelope.QuickSend();
+                }
+                catch (Exception e)
+                {
+                    Logger.LogException(e, envelope.CorrelationId, message:"Unable to send an outgoing message, most likely due to serialization issues");
+                    Logger.DiscardedEnvelope(envelope);
+                }
             }
 
             _outstanding.Clear();

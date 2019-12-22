@@ -91,7 +91,6 @@ namespace Jasper.Messaging.Runtime.Invocation
             {
                 await handler.Handle(context, _cancellation);
 
-                // TODO -- what do we do here if this fails? Compensating actions?
                 await context.SendAllQueuedOutgoingMessages();
 
                 envelope.MarkCompletion(true);
