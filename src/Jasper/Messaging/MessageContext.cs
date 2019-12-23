@@ -126,7 +126,7 @@ namespace Jasper.Messaging
 
             if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)
             {
-                var envelope = Envelope.ForResponse(message);
+                var envelope = Envelope.CreateForResponse(message);
                 await SendEnvelope(envelope);
                 return;
             }

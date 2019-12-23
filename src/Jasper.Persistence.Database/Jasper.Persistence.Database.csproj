@@ -5,8 +5,8 @@
       <Authors>Jeremy D. Miller</Authors>
       <TargetFramework>netstandard2.1</TargetFramework>
       <DebugType>portable</DebugType>
-      <AssemblyName>Jasper.Database</AssemblyName>
-      <PackageId>Jasper.Database</PackageId>
+      <AssemblyName>Jasper.Persistence.Database</AssemblyName>
+      <PackageId>Jasper.Persistence.Database</PackageId>
       <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
       <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
       <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>

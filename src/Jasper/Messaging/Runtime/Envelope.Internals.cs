@@ -20,7 +20,7 @@ namespace Jasper.Messaging.Runtime
     // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
-        public static void MarkReceived(Envelope[] messages, Uri uri, DateTime now, int currentNodeId, out Envelope[] scheduled,
+        internal static void MarkReceived(Envelope[] messages, Uri uri, DateTime now, int currentNodeId, out Envelope[] scheduled,
             out Envelope[] incoming)
         {
             foreach (var envelope in messages)
@@ -32,7 +32,7 @@ namespace Jasper.Messaging.Runtime
             incoming = messages.Where(x => x.Status == EnvelopeStatus.Incoming).ToArray();
         }
 
-        public void MarkReceived(Uri uri, DateTime now, int currentNodeId)
+        internal void MarkReceived(Uri uri, DateTime now, int currentNodeId)
         {
             ReceivedAt = uri;
 
@@ -51,7 +51,7 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     Used internally to track the completion of an Envelope.
         /// </summary>
-        public IMessageCallback Callback { get; set; }
+        internal IMessageCallback Callback { get; set; }
 
         internal int SentAttempts { get; set; }
 
@@ -73,12 +73,12 @@ namespace Jasper.Messaging.Runtime
         /// <summary>
         ///     Status according to the message persistence
         /// </summary>
-        public EnvelopeStatus Status { get; set; }
+        internal EnvelopeStatus Status { get; set; }
 
         /// <summary>
         ///     Node owner of this message. 0 denotes that no node owns this message
         /// </summary>
-        public int OwnerId { get; set; }
+        internal int OwnerId { get; set; }
 
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Jasper.Messaging.Runtime
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Envelope ForResponse(object message)
+        public Envelope CreateForResponse(object message)
         {
             var child = ForSend(message);
             child.CausationId = Id;
@@ -112,7 +112,7 @@ namespace Jasper.Messaging.Runtime
             };
         }
 
-        public Envelope Clone(IMessageSerializer writer)
+        internal Envelope CloneForWriter(IMessageSerializer writer)
         {
             var envelope = (Envelope)MemberwiseClone();
             envelope.writer = writer;
@@ -120,7 +120,7 @@ namespace Jasper.Messaging.Runtime
             return envelope;
         }
 
-        public Envelope(object message, IMessageSerializer writer)
+        internal Envelope(object message, IMessageSerializer writer)
         {
             Message = message;
             this.writer = writer;
@@ -153,8 +153,12 @@ namespace Jasper.Messaging.Runtime
             return Sender.EnqueueOutgoing(this);
         }
 
-
-        public bool IsPing()
+        /// <summary>
+        /// Is this envelope for a "ping" message used by Jasper to evaluate
+        /// whether a sending endpoint can be restarted
+        /// </summary>
+        /// <returns></returns>
+        internal bool IsPing()
         {
             return MessageType == PingMessageType;
         }
@@ -166,7 +170,7 @@ namespace Jasper.Messaging.Runtime
         /// <param name="data"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public static Envelope ForData(byte[] data, IMessageCallback callback)
+        internal static Envelope ForData(byte[] data, IMessageCallback callback)
         {
             return new Envelope
             {
@@ -177,7 +181,7 @@ namespace Jasper.Messaging.Runtime
 
 
 
-        public static Envelope ForPing(Uri destination)
+        internal static Envelope ForPing(Uri destination)
         {
             return new Envelope
             {

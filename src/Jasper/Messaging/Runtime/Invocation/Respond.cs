@@ -35,7 +35,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         Envelope ISendMyself.CreateEnvelope(Envelope original)
         {
-            var envelope = original.ForResponse(_message);
+            var envelope = original.CreateForResponse(_message);
 
             _actions.Each(x => x(original, envelope));
 

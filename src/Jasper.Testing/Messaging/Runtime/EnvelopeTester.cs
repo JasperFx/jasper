@@ -58,7 +58,7 @@ namespace Jasper.Testing.Messaging.Runtime
             var parent = ObjectMother.Envelope();
             parent.SagaId = Guid.NewGuid().ToString();
 
-            var response = parent.ForResponse(new Message2());
+            var response = parent.CreateForResponse(new Message2());
             response.SagaId.ShouldBe(parent.SagaId);
         }
 
@@ -87,7 +87,7 @@ namespace Jasper.Testing.Messaging.Runtime
 
             var childMessage = new Message1();
 
-            var child = parent.ForResponse(childMessage);
+            var child = parent.CreateForResponse(childMessage);
 
             child.CausationId.ShouldBe(parent.Id);
             child.Destination.ShouldBe(parent.ReplyUri);
@@ -118,7 +118,7 @@ namespace Jasper.Testing.Messaging.Runtime
 
             var childMessage = new Message1();
 
-            var child = parent.ForResponse(childMessage);
+            var child = parent.CreateForResponse(childMessage);
 
             child.Message.ShouldBeSameAs(childMessage);
 
@@ -136,7 +136,7 @@ namespace Jasper.Testing.Messaging.Runtime
 
             var childMessage = new Message1();
 
-            var child = parent.ForResponse(childMessage);
+            var child = parent.CreateForResponse(childMessage);
 
             child.Message.ShouldBeSameAs(childMessage);
 

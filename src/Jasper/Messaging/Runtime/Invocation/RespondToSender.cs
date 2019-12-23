@@ -11,7 +11,7 @@
 
         public Envelope CreateEnvelope(Envelope original)
         {
-            var response = original.ForResponse(Outgoing);
+            var response = original.CreateForResponse(Outgoing);
             response.Destination = original.ReplyUri;
 
             return response;

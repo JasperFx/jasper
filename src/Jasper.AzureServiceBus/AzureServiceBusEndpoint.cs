@@ -121,7 +121,7 @@ namespace Jasper.AzureServiceBus
             }
         }
 
-        protected override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
 

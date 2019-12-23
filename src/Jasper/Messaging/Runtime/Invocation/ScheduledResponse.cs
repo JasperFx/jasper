@@ -23,7 +23,7 @@ namespace Jasper.Messaging.Runtime.Invocation
 
         public Envelope CreateEnvelope(Envelope original)
         {
-            var outgoing = original.ForResponse(Outgoing);
+            var outgoing = original.CreateForResponse(Outgoing);
             outgoing.ExecutionTime = Time;
 
             return outgoing;

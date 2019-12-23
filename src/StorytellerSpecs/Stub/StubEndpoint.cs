@@ -46,7 +46,7 @@ namespace Jasper.Messaging.Transports.Stub
             // Nothing
         }
 
-        protected override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             // Nothing
         }
