@@ -7,6 +7,7 @@ using Baseline;
 using Jasper.Attributes;
 using Jasper.Serialization;
 using Jasper.Tracking;
+using LamarCodeGeneration.Model;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
@@ -39,11 +40,16 @@ namespace Jasper.Testing.Serialization
             greenApp = JasperHost.For<GreenApp>();
             blueApp = JasperHost.For(new BlueApp());
 
+            var greenMessage = new GreenMessage {Name = "Magic Johnson"};
+            var envelope = new Envelope(greenMessage)
+            {
+                ContentType = "text/plain"
+            };
+
             var session = await greenApp
                 .TrackActivity()
                 .AlsoTrack(blueApp)
-                .ExecuteAndWait(c =>
-                    c.Send(new GreenMessage {Name = "Magic Johnson"}, _ => _.ContentType = "text/plain"));
+                .ExecuteAndWait(c => c.SendEnvelope(envelope));
 
 
             _output.WriteLine("This is what I'm finding'");

@@ -210,7 +210,7 @@ namespace Jasper.Runtime
             _outstanding.Clear();
         }
 
-        public Task Publish(Envelope envelope)
+        public Task PublishEnvelope(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message));
@@ -289,19 +289,6 @@ namespace Jasper.Runtime
             return SendEnvelope(envelope);
         }
 
-        public Task Send<T>(T message, Action<Envelope> customize)
-        {
-            var envelope = new Envelope {Message = message};
-            customize(envelope);
-
-            return SendEnvelope(envelope);
-        }
-
-        public Task Send<T>(Uri destination, T message)
-        {
-            return SendEnvelope(new Envelope {Message = message, Destination = destination});
-        }
-
         public Task Invoke(object message)
         {
             return _root.Pipeline.InvokeNow(new Envelope(message)
@@ -358,32 +345,11 @@ namespace Jasper.Runtime
             }
         }
 
-        public Task ScheduleSend<T>(T message, DateTime time)
-        {
-            return SendEnvelope(new Envelope
-            {
-                Message = message,
-                ExecutionTime = time.ToUniversalTime(),
-                Status = EnvelopeStatus.Scheduled
-            });
-        }
-
-        public Task ScheduleSend<T>(T message, TimeSpan delay)
-        {
-            return ScheduleSend(message, DateTime.UtcNow.Add(delay));
-        }
 
         public Task Publish<T>(T message)
         {
             var envelope = new Envelope(message);
-            return Publish(envelope);
-        }
-
-        public Task Publish<T>(T message, Action<Envelope> customize)
-        {
-            var envelope = new Envelope(message);
-            customize(envelope);
-            return Publish(envelope);
+            return PublishEnvelope(envelope);
         }
 
         public IAdvancedMessagingActions Advanced => this;

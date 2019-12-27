@@ -60,7 +60,15 @@ namespace Jasper.Testing.Persistence.Sagas
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _host.ExecuteAndWait(c => c.Send(message, e => e.SagaId = sagaId.ToString()));
+            return _host.ExecuteAndWait(x =>
+            {
+                var envelope = new Envelope(message)
+                {
+                    SagaId = sagaId.ToString()
+                };
+
+                return x.SendEnvelope(envelope);
+            }, 10000);
         }
 
         protected TSagaState LoadState(object id)

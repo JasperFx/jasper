@@ -33,12 +33,17 @@ namespace Jasper.Testing.Serialization
 
             try
             {
-                var session = await host.TrackActivity().IncludeExternalTransports().ExecuteAndWait(c =>
-                    c.Send(new OriginalMessage {FirstName = "James", LastName = "Worthy"}, e =>
-                    {
-                        e.Destination = "tcp://localhost:2345".ToUri();
-                        e.ContentType = "application/json";
-                    }));
+                var originalMessage = new OriginalMessage {FirstName = "James", LastName = "Worthy"};
+                var envelope = new Envelope(originalMessage)
+                {
+                    Destination = "tcp://localhost:2345".ToUri(),
+                    ContentType = "application/json"
+                };
+
+                var session = await host
+                    .TrackActivity()
+                    .IncludeExternalTransports()
+                    .ExecuteAndWait(c => c.SendEnvelope(envelope));
 
 
                 session.FindSingleTrackedMessageOfType<NewMessage>(EventType.MessageSucceeded)

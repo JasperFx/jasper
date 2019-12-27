@@ -11,36 +11,45 @@ namespace Jasper.Testing.Samples
         // SAMPLE: CustomizingEnvelope
         public Task CustomizingEnvelope(IMessageContext bus)
         {
-            return bus.Send(new SomeMessage(), e =>
+            var envelope = new Envelope(new SomeMessage())
             {
                 // Override the message routing
-                e.Destination = new Uri("tcp://server1:2000");
+                Destination = new Uri("tcp://server1:2000"),
 
                 // Force Jasper to send the message serialized
                 // with a certain content-type
-                e.ContentType = "application/xml";
+                ContentType = "application/xml",
 
-
-                // Make this a scheduled job
-                e.ExecutionTime = DateTime.UtcNow.AddDays(1);
-
+                // Make this a scheduled message
+                ExecutionTime = DateTime.UtcNow.AddDays(1),
 
                 // Direct the receiver that the sender is interested in any response
                 // with this message type
-                e.ReplyRequested = "other-message-type";
 
                 // Probably easier to use this extension method though
-                e.ReplyRequested = typeof(Message2).ToMessageTypeName();
-
-                // This envelope should be discarded if not processed
-                // successfully within 5 days
-                e.DeliverBy = DateTimeOffset.UtcNow.AddDays(5);
+                ReplyRequested = "other-message-type"
+            };
 
 
-                // Discard the message after 20 seconds if
-                // not successfully processed before then
-                e.DeliverWithin(20.Seconds());
-            });
+
+
+
+
+
+
+
+
+
+            // This envelope should be discarded if not processed
+            // successfully within 5 days
+            envelope.DeliverBy = DateTimeOffset.UtcNow.AddDays(5);
+
+
+            // Discard the message after 20 seconds if
+            // not successfully processed before then
+            envelope.DeliverWithin(20.Seconds());
+
+            return bus.SendEnvelope(envelope);
             // ENDSAMPLE
         }
 
@@ -158,7 +167,12 @@ namespace Jasper.Testing.Samples
 
             // or
 
-            await bus.Send(@event, e => { e.Destination = new Uri("tcp://server1:2222"); });
+            var envelope = new Envelope(@event)
+            {
+                Destination = new Uri("tcp://server1:2222")
+            };
+
+            await bus.SendEnvelope(envelope);
         }
 
 

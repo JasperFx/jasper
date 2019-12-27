@@ -51,7 +51,11 @@ namespace Jasper.Testing.Samples
             // Process the issue timeout at 5PM tomorrow
             // Do note that Jasper quietly converts this
             // to universal time in storage
-            await context.Send(timeout, e => e.ExecutionTime = time);
+            await context.SendEnvelope(new Envelope(timeout)
+            {
+                ExecutionTime = time
+            });
+
         }
         // ENDSAMPLE
 
