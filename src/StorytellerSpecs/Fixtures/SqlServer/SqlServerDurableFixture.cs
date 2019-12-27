@@ -6,14 +6,11 @@ using Baseline;
 using IntegrationTests;
 using Jasper;
 using Jasper.Attributes;
-using Jasper.Messaging;
 using Jasper.Persistence;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Jasper.Persistence.SqlServer.Util;
-using Jasper.Runtime.Invocation;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
 
@@ -117,14 +114,14 @@ create table receiver.item_created
     public class TriggerMessageReceiver
     {
         [Transactional]
-        public object Handle(TriggerMessage message, IMessageContext context)
+        public Task Handle(TriggerMessage message, IMessageContext context)
         {
             var response = new CascadedMessage
             {
                 Name = message.Name
             };
 
-            return new RespondToSender(response);
+            return context.RespondToSender(response);
         }
     }
 
@@ -142,7 +139,6 @@ create table receiver.item_created
                 .With("id", created.Id)
                 .With("name", created.Name)
                 .ExecuteNonQueryAsync();
-
         }
     }
     // ENDSAMPLE

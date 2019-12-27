@@ -4,12 +4,10 @@ using Baseline;
 using IntegrationTests;
 using Jasper;
 using Jasper.Attributes;
-using Jasper.Messaging;
 using Jasper.Persistence;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
-using Jasper.Runtime.Invocation;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StorytellerSpecs.Fixtures.Durability;
@@ -25,7 +23,8 @@ namespace StorytellerSpecs.Fixtures.Postgresql
 
         protected override void configureReceiver(JasperOptions receiverOptions)
         {
-            receiverOptions.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_receiver");
+            receiverOptions.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString,
+                "outbox_receiver");
         }
 
         protected override void configureSender(JasperOptions senderOptions)
@@ -108,14 +107,14 @@ create table if not exists receiver.item_created
     public class TriggerMessageReceiver
     {
         [Transactional]
-        public object Handle(TriggerMessage message, IMessageContext context)
+        public Task Handle(TriggerMessage message, IMessageContext context)
         {
             var response = new CascadedMessage
             {
                 Name = message.Name
             };
 
-            return new RespondToSender(response);
+            return context.RespondToSender(response);
         }
     }
 
@@ -133,7 +132,6 @@ create table if not exists receiver.item_created
                 .With("id", created.Id)
                 .With("name", created.Name)
                 .ExecuteNonQueryAsync();
-
         }
     }
     // ENDSAMPLE

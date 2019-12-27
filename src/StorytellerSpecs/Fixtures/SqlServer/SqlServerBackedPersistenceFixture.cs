@@ -9,16 +9,14 @@ using Jasper;
 using Jasper.Logging;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer;
-using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
-using Jasper.Persistence.SqlServer.Util;
 using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using StorytellerSpecs.Fixtures.SqlServer.App;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
+using StorytellerSpecs.Fixtures.SqlServer.App;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
@@ -45,8 +43,10 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
-            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RecreateAll();
-            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
+                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RecreateAll();
+            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
+                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RecreateAll();
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
@@ -177,7 +177,7 @@ create table receiver.trace_doc
                 conn.Open();
 
                 return (int) conn.CreateCommand(
-                        $"select count(*) from receiver.{SqlServerEnvelopePersistence.IncomingTable}")
+                        $"select count(*) from receiver.{DataAccessor.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -190,7 +190,7 @@ create table receiver.trace_doc
                 conn.Open();
 
                 return (int) conn.CreateCommand(
-                        $"select count(*) from sender.{SqlServerEnvelopePersistence.OutgoingTable}")
+                        $"select count(*) from sender.{DataAccessor.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

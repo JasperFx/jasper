@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;

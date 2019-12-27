@@ -1,11 +1,10 @@
 ﻿using System;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Jasper.Testing.Messaging;
 using NSubstitute;
 using Xunit;
 
-namespace Jasper.Testing.Runtime.Invocation
+namespace Jasper.Testing.Runtime
 {
     public class MessageSucceededContinuationTester
     {

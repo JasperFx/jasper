@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
@@ -12,8 +11,8 @@ namespace StorytellerSpecs.Fixtures
 {
     public class ScheduledJobFixture : Fixture
     {
-        private ScheduledMessageReceiver theReceiver;
         private IHost theHost;
+        private ScheduledMessageReceiver theReceiver;
 
         public ScheduledJobFixture()
         {

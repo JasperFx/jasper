@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 
 namespace Jasper.ErrorHandling
 {

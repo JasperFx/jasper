@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Baseline;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Configuration;
 using Jasper.Logging;
-using Jasper.Messaging;
 using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Tracking;
 using Jasper.Util;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using StoryTeller;
@@ -26,7 +22,6 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         public override void SetUp()
         {
-
             var receiverPort = PortFinder.FindPort(3340);
             var senderPort = PortFinder.FindPort(3370);
 
@@ -49,7 +44,6 @@ namespace StorytellerSpecs.Fixtures.Durability
                 x.Message<ScheduledMessage>();
 
                 x.ToPort(receiverPort).Durably();
-
             });
 
 

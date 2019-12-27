@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Polly;
 
 namespace Jasper.ErrorHandling

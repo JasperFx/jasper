@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
@@ -111,16 +110,15 @@ namespace Jasper.Runtime
                 case null:
                     return;
 
+                case Envelope env:
+                    await SendEnvelope(env);
+                    return;
 
                 case IEnumerable<object> enumerable:
                     foreach (var o in enumerable) await EnqueueCascading(o);
 
                     return;
 
-                case ISendMyself sender:
-                    var envelope = sender.CreateEnvelope(Envelope);
-                    await SendEnvelope(envelope);
-                    return;
             }
 
             if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)

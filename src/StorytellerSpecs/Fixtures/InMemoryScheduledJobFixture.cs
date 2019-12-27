@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Messaging.Transports;
 using Jasper.Runtime.Scheduled;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
@@ -23,8 +22,6 @@ namespace StorytellerSpecs.Fixtures
 
         private readonly IList<Envelope> sent = new List<Envelope>();
         private InMemoryScheduledJobProcessor theScheduledJobs;
-        private Uri _address;
-        private ListeningStatus _status;
 
 
         public InMemoryScheduledJobFixture()
@@ -57,6 +54,35 @@ namespace StorytellerSpecs.Fixtures
         {
             throw new NotImplementedException();
         }
+
+        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDisposable.Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        Uri IListeningWorkerQueue.Address { get; }
+
+        ListeningStatus IListeningWorkerQueue.Status { get; set; }
 
 
         public override void SetUp()
@@ -179,39 +205,6 @@ namespace StorytellerSpecs.Fixtures
             theScheduledJobs.Count().ShouldBe(1);
 
             return true;
-        }
-
-        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IReceiverCallback.Acknowledged(Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IDisposable.Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        Uri IListeningWorkerQueue.Address => _address;
-
-        ListeningStatus IListeningWorkerQueue.Status
-        {
-            get => _status;
-            set => _status = value;
         }
     }
 

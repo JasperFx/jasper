@@ -4,7 +4,6 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports.Sending;

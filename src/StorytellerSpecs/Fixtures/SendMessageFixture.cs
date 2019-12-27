@@ -5,15 +5,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
-using Baseline.Dates;
 using Jasper;
 using Jasper.Attributes;
-using Jasper.Configuration;
-using Jasper.Messaging;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Durability;
 using Jasper.Tracking;
-using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
 
@@ -65,8 +60,8 @@ namespace StorytellerSpecs.Fixtures
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            _session = await _host.TrackActivity().IncludeExternalTransports().ExecuteAndWait(x => x.Send(address, message));
-
+            _session = await _host.TrackActivity().IncludeExternalTransports()
+                .ExecuteAndWait(x => x.Send(address, message));
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -79,7 +74,6 @@ namespace StorytellerSpecs.Fixtures
         {
             return _session.AllRecordsInOrder(EventType.Received).Select(x =>
                 new MessageRecord(x.ServiceName, x.Envelope.Destination, (Message) x.Envelope.Message)).ToList();
-
         }
 
 

@@ -3,13 +3,9 @@ using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper;
 using Jasper.Attributes;
-using Jasper.Messaging;
 using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
-using Jasper.Persistence.Marten.Persistence;
-using Jasper.Persistence.Marten.Persistence.Operations;
-using Jasper.Runtime.Invocation;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
@@ -47,7 +43,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             theSender.RebuildMessageStorage();
 
             theReceiver.RebuildMessageStorage();
-
         }
 
         protected override ItemCreated loadItem(IHost receiver, Guid id)
@@ -84,14 +79,14 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class TriggerMessageReceiver
     {
         [Transactional]
-        public object Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
+        public Task Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
         {
             var response = new CascadedMessage
             {
                 Name = message.Name
             };
 
-            return new RespondToSender(response);
+            return context.RespondToSender(response);
         }
     }
 

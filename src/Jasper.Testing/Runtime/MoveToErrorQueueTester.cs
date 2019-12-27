@@ -5,7 +5,7 @@ using Jasper.Testing.Messaging;
 using NSubstitute;
 using Xunit;
 
-namespace Jasper.Testing.Runtime.Invocation
+namespace Jasper.Testing.Runtime
 {
     public class MoveToErrorQueueTester
     {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
-using Jasper.Messaging;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Postgresql;
@@ -19,8 +18,8 @@ namespace StorytellerSpecs.Fixtures.Marten
 {
     public class MartenScheduledJobFixture : Fixture
     {
-        private ScheduledMessageReceiver theReceiver;
         private IHost theHost;
+        private ScheduledMessageReceiver theReceiver;
 
         public MartenScheduledJobFixture()
         {
@@ -29,7 +28,8 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public override void SetUp()
         {
-            var admin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString});
+            var admin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString});
             admin.RecreateAll();
 
             var registry = new ScheduledMessageApp();
@@ -39,13 +39,11 @@ namespace StorytellerSpecs.Fixtures.Marten
             Context.Reporting.Log(logger);
 
 
-
             theHost = Host
                 .CreateDefaultBuilder()
                 .ConfigureLogging(x => x.AddProvider(logger))
                 .UseJasper(registry)
                 .Start();
-
         }
 
         public override void TearDown()
@@ -56,13 +54,15 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
-            return theHost.Services.GetService<IMessageContext>().Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Services.GetService<IMessageContext>()
+                .Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theHost.Services.GetService<IMessageContext>().ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Services.GetService<IMessageContext>()
+                .ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]
@@ -109,7 +109,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             });
 
             Extensions.UseMarten(Servers.PostgresConnectionString);
-
         }
     }
 
@@ -140,10 +139,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public void Consume(ScheduledMessage message)
         {
-            if (!_receiver.Source.Task.IsCompleted)
-            {
-                _receiver.Source.SetResult(message);
-            }
+            if (!_receiver.Source.Task.IsCompleted) _receiver.Source.SetResult(message);
 
             _receiver.ReceivedMessages.Add(message);
         }

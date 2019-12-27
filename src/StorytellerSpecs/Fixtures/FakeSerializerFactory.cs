@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Jasper.Serialization;
 
 namespace StorytellerSpecs.Fixtures
 {
-    internal class FakeSerializerFactory : ISerializerFactory<IMessageDeserializer, IMessageSerializer>, IMessageDeserializer, IMessageSerializer
+    internal class FakeSerializerFactory : ISerializerFactory<IMessageDeserializer, IMessageSerializer>,
+        IMessageDeserializer, IMessageSerializer
     {
         public FakeSerializerFactory(string contentType)
         {

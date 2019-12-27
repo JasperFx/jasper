@@ -10,7 +10,6 @@ using Jasper.Configuration;
 using Jasper.ErrorHandling;
 using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
-using Jasper.Runtime.Invocation;
 using Lamar;
 using LamarCodeGeneration;
 using Polly;

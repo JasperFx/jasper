@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Jasper
 {
-    public static class MessagePublisherExtensions
+    public static class MessageContextExtensions
     {
         /// <summary>
         ///     Send to a specific destination rather than running the routing rules
@@ -41,6 +41,26 @@ namespace Jasper
         public static Task ScheduleSend<T>(this IMessagePublisher publisher, T message, TimeSpan delay)
         {
             return publisher.ScheduleSend(message, DateTime.UtcNow.Add(delay));
+        }
+
+        /// <summary>
+        /// Send a response message back to the original sender of the message being handled.
+        /// This can only be used from within a message handler
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public static Task RespondToSender(this IMessageContext context, object response)
+        {
+            if (context.Envelope == null) throw new InvalidOperationException("This operation can only be performed while in the middle of handling an incoming message");
+
+
+            var envelope = new Envelope(response)
+            {
+                Destination = context.Envelope.ReplyUri
+            };
+
+            return context.SendEnvelope(envelope);
         }
 
     }

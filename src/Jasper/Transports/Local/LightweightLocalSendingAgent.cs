@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports.Sending;
 using Jasper.Util;
@@ -23,11 +22,6 @@ namespace Jasper.Transports.Local
 
         public Uri Destination { get; }
         public Uri ReplyUri { get; set; } = TransportConstants.RepliesUri;
-
-        public void Dispose()
-        {
-            // Nothing
-        }
 
         public bool Latched { get; } = false;
 

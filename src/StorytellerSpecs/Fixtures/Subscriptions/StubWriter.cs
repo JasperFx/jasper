@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Jasper.Serialization;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
@@ -19,6 +18,5 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
         {
             throw new NotImplementedException();
         }
-
     }
 }

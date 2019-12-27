@@ -5,7 +5,6 @@ using Baseline;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Handlers;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Runtime.WorkerQueues;

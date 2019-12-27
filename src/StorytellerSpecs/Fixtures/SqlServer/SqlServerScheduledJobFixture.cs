@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
-using Jasper.Messaging;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
@@ -18,8 +17,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 {
     public class SqlServerScheduledJobFixture : Fixture
     {
-        private ScheduledMessageReceiver theReceiver;
         private IHost theHost;
+        private ScheduledMessageReceiver theReceiver;
 
         public SqlServerScheduledJobFixture()
         {
@@ -28,7 +27,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public override void SetUp()
         {
-            var admin = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
+            var admin = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
+                {ConnectionString = Servers.SqlServerConnectionString});
             admin.RecreateAll();
 
             var registry = new ScheduledMessageApp();
@@ -38,13 +38,11 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             Context.Reporting.Log(logger);
 
 
-
             theHost = Host
                 .CreateDefaultBuilder()
                 .ConfigureLogging(x => x.AddProvider(logger))
                 .UseJasper(registry)
                 .Start();
-
         }
 
         public override void TearDown()
@@ -55,13 +53,15 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
-            return theHost.Services.GetService<IMessageContext>().Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Services.GetService<IMessageContext>()
+                .Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theHost.Services.GetService<IMessageContext>().ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Services.GetService<IMessageContext>()
+                .ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]
@@ -138,10 +138,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public void Consume(ScheduledMessage message)
         {
-            if (!_receiver.Source.Task.IsCompleted)
-            {
-                _receiver.Source.SetResult(message);
-            }
+            if (!_receiver.Source.Task.IsCompleted) _receiver.Source.SetResult(message);
 
             _receiver.ReceivedMessages.Add(message);
         }

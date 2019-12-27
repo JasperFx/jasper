@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Logging;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Jasper.Testing.Messaging;
 using Jasper.Transports;
 using Microsoft.Extensions.DependencyInjection;

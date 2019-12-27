@@ -5,7 +5,6 @@ using Baseline;
 using IntegrationTests;
 using Jasper;
 using Jasper.Logging;
-using Jasper.Messaging;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
@@ -15,9 +14,9 @@ using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using StorytellerSpecs.Fixtures.Marten.App;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
+using StorytellerSpecs.Fixtures.Marten.App;
 
 namespace StorytellerSpecs.Fixtures.Marten
 {
@@ -65,11 +64,12 @@ namespace StorytellerSpecs.Fixtures.Marten
                 _.PLV8Enabled = false;
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
-
             });
 
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RecreateAll();
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll();
+            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RecreateAll();
+            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
@@ -97,7 +97,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                         // being built up
                         x.AddProvider(logger);
                     })
-
                     .UseJasper(registry)
                     .Start();
             });

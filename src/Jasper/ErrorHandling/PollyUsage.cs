@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Polly;
 
 namespace Jasper.ErrorHandling

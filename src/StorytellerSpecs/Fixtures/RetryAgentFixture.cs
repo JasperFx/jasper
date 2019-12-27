@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Configuration;
 using Jasper.Logging;
-using Jasper.Messaging.Transports;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Transports.Tcp;
@@ -80,7 +78,8 @@ namespace StorytellerSpecs.Fixtures
 
             theSettings = new AdvancedSettings();
 
-            theRetryAgent = new LightweightSendingAgent(TransportLogger.Empty(), MessageLogger.Empty(),this, theSettings);
+            theRetryAgent =
+                new LightweightSendingAgent(TransportLogger.Empty(), MessageLogger.Empty(), this, theSettings);
 
             for (var i = 0; i < batches.Length; i++) batches[i] = batchForEnvelopes(15);
 

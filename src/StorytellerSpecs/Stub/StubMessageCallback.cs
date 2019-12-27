@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Transports;
 
-namespace Jasper.Messaging.Transports.Stub
+namespace StorytellerSpecs.Stub
 {
     public class StubMessageCallback : IMessageCallback
     {

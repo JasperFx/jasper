@@ -4,7 +4,6 @@ using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Logging;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;

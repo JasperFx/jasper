@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
@@ -11,7 +9,7 @@ using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Jasper.Messaging.Transports.Stub
+namespace StorytellerSpecs.Stub
 {
     public static class StubTransportExtensions
     {
@@ -30,11 +28,11 @@ namespace Jasper.Messaging.Transports.Stub
                 .As<TransportCollection>()
                 .Get<StubTransport>();
         }
-
     }
 
     public class StubTransport : ITransport
     {
+        private readonly IList<Uri> _listeners = new List<Uri>();
         public readonly LightweightCache<Uri, StubEndpoint> Endpoints;
 
         public StubTransport()
@@ -42,6 +40,8 @@ namespace Jasper.Messaging.Transports.Stub
             Endpoints =
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
         }
+
+        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
 
         public Endpoint ReplyEndpoint()
         {
@@ -65,7 +65,6 @@ namespace Jasper.Messaging.Transports.Stub
 
         public void Dispose()
         {
-
         }
 
         public string Protocol { get; } = "stub";
@@ -91,11 +90,6 @@ namespace Jasper.Messaging.Transports.Stub
         {
             foreach (var listener in _listeners) Endpoints.FillDefault(listener);
         }
-
-        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
-
-
-        private readonly IList<Uri> _listeners = new List<Uri>();
 
         public Endpoint ListenTo(Uri uri)
         {

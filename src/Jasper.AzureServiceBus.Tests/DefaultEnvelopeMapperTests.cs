@@ -4,6 +4,7 @@ using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
 using Shouldly;
 using TestingSupport;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests
@@ -155,7 +156,10 @@ namespace Jasper.AzureServiceBus.Tests
             });
         }
 
-        private readonly Envelope theEnvelope = new Envelope();
+        private readonly Envelope theEnvelope = new Envelope(new Message1())
+        {
+            Data = new byte[]{1,2,3,4}
+        };
         private readonly Lazy<Message> _properties;
 
         private Message theMessage => _properties.Value;

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -9,9 +8,6 @@ using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Stub;
 using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
@@ -21,14 +17,11 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
-using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
-using IMessagingAction = Jasper.Persistence.Durability.IMessagingAction;
-using RecoverIncomingMessages = Jasper.Persistence.Durability.RecoverIncomingMessages;
-using RecoverOutgoingMessages = Jasper.Persistence.Durability.RecoverOutgoingMessages;
+using StorytellerSpecs.Stub;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
@@ -305,8 +298,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
     public class RecordingWorkerQueue : IWorkerQueue
     {
         public readonly IList<Envelope> Enqueued = new List<Envelope>();
-        private Uri _address;
-        private ListeningStatus _status;
 
         public Task Enqueue(Envelope envelope)
         {
@@ -348,15 +339,10 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         void IDisposable.Dispose()
         {
-
         }
 
-        Uri IListeningWorkerQueue.Address => _address;
+        Uri IListeningWorkerQueue.Address { get; }
 
-        ListeningStatus IListeningWorkerQueue.Status
-        {
-            get => _status;
-            set => _status = value;
-        }
+        ListeningStatus IListeningWorkerQueue.Status { get; set; }
     }
 }

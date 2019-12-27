@@ -1,7 +1,4 @@
-﻿using Jasper;
-using Jasper.Attributes;
-using Jasper.Configuration;
-using Jasper.Persistence;
+﻿using Jasper.Attributes;
 using Marten;
 
 namespace StorytellerSpecs.Fixtures.Marten.App

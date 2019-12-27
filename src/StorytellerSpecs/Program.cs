@@ -11,5 +11,7 @@ namespace StorytellerSpecs
         }
     }
 
-    public class SpecSystem : SimpleSystem{}
+    public class SpecSystem : SimpleSystem
+    {
+    }
 }

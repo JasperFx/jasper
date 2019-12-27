@@ -4,13 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
-using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Runtime;
-using Jasper.Runtime.Invocation;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Jasper.Transports.Local;
@@ -67,14 +65,16 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
     public class MartenBackedListenerContext : PostgresqlContext, IDisposable
     {
+        protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin =
+            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString});
+
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
+        private readonly IHandlerPipeline thePipeline;
         protected AdvancedSettings theSettings;
         protected DurableWorkerQueue theWorkerQueue;
-
-        protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings{ConnectionString = Servers.PostgresConnectionString});
-        private IHandlerPipeline thePipeline;
 
 
         public MartenBackedListenerContext()
@@ -95,7 +95,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 new PostgresqlEnvelopePersistence(
                     new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings);
             thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, persistence, TransportLogger.Empty());
+            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings,
+                persistence, TransportLogger.Empty());
 
 
             var agent = Substitute.For<IListener>();

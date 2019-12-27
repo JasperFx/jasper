@@ -20,8 +20,8 @@ namespace StorytellerSpecs.Fixtures
 
     public class BusRoutingFixture : BusFixture
     {
-        private JasperOptions _options;
         private IHost _host;
+        private JasperOptions _options;
         private MessageRoute[] _tracks;
 
 
@@ -48,7 +48,6 @@ namespace StorytellerSpecs.Fixtures
         public void PublishAllLocally()
         {
             _options.Endpoints.PublishAllMessages().Locally();
-
         }
 
         [FormatAs("The application is configured to publish the message {MessageType} locally")]
@@ -60,7 +59,6 @@ namespace StorytellerSpecs.Fixtures
             {
                 x.Message(messageType);
                 x.Locally();
-
             });
         }
 
@@ -71,10 +69,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var type = messageTypeFor(messageType);
 
-            _options.Endpoints.Publish(x =>
-            {
-                x.Message(type).To(channel);
-            });
+            _options.Endpoints.Publish(x => { x.Message(type).To(channel); });
 
             // Just makes the test harness listen for things
             _options.Endpoints.ListenForMessagesFrom(channel);
@@ -156,6 +151,5 @@ namespace StorytellerSpecs.Fixtures
         {
             throw new NotImplementedException();
         }
-
     }
 }

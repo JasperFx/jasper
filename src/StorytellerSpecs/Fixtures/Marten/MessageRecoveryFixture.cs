@@ -7,9 +7,6 @@ using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Stub;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence.Operations;
@@ -25,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
+using StorytellerSpecs.Stub;
 
 namespace StorytellerSpecs.Fixtures.Marten
 {
@@ -294,8 +292,6 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class RecordingWorkerQueue : IWorkerQueue
     {
         public readonly IList<Envelope> Enqueued = new List<Envelope>();
-        private Uri _address;
-        private ListeningStatus _status;
 
         public Task Enqueue(Envelope envelope)
         {
@@ -341,12 +337,8 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
-        Uri IListeningWorkerQueue.Address => _address;
+        Uri IListeningWorkerQueue.Address { get; }
 
-        ListeningStatus IListeningWorkerQueue.Status
-        {
-            get => _status;
-            set => _status = value;
-        }
+        ListeningStatus IListeningWorkerQueue.Status { get; set; }
     }
 }

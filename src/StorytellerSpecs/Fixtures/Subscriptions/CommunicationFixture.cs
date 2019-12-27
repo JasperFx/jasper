@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
-using Baseline.Dates;
 using Jasper;
 using Jasper.Logging;
 using Jasper.Tracking;
@@ -75,8 +74,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
                 {
                     var registry = new JasperOptions
                     {
-                        ServiceName = "Publisher",
-
+                        ServiceName = "Publisher"
                     };
 
                     registry.Extensions.UseMessageTrackingTestingSupport();
@@ -94,7 +92,6 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             message.Name = name;
 
             await _publisher.SendMessageAndWait(message);
-
         }
     }
 

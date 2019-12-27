@@ -8,9 +8,6 @@ using Jasper;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
-using Jasper.Messaging;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Stub;
 using Jasper.Runtime.Handlers;
 using Jasper.Tracking;
 using Jasper.Util;
@@ -19,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Polly;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
+using StorytellerSpecs.Stub;
 
 namespace StorytellerSpecs.Fixtures
 {
@@ -62,7 +60,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Requeue on {errorType}")]
         public void RequeueOn(ErrorType errorType)
         {
-            _errorHandling.Retries += errorType.Type.HandledBy().Requeue(3);
+            _errorHandling.Retries += errorType.Type.HandledBy().Requeue();
         }
 
         [FormatAs("Move to error queue on {errorType}")]
@@ -100,8 +98,8 @@ namespace StorytellerSpecs.Fixtures
         private IMessageContext _bus;
         private HandlerChain _chain;
         private HandlerGraph _graph;
-        private ErrorCausingMessage _message;
         private IHost _host;
+        private ErrorCausingMessage _message;
         private AttemptTracker _tracker;
         private StubTransport _transport;
 
