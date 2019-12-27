@@ -8,8 +8,6 @@ namespace Jasper
     /// </summary>
     public interface ICommandBus
     {
-
-
         /// <summary>
         ///     Invoke consumers for the relevant messages managed by the current
         ///     service bus instance. This happens immediately and on the current thread.

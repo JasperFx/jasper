@@ -35,13 +35,6 @@ namespace Jasper
         /// <returns></returns>
         Task SendAcknowledgement();
 
-        /// <summary>
-        ///     Send a message envelope. Gives you complete power over how the message
-        ///     is delivered
-        /// </summary>
-        /// <param name="envelope"></param>
-        /// <returns></returns>
-        Task<Guid> SendEnvelope(Envelope envelope);
 
         /// <summary>
         ///     Enqueue a cascading message to the outstanding context transaction
