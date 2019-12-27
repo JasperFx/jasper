@@ -23,8 +23,6 @@ namespace Jasper.Persistence.Testing
         {
             using (var host1 = JasperHost.For(new DurableSender(true)))
             {
-                host1.RebuildMessageStorage();
-
                 await host1.Send(new ReceivedMessage());
 
                 var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
@@ -57,6 +55,8 @@ namespace Jasper.Persistence.Testing
     {
         public DurableSender(bool latched)
         {
+            Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+
             Endpoints.PublishAllMessages()
                 .ToLocalQueue("one")
                 .Durably();

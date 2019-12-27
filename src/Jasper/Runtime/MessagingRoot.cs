@@ -155,6 +155,17 @@ namespace Jasper.Runtime
             ScheduledJobs =
                 new InMemoryScheduledJobProcessor((IWorkerQueue) Runtime.AgentForLocalQueue(TransportConstants.Replies));
 
+            switch (Settings.StorageProvisioning)
+            {
+                case StorageProvisioning.Rebuild:
+                    Persistence.Admin.RebuildSchemaObjects();
+                    break;
+
+                case StorageProvisioning.Clear:
+                    Persistence.Admin.ClearAllPersistedEnvelopes();
+                    break;
+            }
+
             await startDurabilityAgent();
         }
 

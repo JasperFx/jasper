@@ -23,10 +23,11 @@ namespace Jasper.Persistence.Testing.EFCore
             {
                 services.AddDbContext<SampleDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
             })
-            .UseJasper(registry =>
+            .UseJasper(options =>
             {
-                registry.Services.AddSingleton<PassRecorder>();
-                registry.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                options.Services.AddSingleton<PassRecorder>();
+                options.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                options.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             });
         }
     }
