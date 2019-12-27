@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Messaging;
 using Marten;
 
 namespace Jasper.Persistence.Marten

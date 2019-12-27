@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Messaging.Runtime;
 using Jasper.RabbitMQ.Internal;
 using RabbitMQ.Client;
 

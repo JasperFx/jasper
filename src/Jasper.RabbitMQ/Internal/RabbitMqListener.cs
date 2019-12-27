@@ -1,8 +1,7 @@
 ﻿using System;
 using Baseline;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Logging;
+using Jasper.Transports;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal

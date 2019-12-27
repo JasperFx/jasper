@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
+using Jasper.Logging;
 using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Sending;
-using Jasper.Messaging.Transports.Tcp;
+using Jasper.Transports;
+using Jasper.Transports.Sending;
+using Jasper.Transports.Tcp;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures

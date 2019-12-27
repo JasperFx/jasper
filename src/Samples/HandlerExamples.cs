@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Attributes;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime;
 using Marten;
 using TestingSupport;
 using TestMessages;

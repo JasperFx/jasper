@@ -1,4 +1,4 @@
-using Jasper.Messaging;
+using Jasper.Runtime;
 using Xunit;
 
 namespace Jasper.Testing

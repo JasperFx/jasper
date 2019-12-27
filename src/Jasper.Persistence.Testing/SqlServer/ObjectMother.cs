@@ -1,6 +1,5 @@
 ﻿using System;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Transports;
 
 namespace Jasper.Persistence.Testing.SqlServer
 {

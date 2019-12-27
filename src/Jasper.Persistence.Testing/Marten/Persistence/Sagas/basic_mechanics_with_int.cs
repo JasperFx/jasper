@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Persistence.Sagas;
 using Shouldly;
 using Xunit;
 

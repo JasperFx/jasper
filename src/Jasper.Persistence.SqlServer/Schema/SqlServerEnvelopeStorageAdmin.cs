@@ -6,11 +6,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Logging;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 

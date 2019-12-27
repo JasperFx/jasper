@@ -2,11 +2,12 @@
 using System.Linq;
 using Baseline.Dates;
 using IntegrationTests;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Attributes;
+using Jasper.Configuration;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
+using Jasper.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

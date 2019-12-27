@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 
 namespace Jasper.Testing.Samples
 {

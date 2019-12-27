@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Conneg;
+using Jasper.Serialization;
 
 namespace StorytellerSpecs.Fixtures.Subscriptions
 {

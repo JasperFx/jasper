@@ -1,5 +1,7 @@
 ﻿using System;
 using Jasper;
+using Jasper.Attributes;
+using Jasper.Configuration;
 using Jasper.Util;
 
 namespace TestMessages

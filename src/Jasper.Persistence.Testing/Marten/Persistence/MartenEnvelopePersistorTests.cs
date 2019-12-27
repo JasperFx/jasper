@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Postgresql;
 using Marten;
 using Microsoft.Extensions.Hosting;

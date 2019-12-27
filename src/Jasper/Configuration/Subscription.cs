@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Messaging.Runtime.Routing;
+using Jasper.Runtime.Routing;
 using Jasper.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

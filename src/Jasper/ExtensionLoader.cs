@@ -4,6 +4,7 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using BaselineTypeDiscovery;
+using Jasper.Attributes;
 using Jasper.Configuration;
 
 namespace Jasper

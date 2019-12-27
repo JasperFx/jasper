@@ -1,5 +1,4 @@
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
+using Jasper.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

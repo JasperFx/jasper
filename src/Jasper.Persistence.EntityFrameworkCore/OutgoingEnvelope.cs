@@ -1,5 +1,4 @@
 using System;
-using Jasper.Messaging.Runtime;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {

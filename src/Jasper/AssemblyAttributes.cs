@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Jasper.Attributes;
 using Jasper.Configuration;
 using Lamar;
 

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Logging;
+using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus.Internal

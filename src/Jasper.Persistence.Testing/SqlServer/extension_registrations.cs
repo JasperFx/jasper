@@ -1,7 +1,7 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
 using IntegrationTests;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;

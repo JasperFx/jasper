@@ -2,10 +2,9 @@
 using System.Linq;
 using Baseline.Dates;
 using IntegrationTests;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
+using Jasper.Transports;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;

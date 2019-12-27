@@ -2,14 +2,12 @@
 using System.IO;
 using System.Threading.Tasks;
 using IntegrationTests;
-using Jasper.Messaging;
-using Jasper.Messaging.Model;
-using Jasper.Messaging.Tracking;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.EntityFrameworkCore;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.Testing.SqlServer;
+using Jasper.Runtime.Handlers;
+using Jasper.Tracking;
 using LamarCodeGeneration;
 using Marten;
 using Microsoft.Data.SqlClient;

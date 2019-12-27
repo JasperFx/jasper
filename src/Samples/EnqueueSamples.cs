@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Messaging;
 using TestMessages;
 
 namespace Jasper.Testing.Samples

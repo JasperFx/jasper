@@ -1,10 +1,11 @@
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Codegen;
 using Jasper.Persistence.Marten.Persistence.Sagas;
 using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.Sagas;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 

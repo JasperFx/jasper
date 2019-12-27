@@ -1,5 +1,4 @@
-﻿using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+﻿using Jasper.Transports;
 using NSubstitute;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence

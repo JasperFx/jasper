@@ -1,5 +1,4 @@
 using System;
-using Jasper.Messaging.Runtime;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
 using Microsoft.Extensions.Configuration;

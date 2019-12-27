@@ -2,9 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Persistence.Postgresql;

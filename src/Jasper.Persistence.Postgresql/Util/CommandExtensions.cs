@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Messaging.Runtime;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -26,7 +25,7 @@ namespace Jasper.Persistence.Postgresql.Util
 
             return command;
         }
-        
+
         public static DbCommand With(this DbCommand command, string name, ErrorReport[] reports)
         {
             var parameter = command.CreateParameter().As<NpgsqlParameter>();

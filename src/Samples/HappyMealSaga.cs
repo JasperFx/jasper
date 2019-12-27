@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Messaging;
 using Jasper.Persistence;
+using Jasper.Persistence.Sagas;
 
 namespace Jasper.Testing.Samples
 {

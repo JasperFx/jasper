@@ -1,5 +1,6 @@
 ﻿using System;
-using Jasper.Messaging.Model;
+using Jasper.Attributes;
+using Jasper.Runtime.Handlers;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

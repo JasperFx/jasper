@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Jasper.Messaging.Transports;
+using Jasper.Transports;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal

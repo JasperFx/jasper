@@ -2,12 +2,11 @@
 using Baseline;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Model;
-using Jasper.Messaging.Tracking;
+using Jasper.Logging;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
 using Jasper.TestSupport.Storyteller.Logging;
+using Jasper.Tracking;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;

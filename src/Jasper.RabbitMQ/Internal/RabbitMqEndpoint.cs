@@ -4,9 +4,9 @@ using System.Linq;
 using Baseline;
 using ImTools;
 using Jasper.Configuration;
-using Jasper.Messaging;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Sending;
+using Jasper.Runtime;
+using Jasper.Transports;
+using Jasper.Transports.Sending;
 using Jasper.Util;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

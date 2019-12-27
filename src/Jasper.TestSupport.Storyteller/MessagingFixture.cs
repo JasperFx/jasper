@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Messaging;
-using Jasper.Messaging.Tracking;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
 

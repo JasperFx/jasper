@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Messaging.Runtime;
 
 namespace Jasper.Persistence.Database
 {

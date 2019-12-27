@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using Jasper;
+using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Persistence;
 using Jasper.Persistence.Database;

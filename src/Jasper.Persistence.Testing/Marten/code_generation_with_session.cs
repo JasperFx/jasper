@@ -1,6 +1,7 @@
 ﻿using IntegrationTests;
-using Jasper.Messaging.Model;
+using Jasper.Attributes;
 using Jasper.Persistence.Marten;
+using Jasper.Runtime.Handlers;
 using Marten;
 using Shouldly;
 using TestingSupport;

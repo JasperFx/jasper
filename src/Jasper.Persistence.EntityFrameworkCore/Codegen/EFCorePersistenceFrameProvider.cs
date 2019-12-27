@@ -7,7 +7,8 @@ using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Microsoft.EntityFrameworkCore;
 using Baseline;
-using Jasper.Messaging.Model;
+using Jasper.Persistence.Sagas;
+using Jasper.Runtime.Handlers;
 
 namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 {

@@ -5,9 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports.Sending;
+using Jasper.Logging;
+using Jasper.Transports.Sending;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
 

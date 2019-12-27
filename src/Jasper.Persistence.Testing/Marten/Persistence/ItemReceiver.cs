@@ -1,7 +1,7 @@
 ﻿using IntegrationTests;
 using Jasper.Configuration;
-using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
+using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,8 +1,9 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
+using Jasper.Persistence.Sagas;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 using Lamar.Scanning.Conventions;

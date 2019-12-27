@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Messaging;
-using Jasper.Messaging.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Samples

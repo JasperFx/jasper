@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Jasper.Messaging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Invocation;
+using Jasper.Runtime.Invocation;
 using Jasper.Util;
 
 namespace Jasper.Testing.Samples.CascadingMessages

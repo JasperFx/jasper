@@ -2,7 +2,6 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using Baseline;
-using Jasper.Messaging.Runtime;
 using Jasper.Persistence.Database;
 
 namespace Jasper.Persistence.SqlServer.Util

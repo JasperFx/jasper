@@ -1,6 +1,4 @@
 ﻿using Jasper.Configuration;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
 using Jasper.Persistence.Marten.Persistence.Sagas;
 using LamarCodeGeneration.Model;
 using Marten;

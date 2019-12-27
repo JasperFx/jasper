@@ -1,6 +1,5 @@
 ﻿using Jasper.Configuration;
-using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Model;
+using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;

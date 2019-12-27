@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Baseline;
-using Jasper.Messaging.Transports;
+using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
 

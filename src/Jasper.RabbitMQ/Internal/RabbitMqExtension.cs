@@ -1,4 +1,5 @@
-﻿using Jasper.Configuration;
+﻿using Jasper.Attributes;
+using Jasper.Configuration;
 using Jasper.RabbitMQ.Internal;
 
 [assembly: JasperModule(typeof(RabbitMqExtension))]

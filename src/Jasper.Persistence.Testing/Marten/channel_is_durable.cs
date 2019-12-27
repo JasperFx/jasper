@@ -1,6 +1,6 @@
 ﻿using IntegrationTests;
-using Jasper.Messaging;
 using Jasper.Persistence.Marten;
+using Jasper.Runtime;
 using Jasper.Util;
 using Shouldly;
 using Xunit;

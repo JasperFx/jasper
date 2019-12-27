@@ -2,10 +2,8 @@
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
+using Jasper.Persistence.Durability;
+using Jasper.Transports;
 
 namespace Jasper.Persistence.Database
 {

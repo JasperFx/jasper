@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;

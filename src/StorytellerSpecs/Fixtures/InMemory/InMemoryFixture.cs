@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Jasper;
-using Jasper.Messaging.Model;
+using Jasper.Runtime.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using StoryTeller;
 

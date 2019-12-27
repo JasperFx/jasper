@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Configuration;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Invocation;
-using Jasper.Messaging.Transports.Sending;
+using Jasper.Logging;
+using Jasper.Runtime;
+using Jasper.Runtime.Invocation;
+using Jasper.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.Messaging.Transports.Stub

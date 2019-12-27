@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
 using Marten;
 using Marten.Schema;
 using Jasper.Persistence.Postgresql;

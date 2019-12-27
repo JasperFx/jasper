@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using Baseline;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Microsoft.Extensions.DependencyInjection;
 using Oakton;
 using Oakton.AspNetCore;

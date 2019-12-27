@@ -1,6 +1,5 @@
 using System;
 using Baseline;
-using Jasper.Messaging.Runtime;
 using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus.Internal

@@ -1,6 +1,5 @@
 using System;
 using Jasper.AzureServiceBus.Internal;
-using Jasper.Messaging.Runtime;
 using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
 using Shouldly;

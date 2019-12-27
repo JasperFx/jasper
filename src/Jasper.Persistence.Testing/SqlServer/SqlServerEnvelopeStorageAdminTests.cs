@@ -1,6 +1,6 @@
 ﻿using Baseline;
 using IntegrationTests;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
 using Shouldly;

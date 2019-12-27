@@ -1,5 +1,4 @@
 using System;
-using Jasper.Messaging.Configuration;
 
 namespace Jasper.Configuration
 {

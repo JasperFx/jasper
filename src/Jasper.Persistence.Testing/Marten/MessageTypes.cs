@@ -1,4 +1,6 @@
 ﻿using System;
+using Jasper.Attributes;
+using Jasper.Configuration;
 using Jasper.Util;
 
 namespace Jasper.Persistence.Testing.Marten

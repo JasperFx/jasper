@@ -6,8 +6,6 @@ using Baseline;
 using Baseline.Reflection;
 using IntegrationTests;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Shouldly;

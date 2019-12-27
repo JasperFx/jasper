@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Conneg;
-using Jasper.Messaging.Runtime;
+using Jasper.Attributes;
+using Jasper.Configuration;
+using Jasper.Serialization;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;

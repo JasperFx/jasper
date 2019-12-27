@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Attributes;
 using Jasper.Configuration;
-using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Model;
 using Jasper.Persistence.Marten.Codegen;
+using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration;
 using Marten;

@@ -1,6 +1,5 @@
 ﻿using IntegrationTests;
 using Jasper.Configuration;
-using Jasper.Messaging.Tracking;
 using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 

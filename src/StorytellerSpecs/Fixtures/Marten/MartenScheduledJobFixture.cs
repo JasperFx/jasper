@@ -5,7 +5,7 @@ using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;

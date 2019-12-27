@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Jasper.Messaging;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jasper.Persistence.EntityFrameworkCore

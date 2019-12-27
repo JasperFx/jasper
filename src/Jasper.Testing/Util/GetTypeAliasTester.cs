@@ -1,4 +1,6 @@
-﻿using Jasper.Util;
+﻿using Jasper.Attributes;
+using Jasper.Configuration;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 

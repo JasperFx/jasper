@@ -2,14 +2,14 @@
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper;
+using Jasper.Attributes;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Persistence;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
+using Jasper.Runtime.Invocation;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;

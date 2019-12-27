@@ -1,6 +1,6 @@
 using Jasper.Configuration;
-using Jasper.Messaging;
 using Jasper.RabbitMQ.Internal;
+using Jasper.Runtime;
 using LamarCodeGeneration.Util;
 using Microsoft.Extensions.Hosting;
 

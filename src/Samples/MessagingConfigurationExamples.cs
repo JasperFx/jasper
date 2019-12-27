@@ -1,7 +1,7 @@
 ﻿using Baseline.Dates;
 using Bootstrapping.Configuration2;
 using Jasper.Configuration;
-using Jasper.Messaging.ErrorHandling;
+using Jasper.ErrorHandling;
 using Microsoft.Extensions.Hosting;
 using TestMessages;
 

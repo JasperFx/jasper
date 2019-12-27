@@ -1,5 +1,5 @@
 ﻿using System;
-using Jasper.Messaging.Configuration;
+using Jasper.Configuration;
 
 namespace TestingSupport
 {

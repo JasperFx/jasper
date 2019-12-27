@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
 using Jasper;
+using Jasper.Attributes;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Invocation;
 using Jasper.Persistence;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
+using Jasper.Runtime.Invocation;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
 

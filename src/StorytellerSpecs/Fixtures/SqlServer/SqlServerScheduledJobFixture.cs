@@ -5,7 +5,7 @@ using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.TestSupport.Storyteller.Logging;

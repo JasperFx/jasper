@@ -1,5 +1,5 @@
 using Jasper.Configuration;
-using Jasper.Messaging.Transports.Local;
+using Jasper.Transports.Local;
 using Shouldly;
 using Xunit;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Messaging.Transports;
+using Jasper.Transports;
 using Microsoft.Extensions.Configuration;
 
 namespace Jasper.Util

@@ -26,7 +26,7 @@ namespace Jasper.Configuration
         }
     }
 
-    public class SubscriberConfiguration : SubscriberConfiguration<ISubscriberConfiguration, Endpoint>, ISubscriberConfiguration
+    internal class SubscriberConfiguration : SubscriberConfiguration<ISubscriberConfiguration, Endpoint>, ISubscriberConfiguration
     {
         public SubscriberConfiguration(Endpoint endpoint) : base(endpoint)
         {

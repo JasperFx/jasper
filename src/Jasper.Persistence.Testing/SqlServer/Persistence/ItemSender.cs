@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Jasper.Messaging;
+using Jasper.Attributes;
 
 namespace Jasper.Persistence.Testing.SqlServer.Persistence
 {

@@ -1,6 +1,6 @@
 ﻿using System;
-using Jasper.Messaging;
-using Jasper.Messaging.Model;
+using Jasper.Runtime;
+using Jasper.Runtime.Handlers;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 

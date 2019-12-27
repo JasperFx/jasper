@@ -1,7 +1,8 @@
 ﻿using System.Data.Common;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
+using Jasper.Persistence.Sagas;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;

@@ -1,4 +1,3 @@
-using Jasper.Messaging.Runtime;
 using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus

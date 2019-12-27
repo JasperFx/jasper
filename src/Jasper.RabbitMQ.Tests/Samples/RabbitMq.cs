@@ -1,6 +1,5 @@
 using System.Net;
 using Jasper;
-using Jasper.Messaging.Runtime;
 using Jasper.RabbitMQ;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

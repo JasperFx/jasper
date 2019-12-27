@@ -1,7 +1,6 @@
 using System;
 using Baseline;
 using Jasper.Configuration;
-using Jasper.Messaging.Configuration;
 
 namespace Jasper.AzureServiceBus
 {

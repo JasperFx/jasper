@@ -1,8 +1,8 @@
 ﻿using IntegrationTests;
 using Jasper.Configuration;
-using Jasper.Messaging.Tracking;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Testing.Marten.Persistence.Resiliency;
+using Jasper.Tracking;
 using Marten;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence

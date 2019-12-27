@@ -5,10 +5,9 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
+using Jasper.Transports;
 using Jasper.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence

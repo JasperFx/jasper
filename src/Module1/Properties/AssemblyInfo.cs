@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using Jasper;
+using Jasper.Attributes;
 using Jasper.Configuration;
 using Module1;
 

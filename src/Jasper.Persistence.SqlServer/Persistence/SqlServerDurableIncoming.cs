@@ -1,11 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Util;
+using Jasper.Transports;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {

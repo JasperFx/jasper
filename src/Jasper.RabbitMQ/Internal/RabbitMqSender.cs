@@ -3,10 +3,9 @@ using System.Security.Authentication.ExtendedProtection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Sending;
+using Jasper.Logging;
+using Jasper.Transports;
+using Jasper.Transports.Sending;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal

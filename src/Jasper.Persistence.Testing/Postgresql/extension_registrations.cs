@@ -1,6 +1,6 @@
 ﻿using System.Data.Common;
 using IntegrationTests;
-using Jasper.Messaging.Durability;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Testing.Marten;
 using Lamar;

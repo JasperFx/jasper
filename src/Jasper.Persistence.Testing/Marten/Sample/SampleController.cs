@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Jasper.Messaging;
 using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.AspNetCore.Mvc;

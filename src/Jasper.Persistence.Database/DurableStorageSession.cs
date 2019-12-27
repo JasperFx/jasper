@@ -3,8 +3,8 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Logging;
+using Jasper.Logging;
+using Jasper.Persistence.Durability;
 
 namespace Jasper.Persistence.Database
 {

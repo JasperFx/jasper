@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
 using Baseline;
+using Jasper.Attributes;
+using Jasper.Configuration;
 using Jasper.Util;
 using LamarCodeGeneration;
 using LamarCompiler;

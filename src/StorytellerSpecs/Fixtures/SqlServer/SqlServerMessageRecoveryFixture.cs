@@ -10,25 +10,25 @@ using IntegrationTests;
 using Jasper;
 using Jasper.Configuration;
 using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Runtime;
-using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Scheduled;
 using Jasper.Messaging.Transports;
 using Jasper.Messaging.Transports.Stub;
-using Jasper.Messaging.Transports.Tcp;
-using Jasper.Messaging.WorkerQueues;
 using Jasper.Persistence;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
+using Jasper.Runtime;
+using Jasper.Runtime.WorkerQueues;
+using Jasper.Serialization;
+using Jasper.Transports;
+using Jasper.Transports.Tcp;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
-using IMessagingAction = Jasper.Messaging.Durability.IMessagingAction;
-using RecoverIncomingMessages = Jasper.Messaging.Durability.RecoverIncomingMessages;
-using RecoverOutgoingMessages = Jasper.Messaging.Durability.RecoverOutgoingMessages;
+using IMessagingAction = Jasper.Persistence.Durability.IMessagingAction;
+using RecoverIncomingMessages = Jasper.Persistence.Durability.RecoverIncomingMessages;
+using RecoverOutgoingMessages = Jasper.Persistence.Durability.RecoverOutgoingMessages;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {

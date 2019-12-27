@@ -1,3 +1,4 @@
+using Jasper.Attributes;
 using Jasper.AzureServiceBus;
 using Jasper.Configuration;
 

@@ -1,7 +1,7 @@
 using System;
 using System.Data.SqlClient;
 using Baseline.Dates;
-using Jasper.Messaging.ErrorHandling;
+using Jasper.ErrorHandling;
 using Polly;
 
 namespace Jasper.Testing.Samples

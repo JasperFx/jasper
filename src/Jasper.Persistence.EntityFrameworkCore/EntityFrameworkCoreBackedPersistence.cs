@@ -1,5 +1,6 @@
 using Jasper.Configuration;
 using Jasper.Persistence.EntityFrameworkCore.Codegen;
+using Jasper.Persistence.Sagas;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {

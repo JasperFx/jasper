@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Messaging.Runtime;
 using TestMessages;
 
 namespace Jasper.Testing.Samples.HandlerDiscovery

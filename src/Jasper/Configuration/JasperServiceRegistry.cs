@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
-using Jasper.Conneg;
-using Jasper.Messaging;
-using Jasper.Messaging.Durability;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Model;
-using Jasper.Messaging.Runtime.Serializers;
-using Jasper.Messaging.Scheduled;
+using Jasper.Logging;
 using Jasper.Persistence;
+using Jasper.Persistence.Durability;
+using Jasper.Persistence.Sagas;
+using Jasper.Runtime;
+using Jasper.Runtime.Handlers;
+using Jasper.Runtime.Scheduled;
+using Jasper.Serialization;
+using Jasper.Serialization.Json;
 using Lamar;
 using Lamar.IoC.Instances;
 using LamarCodeGeneration;
@@ -34,6 +35,7 @@ namespace Jasper.Configuration
             For<IMessageSerializer>().Use<EnvelopeReaderWriter>();
             For<IMessageDeserializer>().Use<EnvelopeReaderWriter>();
 
+            For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Use<NewtonsoftSerializerFactory>();
 
             this.AddSingleton(parent.Advanced);
             this.AddSingleton(parent.CodeGeneration);

@@ -5,7 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Baseline;
-using Jasper.Conneg;
+using Jasper.Attributes;
+using Jasper.Configuration;
 
 namespace Jasper.Util
 {
@@ -72,9 +73,6 @@ namespace Jasper.Util
         {
             if (type.HasAttribute<MessageIdentityAttribute>())
                 return type.GetAttribute<MessageIdentityAttribute>().GetName();
-
-            if (type.CanBeCastTo<ClientMessage>() && type.IsConcreteWithDefaultCtor())
-                return Activator.CreateInstance(type).As<ClientMessage>().Type;
 
             if (type.Closes(typeof(IForwardsTo<>)))
             {

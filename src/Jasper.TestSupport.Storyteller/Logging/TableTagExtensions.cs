@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using Baseline;
 using Baseline.Reflection;
-using Jasper.Messaging.Runtime;
 using StoryTeller.Util;
 
 namespace Jasper.TestSupport.Storyteller.Logging

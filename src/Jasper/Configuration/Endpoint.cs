@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Messaging;
-using Jasper.Messaging.Transports.Sending;
+using Jasper.Runtime;
+using Jasper.Transports.Sending;
 
 namespace Jasper.Configuration
 {

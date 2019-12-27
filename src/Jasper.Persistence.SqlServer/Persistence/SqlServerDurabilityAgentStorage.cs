@@ -1,7 +1,7 @@
 using System.Data;
 using Jasper.Configuration;
-using Jasper.Messaging.Durability;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Util;
 
 namespace Jasper.Persistence.SqlServer.Persistence

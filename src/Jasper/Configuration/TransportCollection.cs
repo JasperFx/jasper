@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Messaging.Configuration;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Local;
-using Jasper.Messaging.Transports.Tcp;
+using Jasper.Transports;
+using Jasper.Transports.Local;
+using Jasper.Transports.Tcp;
 
 namespace Jasper.Configuration
 {

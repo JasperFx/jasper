@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using Jasper.Configuration;
-using Jasper.Messaging.Runtime.Routing;
-using Jasper.Messaging.Transports;
-using Jasper.Messaging.Transports.Local;
-using Jasper.Messaging.Transports.Tcp;
+using Jasper.Runtime.Routing;
+using Jasper.Transports;
+using Jasper.Transports.Local;
+using Jasper.Transports.Tcp;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
 using Microsoft.Extensions.Hosting;

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using IntegrationTests;
-using Jasper.Messaging;
-using Jasper.Messaging.Model;
-using Jasper.Messaging.Tracking;
-using Jasper.Messaging.Transports;
 using Jasper.Persistence.Marten;
+using Jasper.Runtime.Handlers;
+using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;

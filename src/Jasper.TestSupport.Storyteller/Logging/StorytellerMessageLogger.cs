@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Messaging.Logging;
-using Jasper.Messaging.Tracking;
+using Jasper.Logging;
+using Jasper.Tracking;
 using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Results;
-using Envelope = Jasper.Messaging.Runtime.Envelope;
+using Envelope = Jasper.Envelope;
 
 namespace Jasper.TestSupport.Storyteller.Logging
 {
