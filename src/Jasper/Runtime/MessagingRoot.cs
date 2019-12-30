@@ -90,14 +90,17 @@ namespace Jasper.Runtime
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
+            if (_hasStopped) return;
+
             _hasStopped = true;
+
+
 
             // This is important!
             _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
 
 
-
-            await Durability.StopAsync(cancellationToken);
+            if (Durability != null) await Durability.StopAsync(cancellationToken);
 
             Settings.Cancel();
         }
