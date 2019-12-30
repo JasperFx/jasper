@@ -5,9 +5,9 @@
         "Jasper", "Messaging"
     ],
     "identity": "Jasper.Service",
-    "name": "Jasper Service",
+    "name": "Jasper Headless Application",
     "shortName": "jasper.service",
-    "sourceName": "JasperService",
+    "sourceName": "Jasper.Service",
     "preferNameDirectory" : true
 
 }

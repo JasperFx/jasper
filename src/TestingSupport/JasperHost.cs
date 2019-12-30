@@ -8,9 +8,9 @@ using Oakton.AspNetCore;
 namespace Jasper
 {
     /// <summary>
-    ///     Used to bootstrap a Jasper application
+    /// Shortcut to bootstrap simple Jasper applications.
+    /// Syntactical sugar over Host.CreateDefaultBuilder().UseJasper().RunOaktonCommands(args);
     /// </summary>
-    [Obsolete]
     public static class JasperHost
     {
         /// <summary>

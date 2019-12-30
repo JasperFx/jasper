@@ -1,24 +1,31 @@
-using System;
 using Jasper;
-using Jasper.CommandLine;
+using Jasper.AzureServiceBus;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+
 
 namespace JasperService
 {
-    internal class JasperConfig : JasperRegistry
+    internal class JasperConfig : JasperOptions
     {
         public JasperConfig()
         {
-            // Add any necessary jasper options
+            // Any static configuration that does not depend
+            // on the environment or configuration. Can be omitted.
+        }
 
-            // Message publishing rules
-            Publish.AllMessagesToUriValueInConfig("outbound");
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            // You must supply a connection string to Azure Service Bus
+            Endpoints.ConfigureAzureServiceBus(config.GetValue<string>("AzureServiceBusConnectionString"));
 
-            // Register listeners
-            Transports.ListenForMessagesFromUriValueInConfig("inbound");
+            // Listen for incoming messages from a named queue
+            Endpoints.ListenToAzureServiceBusQueue("incoming");
+            Endpoints.PublishAllMessages().ToAzureServiceBusQueue("outgoing");
 
-            // Explicitly registers the Azure Service Bus transport
-            Include<Jasper.AzureServiceBus.AzureServiceBusTransportExtension>();
+            
+            
+
         }
     }
 

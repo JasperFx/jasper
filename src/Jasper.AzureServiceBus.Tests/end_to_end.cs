@@ -246,7 +246,10 @@ namespace Jasper.AzureServiceBus.Tests
             Extensions.UseMessageTrackingTestingSupport();
         }
 
-
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            Endpoints.ConfigureAzureServiceBus(config.GetValue<string>("AzureServiceBusConnectionString"));
+        }
     }
 
     public class ColorHandler

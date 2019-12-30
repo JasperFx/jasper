@@ -1,15 +1,24 @@
-using System;
 using Jasper;
-using Jasper.CommandLine;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+
 
 namespace JasperService
 {
-    internal class JasperConfig : JasperRegistry
+    internal class JasperConfig : JasperOptions
     {
         public JasperConfig()
         {
-            // Add any necessary jasper options
+            // Any static configuration that does not depend
+            // on the environment or configuration. Can be omitted.
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            // Additional Jasper configuration using the application's IHostEnvironment
+            // and compiled IConfiguration
+
+            // This method can be omitted
         }
     }
 
