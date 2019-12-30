@@ -140,6 +140,7 @@ task :pack do
   #pack_nuget 'Jasper.TestSupport.Storyteller'
   #pack_nuget 'Jasper.TestSupport.Alba'
   pack_nuget 'Jasper.RabbitMQ'
+  pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.JsonCommands'
 end
 
