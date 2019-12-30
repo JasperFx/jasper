@@ -142,7 +142,7 @@ task :pack do
   pack_nuget 'Jasper.RabbitMQ'
   pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.JsonCommands'
-  pack_nuget 'Jasper.EntityFrameworkCore'
+  pack_nuget 'Jasper.Persistence.EntityFrameworkCore'
 end
 
 def pack_nuget(project)
