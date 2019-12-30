@@ -1,4 +1,4 @@
-version: 0.9.15.{build}
+version: 0.9.16.{build}
 image: Visual Studio 2017
 
 
@@ -28,9 +28,9 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '0.9.15'
-  package_version: '0.9.15'
-  assembly_version: '0.9.15'
+  version: '0.9.16'
+  package_version: '0.9.16'
+  assembly_version: '0.9.16'
   file_version: '{version}'
   informational_version: '{version}'
 

@@ -35,11 +35,6 @@ namespace Jasper.Transports.Local
 
         public Uri Destination { get; }
 
-        public void Dispose()
-        {
-            // nothing
-        }
-
         public Uri ReplyUri { get; set; }
 
         public bool Latched => false;

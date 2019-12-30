@@ -2,11 +2,11 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '0.9.15' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '0.9.16' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '0.9.15'
+TEMPLATE_VERSION = '0.9.16'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
@@ -137,9 +137,9 @@ task :pack do
   pack_nuget 'Jasper.Persistence.SqlServer'
   pack_nuget 'Jasper.Persistence.Database'
   pack_nuget 'Jasper.Persistence.Postgresql'
-  pack_nuget 'Jasper.TestSupport.Storyteller'
-  pack_nuget 'Jasper.TestSupport.Alba'
-  #pack_nuget 'Jasper.RabbitMQ'
+  #pack_nuget 'Jasper.TestSupport.Storyteller'
+  #pack_nuget 'Jasper.TestSupport.Alba'
+  pack_nuget 'Jasper.RabbitMQ'
   pack_nuget 'Jasper.JsonCommands'
 end
 
