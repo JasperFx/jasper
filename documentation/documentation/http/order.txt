@@ -1,4 +1,0 @@
-endpoints
-conneg
-mvcextender
-policies
