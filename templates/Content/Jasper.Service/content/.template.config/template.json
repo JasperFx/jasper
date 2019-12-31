@@ -4,10 +4,10 @@
     "classifications": [
         "Jasper", "Messaging"
     ],
-    "identity": "Jasper.Service",
+    "identity": "JasperService",
     "name": "Jasper Headless Application",
     "shortName": "jasper.service",
-    "sourceName": "Jasper.Service",
+    "sourceName": "JasperService",
     "preferNameDirectory" : true
 
 }

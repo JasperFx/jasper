@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Jasper.AzureServiceBus" Version="0.9.16" />
+    <PackageReference Include="Jasper.AzureServiceBus" Version="0.9.17" />
   </ItemGroup>
     <ItemGroup>
     <None Update="appsettings.json">

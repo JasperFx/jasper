@@ -250,7 +250,7 @@ task :templates => [:clean] do
     sh "dotnet new --uninstall jasper.azureservicebus"
 		sh "dotnet new -i ../templates/JasperTemplates.#{TEMPLATE_VERSION}.nupkg"
 
-		sh "dotnet new jasper.azureservicebus"
+		sh "dotnet new jasper.rabbitmq"
 
     sh "dotnet restore"
 
