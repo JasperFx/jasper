@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Baseline;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -15,7 +16,7 @@ namespace Jasper.RabbitMQ.Internal
                 Source = props.AppId,
                 ContentType = props.ContentType,
                 MessageType = props.Type,
-
+                ReplyUri = props.ReplyTo.IsEmpty() ? null : new Uri(props.ReplyTo)
             };
 
             if (Guid.TryParse(props.CorrelationId, out var id))
@@ -23,9 +24,7 @@ namespace Jasper.RabbitMQ.Internal
                 envelope.Id = id;
             }
 
-
             if (props.Headers != null) envelope.ReadPropertiesFromDictionary(props.Headers);
-
 
             return envelope;
         }
@@ -36,6 +35,7 @@ namespace Jasper.RabbitMQ.Internal
             properties.AppId = envelope.Source;
             properties.ContentType = envelope.ContentType;
             properties.Type = envelope.MessageType;
+            if (envelope.ReplyUri != null) properties.ReplyTo = envelope.ReplyUri.ToString();
 
             if (properties.Headers == null) properties.Headers = new Dictionary<string, object>();
 

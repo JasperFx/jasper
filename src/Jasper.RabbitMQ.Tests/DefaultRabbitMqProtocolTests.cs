@@ -26,7 +26,8 @@ namespace Jasper.RabbitMQ.Tests
 
         private readonly Envelope theOriginal = new Envelope
         {
-            Id = Guid.NewGuid()
+            Id = Guid.NewGuid(),
+
         };
 
         private readonly Lazy<Envelope> _mapped;
@@ -37,7 +38,8 @@ namespace Jasper.RabbitMQ.Tests
             {
                 Headers = new Dictionary<string, object>()
             },
-            Body = new byte[] {1, 2, 3, 4}
+            Body = new byte[] {1, 2, 3, 4},
+
         };
 
         private Envelope theEnvelope => _mapped.Value;
