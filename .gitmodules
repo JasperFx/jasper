@@ -1,0 +1,3 @@
+[submodule "JasperSamples"]
+	path = JasperSamples
+	url = https://github.com/JasperFx/JasperSamples.git

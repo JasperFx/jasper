@@ -204,7 +204,7 @@ end
 
 "Launches the documentation project in editable mode"
 task :docs => [:prepare_docs] do
-	sh "dotnet stdocs run -v #{BUILD_VERSION}"
+	sh "dotnet stdocs run -v #{BUILD_VERSION} --code src JasperSamples"
 end
 
 "Exports the documentation to jasperfx.github.io - requires Git access to that repo though!"
