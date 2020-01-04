@@ -1,71 +1,72 @@
 <!--title:Bootstrapping & Configuration-->
 
-<[info]>
-Jasper uses the ASP.Net Core `IWebHostBuilder` infrastructure internally for bootstrapping now, even for idiomatic Jasper
-bootstrapping.
-<[/info]>
+As of the 1.0 release, Jasper plays entirely within the existing .Net Core ecosystem and depends on the [generic hosting](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-3.1) released as part of .Net Core 3.0 (`IHostBuilder`) for bootstrapping.
 
-All the examples in this page are using the default, "in the box" options for Jasper. To see what else can be configured or added to a Jasper application, see the folling topics:
+All Jasper configuration starts with the [JasperOptions](https://github.com/JasperFx/jasper/blob/master/src/Jasper/JasperOptions.cs) class and the `UseJasper()` extension method that hangs off of `IHostBuilder`.
 
-<[TableOfContents]>
+Say that you are starting with the `dotnet new worker` template to build a headless Jasper 
+application (i.e., no HTTP endpoints and no user interface of any kind). After adding a reference to the Jasper nuget,
+the `Program` class would look like this:
 
-Even if running "headless" (i.e., without Kestrel), Jasper applications are effectively ASP.Net Core applications and use the ASP.Net Core `IWebHostBuilder` for all bootstrapping and application lifecycle events. 
+<[sample:SimpleJasperWorker]>
 
-In its simplest possible setup, you can fire up a Jasper application in memory like so:
+Do be aware that Jasper can **only function with [Lamar](https://jasperfx.github.io/lamar) as the underlying IoC container** and 
+the call to `UseJasper()` quietly replaces the built in ASP.Net Core DI container with Lamar. 
 
-<[sample:simplest-aspnetcore-bootstrapping]>
-
-More likely though, you'll want to run a Jasper-ized ASP.net Core application from a command line application. Jasper goes all in on command line tooling with quite a bit of its own diagnostics, so naturally it comes with a first class citizen for bootstrapping and executing from the command line
-with `JasperHost` like so:
-
-<[sample:simplest-aspnetcore-run-from-command-line]>
-
-Or with the usage of an extension method in Jasper, this is an exact equivalent:
-
-<[sample:simplest-aspnetcore-run-from-command-line-2]>
+See <[linkto:documentation/bootstrapping/ioc]> for more information.
 
 
+## Applying Jasper to a .Net Generic Host
+
+We already saw above how to call `UseJasper()` with no arguments to add Jasper with all the defaults, but outside of using Jasper as just an in memory mediator, you'll need some further configuration.
+
+If your Jasper configuration is relatively simple, you can modify the `JasperOptions` directly as shown in this overload of `UseJasper(Action<JasperOptions>)`:
+
+<[sample:UseJasperWithInlineOptionsConfiguration]>
+
+If you need to lookup configuration items like connection strings, ports, file paths, and other similar
+items from application configuration -- or need to vary the Jasper configuration by hosting environment -- you 
+can use this overload:
+
+<[sample:UseJasperWithInlineOptionsConfigurationAndHosting]>
+
+Lastly, if you have more complex Jasper configuration, you may want to opt for a custom `JasperOptions`
+type. Let's say we have a class called `CustomJasperOptions` that inherits from `JasperOptions`like this: 
+
+<[sample:CustomJasperOptions]>
+
+That can be applied to a .Net Core application like this:
+
+<[sample:UseJasperWithCustomJasperOptions]>
 
 
 
 
-## Headless Applications
 
-If you are building a Jasper application that does not expose any HTTP endpoints or needs to customize the underlying `IWebHostBuilder`, you can use
-`JasperHost.CreateDefaultBuilder()` as shown below to create a pre-configured `IWebHostBuilder` that is lighter than `WebHost.CreateDefaultBuilder()` that you would use for HTTP projects:
+## Jasper with ASP.Net Core
 
-<[sample:Bootstrapping-Basic2]>
+Adding Jasper to an ASP.Net Core application -- with or without MVC -- isn't really any different. You still use the `UseJasper()` extension method like in this example:
 
-This default `IWebHostBuilder` behind the scenes is this:
-
-<[sample:default-configuration-options]>
+<[sample:InMemoryMediatorProgram]>
 
 
-There is also a shortcut for bootstrapping directly with `JasperHost` like this:
+## JasperOptions
 
-<[sample:Bootstrapping-Basic]>
+The custom `JasperOptions` class shown below demonstrates the main features you can configure or extend for a Jasper application:
 
-Which is just syntactical sugar for:
 
-<[sample:Bootstrapping-Basic2]>
+<[sample:JasperOptionsWithEverything]>
 
-And likewise, to run a Jasper application from a command line application, you can again use `JasperRuntime` like so:
+The major areas are:
 
-<[sample:simplest-idiomatic-command-line]>
+* `ServiceName` -- see the section below
+* `Extensions` -- see <[linkto:documentation/extensions]>
+* `Advanced` -- most of these properties are related to message persistence. See <[linkto:documentation/messaging/transports/durable]> for more information
+* `Services` -- see <[linkto:documentation/bootstrapping/ioc]>
+* `Handlers` -- see <[linkto:documentation/messaging/handling]>
+* `Endpoints` -- see <[linkto:documentation/messaging/transports]>
 
-This option might be enough to do some useful things with Jasper as a command executor at the least, but more likely you'll want to add other elements to your system like additional services to the <[linkto:documentation/bootstrapping/ioc;title=underlying IoC container]>, <[linkto:documentation/messaging/configuration;title=the messaging configuration]>, or <[linkto:documentation/bootstrapping/aspnetcore;title=ASP.Net Core middleware]>.
 
-All configuration and set up of Jasper starts with the `JasperRegistry` class. Typically you would subclass `JasperRegistry`, but if you have only minimal configuration needs, you might bootstrap like this:
-
-<[sample:Bootstrapping-Basic3]>
-
-More likely though is that you will opt to define your application with a custom `JasperRegistry`:
-
-<[sample:CustomJasperRegistry]>
-
-And then use that to bootstrap your application:
-
-<[sample:Bootstrapping-with-custom-JasperRegistry]>
 
 
 

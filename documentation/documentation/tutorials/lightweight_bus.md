@@ -1,6 +1,6 @@
 <!--title:Using Jasper as a Lightweight Service Bus-->
 
-Using its own built in <[linkto:documentation/messaging/transports/tcp]>, Jasper can be used as a very lightweight service bus to send messages asynchronously between Jasper applications. In this tutorial, we're going to create two Jasper services that exchange messages with each either.
+Using its own built in <[linkto:documentation/messaging/transports/tcp]>, Jasper can be used as a very lightweight service bus to send messages asynchronously between Jasper applications. In this tutorial, we're going to create two Jasper services that exchange messages with each either. All of the [code for the sample Ping Pong application is in GitHub](https://github.com/JasperFx/JasperSamples/tree/master/PingPong).
 
 
 <[info]>
