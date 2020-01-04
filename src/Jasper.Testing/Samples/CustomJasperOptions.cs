@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Tracking;
+using Lamar;
 using LamarCodeGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -94,6 +96,8 @@ namespace Jasper.Testing.Samples
         public JasperOptionsWithEverything()
         {
             // This is strictly for logging and diagnostics identification
+            // By default, this is just the name of the main application
+            // assembly
             ServiceName = "MyService";
 
             // Extensions lets you apply or query Jasper extensions
@@ -139,6 +143,17 @@ namespace Jasper.Testing.Samples
         public static IHostBuilder CreateHostBuilder() =>
             Host.CreateDefaultBuilder()
                 .UseJasper<CustomJasperOptions>();
+        // ENDSAMPLE
+
+
+        // SAMPLE: GetAtTheContainer
+        public void GetAtContainer(IServiceProvider services)
+        {
+            // The IHost.Services service provider is the Lamar
+            // IContainer, so you can just downcast it
+            IContainer container = (IContainer)services;
+        }
+
         // ENDSAMPLE
 
     }
