@@ -1,4 +1,4 @@
-<!--title:Scheduled Message Execution-->
+<!--title:Scheduling Message Execution-->
 
 <[info]>
 This functionality is perfect for "timeout" conditions like "send an email if this issue isn't solved within 3 days." Internally,
@@ -22,20 +22,7 @@ No points for style here, the scheduled message execution simply polls in a back
 In both cases, there is a guarantee that each scheduled message will be executed on only one node. 
 
 
-## Schedule Execution Locally
-
-You can schedule a message to be executed in the local system. Either by specifying a `TimeSpan` delay like this:
-
-<[sample:ScheduleLocally-In-3-Days]>
-
-Or specify the execution at an exact time like this:
-
-<[sample:ScheduleLocally-At-5-PM-Tomorrow]>
-
-Note that if you are using <[linkto:documentation/messaging/transports/durable]>, the message could be executed by any running node within the system rather than the currently running process. If you aren't using durable messaging, the message is kept and scheduled in memory. Do be aware of that for the sake of memory usage and whether or not the scheduled execution should survive past the lifetime of the current process.
-
-
-## Schedule a Message to Another System
+## Schedule Send Message to Another System
 
 Likewise, you can send a message to another system and request that the message be executed later, either by a time delay:
 
@@ -48,6 +35,20 @@ or at a certain time:
 If you wanted to, the methods above are really just syntactical sugar for this below:
 
 <[sample:ScheduleSend-Yourself]>
+
+## Schedule Execution Locally
+
+You can schedule a message to be executed in the local system at a scheduled time. Either by specifying a `TimeSpan` delay like this:
+
+<[sample:ScheduleLocally-In-3-Days]>
+
+Or specify the execution at an exact time like this:
+
+<[sample:ScheduleLocally-At-5-PM-Tomorrow]>
+
+Note that if you are using <[linkto:documentation/publishing/transports/durable]>, the message could be executed by any running node within the system rather than the currently running process. If you aren't using durable messaging, the message is kept and scheduled in memory. Do be aware of that for the sake of memory usage and whether or not the scheduled execution should survive past the lifetime of the current process.
+
+
 
 
 

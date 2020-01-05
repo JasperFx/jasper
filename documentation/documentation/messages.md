@@ -1,4 +1,4 @@
-<!--title:Reading, Writing, and Versioning Messages-->
+<!--title:Reading, Writing, and Versioning Messages, Commands, and Events-->
 
 Jasper ultimately needs to be able to dehydrate any published message to a `byte[]` then ship that information along with the related header
 metadata to the receiving application that will ultimately hydrate that `byte[]` back to a .Net object. Out of the box, Jasper comes with support for using [Newtonsoft.Json](https://www.newtonsoft.com/json) to serialize and deserialize objects for

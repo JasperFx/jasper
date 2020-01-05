@@ -15,8 +15,4 @@ This functionality is useful for long lived workflows where there are time limit
 
 As of today, the only supported option is the default in memory option that we think is sufficient for short lived retries and limited workflow validations. In the longer term, Jasper will support database persisted delayed jobs. Follow [this GitHub issue](https://github.com/JasperFx/jasper/issues/199) for any progress on that front.
 
-## Scheduling Jobs Locally
 
-You also have the ability to schedule a message to be processed locally in the current system at a later time:
-
-<[sample:schedule-job-locally]>

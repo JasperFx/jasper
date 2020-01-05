@@ -1,4 +1,4 @@
-<!--title:Jasper.JsonCommands-->
+<!--title:Message Json Schema Commands-->
 
 The `Jasper.JsonCommands` extention adds a pair of commands to your application that allow you to export [JSON schema](http://json-schema.org/) documents from your handled message types or to generate C# [DTO](https://en.wikipedia.org/wiki/Data_transfer_object) classes to 
 match JSON schema files. The purpose of this functionality is to avoid the necessity of having to share message types through some kind of shared DTO assembly in environments where that may be

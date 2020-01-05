@@ -1,8 +1,0 @@
-configuring_jasper
-aspnetcore
-configuration
-console
-ioc
-logging
-ihostedservice
-environment_tests
