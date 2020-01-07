@@ -1,4 +1,0 @@
-persistence
-transactions
-sqlserver
-postgresql

@@ -12,6 +12,7 @@
 
     <!-- Bootstrap Core CSS -->
     <[css:content/bootstrap.min.css]>
+    <[css:content/prism.css]>
 
 
     </head>
@@ -21,63 +22,199 @@
 <a href="https://github.com/JasperFx/jasper"><img style="z-index: 5000; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
 -->
 
-<header>
-  <!-- Fixed navbar -->
-  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav">
-    <a href="<[RootUrl]>" class="navbar-brand">Jasper</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#about">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#getting-started">Getting Started</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#documentation">Documentation</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#related">Related Projects</a>
-        </li>
+      <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav">
+          <a href="<[RootUrl]>" class="navbar-brand">Jasper</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#about">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#getting-started">Getting Started</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#documentation">Documentation</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#related">Related Projects</a>
+              </li>
 
-      </ul>
-      <form class="form-inline mt-2 mt-md-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
-        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
-      </form>
-    </div>
-  </nav>
-</header>
+            </ul>
+            <form class="form-inline mt-2 mt-md-0">
+              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
+              <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+            </form>
+          </div>
+        </nav>
+      </header>
 
 
     
-			  <img src="/content/banner.png" width="100%" align="middle" />
+      <img src="/content/banner.png" width="100%" align="middle" />
 
+      <div class="container" >
+        <div style="text-align: center">
+          <h2 style="margin-top:20px">Tools for Modern .Net Server Side Systems</h2>
+          <p class="lead">
+              <a href="https://ci.appveyor.com/project/jasper-ci/jasper"><img src="https://ci.appveyor.com/api/projects/status/o23fp3diks7024x9?svg=true"></img></a>
+              <a href="https://gitter.im/jasperfx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/jasperfx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
+          </p>
+        </div>
+        <br>
+
+        <hr></hr>
         <div class="container" >
-            <div style="text-align: center">
-                    <h2 style="margin-top:20px">Tools for Modern .Net Server Side Systems</h2>
-                    <p class="lead">
-                        <a href="https://ci.appveyor.com/project/jasper-ci/jasper"><img src="https://ci.appveyor.com/api/projects/status/o23fp3diks7024x9?svg=true"></img></a>
-                        <a href="https://gitter.im/jasperfx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/jasperfx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
-                    </p>
+
+          <div class="row" id="about"></div>
+            <h2 align="middle">About Jasper</h2>
+
+            <p>Some stuff about Jasper</p>
+
+            <div class="card-deck">
+
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">Execution Pipeline</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                  </div>
+                </div>
+
+
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">Local Worker Queues</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                  </div>
+                </div>
+
+
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">Asynchronous Messaging</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                  </div>
+                </div>
+
             </div>
-            <br>
+
+
+            <div align="middle"><img src="/content/JasperIntroduction.png" /></div>
+          </div>
+
+          
+          <div class="row" id="getting-started">
+            <h2 align="middle">Getting Started</h2>
+  
+            
+  
+          </div>
+          <hr></hr>
+
+  
+          <div class="row" id="documentation">
+            <h2>Documentation</h2>
+            <[TableOfContents]>
+            
+          </div>
+
+          <hr></hr>
+          <div class="row" id="related">
+            <h2>The JasperFx Family of Open Source Projects</h2>
+
+            <div class="row">
+              <div class="card-deck row-cols-3 row-cols-md-3">
+                <div class="col mb-4">
+                  <div class="card" style="width: 18rem;">
+                    <img src="content/jasper-icon.png" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Jasper</h5>
+                      <p class="card-text">Next generation framework for server side .Net Core applications</p>
+                      <a href="#" class="btn btn-primary">Learn More</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col mb-4">
+                  <div class="card" style="width: 18rem;">
+                    <img style="display:block;margin-left:auto;margin-right:auto;width:50%" src="https://jasperfx.github.io/marten/content/images/emblem.png" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Marten</h5>
+                      <p class="card-text">Postgresql as a Document Db and Event Store for .Net Development</p>
+                      <a href="http://jasperfx.github.io/marten" class="btn btn-primary">Learn More</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col mb-4">
+                  <div class="card" style="width: 18rem;">
+                    <img src="content/lamar.jpg" class="card-img-top" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title">Lamar</h5>
+                      <p class="card-text">Fast Inversion of Control Tool and Sundry Items of Roslyn Chicanery</p>
+                      <a href="https://jasperfx.github.io/lamar" class="btn btn-primary">Learn More</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col mb-4">
+                  <div class="card" style="width: 18rem;">
+                    <img style="width:100%;display:block" src="content/oakton.png" class="card-img-top"></img>
+                    <div class="card-body">
+                      <h5 class="card-title">Oakton</h5>
+                      <p class="card-text">Parsing and Utilities for Command Line Tools in .Net</p>
+                      <a href="https://jasperfx.github.io/oakton" class="btn btn-primary">Learn More</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col mb-4">
+                  <div class="card" style="width: 18rem;">
+                    <img style="width:100%;display:block" src="content/alba.jpg" class="card-img-top">
+                    <div class="card-body">
+                      <h5 class="card-title">Alba</h5>
+                      <p class="card-text">Easy integration testing helper for ASP.Net Core applications</p>
+                      <a href="https://jasperfx.github.io/alba" class="btn btn-primary">Learn More</a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col mb-4">
+                  <div class="card" style="width: 18rem;">
+                    <img style="width:100$;display:block" src="content/baseline.png" class="card-img-top"></img>
+                    <div class="card-body">
+                      <h5 class="card-title">Baseline</h5>
+                      <p class="card-text">Grab bag of generic utilities and extension methods for .Net development</p>
+                      <a href="https://github.com/jasperfx/baseline" class="btn btn-primary">Learn More</a>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+          </div>
+
+        </div>
+        
 
 
 
 
+      </div> <!-- /container -->
 
-    </div> <!-- /container -->
-
-        <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type='text/javascript' src="/content/bootstrap.min.js"></script>
-        <[script:content/embed.js]>
+      <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+      <script type='text/javascript' src="/content/bootstrap.min.js"></script>
+      <[script:content/embed.js]>
+      <[script:content/prism.js]>
 
 
 <script>
