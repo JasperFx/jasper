@@ -13,113 +13,70 @@
     <!-- Bootstrap Core CSS -->
     <[css:content/bootstrap.min.css]>
 
-    <!-- Custom CSS -->
-    <[css:content/stylish-portfolio.css]>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+
     </head>
-    <body>
+    <body data-spy="scroll" data-target="#nav" data-offset="0" style="position: relative;">
 
+      <!--
 <a href="https://github.com/JasperFx/jasper"><img style="z-index: 5000; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+-->
+
+<header>
+  <!-- Fixed navbar -->
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav">
+    <a href="<[RootUrl]>" class="navbar-brand">Jasper</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#getting-started">Getting Started</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#documentation">Documentation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#related">Related Projects</a>
+        </li>
+
+      </ul>
+      <form class="form-inline mt-2 mt-md-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
+        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+</header>
 
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="banner">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="<[RootUrl]>" class="navbar-brand">JasperFx</a>
-        </div>
-        <nav class="collapse navbar-collapse" role="navigation">
-          <ul class="nav navbar-nav pull-right">
-            <li>
-              <[linkto:documentation/getting_started]>
-            </li>
-            <li>
-              <[linkto:documentation]>
-            </li>
-            <li>
-<a href="https://gitter.im/JasperFx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/JasperFx/https://github.com/JasperFx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
-            </li>
-            <li>
-              <a href="https://github.com/JasperFx/jasper/blob/master/documentation/<[FilePath]>"  class="text-muted"><i class="fa fa-github"></i> Edit on GitHub</a>
-            </li>
-          </ul>
-          <div class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-              <input id="search" type="search" class="form-control" placeholder="Search">
-            </div>
-          </div>
-        </nav>
-
-      </div>
-    </nav>
-
-        <!-- Header -->
-    <header id="top" class="header">
+    
 			  <img src="/content/banner.png" width="100%" align="middle" />
 
-
+        <div class="container" >
             <div style="text-align: center">
-                    <h1 style="margin-top:25px">JasperFx</h1>
-                    <h2>Tools for Modern .Net Server Side Systems</h2>
+                    <h2 style="margin-top:20px">Tools for Modern .Net Server Side Systems</h2>
                     <p class="lead">
                         <a href="https://ci.appveyor.com/project/jasper-ci/jasper"><img src="https://ci.appveyor.com/api/projects/status/o23fp3diks7024x9?svg=true"></img></a>
                         <a href="https://gitter.im/jasperfx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/jasperfx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
                     </p>
             </div>
             <br>
-    </header>
-
-    <div class="container" style="margin-top:25px">
-      <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-3"><a href="documentation"><img src="content/jasper-icon.png"></img></a></div>
-        <div class="col-md-7" style="vertical-align: middle"><h4>Jasper:  Next generation framework for server side .Net Core applications</h4></div>
-      </div>
-      <div class="row" style="margin-top:50px">
-        <div class="col-md-2"></div>
-        <div class="col-md-3" style="text-align: center;"><a href="http://jasperfx.github.io/marten"><img style="display:block;margin-left:auto;margin-right:auto;width:50%" src="http://jasperfx.github.io/marten/content/images/emblem.png"></img></a></div>
-        <div class="col-md-7" style="vertical-align: middle"><h4>Marten:  Postgresql as a Document Db and Event Store for .Net Development</h4></div>
-      </div>
-
-      <div class="row" style="margin-top:50px">
-        <div class="col-md-2"></div>
-        <div class="col-md-3"><a style="text-align: center;" href="http://jasperfx.github.io/lamar"><img style="width:200px;display:block" src="content/lamar.jpg"></img></a></div>
-        <div class="col-md-7" style="vertical-align: middle"><h4>Lamar:  Fast Inversion of Control Tool and Sundry Items of Roslyn Chicanery</h4></div>
-      </div>
-
-      <div class="row" style="margin-top:50px">
-        <div class="col-md-2"></div>
-        <div class="col-md-3"><a style="text-align: center;" href="http://jasperfx.github.io/oakton"><img style="width:200px;display:block" src="content/oakton.png"></img></a></div>
-        <div class="col-md-7" style="vertical-align: middle"><h4>Oakton:  Parsing and Utilities for Command Line Tools in .Net</h4></div>
-      </div>
-
-      <div class="row" style="margin-top:50px">
-        <div class="col-md-2"></div>
-        <div class="col-md-3"><a href="https://jasperfx.github.io/alba"><img style="width:200px;display:block" src="content/alba.jpg"></img></a></div>
-        <div class="col-md-7" style="vertical-align: middle"><h4>Alba:  Easy integration testing helper for ASP.Net Core applications</h4></div>
-      </div>
-
-      <div class="row" style="margin-top:50px">
-        <div class="col-md-2"></div>
-        <div class="col-md-3"><a href="https://github.com/jasperfx/baseline"><img style="width:200px;display:block" src="content/baseline.png"></img></a></div>
-        <div class="col-md-7" style="vertical-align: middle"><h4>Baseline:  Grab bag of generic utilities and extension methods for .Net development</h4></div>
-      </div>
-
-
-    </div>
 
 
 
-
-
-
-
-      <hr>
 
 
     </div> <!-- /container -->
 
         <script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script type='text/javascript' src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script type='text/javascript' src="/content/bootstrap.min.js"></script>
         <[script:content/embed.js]>
 
 
