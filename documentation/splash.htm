@@ -34,14 +34,15 @@
               <li class="nav-item">
                 <a class="nav-link" href="#about">About</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#getting-started">Getting Started</a>
-              </li>
+
               <li class="nav-item">
                 <a class="nav-link" href="#documentation">Documentation</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#related">Related Projects</a>
+              </li>
+              <li class="nav-item">
+                <[linkto:getting_started;<a class="nav-link" href="{href}">Getting Started</a>]>
               </li>
 
             </ul>
@@ -73,14 +74,14 @@
           <div class="row" id="about"></div>
             <h2 align="middle">About Jasper</h2>
 
-            <p>Some stuff about Jasper</p>
+            <br/>
 
             <div class="card-deck">
 
                 <div class="card" style="width: 18rem;">
                   <div class="card-body">
-                    <h5 class="card-title">Execution Pipeline</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <h5 class="card-title">Command Processing</h5>
+                    <p class="card-text">Jasper can be used as the mechanism to execute the <i>command</i> inputs into a <a href="https://martinfowler.com/bliki/CQRS.html">CQRS architecture</a>. Jasper provides a uniquely efficient command execution pipeline that will allow you to author command handlers with the cleanest code possible. </p>
                     <a href="#" class="btn btn-primary">Learn More</a>
                   </div>
                 </div>
@@ -88,8 +89,9 @@
 
                 <div class="card" style="width: 18rem;">
                   <div class="card-body">
-                    <h5 class="card-title">Local Worker Queues</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <h5 class="card-title">Mediator</h5>
+                    <p class="card-text">Jasper can be used as a low ceremony <i>mediator</i> tool within HTTP services to decouple the system's HTTP mechanics from the rest of the application for more maintainable code. Using Jasper's worker queues functionality,
+                    it also acts as an in-process command bus.</p>
                     <a href="#" class="btn btn-primary">Learn More</a>
                   </div>
                 </div>
@@ -97,8 +99,8 @@
 
                 <div class="card" style="width: 18rem;">
                   <div class="card-body">
-                    <h5 class="card-title">Asynchronous Messaging</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <h5 class="card-title">Microservice Integration</h5>
+                    <p class="card-text">If you are using a <a href="https://martinfowler.com/articles/microservices.html">microservice architecture</a> in .Net, Jasper's command processing can be combined with its strong asynchronous messaging support for effective and reliable system integration.   </p>
                     <a href="#" class="btn btn-primary">Learn More</a>
                   </div>
                 </div>
@@ -106,26 +108,69 @@
             </div>
 
 
-            <div align="middle"><img src="/content/JasperIntroduction.png" /></div>
+            <br />
+            <br />
+
+            <div align="middle"><img src="/content/JasperIntroduction.png" style="width: 100%;" /></div>
+            
+            <br />
+            <br />
+
+            <div class="card-deck">
+
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">Execution Pipeline</h5>
+                  <p class="card-text">Jasper's "special sauce" is using Roslyn's runtime code compilation to eliminate a great deal of the runtime overhead inherent in most .Net application frameworks while also allowing Jasper to provide a rich middleware strategy for cross-cutting concerns.</p>
+                  <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+              </div>
+
+
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">Durable Message Processing</h5>
+                  <p class="card-text">Jasper has robust support for durable <a href="https://en.wikipedia.org/wiki/Store_and_forward">store and forward messaging</a> patterns. Using your application database, Jasper allows you to side step ugly distributed transactions by leaning on the <a href="https://microservices.io/patterns/data/transactional-outbox.html">outbox pattern</a>.</p>
+                  <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+              </div>
+
+
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">External Messaging Transports</h5>
+                  <p class="card-text">External messaging transport tools like Rabbit MQ or Azure Service Bus provide a lot of functionality to support common messaging patterns, 
+                    but there's still a lot of work to connect <b>your</b> application code to the external queues. Jasper steps in to deal with all the "connective tissue" between
+                    your application code and the external queues.  </p>
+                  <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+              </div>
+
           </div>
 
-          
-          <div class="row" id="getting-started">
-            <h2 align="middle">Getting Started</h2>
-  
-            
-  
+
           </div>
+
+          <br />
+          <br />
+
+
           <hr></hr>
 
   
           <div class="row" id="documentation">
             <h2>Documentation</h2>
+            <br />
             <[TableOfContents]>
             
           </div>
 
           <hr></hr>
+
+          <br />
+          <br />
+
+
           <div class="row" id="related">
             <h2>The JasperFx Family of Open Source Projects</h2>
 
