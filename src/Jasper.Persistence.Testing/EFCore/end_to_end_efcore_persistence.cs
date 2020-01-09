@@ -7,6 +7,7 @@ using Jasper.Persistence.EntityFrameworkCore;
 using Jasper.Persistence.SqlServer;
 using Jasper.Transports;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -15,6 +16,7 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.EFCore
 {
+
     public class EFCorePersistenceContext : BaseContext
     {
         public EFCorePersistenceContext() : base(false)

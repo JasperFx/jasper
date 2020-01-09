@@ -1,4 +1,0 @@
-persistence
-middleware
-outbox
-subscriptions

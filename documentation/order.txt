@@ -1,9 +1,9 @@
 getting_started
 bootstrapping
 messages
-handling
-local
-publishing
+execution
+mediator
+integration
 durability
 testing
 ioc

@@ -120,8 +120,9 @@
 
               <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                  <h5 class="card-title">Execution Pipeline</h5>
-                  <p class="card-text">Jasper's "special sauce" is using Roslyn's runtime code compilation to eliminate a great deal of the runtime overhead inherent in most .Net application frameworks while also allowing Jasper to provide a rich middleware strategy for cross-cutting concerns.</p>
+                  <h5 class="card-title">Local Work Queues</h5>
+                  <p class="card-text">Jasper has a robust local work queueing system around its execution pipeline build on top of the proven <a href="https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/dataflow-task-parallel-library">TPL Dataflow library</a>. This support
+                  allows for asynchronous processing with configurable message routing, priorities, and parallelization.</p>
                   <a href="#" class="btn btn-primary">Learn More</a>
                 </div>
               </div>
