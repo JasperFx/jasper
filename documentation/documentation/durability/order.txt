@@ -1,3 +1,5 @@
+endpoints
+agent
 managing
 sqlserver
 postgresql

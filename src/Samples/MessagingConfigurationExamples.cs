@@ -66,11 +66,24 @@ namespace Jasper.Testing.Samples
     {
         public DurableTransportApp()
         {
-            // Set up a listener (this is optional)
-            Endpoints.ListenAtPort(2200).Durably();
+            Endpoints
+                .PublishAllMessages()
+                .ToServerAndPort("server1", 2201)
 
-            // With the RabbitMQ transport
-            Endpoints.ListenForMessagesFrom("rabbitmq://server1/durable/queue1");
+                // This applies the store and forward persistence
+                // to the outgoing message
+                .Durably();
+
+            // Set up a listener (this is optional)
+            Endpoints.ListenAtPort(2200)
+
+                // This applies the message persistence
+                // to the incoming endpoint such that incoming
+                // messages are first saved to the application
+                // database before attempting to handle the
+                // incoming message
+                .Durably();
+
         }
     }
     // ENDSAMPLE

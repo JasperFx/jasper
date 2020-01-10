@@ -14,6 +14,14 @@ namespace Jasper.Persistence.Testing.Samples
             // Enables Sql Server-backed message persistence using
             // a connection string from your application's appsettings.json
             Extensions.PersistMessagesWithSqlServer(config.GetConnectionString("sqlserver"));
+
+
+            // If running in development mode, just rebuild the
+            // message database storage objects on application startup
+            if (hosting.IsDevelopment())
+            {
+                Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+            }
         }
     }
     // ENDSAMPLE
