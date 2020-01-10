@@ -24,13 +24,28 @@ namespace Jasper.Testing.Bootstrapping
         }
     }
 
+    // SAMPLE: AppWithHandlerPolicy
+    public class AppWithHandlerPolicy : JasperOptions
+    {
+        public AppWithHandlerPolicy()
+        {
+            Handlers.GlobalPolicy<WrapWithSimple>();
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: WrapWithSimple
     public class WrapWithSimple : IHandlerPolicy
     {
         public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
         {
-            foreach (var chain in graph.Chains) chain.Middleware.Add(new SimpleWrapper());
+            foreach (var chain in graph.Chains)
+            {
+                chain.Middleware.Add(new SimpleWrapper());
+            }
         }
     }
+    // ENDSAMPLE
 
     public class SimpleWrapper : Frame
     {

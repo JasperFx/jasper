@@ -18,11 +18,17 @@ service bus as part of the same transaction with whatever routing rules apply to
 * Cascading messages returned from handler methods will not be sent out until after the original message succeeds and is part of the underlying
   transport transaction
 * Null's returned by handler methods are simply ignored
-* There is a significant performance advantage to using cascading messages instead of explicitly calling `IMessageContext.Send()` if you are using the
-  LightningQueues transport
 * The cascading message feature was explicitly designed to make unit testing handler actions easier by shifting the test strategy 
   to [state-based](http://blog.jayfields.com/2008/02/state-based-testing.html) where you mostly need to verify the state of the response
   objects instead of mock-heavy testing against calls to `IMessageContext`.
+
+The response types of your message handlers can be:
+
+1. A specific message type
+1. `object`
+1. The Jasper `Envelope` if you need to customize how the cascading response is to be sent (schedule send, mark expiration times, route yourself, etc.)
+1. `IEnumerable<object>` or `object[]` to make multiple responses
+1. A [Tuple](https://docs.microsoft.com/en-us/dotnet/csharp/tuples) type to express the exact kinds of responses your message handler returns
 
 
 ## Request/Reply Scenarios
@@ -60,9 +66,9 @@ be `object` like this sample shown below:
 <[sample:ConditionalResponseHandler]>
 
 
-## Delayed Messages
+## Schedule Response Messages
 
-You may want to raise a delayed message by using the `DelayedResponse` class as shown below:
+You may want to raise a delayed or scheduled response. In this case you will need to return an <[linkto:documentation/integration/customizing_envelopes;title=Envelope]> for the response as shown below:
 
 <[sample:DelayedResponseHandler]>
 
@@ -73,39 +79,6 @@ cast to `IEnumerable<object>`, and Jasper will treat each element as a separate 
 An empty enumerable is just ignored.
 
 <[sample:MultipleResponseHandler]>
-
-## Send Message Back to the Sender
-
-If you want to send a message right back to the original sender node, you can return your message
-wrapped by the `RespondToSender` type:
-
-<[sample:BackToSenderHandler]>
-
-
-## Send Message to a Specific Channel
-
-If you need to trigger a message that needs to be sent to a specific node and want to bypass the 
-normal subscription routing, you can use the `SendDirectlyTo` wrapper like this:
-
-<[sample:GoDirectlyHandler]>
-
-
-## Fluent Interface for Controlling Responses
-
-Jasper also supports a limited fluent interface to more exactly control how the cascading message
-should be handled:
-
-<[sample:RespondsHandler]>
-
-
-## Custom Cascading Message Behavior
-
-Finally, you can create your own custom response behavior by creating your own implementation of
-`ISendMyself` and returning that wrapper object from your handler methods:
-
-<[sample:ISendMyself-Specially]>
-
-`DelayedResponse`, `RespondToSender`, and `SendDirectlyTo` are implementations of `ISendMyself`.
 
 
 ## Using C# Tuples as Return Values

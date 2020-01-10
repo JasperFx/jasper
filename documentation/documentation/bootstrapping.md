@@ -64,7 +64,7 @@ The major areas are:
 * `Advanced` -- most of these properties are related to message persistence. See <[linkto:documentation/durability]> for more information
 * `Services` -- see <[linkto:documentation/ioc]>
 * `Handlers` -- see <[linkto:documentation/execution]>
-* `Endpoints` -- see <[linkto:documentation/publishing/transports]>
+* `Endpoints` -- see <[linkto:documentation/execution/transports]>
 
 
 

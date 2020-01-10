@@ -262,6 +262,28 @@ namespace Jasper
         }
 
 
+        /// <summary>
+        /// Schedule this envelope to be sent or executed
+        /// after a delay
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <returns></returns>
+        public Envelope ScheduleDelayed(TimeSpan delay)
+        {
+            ExecutionTime = DateTime.UtcNow.Add(delay);
+            return this;
+        }
 
+        /// <summary>
+        /// Schedule this envelope to be sent or executed
+        /// at a certain time
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public Envelope ScheduleAt(DateTime time)
+        {
+            ExecutionTime = time.ToUniversalTime();
+            return this;
+        }
     }
 }

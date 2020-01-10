@@ -22,21 +22,6 @@ Today, Jasper has the ability to:
 * Use custom Polly error handling to do whatever you want, as long as the policy returns a Jasper `IContinuation` object
 
 
-## IContinuation
-
-If you want to write a custom error handler, you may need to write a custom `IContinuation` that just tells Jasper "what do I do now with this message?":
-
-<[sample:IContinuation]>
-
-Internally, Jasper has built in `IContinuation` strategies for retrying messages, moving messages to the error queue, and requeueing messages among others.
-
-## Exponential Backoff Policies
-
-By integrating Polly for our retry policies, Jasper gets [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) retry scheduling nearly for free.
-
-To reschedule a message to be retried later at increasingly longer wait times, use this syntax:
-
-<[sample:AppWithErrorHandling]>
 
 
 
@@ -95,5 +80,25 @@ The most common exception handling actions are shown below:
 The `RetryLater()` function uses <[linkto:documentation/scheduled]>.
 
 See also <[linkto:documentation/execution/dead_letter_queue]> for more information.
+
+
+
+## Exponential Backoff Policies
+
+By integrating Polly for our retry policies, Jasper gets [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff) retry scheduling nearly for free.
+
+To reschedule a message to be retried later at increasingly longer wait times, use this syntax:
+
+<[sample:AppWithErrorHandling]>
+
+## IContinuation
+
+If you want to write a custom error handler, you may need to write a custom `IContinuation` that just tells Jasper "what do I do now with this message?":
+
+<[sample:IContinuation]>
+
+Internally, Jasper has built in `IContinuation` strategies for retrying messages, moving messages to the error queue, and requeueing messages among others.
+
+
 
 

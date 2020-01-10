@@ -1,7 +1,7 @@
 <!--title:Dead Letter Envelopes-->
 
 <[warning]>
-You will need to use <[linkto:documentation/transports/durable]> to have the *dead letter queue* be persisted.
+You will need to use some kind of <[linkto:documentation/durability]> to have the *dead letter queue* be persisted.
 <[/warning]>
 
 If a message cannot be processed after all its retries or if your <[linkto:documentation/execution/errorhandling;title=error handling policies]> explicitly use the `MoveToErrorQueue()` functionality, those envelopes are moved out of the active queues and saved

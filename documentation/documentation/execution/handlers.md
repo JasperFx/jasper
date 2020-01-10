@@ -1,4 +1,4 @@
-<!--title:Message Handlers -->
+<!--title:Writing Message Handlers -->
 
 Jasper purposely eschews the typical `IHandler<T>` approach that most .Net messaging frameworks take in favor of a more flexible
 model that relies on naming conventions. This might throw some users that are used to being guided by implementing an expected interface
@@ -66,7 +66,7 @@ constructor like this example that takes in a dependency on an `IDocumentSession
 
 <[sample:HandlerBuiltByConstructorInjection]>
 
-See <[linkto:documentation/bootstrapping/ioc]> for more information about how Jasper integrates the application's IoC container.
+See <[linkto:documentation/ioc]> for more information about how Jasper integrates the application's IoC container.
 
 ## Method Injection
 
@@ -82,7 +82,7 @@ So, what can be injected as an argument to your message handler?
 1. Any service that is registered in your application's IoC container
 1. `Envelope`
 1. The current time in UTC if you have a parameter like `DateTime now` or `DateTimeOffset now`
-1. Services or variables that match a registered code generation strategy. See <[linkto:documentation/bootstrapping/middleware_and_codegen]> for more information on this mechanism.
+1. Services or variables that match a registered code generation strategy. See <[linkto:documentation/execution/middleware_and_codegen]> for more information on this mechanism.
 
 ## Cascading Messages from Actions
 
@@ -96,5 +96,12 @@ argument like this:
 
 <[sample:HandlerUsingEnvelope]>
 
-See <[linkto:documentation/publishing/customizing_envelopes]> for more information on interacting with `Envelope` objects.
+See <[linkto:documentation/integration/customizing_envelopes]> for more information on interacting with `Envelope` objects.
 
+## Using the Current IMessageContext
+
+If you want to access or use the current `IMessageContext` for the message being handled to send response messages
+or maybe to enqueue local commands within the current outbox scope, just take in `IMessageContext` as a method argument 
+like in this example:
+
+<[sample:PingHandler]>
