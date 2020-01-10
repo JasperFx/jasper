@@ -14,6 +14,8 @@
     <[css:content/bootstrap.min.css]>
     <[css:content/prism.css]>
 
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+
 
     </head>
     <body data-spy="scroll" data-target="#nav" data-offset="0" style="position: relative;">
@@ -34,15 +36,15 @@
               <li class="nav-item">
                 <a class="nav-link" href="#about">About</a>
               </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="#documentation">Documentation</a>
-              </li>
               <li class="nav-item">
                 <a class="nav-link" href="#related">Related Projects</a>
               </li>
               <li class="nav-item">
-                <[linkto:getting_started;<a class="nav-link" href="{href}">Getting Started</a>]>
+                <[linkto:documentation;<a class="nav-link" href="{href}">Documentation</a>]>
+              </li>
+
+              <li class="nav-item">
+                <[linkto:documentation/getting_started;<a class="nav-link" href="{href}">Getting Started</a>]>
               </li>
 
             </ul>
@@ -92,7 +94,7 @@
                     <h5 class="card-title">Mediator</h5>
                     <p class="card-text">Jasper can be used as a low ceremony <i>mediator</i> tool within HTTP services to decouple the system's HTTP mechanics from the rest of the application for more maintainable code. Using Jasper's worker queues functionality,
                     it also acts as an in-process command bus.</p>
-                    <a href="#" class="btn btn-primary">Learn More</a>
+                    <a href="/documentation/mediator" class="btn btn-primary">Learn More</a>
                   </div>
                 </div>
 
@@ -155,16 +157,6 @@
           <br />
           <br />
 
-
-          <hr></hr>
-
-  
-          <div class="row" id="documentation">
-            <h2>Documentation</h2>
-            <br />
-            <[TableOfContents]>
-            
-          </div>
 
           <hr></hr>
 
