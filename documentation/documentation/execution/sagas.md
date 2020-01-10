@@ -9,8 +9,11 @@ consists of a couple parts:
 1. A saga message handler that inherits from `StatefulSagaOf<T>`, where the "T" is the saga state document type
 1. A saga persistence strategy registered in Jasper that knows how to load and persist the saga state documents
 
-Right now the only options for saga persistence are the default in memory model and an option that uses <[linkto:documentation/extensions/marten/sagas;title=Marten and Postgresql]> for
-persistence. Other options are planned for [Entity Framework](https://github.com/JasperFx/jasper/issues/363) and [Dapper](https://github.com/JasperFx/jasper/issues/362).
+Right now the options for saga persistence are 
+
+* The default in memory model
+* <[linkto:documentation/durability/efcore;title=EF Core with either Sql Server or Postgresql]>
+* <[linkto:documentation/durability/marten;title=Marten and Postgresql]> 
 
 Inspired by [Jimmy Bogard's example of ordering at a fast food restaurant](https://lostechies.com/jimmybogard/2013/03/14/saga-implementation-patterns-controller/), let's say that we are building 
 a Jasper system to manage filling the order of Happy Meals at McDonald's. When you place an order in our McDonald's, various folks gather up the various parts of the order until it is completed, then calls out to the customer that the order is ready. In our system,
@@ -85,7 +88,7 @@ To add some context, let's see these two messages in context:
 
 <[sample:passing-saga-state-id-through-message]>
 
-If you were using the <[linkto:documentation/extensions/marten/sagas;title=Marten-backed saga persistence]>, the code above
+If you were using the <[linkto:documentation/durability/marten;title=Marten-backed saga persistence]>, the code above
 would result in the `HappyMealOrderState` document being loaded with the value in `BurgerReady.SagaId` or `ToyOnTray.OrderId` as the document id.
 
 Right now, Jasper supports the following types as valid saga state document identity types:
