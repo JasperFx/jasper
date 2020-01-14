@@ -23,14 +23,14 @@ namespace Jasper.Configuration
         ///     Force any messages enqueued to this worker queue to be durable
         /// </summary>
         /// <returns></returns>
-        T Durably();
+        T Durable();
 
         /// <summary>
         /// By default, messages on this worker queue will not be persisted until
         /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        T Lightweight();
+        T NotDurable();
 
 
         /// <summary>

@@ -36,13 +36,13 @@ namespace Jasper.Configuration
             return this.As<TSelf>();
         }
 
-        public TSelf Durably()
+        public TSelf Durable()
         {
             endpoint.IsDurable = true;
             return this.As<TSelf>();
         }
 
-        public TSelf Lightweight()
+        public TSelf NotDurable()
         {
             endpoint.IsDurable = false;
             return this.As<TSelf>();

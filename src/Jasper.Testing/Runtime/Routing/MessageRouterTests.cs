@@ -81,9 +81,21 @@ namespace Jasper.Testing.Runtime.Routing
         }
     }
 
+
     [LocalQueue("foo")]
     public class DecoratedMessage
     {
 
     }
+
+    // SAMPLE: local-queue-routed-message
+
+    // This message type would go to the "important"
+    // named queue
+    [LocalQueue("important")]
+    public class ImportantMessage
+    {
+
+    }
+    // ENDSAMPLE
 }

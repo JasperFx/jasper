@@ -111,7 +111,7 @@ namespace Bootstrapping.Configuration2
         {
             ServiceName = "My Jasper App";
 
-            Endpoints.ListenAtPort(2111).Durably();
+            Endpoints.ListenAtPort(2111).Durable();
         }
     }
     // ENDSAMPLE

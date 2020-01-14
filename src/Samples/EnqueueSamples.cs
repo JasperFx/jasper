@@ -6,11 +6,9 @@ namespace Jasper.Testing.Samples
     public class EnqueueSamples
     {
         // SAMPLE: enqueue-locally
-        public static async Task enqueue_locally(IMessageContext bus)
+        public static async Task enqueue_locally(ICommandBus bus)
         {
-            // Enqueue a message to the local, loopback transport
-            // using the default worker queue & durability rules
-            // for the message type
+            // Enqueue a message to the local worker queues
             await bus.Enqueue(new Message1());
 
         }

@@ -25,8 +25,8 @@ namespace Jasper.Testing.Configuration
             {
                 x.Endpoints.ListenForMessagesFrom("local://one").Sequential();
                 x.Endpoints.ListenForMessagesFrom("local://two").MaximumThreads(11);
-                x.Endpoints.ListenForMessagesFrom("local://three").Durably();
-                x.Endpoints.ListenForMessagesFrom("local://four").Durably().Lightweight();
+                x.Endpoints.ListenForMessagesFrom("local://three").Durable();
+                x.Endpoints.ListenForMessagesFrom("local://four").Durable().NotDurable();
 
             }).Build();
 
@@ -79,7 +79,7 @@ namespace Jasper.Testing.Configuration
         public void listen_for_port()
         {
             theOptions.Endpoints.ListenAtPort(1111)
-                .Durably();
+                .Durable();
 
             var endpoint = findEndpoint("tcp://localhost:1111");
             endpoint.ShouldNotBeNull();
@@ -125,7 +125,7 @@ namespace Jasper.Testing.Configuration
             theOptions
                 .Endpoints
                 .ListenForMessagesFrom("local://three")
-                .Durably();
+                .Durable();
 
 
             localQueue("three")

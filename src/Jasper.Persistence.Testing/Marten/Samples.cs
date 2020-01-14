@@ -15,7 +15,7 @@ namespace Jasper.Persistence.Testing.Marten
             // persisted with Marten upon receipt and
             // deleted only when the message is successfully
             // processed
-            Endpoints.ListenAtPort(2222).Durably();
+            Endpoints.ListenAtPort(2222).Durable();
         }
 
         public override void Configure(IHostEnvironment hosting, IConfiguration config)

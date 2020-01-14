@@ -138,7 +138,7 @@ namespace Jasper.AzureServiceBus.Tests
             var receiver = JasperHost.For(_ =>
             {
                 _.Endpoints.ConfigureAzureServiceBus(ConnectionString);
-                _.Endpoints.ListenToAzureServiceBusQueue("messages").Durably();
+                _.Endpoints.ListenToAzureServiceBusQueue("messages").Durable();
 
                 _.Services.AddSingleton<ColorHistory>();
                 _.Extensions.UseMessageTrackingTestingSupport();

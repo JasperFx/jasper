@@ -82,7 +82,7 @@ namespace Jasper.Testing.Samples
                 // messages are first saved to the application
                 // database before attempting to handle the
                 // incoming message
-                .Durably();
+                .Durable();
 
         }
     }
@@ -94,12 +94,30 @@ namespace Jasper.Testing.Samples
     {
         public LocalTransportApp()
         {
-            // Publish the message Message2 the important queue
+            // Publish the message Message2 the "important"
+            // local queue
             Endpoints.Publish(x =>
             {
                 x.Message<Message2>();
                 x.ToLocalQueue("important");
             });
+        }
+    }
+
+    // ENDSAMPLE
+
+    // SAMPLE: LocalDurableTransportApp
+    public class LocalDurableTransportApp : JasperOptions
+    {
+        public LocalDurableTransportApp()
+        {
+            // Make the default local queue durable
+            Endpoints.DefaultLocalQueue.Durable();
+
+            // Or do just this by name
+            Endpoints
+                .LocalQueue("important")
+                .Durable();
         }
     }
 

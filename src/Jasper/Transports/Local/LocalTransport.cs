@@ -18,7 +18,6 @@ namespace Jasper.Transports.Local
 
         public LocalTransport()
         {
-            _queues.FillDefault(TransportConstants.Retries);
             _queues.FillDefault(TransportConstants.Default);
             _queues.FillDefault(TransportConstants.Replies);
 

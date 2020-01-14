@@ -203,4 +203,39 @@ namespace Jasper.Testing.Samples
         {
         }
     }
+
+    // SAMPLE: LocalQueuesApp
+    public class LocalQueuesApp : JasperOptions
+    {
+        public LocalQueuesApp()
+        {
+            // Force a local queue to be
+            // strictly first in, first out
+            // with no more than a single
+            // thread handling messages enqueued
+            // here
+
+            // Use this option if message ordering is
+            // important
+            Endpoints
+                .LocalQueue("one")
+                .Durable()
+                .Sequential();
+
+
+            Endpoints
+                .LocalQueue("two")
+                .MaximumThreads(5);
+
+
+            // Or just edit the ActionBlock directly
+            Endpoints.LocalQueue("three")
+                .ConfigureExecution(options =>
+                {
+                    options.MaxDegreeOfParallelism = 5;
+                    options.BoundedCapacity = 1000;
+                });
+        }
+    }
+    // ENDSAMPLE
 }

@@ -59,7 +59,7 @@ namespace Jasper.Persistence.Testing
 
             Endpoints.PublishAllMessages()
                 .ToLocalQueue("one")
-                .Durably();
+                .Durable();
 
             Extensions.UseMarten(Servers.PostgresConnectionString);
 
