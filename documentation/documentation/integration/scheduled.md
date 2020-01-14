@@ -1,9 +1,12 @@
 <!--title:Scheduled Message Delivery and Execution-->
 
+
 <[info]>
- If there is no native facility,
-this is done by polling against the configured message storage of your Jasper system. If there is no message persistence, the message scheduling is done in memory and scheduled messages will be lost if the application is stopped.
+Why didn't we just use [Hangfire](https://www.hangfire.io/)? We looked at it, but thought that our current solution avoided having to have more dependencies and the database mechanism was actually easier for diagnostic views of the scheduled messages. We do recommend Hangfire if you really just want scheduled job execution.
 <[/info]>
+
+
+## Schedule Message Delivery
 
 You can send messages with Jasper, but request that the actual message sending to happen at some later time with `IMessageContext.ScheduleSend()`:
 
@@ -11,12 +14,6 @@ You can send messages with Jasper, but request that the actual message sending t
 
 
 This functionality is useful for long lived workflows where there are time limits for any part of the process. Internally, this feature is used for the *retry later* function in <[linkto:documentation/execution/errorhandling;error handling and retries]>. 
-
-This same functionality is used for the `ICommandBus.Schedule()` functionality as shown below:
-
-<[sample:schedule-job-locally]>
-
-In the case above though, the message is executed locally at the designated time.
 
 Here's a couple things to know about this functionality:
 
@@ -26,4 +23,27 @@ Here's a couple things to know about this functionality:
 * If there is no message persistence, the scheduling uses an in memory model. This model was really just meant for message retries in lightweight scenarios and probably shouldn't be used in high volume systems
 
 
+
+## Schedule Execution Locally
+
+This same functionality is used for the `ICommandBus.Schedule()` functionality as shown below:
+
+<[sample:schedule-job-locally]>
+
+In the case above though, the message is executed locally at the designated time.
+
+
+
+
+## Schedule Execution From Cascading Messages
+
+To schedule a message to another system as a <[linkto:documentation/execution/cascading;title=cascading message]> from a message handler, 
+you can return the `ScheduledResponse` object like this:
+
+<[sample:DelayedResponseHandler]>
+
+
+## RequeueLater
+
+The `RetryLater()` mechanism in message error handling is using the scheduled execution. See <[linkto:documentation/execution/errorhandling]> for more information.
 

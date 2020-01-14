@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.Marten
 {
+    // SAMPLE: MartenExtension
     public class MartenExtension : IJasperExtension
     {
         public void Configure(JasperOptions options)
@@ -52,5 +53,6 @@ namespace Jasper.Persistence.Marten
 
         public StoreOptions Options { get; } = new StoreOptions();
     }
+    // ENDSAMPLE
 }
-// ENDSAMPLE
+

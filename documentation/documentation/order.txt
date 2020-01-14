@@ -3,6 +3,7 @@ bootstrapping
 messages
 execution
 mediator
+local
 integration
 durability
 testing

@@ -7,7 +7,7 @@ you may already be using.
 
 There are two subjects:
 
-1. *Jasper.Transports* - information about Jasper's running <[linkto:documentation/transports;title=transports]>, including circuit breaker events and messaging failures
+1. *Jasper.Transports* - information about Jasper's running <[linkto:documentation/integration/transports;title=transports]>, including circuit breaker events and messaging failures
 1. *Jasper.Messages* - information about specific messages
 
 
