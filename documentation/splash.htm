@@ -20,9 +20,7 @@
     </head>
     <body data-spy="scroll" data-target="#nav" data-offset="0" style="position: relative;">
 
-      <!--
-<a href="https://github.com/JasperFx/jasper"><img style="z-index: 5000; position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
--->
+
 
       <header>
         <!-- Fixed navbar -->
@@ -66,6 +64,7 @@
           <p class="lead">
               <a href="https://ci.appveyor.com/project/jasper-ci/jasper"><img src="https://ci.appveyor.com/api/projects/status/o23fp3diks7024x9?svg=true"></img></a>
               <a href="https://gitter.im/jasperfx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/jasperfx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
+              <a href="https://github.com/jasperfx/jasper"><img src="https://img.shields.io/github/forks/jasperfx/jasper?label=Forks&style=social"></img></a>
           </p>
         </div>
         <br>
@@ -84,7 +83,7 @@
                   <div class="card-body">
                     <h5 class="card-title">Command Processing</h5>
                     <p class="card-text">Jasper can be used as the mechanism to execute the <i>command</i> inputs into a <a href="https://martinfowler.com/bliki/CQRS.html">CQRS architecture</a>. Jasper provides a uniquely efficient command execution pipeline that will allow you to author command handlers with the cleanest code possible. </p>
-                    <a href="#" class="btn btn-primary">Learn More</a>
+                    <a href="/documentation/execution" class="btn btn-primary">Learn More</a>
                   </div>
                 </div>
 
@@ -103,7 +102,7 @@
                   <div class="card-body">
                     <h5 class="card-title">Microservice Integration</h5>
                     <p class="card-text">If you are using a <a href="https://martinfowler.com/articles/microservices.html">microservice architecture</a> in .Net, Jasper's command processing can be combined with its strong asynchronous messaging support for effective and reliable system integration.   </p>
-                    <a href="#" class="btn btn-primary">Learn More</a>
+                    <a href="/documentation/integration" class="btn btn-primary">Learn More</a>
                   </div>
                 </div>
 
@@ -125,7 +124,7 @@
                   <h5 class="card-title">Local Work Queues</h5>
                   <p class="card-text">Jasper has a robust local work queueing system around its execution pipeline build on top of the proven <a href="https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/dataflow-task-parallel-library">TPL Dataflow library</a>. This support
                   allows for asynchronous processing with configurable message routing, priorities, and parallelization.</p>
-                  <a href="#" class="btn btn-primary">Learn More</a>
+                  <a href="/documentation/local" class="btn btn-primary">Learn More</a>
                 </div>
               </div>
 
@@ -134,18 +133,17 @@
                 <div class="card-body">
                   <h5 class="card-title">Durable Message Processing</h5>
                   <p class="card-text">Jasper has robust support for durable <a href="https://en.wikipedia.org/wiki/Store_and_forward">store and forward messaging</a> patterns. Using your application database, Jasper allows you to side step ugly distributed transactions by leaning on the <a href="https://microservices.io/patterns/data/transactional-outbox.html">outbox pattern</a>.</p>
-                  <a href="#" class="btn btn-primary">Learn More</a>
+                  <a href="/documentation/durability" class="btn btn-primary">Learn More</a>
                 </div>
               </div>
 
 
               <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                  <h5 class="card-title">External Messaging Transports</h5>
-                  <p class="card-text">External messaging transport tools like Rabbit MQ or Azure Service Bus provide a lot of functionality to support common messaging patterns, 
-                    but there's still a lot of work to connect <b>your</b> application code to the external queues. Jasper steps in to deal with all the "connective tissue" between
-                    your application code and the external queues.  </p>
-                  <a href="#" class="btn btn-primary">Learn More</a>
+                  <h5 class="card-title">Testability</h5>
+                  <p class="card-text">Authoring automated tests against systems dependent on asynchronous messaging can be very tricky, unless you
+                    have Jasper's first class support for automated testing scenarios baked right in.  </p>
+                  <a href="/documentation/testing" class="btn btn-primary">Learn More</a>
                 </div>
               </div>
 
@@ -166,7 +164,8 @@
 
           <div class="row" id="related">
             <h2>The JasperFx Family of Open Source Projects</h2>
-
+            <br />
+            <br />
             <div class="row">
               <div class="card-deck row-cols-3 row-cols-md-3">
                 <div class="col mb-4">
