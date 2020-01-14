@@ -52,7 +52,7 @@ a .Net Core application, it adds the `ICommandBus` service to the underlying sys
 so it can be injected into controller classes as a constructor argument or as a method argument
 if you prefer to use the `[FromServices]` attribute and method injection. The `ICommandBus.Invoke(message)` 
 method takes the message passed in, finds the correct execution path for the message type, and 
-executes the correct Jasper handler(s) as well as any of the registered <[linkto:documentation/middleware_and_codegen]>.
+executes the correct Jasper handler(s) as well as any of the registered <[linkto:documentation/execution/middleware_and_codegen]>.
 
 <[warning]>
 This execution happens inline, and does not involve any of Jasper's <[linkto:documentation/execution/errorhandling]>

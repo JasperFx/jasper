@@ -1,12 +1,7 @@
-<!--title:Publishing Messages-->
+<!--title:Messaging Between Systems-->
 
-The subjects in this section are about how to send messages and even customize how the messages should be delivered. See <[linkto:documentation/routing]> for information about how
-to subscribe to message or set up routing rules to control *where* your messages are sent.
+Jasper is hopefully plenty useful within a single application as a <[linkto:documentation/mediator;title=mediator]>
+and as a <[linkto:documentation/local;title=local command bus]>, but Jasper was meant to be a strong foundation for
+integration between systems through asynchronous messaging.
 
-Jasper supports a couple different patterns of messaging:
-
-* <[linkto:documentation/publishing/pubsub]> - sends a message to one or more subscribers
-* <[linkto:documentation/publishing/expected_reply]> - send a message to another system while expecting an eventual response from the other system
-* <[linkto:documentation/publishing/invoke]> - handle a message locally either inline or by enqueueing the message locally
-* <[linkto:documentation/publishing/delayed]> - publish a message with the expectation that it be processed at a later time
-* <[linkto:documentation/publishing/customizing_envelopes]> - take full control about how or where a message is sent
+<[TableOfContents]>

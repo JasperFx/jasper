@@ -1,71 +1,45 @@
 using System;
+using Baseline;
+using Jasper.AzureServiceBus.Internal;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.AzureServiceBus.Tests
 {
 
-    public class Samples
+
+
+    // SAMPLE: SettingAzureServiceBusOptions
+    public class JasperWithAzureServiceBusApp : JasperOptions
     {
-        public void hard_code_it()
+        public JasperWithAzureServiceBusApp()
         {
+            Endpoints.ConfigureAzureServiceBus(asb =>
+            {
+
+                asb.ConnectionString = "an Azure Service Bus connection string";
+
+                // The following properties would be set on all
+                // TopicClient, QueueClient, or SubscriptionClient
+                // objects created at runtime
+                asb.TransportType = TransportType.AmqpWebSockets;
+                asb.TokenProvider = new ManagedServiceIdentityTokenProvider();
+                asb.ReceiveMode = ReceiveMode.ReceiveAndDelete;
+                asb.RetryPolicy = RetryPolicy.NoRetry;
+            });
+
+            // Configure endpoints
+            Endpoints.PublishAllMessages().ToAzureServiceBusQueue("outgoing");
+            Endpoints.ListenToAzureServiceBusQueue("incoming");
         }
 
 
-        /*
-        // SAMPLE: Main-activation-of-asb-with-startup
-        public static int Main(string[] args)
-        {
-            return JasperHost.CreateDefaultBuilder()
-                .UseJasper()
-                .UseStartup<Startup>()
-                .RunJasper(args);
-        }
-        // ENDSAMPLE
-        */
-    }
-
-/*
-
-    // SAMPLE: HardCodedASBConnection
-    public class HardCodedConnectionApp : JasperRegistry
-    {
-        public HardCodedConnectionApp()
-        {
-            Settings
-                .AddAzureServiceBusConnection("azure", "some connection string");
-
-            Publish.AllMessagesTo("azureservicebus://azure/queue/outgoing");
-
-            Transports.ListenForMessagesFrom("azureservicebus://azure/queue/incoming");
-        }
     }
     // ENDSAMPLE
 
-    // SAMPLE: Main-activation-of-asb-Startup
-    public class Startup
-    {
-        // Both AzureServiceBusOptions and JasperOptions are registered services in your
-        // Jasper application's IoC container, so are available to be injected into Startup.Configure()
-        public void Configure(IConfiguration config, AzureServiceBusOptions asb,
-            JasperOptions jasper)
-        {
-            // This code will add a new Azure Service Bus connection named "azure"
-            asb.Connections.Add("azure", config["AzureServiceBusConnectionString"]);
-
-            // Listen for messages from the 'queue1' queue at the connection string
-            // configured above
-            jasper.ListenForMessagesFrom("azureservicebus://azure/queue/queue1");
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // add service registrations
-        }
-    }
-    // ENDSAMPLE
 
     public class MySpecialProtocol : IAzureServiceBusProtocol
     {
@@ -80,65 +54,180 @@ namespace Jasper.AzureServiceBus.Tests
         }
     }
 
-    // SAMPLE: CustomizedAzureServiceBusApp
-    public class CustomizedAzureServiceBusApp : JasperRegistry
+
+    // SAMPLE: PublishAndSubscribeToAzureServiceBusQueue
+    internal class JasperConfig : JasperOptions
     {
-        public CustomizedAzureServiceBusApp()
+        public JasperConfig()
         {
-            // There is another overload that will give you access
-            // to the application's IHostingEnvironment and IConfiguration as well
-            // if you prefer putting this into the JasperRegistry rather than
-            // using Startup.Configure()
-            Settings.ConfigureAzureServiceBus(options =>
-            {
-                // Configure a single endpoint
-                options.ConfigureEndpoint("azureservicebus://azure/queue/incoming", endpoint =>
-                {
-                    // modify the endpoint
-                });
+            // Publish all messages to an Azure Service Bus queue
+            Endpoints
+                .PublishAllMessages()
+                .ToAzureServiceBusQueue("pings")
 
-                // Configure all the endpoints related to a specific connection string
-                options.ConfigureEndpoint("azure", endpoint =>
-                {
-                    endpoint.ReceiveMode = ReceiveMode.ReceiveAndDelete;
-                    endpoint.RetryPolicy = RetryPolicy.NoRetry;
-                    endpoint.TokenProvider = new ManagedServiceIdentityTokenProvider();
-                    endpoint.TransportType = TransportType.AmqpWebSockets;
+                // Optionally use the store and forward
+                // outbox mechanics against this endpoint
+                .Durably();
 
+            // Listen to incoming messages from an Azure Service Bus
+            // queue
+            Endpoints
+                .ListenToAzureServiceBusQueue("pongs");
+        }
 
-                    // Override the envelope to message mapping for usage with non-Jasper applications
-                    endpoint.Protocol = new MySpecialProtocol();
-                });
-            });
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("azureservicebus");
+            Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
+    // ENDSAMPLE
 
-    // Or with Startup
-
-    public class CustomizedStartup
+    // SAMPLE: PublishAndSubscribeToAzureServiceBusQueueByUri
+    internal class JasperConfig2 : JasperOptions
     {
-        public void Configure(AzureServiceBusOptions options)
+        public JasperConfig2()
         {
-            // Configure a single endpoint
-            options.ConfigureEndpoint("azureservicebus://azure/queue/incoming", endpoint =>
-            {
-                // modify the endpoint
-            });
+            // Publish all messages to an Azure Service Bus queue
+            Endpoints
+                .PublishAllMessages()
+                .To("asb://queue/pings");
 
-            // Configure all the endpoints related to a specific connection string
-            options.ConfigureEndpoint("azure", endpoint =>
-            {
-                endpoint.ReceiveMode = ReceiveMode.ReceiveAndDelete;
-                endpoint.RetryPolicy = RetryPolicy.NoRetry;
-                endpoint.TokenProvider = new ManagedServiceIdentityTokenProvider();
-                endpoint.TransportType = TransportType.AmqpWebSockets;
-            });
+
+            // Listen to incoming messages from an Azure Service Bus
+            // queue
+            Endpoints
+                .ListenForMessagesFrom("asb://queue/pongs")
+                .UseForReplies();
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("azureservicebus");
+            Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-
     // ENDSAMPLE
 
 
 
-    */
+
+
+    // SAMPLE: PublishAndSubscribeToAzureServiceBusTopic
+    internal class JasperConfig3 : JasperOptions
+    {
+        public JasperConfig3()
+        {
+            // Publish all messages to an Azure Service Bus queue
+            Endpoints
+                .PublishAllMessages()
+                .ToAzureServiceBusTopic("pings")
+
+                // Optionally use the store and forward
+                // outbox mechanics against this endpoint
+                .Durably();
+
+            // Listen to incoming messages from an Azure Service Bus
+            // queue
+            Endpoints
+                .ListenToAzureServiceBusTopic("pongs", "pong-subscription");
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("azureservicebus");
+            Endpoints.ConfigureAzureServiceBus(connectionString);
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: PublishAndSubscribeToAzureServiceBusTopicByUri
+    internal class JasperConfig4 : JasperOptions
+    {
+        public JasperConfig4()
+        {
+            // Publish all messages to an Azure Service Bus queue
+            Endpoints
+                .PublishAllMessages()
+                .To("asb://topic/pings");
+
+
+            // Listen to incoming messages from an Azure Service Bus
+            // queue
+            Endpoints
+                .ListenForMessagesFrom("asb://topic/pongs/subscription/pong-subscription")
+                .UseForReplies();
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("azureservicebus");
+            Endpoints.ConfigureAzureServiceBus(connectionString);
+        }
+    }
+    // ENDSAMPLE
+
+
+    // SAMPLE: CustomAzureServiceBusProtocol
+
+    public class SpecialAzureServiceBusProtocol : DefaultAzureServiceBusProtocol
+    {
+        public override Message WriteFromEnvelope(Envelope envelope)
+        {
+            var message = base.WriteFromEnvelope(envelope);
+
+            // Override some properties from how
+            // Jasper itself would write them out
+            message.ReplyTo = "replies";
+
+            return message;
+        }
+
+        public override Envelope ReadEnvelope(Message message)
+        {
+            var envelope = base.ReadEnvelope(message);
+
+            if (message.ReplyTo.IsNotEmpty())
+            {
+                var uriString = "asb://topic/" + message.ReplyTo;
+            }
+
+            return envelope;
+        }
+    }
+    // ENDSAMPLE
+
+
+
+    // SAMPLE: PublishAndSubscribeToAzureServiceBusTopicAndCustomProtocol
+    internal class JasperConfig5 : JasperOptions
+    {
+        public JasperConfig5()
+        {
+            // Publish all messages to an Azure Service Bus queue
+            Endpoints
+                .PublishAllMessages()
+                .ToAzureServiceBusTopic("pings")
+
+                // Override the Azure Service Bus protocol
+                // because it's not a Jasper application on the other end
+                .Protocol<SpecialAzureServiceBusProtocol>()
+
+                // Optionally use the store and forward
+                // outbox mechanics against this endpoint
+                .Durably();
+
+            // Listen to incoming messages from an Azure Service Bus
+            // queue
+            Endpoints
+                .ListenToAzureServiceBusTopic("pongs", "pong-subscription");
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("azureservicebus");
+            Endpoints.ConfigureAzureServiceBus(connectionString);
+        }
+    }
+    // ENDSAMPLE
 }

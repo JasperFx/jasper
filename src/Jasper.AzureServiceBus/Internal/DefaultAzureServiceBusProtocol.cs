@@ -7,7 +7,7 @@ namespace Jasper.AzureServiceBus.Internal
     // SAMPLE: DefaultAzureServiceBusProtocol
     public class DefaultAzureServiceBusProtocol : IAzureServiceBusProtocol
     {
-        public Message WriteFromEnvelope(Envelope envelope)
+        public virtual Message WriteFromEnvelope(Envelope envelope)
         {
             var message = new Message
             {
@@ -37,7 +37,7 @@ namespace Jasper.AzureServiceBus.Internal
             return message;
         }
 
-        public Envelope ReadEnvelope(Message message)
+        public virtual Envelope ReadEnvelope(Message message)
         {
             var envelope = new Envelope
             {

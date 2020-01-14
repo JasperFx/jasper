@@ -3,4 +3,5 @@ requestreply
 expected_reply
 delayed
 invoke
-custominzing_envelopes
+customizing_envelopes
+message_delivery_rules

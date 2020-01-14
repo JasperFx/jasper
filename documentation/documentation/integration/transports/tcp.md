@@ -1,6 +1,8 @@
 <!--title:TCP Transport-->
 
-<div class="alert alert-warning"><b>Note!</b> This transport works by sending traffic directly via sockets and may not be acceptable in your IT department policies. We are pursuing the usage of JWT's to secure the traffic between applications using the socket based transports, see <a href="https://github.com/JasperFx/jasper/issues/184">the GitHub issue</a></div>
+<[warning]>
+ This transport works by sending traffic directly via sockets and may not be acceptable in your IT department policies. It is load tested and is based on the older [LightningQueues](https://github.com/LightningQueues/LightningQueues) project that was happily used in high volume systems, so we feel like it's plenty robust. 
+<[/warning]>
 
 
 ## Lightweight, fire and forget
@@ -18,13 +20,16 @@ a very limited value in terms of time. My shop uses this transport for frequent 
 
 ## Durable TCP Messaging
 
-First, see <[linkto:documentation/transports/durable]> about how message durability is enabled and functions within Jasper.
+First, see <[linkto:documentation/durability]> about how message durability is enabled and functions within Jasper.
 
 The TCP transport can be used durably as both listener or sender. To configure a durable TCP listener, use one of these options:
 
 <[sample:DurableTransportApp]>
 
-Note here that the Uri's `durable://server:port` and `tcp://server:port/durable` are considered as equivalents by Jasper.
 
+## Uri Pattern
+
+The `Uri` structure for this transport is `tcp://[server]:[port]` for fire and forget, and `tcp://[server]:[port]/durable`
+if the endpoint should be durable. 
 
 

@@ -13,7 +13,7 @@ namespace Jasper.Testing.Samples
         {
             var envelope = new Envelope(new SomeMessage())
             {
-                // Override the message routing
+                // Override the message routing by a Uri
                 Destination = new Uri("tcp://server1:2000"),
 
                 // Force Jasper to send the message serialized
@@ -30,16 +30,6 @@ namespace Jasper.Testing.Samples
                 ReplyRequested = "other-message-type"
             };
 
-
-
-
-
-
-
-
-
-
-
             // This envelope should be discarded if not processed
             // successfully within 5 days
             envelope.DeliverBy = DateTimeOffset.UtcNow.AddDays(5);
@@ -49,6 +39,7 @@ namespace Jasper.Testing.Samples
             // not successfully processed before then
             envelope.DeliverWithin(20.Seconds());
 
+            // Send the envelope and its contained message
             return bus.SendEnvelope(envelope);
             // ENDSAMPLE
         }
@@ -148,6 +139,24 @@ namespace Jasper.Testing.Samples
             };
 
             return bus.Send(@event);
+        }
+        // ENDSAMPLE
+
+
+        // SAMPLE: publishing-message-with-servicebus
+        public Task PublishMessage(IMessageContext bus)
+        {
+            // In this case, we're sending an "InvoiceCreated"
+            // message
+            var @event = new InvoiceCreated
+            {
+                Time = DateTime.UtcNow,
+                Purchaser = "Guy Fieri",
+                Amount = 112.34,
+                Item = "Cookbook"
+            };
+
+            return bus.Publish(@event);
         }
         // ENDSAMPLE
 

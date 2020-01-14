@@ -7,10 +7,10 @@ figure out which locations should receive the message. Consider this code that p
 
 <[sample:sending-messages-for-static-routing]>
 
-To route `PingMessage` to a channel, we can apply static message routing rules by using one of the 
-_SendMessage****_ methods as shown below:
+To route `PingMessage` to a channel, we can apply static message routing rules by using the 
+`Endpoint.Publish()` method as shown below:
 
-<[sample:StaticRoutingApp]>
+<[sample:StaticPublishingRules]>
 
 Do note that doing the message type filtering by namespace will also include child namespaces. In
 our own usage we try to rely on either namespace rules or by using shared message assemblies. 
