@@ -80,9 +80,14 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     // SAMPLE: AppUsingMessageTracking
     public class AppUsingMessageTracking : JasperOptions
     {
-        public AppUsingMessageTracking()
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
         {
-            Extensions.Include<MessageTrackingExtension>();
+            if (hosting.IsDevelopment() || hosting.IsEnvironment("Testing"))
+            {
+                // This is necessary to add the message tracking
+                // to your Jasper application
+                Extensions.UseMessageTrackingTestingSupport();
+            }
         }
     }
     // ENDSAMPLE

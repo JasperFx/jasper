@@ -47,7 +47,9 @@ namespace Jasper.Testing.Samples
                     // dependencies up and running, stub them out
                     if (context.HostingEnvironment.IsDevelopment())
                     {
+                        // This will "stub" out all configured external endpoints
                         opts.Endpoints.StubAllExternallyOutgoingEndpoints();
+
                         opts.Extensions.UseMessageTrackingTestingSupport();
                     }
                 });

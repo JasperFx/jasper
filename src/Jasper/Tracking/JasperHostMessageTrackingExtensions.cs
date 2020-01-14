@@ -81,7 +81,7 @@ namespace Jasper.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async static Task<ITrackedSession> ExecuteAndWait(this IHost host,
+        public static async Task<ITrackedSession> ExecuteAndWait(this IHost host,
             Func<IMessageContext, Task> action,
             int timeoutInMilliseconds = 5000)
             {

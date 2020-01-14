@@ -1,4 +1,4 @@
-<!--title:Jasper Command Line Support-->
+<!--title:Command Line Support-->
 
 <[info]>
 "Oakton" is a small community just to the North of Jasper's namesake.

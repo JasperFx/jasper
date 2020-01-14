@@ -24,14 +24,20 @@ namespace Jasper.AzureServiceBus.Tests
         public const string ConnectionString =
             "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
 
-
+        // SAMPLE: can_stop_and_start_ASB
         [Fact]
         public async Task can_stop_and_start()
         {
             using (var host = JasperHost.For<ASBUsingApp>())
             {
                 await host
+                    // The TrackActivity() method starts a Fluent Interface
+                    // that gives you fine-grained control over the
+                    // message tracking
                     .TrackActivity()
+
+                    // Include the external transports in the determination
+                    // of "completion"
                     .IncludeExternalTransports()
                     .SendMessageAndWait(new ColorChosen {Name = "Red"});
 
@@ -40,6 +46,7 @@ namespace Jasper.AzureServiceBus.Tests
                 colors.Name.ShouldBe("Red");
             }
         }
+        // ENDSAMPLE
 
         [Fact]
         public async Task schedule_send_message_to_and_receive_through_asb_with_durable_transport_option()
