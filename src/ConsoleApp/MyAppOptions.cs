@@ -12,7 +12,7 @@ namespace MyApp
         {
             Endpoints.ListenAtPort(2222);
 
-            CodeGeneration.TypeLoadMode = TypeLoadMode.LoadFromPreBuiltAssembly;
+            Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.LoadFromPreBuiltAssembly;
         }
     }
     // ENDSAMPLE

@@ -19,11 +19,11 @@ namespace Jasper.Persistence.Marten
             options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
             options.Services.AddSingleton(Options);
 
-            options.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
+            options.Advanced.CodeGeneration.Sources.Add(new MartenBackedPersistenceMarker());
 
             var frameProvider = new MartenSagaPersistenceFrameProvider();
-            options.CodeGeneration.SetSagaPersistence(frameProvider);
-            options.CodeGeneration.SetTransactions(frameProvider);
+            options.Advanced.CodeGeneration.SetSagaPersistence(frameProvider);
+            options.Advanced.CodeGeneration.SetTransactions(frameProvider);
 
             options.Services.AddSingleton<IDocumentStore>(x =>
             {
@@ -37,7 +37,7 @@ namespace Jasper.Persistence.Marten
             options.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
             options.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
 
-            options.CodeGeneration.Sources.Add(new SessionVariableSource());
+            options.Advanced.CodeGeneration.Sources.Add(new SessionVariableSource());
 
             options.Services.AddSingleton(s =>
             {

@@ -11,7 +11,6 @@ namespace Jasper.Testing.Transports.Local
     {
         [Theory]
         [InlineData(TransportConstants.Default)]
-        [InlineData(TransportConstants.Retries)]
         [InlineData(TransportConstants.Replies)]
         public void has_default_queues(string queueName)
         {

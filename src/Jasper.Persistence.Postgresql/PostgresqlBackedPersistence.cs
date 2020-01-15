@@ -20,7 +20,7 @@ namespace Jasper.Persistence.Postgresql
 
             options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
 
-            options.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
+            options.Advanced.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
 
 
             options.Services.For<NpgsqlConnection>().Use<NpgsqlConnection>();
@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Postgresql
             options.Services.Add(new NpgsqlConnectionInstance(typeof(NpgsqlConnection)));
             options.Services.Add(new NpgsqlConnectionInstance(typeof(DbConnection)));
 
-            options.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
+            options.Advanced.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
         }
 
         public PostgresqlSettings Settings { get; } = new PostgresqlSettings();

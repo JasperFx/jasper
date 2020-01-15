@@ -57,17 +57,11 @@ namespace Jasper
 
             establishApplicationAssembly(assemblyName);
 
-            var name = ApplicationAssembly?.GetName().Name ?? "JasperApplication";
-            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
-            CodeGeneration.Sources.Add(new NowTimeVariableSource());
-
-            CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
-            CodeGeneration.Assemblies.Add(ApplicationAssembly);
-
+            Advanced = new AdvancedSettings(ApplicationAssembly);
 
             _baseServices = new JasperServiceRegistry(this);
 
-            _baseServices.AddSingleton(CodeGeneration);
+            _baseServices.AddSingleton(Advanced.CodeGeneration);
 
             deriveServiceName();
         }
@@ -82,13 +76,10 @@ namespace Jasper
         ///     Advanced configuration options for Jasper message processing,
         ///     job scheduling, validation, and resiliency features
         /// </summary>
-        public AdvancedSettings Advanced { get; } = new AdvancedSettings();
+        public AdvancedSettings Advanced { get; }
 
 
-        /// <summary>
-        ///     Configure or extend the Lamar code generation
-        /// </summary>
-        public GenerationRules CodeGeneration { get; }
+
 
         /// <summary>
         ///     Register additional services to the underlying IoC container

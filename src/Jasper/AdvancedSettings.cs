@@ -1,7 +1,10 @@
 using System;
+using System.Reflection;
 using System.Threading;
 using Baseline.Dates;
 using Jasper.Util;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Model;
 using Newtonsoft.Json;
 
 namespace Jasper
@@ -32,6 +35,22 @@ namespace Jasper
 
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+
+
+        public AdvancedSettings(Assembly applicationAssembly)
+        {
+            var name = applicationAssembly?.GetName().Name ?? "JasperApplication";
+            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration.Sources.Add(new NowTimeVariableSource());
+
+            CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);
+            CodeGeneration.Assemblies.Add(applicationAssembly);
+        }
+
+        /// <summary>
+        ///     Configure or extend the Lamar code generation
+        /// </summary>
+        public GenerationRules CodeGeneration { get; }
 
         internal void Cancel()
         {

@@ -16,8 +16,8 @@ namespace Jasper.Persistence.EntityFrameworkCore
         public void Configure(JasperOptions options)
         {
             var frameProvider = new EFCorePersistenceFrameProvider();
-            options.CodeGeneration.SetSagaPersistence(frameProvider);
-            options.CodeGeneration.SetTransactions(frameProvider);
+            options.Advanced.CodeGeneration.SetSagaPersistence(frameProvider);
+            options.Advanced.CodeGeneration.SetTransactions(frameProvider);
         }
     }
 }

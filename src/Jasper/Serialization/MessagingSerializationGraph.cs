@@ -30,7 +30,7 @@ namespace Jasper.Serialization
 
         public static MessagingSerializationGraph Basic()
         {
-            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>{new NewtonsoftSerializerFactory(new AdvancedSettings(), new DefaultObjectPoolProvider())}, new List<IMessageDeserializer>(),
+            return new MessagingSerializationGraph(new HandlerGraph(), new List<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>{new NewtonsoftSerializerFactory(new AdvancedSettings(null), new DefaultObjectPoolProvider())}, new List<IMessageDeserializer>(),
                 new List<IMessageSerializer>());
         }
 

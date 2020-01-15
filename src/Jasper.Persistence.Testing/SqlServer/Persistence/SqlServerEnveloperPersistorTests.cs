@@ -22,7 +22,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 = new SqlServerEnvelopePersistence(new SqlServerSettings
                 {
                     ConnectionString = Servers.SqlServerConnectionString
-                }, new AdvancedSettings());
+                }, new AdvancedSettings(null));
         }
 
 

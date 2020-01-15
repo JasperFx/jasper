@@ -76,7 +76,7 @@ namespace StorytellerSpecs.Fixtures
             _unlatched = false;
             _pingFails = false;
 
-            theSettings = new AdvancedSettings();
+            theSettings = new AdvancedSettings(null);
 
             theRetryAgent =
                 new LightweightSendingAgent(TransportLogger.Empty(), MessageLogger.Empty(), this, theSettings);

@@ -38,7 +38,6 @@ namespace Jasper.Configuration
             For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Use<NewtonsoftSerializerFactory>();
 
             this.AddSingleton(parent.Advanced);
-            this.AddSingleton(parent.CodeGeneration);
 
             conneg(parent);
             messaging(parent);

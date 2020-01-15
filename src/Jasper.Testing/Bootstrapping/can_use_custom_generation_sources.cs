@@ -19,7 +19,7 @@ namespace Jasper.Testing.Bootstrapping
         {
             with(_ =>
             {
-                _.CodeGeneration.Sources.Add(new SpecialServiceSource());
+                _.Advanced.CodeGeneration.Sources.Add(new SpecialServiceSource());
                 _.Handlers.IncludeType<SpecialServiceUsingThing>();
             });
 

@@ -24,7 +24,7 @@ namespace Jasper.Persistence.SqlServer
 
             options.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
 
-            options.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
+            options.Advanced.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
 
 
             options.Services.For<SqlConnection>().Use<SqlConnection>();
@@ -32,7 +32,7 @@ namespace Jasper.Persistence.SqlServer
             options.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
             options.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
 
-            options.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
+            options.Advanced.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
         }
     }
 }

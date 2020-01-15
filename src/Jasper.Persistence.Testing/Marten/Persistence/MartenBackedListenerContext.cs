@@ -86,7 +86,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             });
 
 
-            theSettings = new AdvancedSettings();
+            theSettings = new AdvancedSettings(null);
 
 
             EnvelopeStorageAdmin.RebuildSchemaObjects();

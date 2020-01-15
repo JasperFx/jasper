@@ -143,10 +143,10 @@ namespace Jasper.Runtime
         {
             // Build up the message handlers
             await Handlers.Compiling;
-            Handlers.Compile(Options.CodeGeneration, _container);
+            Handlers.Compile(Options.Advanced.CodeGeneration, _container);
 
             // If set, use pre-generated message handlers for quicker starts
-            if (Options.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
+            if (Options.Advanced.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
             {
                 await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
             }

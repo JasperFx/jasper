@@ -36,7 +36,7 @@ namespace Jasper.Testing.Runtime
             return new MessageContext(this);
         }
 
-        public AdvancedSettings Settings { get; } = new AdvancedSettings();
+        public AdvancedSettings Settings { get; } = new AdvancedSettings(null);
         public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
         public CancellationToken Cancellation { get; } = default(CancellationToken);
 

@@ -81,9 +81,9 @@ namespace Jasper.Testing.Configuration
             collection.ListenAtPort(2222);
             collection.PublishAllMessages().ToPort(2223);
 
-            // 3 default local queues + the 2 added here
+            // 2 default local queues + the 2 added here
             collection.AllEndpoints()
-                .Length.ShouldBe(6);
+                .Length.ShouldBe(5);
         }
 
         [Fact]

@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString}).RecreateAll();
 
 
-            theSettings = new AdvancedSettings();
+            theSettings = new AdvancedSettings(null);
 
             mssqlSettings = new SqlServerSettings
             {

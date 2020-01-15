@@ -8,7 +8,7 @@ namespace Jasper.Testing
         [Fact]
         public void storage_provisioning_is_none_by_default()
         {
-            new AdvancedSettings().StorageProvisioning.ShouldBe(StorageProvisioning.None);
+            new AdvancedSettings(null).StorageProvisioning.ShouldBe(StorageProvisioning.None);
         }
     }
 }
