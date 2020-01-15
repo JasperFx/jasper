@@ -44,11 +44,17 @@ namespace Jasper.Configuration
         IListenerConfiguration LocalQueue(string queueName);
 
         /// <summary>
-        /// Access the configuration for the default local queueLocalQueueSettings
+        /// Access the configuration for the default local queue
         /// </summary>
         /// <value></value>
         IListenerConfiguration DefaultLocalQueue { get; }
 
+
+        /// <summary>
+        /// Access the configuration for the "durable" local queue that
+        /// is used to handle the actual work of scheduled messages
+        /// </summary>
+        IListenerConfiguration DurableScheduledMessagesLocalQueue { get; }
 
         /// <summary>
         /// This should probably *only* be used in development or testing

@@ -32,7 +32,9 @@ This same functionality is used for the `ICommandBus.Schedule()` functionality a
 
 In the case above though, the message is executed locally at the designated time.
 
+The locally scheduled messages are handled in the local "durable" queue. You can fine tune the parallelization of this <[linkto:documentation/local;title=local worker queue]> through this syntax:
 
+<[sample:DurableScheduledMessagesLocalQueue]>
 
 
 ## Schedule Execution From Cascading Messages

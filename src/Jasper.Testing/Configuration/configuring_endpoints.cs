@@ -76,6 +76,17 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
+        public void configure_durable_queue()
+        {
+            theOptions.Endpoints.DurableScheduledMessagesLocalQueue
+                .MaximumThreads(22);
+
+            localQueue(TransportConstants.Durable)
+                .ExecutionOptions.MaxDegreeOfParallelism
+                .ShouldBe(22);
+        }
+
+        [Fact]
         public void listen_for_port()
         {
             theOptions.Endpoints.ListenAtPort(1111)
