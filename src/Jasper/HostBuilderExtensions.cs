@@ -86,7 +86,6 @@ namespace Jasper
                 services.AddSingleton(s => (IHostedService)s.GetService<IMessagingRoot>());
 
                 services.AddRange(options.CombineServices());
-                services.AddSingleton(options);
             });
 
             return builder;

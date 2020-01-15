@@ -1,6 +1,9 @@
 ﻿using System;
 using Jasper.Runtime.Handlers;
+using Lamar;
 using Microsoft.Extensions.Hosting;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Jasper.Testing.Bootstrapping
 {

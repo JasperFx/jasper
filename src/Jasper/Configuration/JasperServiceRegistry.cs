@@ -39,13 +39,6 @@ namespace Jasper.Configuration
 
             this.AddSingleton(parent.Advanced);
 
-            conneg(parent);
-            messaging(parent);
-        }
-
-
-        private void conneg(JasperOptions parent)
-        {
             this.AddOptions();
 
             var forwarding = new Forwarders();
@@ -58,10 +51,7 @@ namespace Jasper.Configuration
                 _.AddAllTypesOf<IMessageDeserializer>();
                 _.With(new ForwardingRegistration(forwarding));
             });
-        }
 
-        private void messaging(JasperOptions parent)
-        {
             Policies.Add(new HandlerScopingPolicy(parent.HandlerGraph));
 
             ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
@@ -88,17 +78,14 @@ namespace Jasper.Configuration
             MessagingRootService(x => x.Router);
             MessagingRootService(x => x.ScheduledJobs);
             MessagingRootService(x => x.Runtime);
-            For<AdvancedSettings>().Use(x => x.GetInstance<JasperOptions>().Advanced);
 
 
-            For<IMessageContext>().Use<MessageContext>();
 
 
             For<IMessageContext>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
             For<ICommandBus>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
             For<IMessagePublisher>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
 
-            ForSingletonOf<ITransportLogger>().Use<TransportLogger>();
 
             // I'm not proud of this code, but you need a non-null
             // Container property to use the codegen
