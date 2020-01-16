@@ -13,6 +13,7 @@
     <!-- Bootstrap Core CSS -->
     <[css:content/bootstrap.min.css]>
     <[css:content/prism.css]>
+    <[css:content/theme.css]>
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
 
@@ -47,8 +48,7 @@
 
             </ul>
             <form class="form-inline mt-2 mt-md-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
-              <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+              <input id="search" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
             </form>
           </div>
         </nav>
@@ -60,190 +60,159 @@
 
       <div class="container" >
         <div style="text-align: center">
-          <h2 style="margin-top:20px">Tools for Modern .Net Server Side Systems</h2>
+          <h2 style="margin-top:20px">Command Execution Engine and Messaging Solution for .Net Systems</h2>
           <p class="lead">
               <a href="https://ci.appveyor.com/project/jasper-ci/jasper"><img src="https://ci.appveyor.com/api/projects/status/o23fp3diks7024x9?svg=true"></img></a>
               <a href="https://gitter.im/jasperfx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/jasperfx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
               <a href="https://github.com/jasperfx/jasper"><img src="https://img.shields.io/github/forks/jasperfx/jasper?label=Forks&style=social"></img></a>
           </p>
         </div>
+
         <br>
 
-        <hr></hr>
-        <div class="container" >
 
-          <div class="row" id="about"></div>
-            <h2 align="middle">About Jasper</h2>
+        <h2 align="middle" id="about">About Jasper</h2>
 
-            <br/>
-
-            <div class="card-deck">
-
-                <div class="card" style="width: 18rem;">
-                  <div class="card-body">
-                    <h5 class="card-title">Command Processing</h5>
-                    <p class="card-text">Jasper can be used as the mechanism to execute the <i>command</i> inputs into a <a href="https://martinfowler.com/bliki/CQRS.html">CQRS architecture</a>. Jasper provides a uniquely efficient command execution pipeline that will allow you to author command handlers with the cleanest code possible. </p>
-                    <a href="/documentation/execution" class="btn btn-primary">Learn More</a>
-                  </div>
-                </div>
+        <br/>
 
 
-                <div class="card" style="width: 18rem;">
-                  <div class="card-body">
-                    <h5 class="card-title">Mediator</h5>
-                    <p class="card-text">Jasper can be used as a low ceremony <i>mediator</i> tool within HTTP services to decouple the system's HTTP mechanics from the rest of the application for more maintainable code. Using Jasper's worker queues functionality,
-                    it also acts as an in-process command bus.</p>
-                    <a href="/documentation/mediator" class="btn btn-primary">Learn More</a>
-                  </div>
-                </div>
+        <div class="card-deck">
 
-
-                <div class="card" style="width: 18rem;">
-                  <div class="card-body">
-                    <h5 class="card-title">Microservice Integration</h5>
-                    <p class="card-text">If you are using a <a href="https://martinfowler.com/articles/microservices.html">microservice architecture</a> in .Net, Jasper's command processing can be combined with its strong asynchronous messaging support for effective and reliable system integration.   </p>
-                    <a href="/documentation/integration" class="btn btn-primary">Learn More</a>
-                  </div>
-                </div>
-
-            </div>
-
-
-            <br />
-            <br />
-
-            <div align="middle"><img src="/content/JasperIntroduction.png" style="width: 100%;" /></div>
-            
-            <br />
-            <br />
-
-            <div class="card-deck">
-
-              <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                  <h5 class="card-title">Local Work Queues</h5>
-                  <p class="card-text">Jasper has a robust local work queueing system around its execution pipeline build on top of the proven <a href="https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/dataflow-task-parallel-library">TPL Dataflow library</a>. This support
-                  allows for asynchronous processing with configurable message routing, priorities, and parallelization.</p>
-                  <a href="/documentation/local" class="btn btn-primary">Learn More</a>
-                </div>
-              </div>
-
-
-              <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                  <h5 class="card-title">Durable Message Processing</h5>
-                  <p class="card-text">Jasper has robust support for durable <a href="https://en.wikipedia.org/wiki/Store_and_forward">store and forward messaging</a> patterns. Using your application database, Jasper allows you to side step ugly distributed transactions by leaning on the <a href="https://microservices.io/patterns/data/transactional-outbox.html">outbox pattern</a>.</p>
-                  <a href="/documentation/durability" class="btn btn-primary">Learn More</a>
-                </div>
-              </div>
-
-
-              <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                  <h5 class="card-title">Testability</h5>
-                  <p class="card-text">Authoring automated tests against systems dependent on asynchronous messaging can be very tricky, unless you
-                    have Jasper's first class support for automated testing scenarios baked right in.  </p>
-                  <a href="/documentation/testing" class="btn btn-primary">Learn More</a>
-                </div>
-              </div>
-
-          </div>
-
-
-          </div>
-
-          <br />
-          <br />
-
-
-          <hr></hr>
-
-          <br />
-          <br />
-
-
-          <div class="row" id="related">
-            <h2>The JasperFx Family of Open Source Projects</h2>
-            <br />
-            <br />
-            <div class="row">
-              <div class="card-deck row-cols-3 row-cols-md-3">
-                <div class="col mb-4">
-                  <div class="card" style="width: 18rem;">
-                    <img src="content/jasper-icon.png" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Jasper</h5>
-                      <p class="card-text">Next generation framework for server side .Net Core applications</p>
-                      <a href="#" class="btn btn-primary">Learn More</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col mb-4">
-                  <div class="card" style="width: 18rem;">
-                    <img style="display:block;margin-left:auto;margin-right:auto;width:50%" src="https://jasperfx.github.io/marten/content/images/emblem.png" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Marten</h5>
-                      <p class="card-text">Postgresql as a Document Db and Event Store for .Net Development</p>
-                      <a href="http://jasperfx.github.io/marten" class="btn btn-primary">Learn More</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col mb-4">
-                  <div class="card" style="width: 18rem;">
-                    <img src="content/lamar.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">Lamar</h5>
-                      <p class="card-text">Fast Inversion of Control Tool and Sundry Items of Roslyn Chicanery</p>
-                      <a href="https://jasperfx.github.io/lamar" class="btn btn-primary">Learn More</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col mb-4">
-                  <div class="card" style="width: 18rem;">
-                    <img style="width:100%;display:block" src="content/oakton.png" class="card-img-top"></img>
-                    <div class="card-body">
-                      <h5 class="card-title">Oakton</h5>
-                      <p class="card-text">Parsing and Utilities for Command Line Tools in .Net</p>
-                      <a href="https://jasperfx.github.io/oakton" class="btn btn-primary">Learn More</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col mb-4">
-                  <div class="card" style="width: 18rem;">
-                    <img style="width:100%;display:block" src="content/alba.jpg" class="card-img-top">
-                    <div class="card-body">
-                      <h5 class="card-title">Alba</h5>
-                      <p class="card-text">Easy integration testing helper for ASP.Net Core applications</p>
-                      <a href="https://jasperfx.github.io/alba" class="btn btn-primary">Learn More</a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col mb-4">
-                  <div class="card" style="width: 18rem;">
-                    <img style="width:100$;display:block" src="content/baseline.png" class="card-img-top"></img>
-                    <div class="card-body">
-                      <h5 class="card-title">Baseline</h5>
-                      <p class="card-text">Grab bag of generic utilities and extension methods for .Net development</p>
-                      <a href="https://github.com/jasperfx/baseline" class="btn btn-primary">Learn More</a>
-                    </div>
-                  </div>
-                </div>
-
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">Command Processing</h5>
+                <p class="card-text">Jasper can be used as the mechanism to execute the <i>command</i> inputs into a <a href="https://martinfowler.com/bliki/CQRS.html">CQRS architecture</a>. Jasper provides a uniquely efficient command execution pipeline that will allow you to author command handlers with the cleanest code possible. </p>
+                <a href="/documentation/execution" class="btn btn-primary">Learn More</a>
               </div>
             </div>
 
 
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">Mediator</h5>
+                <p class="card-text">Jasper can be used as a low ceremony <i>mediator</i> tool within HTTP services to decouple the system's HTTP mechanics from the rest of the application for more maintainable code. Using Jasper's worker queues functionality,
+                it also acts as an in-process command bus.</p>
+                <a href="/documentation/mediator" class="btn btn-primary">Learn More</a>
+              </div>
+            </div>
+
+
+            <div class="card" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">Microservice Integration</h5>
+                <p class="card-text">If you are using a <a href="https://martinfowler.com/articles/microservices.html">microservice architecture</a> in .Net, Jasper's command processing can be combined with its strong asynchronous messaging support for effective and reliable system integration.   </p>
+                <a href="/documentation/integration" class="btn btn-primary">Learn More</a>
+              </div>
+            </div>
+
+        </div>
+
+
+        <br />
+        <br />
+
+        <div align="middle"><img src="/content/JasperIntroduction.png" style="width: 100%;" /></div>
+        
+        <br />
+        <br />
+
+        <div class="card-deck">
+
+          <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Local Work Queues</h5>
+              <p class="card-text">Jasper has a robust local work queueing system around its execution pipeline build on top of the proven <a href="https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/dataflow-task-parallel-library">TPL Dataflow library</a>. This support
+              allows for asynchronous processing with configurable message routing, priorities, and parallelization.</p>
+              <a href="/documentation/local" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+
+          <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Durable Message Processing</h5>
+              <p class="card-text">Jasper has robust support for durable <a href="https://en.wikipedia.org/wiki/Store_and_forward">store and forward messaging</a> patterns. Using your application database, Jasper allows you to side step ugly distributed transactions by leaning on the <a href="https://microservices.io/patterns/data/transactional-outbox.html">outbox pattern</a>.</p>
+              <a href="/documentation/durability" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+
+          <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title">Testability</h5>
+              <p class="card-text">Authoring automated tests against systems dependent on asynchronous messaging can be very tricky, unless you
+                have Jasper's first class support for automated testing scenarios baked right in.  </p>
+              <a href="/documentation/testing" class="btn btn-primary">Learn More</a>
+            </div>
           </div>
 
         </div>
-        
+
+        <br />
+        <br />
+        <h2 align="middle" id="related" style="padding-top: 100px;">The JasperFx Family of Open Source Projects</h2>
+        <br />
+        <br />
 
 
+        <div class="card-deck">
+          <div class="card" style="width: 18rem;">
+            <img src="content/jasper-icon.png" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">Jasper</h5>
+              <p class="card-text">Next generation framework for server side .Net Core applications</p>
+              <a href="#" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem;">
+            <img style="display:block;margin-left:auto;margin-right:auto;width:50%" src="https://jasperfx.github.io/marten/content/images/emblem.png" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">Marten</h5>
+              <p class="card-text">Postgresql as a Document Db and Event Store for .Net Development</p>
+              <a href="http://jasperfx.github.io/marten" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem;">
+            <img src="content/lamar.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">Lamar</h5>
+              <p class="card-text">Fast Inversion of Control Tool and Sundry Items of Roslyn Chicanery</p>
+              <a href="https://jasperfx.github.io/lamar" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card-deck" style="padding-top:50px">
+          <div class="card" style="width: 18rem;">
+            <img style="width:100%;display:block" src="content/oakton.png" class="card-img-top"></img>
+            <div class="card-body">
+              <h5 class="card-title">Oakton</h5>
+              <p class="card-text">Parsing and Utilities for Command Line Tools in .Net</p>
+              <a href="https://jasperfx.github.io/oakton" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem;">
+            <img style="width:100%;display:block" src="content/alba.jpg" class="card-img-top">
+            <div class="card-body">
+              <h5 class="card-title">Alba</h5>
+              <p class="card-text">Easy integration testing helper for ASP.Net Core applications</p>
+              <a href="https://jasperfx.github.io/alba" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem;">
+            <img style="width:100$;display:block" src="content/baseline.png" class="card-img-top"></img>
+            <div class="card-body">
+              <h5 class="card-title">Baseline</h5>
+              <p class="card-text">Grab bag of generic utilities and extension methods for .Net development</p>
+              <a href="https://github.com/jasperfx/baseline" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
 
 
       </div> <!-- /container -->

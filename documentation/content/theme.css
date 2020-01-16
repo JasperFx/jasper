@@ -43,3 +43,21 @@ i.command-description {
 .command-section h4 {
     margin-bottom: 10px;
 }
+
+.card{
+    height: 100%;
+}
+
+.card .card-body{
+    vertical-align: bottom;
+    
+}
+
+.card-body .btn{
+    vertical-align: bottom;
+}
+
+pre {
+    background-color: #eee;
+    padding: 5px;
+}

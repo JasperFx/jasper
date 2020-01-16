@@ -38,7 +38,7 @@
 
 	<header>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary" id="nav">
-			<a href="<[RootUrl]>" class="navbar-brand">Jasper v<[version]></a>
+			<a href="<[RootUrl]>" class="navbar-brand">Jasper</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 			  <span class="navbar-toggler-icon"></span>
 			</button>
@@ -46,20 +46,21 @@
 				<ul class="navbar-nav mr-auto">
 					<[linkto:documentation;<li class="nav-item"><a class="nav-link" href="{href}" title="{title}">Documentation</a></li>]>
 					<[linkto:documentation/getting_started;<li class="nav-item"><a class="nav-link" href="{href}" title="{title}">Getting Started</a></li>]>
+
+					
+				</ul>
+
+				<ul class="navbar-nav justify-content-end">
 					<[linkto:{previous};<li class="nav-item"><a class="nav-link" href="{href}" title="{title}">Previous</a></li>]>
 					<[linkto:{next};<li class="nav-item"><a class="nav-link" href="{href}" title="{title}">Next</a></li>]>
 					<li class="nav-item">
-						<a href="https://github.com/JasperFx/jasper/blob/master/documentation/<[FilePath]>"  class="nav-link" style="margin-right: 10px;"><i class="fa fa-github"></i> Edit on GitHub</a>
+						<a title="Open the GitHub file for this page" href="https://github.com/JasperFx/jasper/blob/master/documentation/<[FilePath]>"  class="nav-link" style="margin-right: 10px;"><i class="fa fa-github"></i> Edit on GitHub</a>
 					</li>
-					
 				</ul>
 				
 				<form class="form-inline mt-2 mt-md-0">
-					
-					<a class="nav-item" href="https://gitter.im/JasperFx/jasper?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/JasperFx/https://github.com/JasperFx/jasper" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;margin-right: 30px;"></a>
-				  <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
-				  <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
-				</form>
+					<input id="search" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" id="search">
+				  </form>
 		  </div>
 
 		</nav>
@@ -86,10 +87,10 @@
 				<br />
 				<br />
 
-			  <ul id="sidebar">
+			  <ul id="sidebar" class="list-group" style="padding-bottom: 20px;">
 
 			  </ul>
-
+			  	  <h3 class="no-margin">Version</h3><p><[version]></p>
 				  <[linkto:{next};<h3 class="no-margin">Next</h3><p><a href="{href}">{title}</a></p>]>
 				  <[linkto:{previous};<h3 class="no-margin">Previous</h3><a href="{href}">{title}</a></p>]>
 

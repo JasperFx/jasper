@@ -5,6 +5,6 @@ $(document).ready(function(){
 		var id = 'sec' + i.toString();
 		$(h2).attr('id', id);
 
-		$('<li class=""><a href="#' + id + '">' + $(h2).html() + '</a></li>').appendTo(sidebar);
+		$('<li><a href="#' + id + '">' + $(h2).html() + '</a></li>').addClass("list-group-item").appendTo(sidebar);
 	});
 });
