@@ -1,9 +1,15 @@
-﻿using Baseline.Dates;
+using Baseline.Dates;
 using Bootstrapping.Configuration2;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
 using Microsoft.Extensions.Hosting;
 using TestMessages;
+
+#if NETSTANDARD2_0
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Host = Microsoft.Extensions.Hosting.Host;
+#endif
 
 namespace Jasper.Testing.Samples
 {

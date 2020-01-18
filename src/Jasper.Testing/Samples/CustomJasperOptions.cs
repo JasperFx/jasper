@@ -8,6 +8,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
 
+#if NETSTANDARD2_0
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+#else
+using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+#endif
+
 namespace Jasper.Testing.Samples
 {
 

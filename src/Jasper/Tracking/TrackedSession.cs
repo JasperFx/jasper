@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Lamar;
-using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD2_0
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+#else
+using IHost = Microsoft.Extensions.Hosting.IHost;
+#endif
 
 namespace Jasper.Tracking
 {

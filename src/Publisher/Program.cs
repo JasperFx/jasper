@@ -1,9 +1,15 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.Configuration;
 using Microsoft.Extensions.Hosting;
 using Oakton.AspNetCore;
 using TestMessages;
+
+#if NETSTANDARD2_0
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Host = Microsoft.Extensions.Hosting.Host;
+#endif
 
 namespace Publisher
 {

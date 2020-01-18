@@ -1,8 +1,14 @@
-﻿using Jasper;
+using Jasper;
 using Jasper.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD2_0
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Host = Microsoft.Extensions.Hosting.Host;
+#endif
 
 namespace Jasper.Testing.Samples
 {

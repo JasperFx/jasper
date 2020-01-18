@@ -1,6 +1,11 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD2_0
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Host = Microsoft.Extensions.Hosting.Host;
+#endif
 
 namespace Jasper.Testing.Samples
 {

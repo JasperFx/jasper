@@ -5,6 +5,12 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
+#if NETSTANDARD2_0
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+#else
+using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+#endif
+
 namespace Jasper.RabbitMQ.Tests
 {
     public class RabbitMqCommandTester

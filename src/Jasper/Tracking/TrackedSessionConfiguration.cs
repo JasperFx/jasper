@@ -2,7 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Jasper.Runtime;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD2_0
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+#else
+using IHost = Microsoft.Extensions.Hosting.IHost;
+#endif
 
 namespace Jasper.Tracking
 {

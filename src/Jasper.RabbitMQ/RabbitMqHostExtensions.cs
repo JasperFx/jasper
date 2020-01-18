@@ -2,7 +2,12 @@ using Jasper.Configuration;
 using Jasper.RabbitMQ.Internal;
 using Jasper.Runtime;
 using LamarCodeGeneration.Util;
-using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD2_0
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+#else
+using IHost = Microsoft.Extensions.Hosting.IHost;
+#endif
 
 namespace Jasper.RabbitMQ
 {

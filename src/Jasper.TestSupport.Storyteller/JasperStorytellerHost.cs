@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Engine;
+
+#if NETSTANDARD2_0
+using TheHost = Microsoft.AspNetCore.WebHost;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+#else
+using TheHost = Microsoft.Extensions.Hosting.Host;
+using IHost = Microsoft.Extensions.Hosting.IHost;
+#endif
 
 namespace Jasper.TestSupport.Storyteller
 {
@@ -121,7 +129,7 @@ namespace Jasper.TestSupport.Storyteller
         {
             _warmup = Task.Factory.StartNew(() =>
             {
-                _host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(Registry).Build();
+                _host = TheHost.CreateDefaultBuilder().UseJasper(Registry).Build();
 
                 _messageLogger = _host.Services.GetService<IMessageLogger>().As<StorytellerMessageLogger>();
                 _messageLogger.ServiceName = _host.Services.GetService<JasperOptions>().ServiceName;
@@ -230,7 +238,12 @@ namespace Jasper.TestSupport.Storyteller
         internal void Bootstrap(IMessageLogger logger)
         {
             _options.Services.AddSingleton(logger);
-            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_options).Start();
+            Host = TheHost.CreateDefaultBuilder().UseJasper(_options)
+#if NETSTANDARD2_0
+                .Build();
+#else
+                .Start();
+#endif
         }
 
         public Task Send<T>(T message)

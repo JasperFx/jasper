@@ -11,10 +11,15 @@ using Jasper.Util;
 using Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
+
+#if NETSTANDARD2_0
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+#else
+using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+#endif
 
 namespace Jasper.AzureServiceBus.Tests
 {

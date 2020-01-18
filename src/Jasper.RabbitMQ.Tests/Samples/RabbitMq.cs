@@ -8,6 +8,12 @@ using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using ExchangeType = Jasper.RabbitMQ.ExchangeType;
 
+#if NETSTANDARD2_0
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+#else
+using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+#endif
+
 namespace IntegrationTests.Samples
 {
 

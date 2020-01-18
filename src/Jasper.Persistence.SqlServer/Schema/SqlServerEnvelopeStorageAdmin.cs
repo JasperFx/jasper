@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -200,7 +200,7 @@ GO
                 {
                     while (await reader.ReadAsync())
                     {
-                        var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
+                        var status = (EnvelopeStatus)Enum.Parse(typeof(EnvelopeStatus), await reader.GetFieldValueAsync<string>(0));
                         var count = await reader.GetFieldValueAsync<int>(1);
 
                         if (status == EnvelopeStatus.Incoming)

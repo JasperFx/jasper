@@ -4,6 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
+#if NETSTANDARD2_0
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+#else
+using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+#endif
+
 namespace Jasper.Testing.Bootstrapping
 {
     public class environment_sensitive_configuration

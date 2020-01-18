@@ -12,10 +12,10 @@ using Microsoft.Extensions.Hosting;
 #if NETSTANDARD2_0
 using HostBuilderContext = Microsoft.AspNetCore.Hosting.WebHostBuilderContext;
 using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
 #else
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 #endif
-
 
 using Oakton.AspNetCore;
 
