@@ -10,6 +10,13 @@ namespace Microsoft.AspNetCore.Hosting
             await host.StartAsync();
             return host;
         }
+
+        public static IWebHost Start(this IWebHostBuilder builder)
+        {
+            var host = builder.Build();
+            host.Start();
+            return host;
+        }
     }
 }
 #endif

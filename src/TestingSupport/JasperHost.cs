@@ -76,12 +76,7 @@ namespace Jasper
             return Host.CreateDefaultBuilder()
                 .UseJasper(options)
                 //.ConfigureLogging(x => x.ClearProviders())
-#if NETSTANDARD2_0
-                .Build();
-#else
                 .Start();
-#endif
-
         }
 
 

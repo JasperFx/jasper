@@ -14,6 +14,7 @@ using StoryTeller.Engine;
 #if NETSTANDARD2_0
 using TheHost = Microsoft.AspNetCore.WebHost;
 using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Microsoft.AspNetCore.Hosting;
 #else
 using TheHost = Microsoft.Extensions.Hosting.Host;
 using IHost = Microsoft.Extensions.Hosting.IHost;
@@ -239,11 +240,7 @@ namespace Jasper.TestSupport.Storyteller
         {
             _options.Services.AddSingleton(logger);
             Host = TheHost.CreateDefaultBuilder().UseJasper(_options)
-#if NETSTANDARD2_0
-                .Build();
-#else
                 .Start();
-#endif
         }
 
         public Task Send<T>(T message)
