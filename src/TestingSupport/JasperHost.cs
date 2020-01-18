@@ -1,16 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Lamar.Scanning.Conventions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Oakton.AspNetCore;
 
 #if NETSTANDARD2_0
-using Host = Microsoft.AspNetCore.WebHost;
+using Microsoft.AspNetCore.Hosting;
 using HostBuilderContext = Microsoft.AspNetCore.Hosting.WebHostBuilderContext;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
 using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
 #else
-using Host = Microsoft.Extensions.Hosting.Host;
+using Microsoft.Extensions.Hosting;
 #endif
 
 namespace Jasper
