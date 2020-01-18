@@ -17,6 +17,7 @@ build_number = "#{BUILD_VERSION}.#{build_revision}"
 BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
+TFMS = ["net462", "netcoreapp2.2", "netcoreapp3.1"]
 
 task :ci => [:commands, :compile, :pack, :appVeyorPush]
 #task :ci => [:default, :commands, :pack, :appVeyorPush]
@@ -116,12 +117,13 @@ task :commands do
 #    sh "dotnet run -- ?"
 #    sh "dotnet run -- export-json-schema obj/schema"
 #  end
-
-  Dir.chdir("src/ConsoleApp") do
-    sh "dotnet run -- codegen preview"
-    sh "dotnet run -- codegen test"
-    sh "dotnet run -- codegen write"
-    sh "dotnet run -- codegen delete"
+  for tfm in TFMS do
+    Dir.chdir("src/ConsoleApp") do
+      sh "dotnet run -f #{tfm} -- codegen preview"
+      sh "dotnet run -f #{tfm} -- codegen test"
+      sh "dotnet run -f #{tfm} -- codegen write"
+      sh "dotnet run -f #{tfm} -- codegen delete"
+    end
   end
 end
 
