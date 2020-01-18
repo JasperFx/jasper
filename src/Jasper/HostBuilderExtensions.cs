@@ -8,13 +8,21 @@ using Lamar;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD20
+using HostBuilderContext = Microsoft.AspNetCore.Hosting.WebHostBuilderContext;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+#else
+using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
+#endif
+
+
 using Oakton.AspNetCore;
 
 namespace Jasper
 {
     public static class HostBuilderExtensions
     {
-
         /// <summary>
         ///     Add Jasper to an ASP.Net Core application using a custom JasperOptionsBuilder (or JasperOptions) type
         /// </summary>
@@ -62,13 +70,21 @@ namespace Jasper
         public static IHostBuilder UseJasper(this IHostBuilder builder, JasperOptions options, Action<HostBuilderContext, JasperOptions> customization = null)
         {
             var appliedKey = "JASPER_HAS_BEEN_APPLIED";
+#if NETSTANDARD20
+            if (builder.GetSetting(appliedKey).IsNotEmpty())
+            {
+                throw new InvalidOperationException($"{nameof(UseJasper)} can only be called once per builder");
+            }
+
+            builder.UseSetting(appliedKey, "true");
+#else
             if (builder.Properties.ContainsKey(appliedKey))
                 throw new InvalidOperationException($"{nameof(UseJasper)} can only be called once per builder");
 
             builder.Properties.Add(appliedKey, "true");
-
             builder.UseServiceProviderFactory<IServiceCollection>(new LamarServiceProviderFactory());
             builder.UseServiceProviderFactory<ServiceRegistry>(new LamarServiceProviderFactory());
+#endif
 
             ExtensionLoader.ApplyExtensions(options);
 
@@ -86,6 +102,11 @@ namespace Jasper
                 services.AddSingleton(s => (IHostedService)s.GetService<IMessagingRoot>());
 
                 services.AddRange(options.CombineServices());
+
+#if NETSTANDARD20
+                services.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
+                services.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
+#endif
             });
 
             return builder;

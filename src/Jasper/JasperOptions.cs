@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +12,10 @@ using LamarCodeGeneration.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+#if NETSTANDARD20
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+#endif
 
 namespace Jasper
 {
