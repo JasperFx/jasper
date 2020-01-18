@@ -8,9 +8,18 @@ using Jasper.Persistence;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
-using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StorytellerSpecs.Fixtures.Durability;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Fixtures.Postgresql
 {

@@ -10,9 +10,18 @@ using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.TestSupport.Storyteller.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StoryTeller;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Fixtures.Marten
 {

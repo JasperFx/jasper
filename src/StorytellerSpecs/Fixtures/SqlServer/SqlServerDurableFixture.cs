@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +11,17 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
-using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {

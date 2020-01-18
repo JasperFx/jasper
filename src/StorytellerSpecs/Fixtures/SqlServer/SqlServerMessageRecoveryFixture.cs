@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -18,10 +18,19 @@ using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Stub;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {

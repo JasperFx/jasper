@@ -71,7 +71,7 @@ namespace Jasper.RabbitMQ.Tests
 
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue("queue15");
-                    x.DeclareExchange("ex15", x => x.ExchangeType = ExchangeType.Fanout);
+                    x.DeclareExchange("ex15", y => y.ExchangeType = ExchangeType.Fanout);
                     x.DeclareBinding(new Binding
                     {
                         BindingKey = "key1",

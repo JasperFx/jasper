@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
@@ -7,7 +7,16 @@ using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
 using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Stub
 {

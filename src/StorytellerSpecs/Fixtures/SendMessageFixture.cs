@@ -9,8 +9,17 @@ using Jasper;
 using Jasper.Attributes;
 using Jasper.Persistence.Durability;
 using Jasper.Tracking;
-using Microsoft.Extensions.Hosting;
 using StoryTeller;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Fixtures
 {

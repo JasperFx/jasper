@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper;
@@ -7,8 +7,17 @@ using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Marten;
-using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace StorytellerSpecs.Fixtures.Marten
 {
