@@ -7,10 +7,19 @@ using Jasper.Transports.Local;
 using Jasper.Transports.Tcp;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
-using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Shouldly;
 using Xunit;
+
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace Jasper.Testing.Configuration
 {

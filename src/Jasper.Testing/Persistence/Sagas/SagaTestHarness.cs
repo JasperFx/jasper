@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Handlers;
@@ -6,6 +6,16 @@ using Jasper.Tracking;
 using Jasper.Transports;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace Jasper.Testing.Persistence.Sagas
 {

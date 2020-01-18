@@ -1,14 +1,17 @@
 using System;
 using Jasper.RabbitMQ.CommandLine;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
 #if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
 using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
 #else
-using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+using Microsoft.Extensions.Hosting;
 #endif
 
 namespace Jasper.RabbitMQ.Tests

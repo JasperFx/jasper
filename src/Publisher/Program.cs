@@ -1,15 +1,19 @@
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Configuration;
-using Microsoft.Extensions.Hosting;
 using Oakton.AspNetCore;
 using TestMessages;
 
 #if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
 using Host = Microsoft.AspNetCore.WebHost;
 #else
-using Host = Microsoft.Extensions.Hosting.Host;
+using Microsoft.Extensions.Hosting;
 #endif
+
 
 namespace Publisher
 {

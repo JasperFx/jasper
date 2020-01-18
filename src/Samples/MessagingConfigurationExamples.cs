@@ -2,13 +2,16 @@ using Baseline.Dates;
 using Bootstrapping.Configuration2;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
-using Microsoft.Extensions.Hosting;
 using TestMessages;
 
 #if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
 using Host = Microsoft.AspNetCore.WebHost;
 #else
-using Host = Microsoft.Extensions.Hosting.Host;
+using Microsoft.Extensions.Hosting;
 #endif
 
 namespace Jasper.Testing.Samples

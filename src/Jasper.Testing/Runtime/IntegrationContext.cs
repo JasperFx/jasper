@@ -1,8 +1,17 @@
-﻿using System;
+using System;
 using Jasper.Runtime.Handlers;
 using Lamar;
-using Microsoft.Extensions.Hosting;
 using Xunit;
+
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#else
+using Microsoft.Extensions.Hosting;
+#endif
 
 namespace Jasper.Testing.Runtime
 {

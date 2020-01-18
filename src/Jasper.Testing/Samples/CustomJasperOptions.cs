@@ -5,13 +5,16 @@ using Jasper.Tracking;
 using Lamar;
 using LamarCodeGeneration;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using TestingSupport;
 
 #if NETSTANDARD2_0
+using Microsoft.AspNetCore.Hosting;
 using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
 #else
-using IHostEnvironment = Microsoft.Extensions.Hosting.IHostEnvironment;
+using Microsoft.Extensions.Hosting;
 #endif
 
 namespace Jasper.Testing.Samples

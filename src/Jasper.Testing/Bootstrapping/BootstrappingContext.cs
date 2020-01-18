@@ -1,9 +1,16 @@
-﻿using System;
+using System;
 using Jasper.Runtime.Handlers;
 using Lamar;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 using Xunit.Abstractions;
+
+#if NETSTANDARD2_0
+using IHostEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+using Host = Microsoft.AspNetCore.WebHost;
+#endif
 
 namespace Jasper.Testing.Bootstrapping
 {
