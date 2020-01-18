@@ -5,6 +5,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Oakton.AspNetCore;
 
+#if NETSTANDARD2_0
+using Host = Microsoft.AspNetCore.WebHost;
+using HostBuilderContext = Microsoft.AspNetCore.Hosting.WebHostBuilderContext;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+#else
+using Host = Microsoft.Extensions.Hosting.Host;
+#endif
+
 namespace Jasper
 {
     /// <summary>
@@ -66,7 +74,11 @@ namespace Jasper
             return Host.CreateDefaultBuilder()
                 .UseJasper(options)
                 //.ConfigureLogging(x => x.ClearProviders())
+#if NETSTANDARD2_0
+                .Build();
+#else
                 .Start();
+#endif
 
         }
 

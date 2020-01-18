@@ -2,6 +2,14 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
+#if NETSTANDARD2_0
+using Host = Microsoft.AspNetCore.WebHost;
+using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
+using IHost = Microsoft.AspNetCore.Hosting.IWebHost;
+#else
+using Host = Microsoft.Extensions.Hosting.Host;
+#endif
+
 namespace TestingSupport
 {
     public abstract class BaseContext : IDisposable
