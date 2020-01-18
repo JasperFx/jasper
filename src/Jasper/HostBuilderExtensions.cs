@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-#if NETSTANDARD20
+#if NETSTANDARD2_0
 using HostBuilderContext = Microsoft.AspNetCore.Hosting.WebHostBuilderContext;
 using IHostBuilder = Microsoft.AspNetCore.Hosting.IWebHostBuilder;
 #else
@@ -70,7 +70,7 @@ namespace Jasper
         public static IHostBuilder UseJasper(this IHostBuilder builder, JasperOptions options, Action<HostBuilderContext, JasperOptions> customization = null)
         {
             var appliedKey = "JASPER_HAS_BEEN_APPLIED";
-#if NETSTANDARD20
+#if NETSTANDARD2_0
             if (builder.GetSetting(appliedKey).IsNotEmpty())
             {
                 throw new InvalidOperationException($"{nameof(UseJasper)} can only be called once per builder");
@@ -103,7 +103,7 @@ namespace Jasper
 
                 services.AddRange(options.CombineServices());
 
-#if NETSTANDARD20
+#if NETSTANDARD2_0
                 services.AddSingleton<IServiceProviderFactory<ServiceRegistry>, LamarServiceProviderFactory>();
                 services.AddSingleton<IServiceProviderFactory<IServiceCollection>, LamarServiceProviderFactory>();
 #endif
