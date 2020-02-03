@@ -7,6 +7,7 @@ using ImTools;
 using Jasper.Configuration;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime;
+using Jasper.Runtime.Routing;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports.Local;
 using Jasper.Transports.Sending;
@@ -14,13 +15,11 @@ using Jasper.Util;
 
 namespace Jasper.Transports
 {
-
-
     public class TransportRuntime : ITransportRuntime
     {
 
         private readonly IList<IListeningWorkerQueue> _listeners = new List<IListeningWorkerQueue>();
-        private readonly IList<Subscriber> _subscribers = new List<Subscriber>();
+        private readonly IList<ISubscriber> _subscribers = new List<ISubscriber>();
 
         private readonly object _channelLock = new object();
 
@@ -52,6 +51,11 @@ namespace Jasper.Transports
             {
                 transport.StartListeners(_root, this);
             }
+
+            foreach (var subscriber in _transports.Subscribers)
+            {
+                _subscribers.Fill(subscriber);
+            }
         }
 
         public ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Endpoint endpoint)
@@ -59,28 +63,33 @@ namespace Jasper.Transports
             try
             {
                 var agent = endpoint.IsDurable
-                    ? (ISendingAgent)new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger, _root.Persistence)
-                    : new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings);
+                    ? (ISendingAgent)new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger, _root.Persistence, endpoint)
+                    : new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
 
                 agent.ReplyUri = replyUri;
                 sender.Start((ISenderCallback) agent);
 
-                AddSubscriber(agent, endpoint.Subscriptions.ToArray());
+                endpoint.Agent = agent;
+
+                AddSendingAgent(agent);
+                AddSubscriber(endpoint);
 
                 return agent;
             }
             catch (Exception e)
             {
-                throw new TransportEndpointException(sender.Destination, "Could not build sending agent. See inner exception.", e);
+                throw new TransportEndpointException(sender.Destination, "Could not build sending sendingAgent. See inner exception.", e);
             }
         }
 
-        public void AddSubscriber(ISendingAgent agent, Subscription[] subscriptions)
+        public void AddSendingAgent(ISendingAgent sendingAgent)
         {
-            _senders = _senders.AddOrUpdate(agent.Destination, agent);
+            _senders = _senders.AddOrUpdate(sendingAgent.Destination, sendingAgent);
+        }
 
-            var subscriber = new Subscriber(agent, subscriptions);
-            _subscribers.Add(subscriber);
+        public void AddSubscriber(ISubscriber subscriber)
+        {
+            _subscribers.Fill(subscriber);
         }
 
         private ImTools.ImHashMap<string, ISendingAgent> _localSenders = ImTools.ImHashMap<string, ISendingAgent>.Empty;
@@ -128,7 +137,7 @@ namespace Jasper.Transports
                 var local = (LocalTransport)transport;
                 var agent = local.AddSenderForDestination(uri, _root, this);
 
-                AddSubscriber(agent, new Subscription[0]);
+                AddSendingAgent(agent);
 
                 return agent;
             }
@@ -161,21 +170,28 @@ namespace Jasper.Transports
             throw new NotImplementedException();
         }
 
-        public ISendingAgent[] FindSubscribers(Type messageType)
+        public ISubscriber[] FindSubscribersForMessageType(Type messageType)
         {
-            return _subscribers.Where(x => x.ShouldSendMessage(messageType))
-                .Select(x => x.Agent)
+            return _subscribers
+                .Where(x => x.ShouldSendMessage(messageType))
                 .ToArray();
         }
+
 
         public ISendingAgent[] FindLocalSubscribers(Type messageType)
         {
             return _subscribers
-                .Where(x => x.Destination.Scheme == TransportConstants.Local)
+                .OfType<LocalQueueSettings>()
                 .Where(x => x.ShouldSendMessage(messageType))
                 .Select(x => x.Agent)
                 .ToArray();
 
+        }
+
+        public ITopicRouter[] FindTopicRoutersForMessageType(Type messageType)
+        {
+            var routers = FindSubscribersForMessageType(messageType).OfType<ITopicRouter>().ToArray();
+            return routers.Any() ? routers : _subscribers.OfType<ITopicRouter>().ToArray();
         }
 
         public void Dispose()

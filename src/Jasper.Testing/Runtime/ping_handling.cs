@@ -22,7 +22,7 @@ namespace Jasper.Testing.Runtime
 
                 sender.Start(new StubSenderCallback());
 
-                await sender.Ping();
+                await sender.Ping(CancellationToken.None);
             }
         }
 
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Runtime
             var sender = new BatchedSender("tcp://localhost:3322".ToUri(), new SocketSenderProtocol(),
                 CancellationToken.None, TransportLogger.Empty());
 
-            await Should.ThrowAsync<InvalidOperationException>(async () => { await sender.Ping(); });
+            await Should.ThrowAsync<InvalidOperationException>(async () => { await sender.Ping(CancellationToken.None); });
         }
     }
 }

@@ -5,16 +5,6 @@ namespace Jasper
 {
     public static class MessageContextExtensions
     {
-        /// <summary>
-        ///     Send to a specific destination rather than running the routing rules
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="destination">The destination to send to</param>
-        /// <param name="message"></param>
-        public static Task Send<T>(this IMessagePublisher publisher, Uri destination, T message)
-        {
-            return publisher.SendEnvelope(new Envelope {Message = message, Destination = destination});
-        }
 
         /// <summary>
         ///     Send a message that should be executed at the given time
@@ -54,13 +44,7 @@ namespace Jasper
         {
             if (context.Envelope == null) throw new InvalidOperationException("This operation can only be performed while in the middle of handling an incoming message");
 
-
-            var envelope = new Envelope(response)
-            {
-                Destination = context.Envelope.ReplyUri
-            };
-
-            return context.SendEnvelope(envelope);
+            return context.SendToDestination(context.Envelope.ReplyUri, response);
         }
 
     }

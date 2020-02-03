@@ -18,7 +18,10 @@ namespace Jasper.Transports.Local
         {
             _messageLogger = messageLogger;
             Destination = endpoint.Uri;
+            Endpoint = endpoint;
         }
+
+        public Endpoint Endpoint { get; }
 
         public Uri Destination { get; }
         public Uri ReplyUri { get; set; } = TransportConstants.RepliesUri;

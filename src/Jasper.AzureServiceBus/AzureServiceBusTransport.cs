@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Baseline;
+using Jasper.AzureServiceBus.Internal;
+using Jasper.Runtime;
+using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
@@ -12,6 +16,8 @@ namespace Jasper.AzureServiceBus
         public static readonly string ProtocolName = "asb";
 
         private readonly LightweightCache<Uri, AzureServiceBusEndpoint> _endpoints;
+
+        public AzureServiceBusTopicRouter Topics { get; } = new AzureServiceBusTopicRouter();
 
         /// <summary>
         /// Azure Service Bus connection string as read from configuration
@@ -73,5 +79,6 @@ namespace Jasper.AzureServiceBus
             var uri = new AzureServiceBusEndpoint{TopicName = topicName}.Uri;
             return _endpoints[uri];
         }
+
     }
 }

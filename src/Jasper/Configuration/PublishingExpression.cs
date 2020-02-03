@@ -15,7 +15,7 @@ namespace Jasper.Configuration
     {
         private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
-        private readonly IList<Endpoint> _endpoints = new List<Endpoint>();
+        private readonly IList<Subscriber> _subscribers = new List<Subscriber>();
 
         internal PublishingExpression(TransportCollection parent)
         {
@@ -76,7 +76,7 @@ namespace Jasper.Configuration
         {
             var endpoint = Parent.GetOrCreateEndpoint(uri);
 
-            _endpoints.Add(endpoint);
+            _subscribers.Add(endpoint);
 
             if (AutoAddSubscriptions)
             {
@@ -84,6 +84,22 @@ namespace Jasper.Configuration
             }
 
             return new SubscriberConfiguration(endpoint);
+        }
+
+        /// <summary>
+        /// Use a routing rule "Subscriber" as a recipient. This is used
+        /// by Jasper's topic routing
+        /// </summary>
+        /// <param name="subscriber"></param>
+        public void ViaRouter(Subscriber subscriber)
+        {
+            if (AutoAddSubscriptions)
+            {
+                subscriber.Subscriptions.AddRange(_subscriptions);
+            }
+
+            Parent.Subscribers.Fill(subscriber);
+            _subscribers.Add(subscriber);
         }
 
         /// <summary>
@@ -135,7 +151,7 @@ namespace Jasper.Configuration
                 settings.Subscriptions.AddRange(_subscriptions);
             }
 
-            _endpoints.Add(settings);
+            _subscribers.Add(settings);
 
             return new ListenerConfiguration(settings);
         }
@@ -154,12 +170,12 @@ namespace Jasper.Configuration
 
         internal void AttachSubscriptions()
         {
-            if (!_endpoints.Any())
+            if (!_subscribers.Any())
             {
                 throw new InvalidOperationException("No subscriber endpoint(s) are specified!");
             }
 
-            foreach (var endpoint in _endpoints)
+            foreach (var endpoint in _subscribers)
             {
                 endpoint.Subscriptions.AddRange(_subscriptions);
             }

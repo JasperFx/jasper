@@ -22,7 +22,7 @@ namespace StorytellerSpecs.Fixtures
     {
         private IHost _host;
         private JasperOptions _options;
-        private MessageRoute[] _tracks;
+        private IMessageRoute[] _tracks;
 
 
         public Task RemoveCapabilities(string serviceName)
@@ -100,9 +100,9 @@ namespace StorytellerSpecs.Fixtures
 
             if (_host == null) _host = JasperHost.For(_options);
 
-            var router = _host.Get<IMessageRouter>();
+            var router = _host.Get<IEnvelopeRouter>();
 
-            _tracks = router.Route(messageType);
+            _tracks = router.RouteByType(messageType).Routes.ToArray();
         }
 
         [FormatAs("There should be no routes")]

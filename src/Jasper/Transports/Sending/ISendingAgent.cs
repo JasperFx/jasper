@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 
 namespace Jasper.Transports.Sending
 {
@@ -24,6 +25,7 @@ namespace Jasper.Transports.Sending
         // indirectly
         Task StoreAndForward(Envelope envelope);
 
+        Endpoint Endpoint { get; }
 
     }
 }

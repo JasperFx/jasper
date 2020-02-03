@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports.Tcp;
 
@@ -9,7 +10,8 @@ namespace Jasper.Transports.Sending
 {
     public class LightweightSendingAgent : SendingAgent
     {
-        public LightweightSendingAgent(ITransportLogger logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings settings) : base(logger, messageLogger, sender, settings)
+        public LightweightSendingAgent(ITransportLogger logger, IMessageLogger messageLogger, ISender sender,
+            AdvancedSettings settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
         {
         }
 
@@ -20,9 +22,9 @@ namespace Jasper.Transports.Sending
             Queued.AddRange(batch.Messages);
             Queued.RemoveAll(e => e.IsExpired());
 
-            if (Queued.Count > _settings.MaximumEnvelopeRetryStorage)
+            if (Queued.Count > Endpoint.MaximumEnvelopeRetryStorage)
             {
-                var toRemove = Queued.Count - _settings.MaximumEnvelopeRetryStorage;
+                var toRemove = Queued.Count - Endpoint.MaximumEnvelopeRetryStorage;
                 Queued = Queued.Skip(toRemove).ToList();
             }
 

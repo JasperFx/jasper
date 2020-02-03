@@ -131,6 +131,7 @@ namespace Jasper.Configuration
 
         public IListenerConfiguration DefaultLocalQueue => LocalQueue(TransportConstants.Default);
         public IListenerConfiguration DurableScheduledMessagesLocalQueue => LocalQueue(TransportConstants.Durable);
+        public IList<ISubscriber> Subscribers { get;  } = new List<ISubscriber>();
 
         public void StubAllExternallyOutgoingEndpoints()
         {

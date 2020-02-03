@@ -85,43 +85,24 @@ namespace Jasper.RabbitMQ.Internal
             Latched = false;
         }
 
-        public Task Ping()
-        {
-            return Ping(channel =>
-            {
-                var envelope = Envelope.ForPing(Destination);
-
-                var props = Channel.CreateBasicProperties();
-
-                _protocol.WriteFromEnvelope(envelope, props);
-                props.AppId = "Jasper";
-
-                channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
-            });
-        }
-
-        internal Task Ping(Action<IModel> action)
+        public Task<bool> Ping(CancellationToken cancellationToken)
         {
             lock (_locker)
             {
-                if (State == AgentState.Connected) return Task.CompletedTask;
+                if (State == AgentState.Connected) return Task.FromResult(true);
 
                 startNewConnection();
 
-
-                try
+                if (Channel.IsOpen)
                 {
-                    action(Channel);
+                    return Task.FromResult(true);
                 }
-                catch (Exception)
+                else
                 {
                     teardownConnection();
-                    throw;
+                    return Task.FromResult(false);
                 }
             }
-
-
-            return Task.CompletedTask;
         }
 
         public bool SupportsNativeScheduledSend { get; } = false;

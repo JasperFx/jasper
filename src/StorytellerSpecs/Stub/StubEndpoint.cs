@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Configuration;
@@ -28,6 +29,8 @@ namespace StorytellerSpecs.Stub
             Destination = destination;
         }
 
+        public Endpoint Endpoint => this;
+
         public override Uri Uri => $"stub://{Name}".ToUri();
 
         public int QueuedCount { get; }
@@ -53,9 +56,9 @@ namespace StorytellerSpecs.Stub
             Latched = false;
         }
 
-        public Task Ping()
+        public Task<bool> Ping(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
 

@@ -56,5 +56,6 @@ namespace Jasper.Testing.Transports.Local
 
             endpoint.ReplyUri().ShouldBe("local://foo".ToUri());
         }
+
     }
 }

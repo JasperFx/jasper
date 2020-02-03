@@ -103,13 +103,15 @@ namespace Jasper.AzureServiceBus.Internal
             Latched = false;
         }
 
-        public Task Ping()
+        public async Task<bool> Ping(CancellationToken cancellationToken)
         {
             var envelope = Envelope.ForPing(Destination);
             var message = _protocol.WriteFromEnvelope(envelope);
             message.SessionId = Guid.NewGuid().ToString();
 
-            return _sender.SendAsync(message);
+            await _sender.SendAsync(message);
+
+            return true;
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;

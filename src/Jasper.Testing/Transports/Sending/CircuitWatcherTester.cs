@@ -6,39 +6,39 @@ using Baseline.Dates;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Shouldly;
+using Xunit;
 
 namespace Jasper.Testing.Transports.Sending
 {
-    public class PingerTests
+    public class CircuitWatcherTester
     {
-        //[Fact]  TODO -- CI doesn't like this one sometimes.
+        [Fact]  //TODO -- CI doesn't like this one sometimes.
         public void ping_until_connected()
         {
             var completed = new ManualResetEvent(false);
 
-            using (var pinger = new Pinger(new StubSender(5), 50.Milliseconds(), () =>
-            {
-                completed.Set();
-                return Task.CompletedTask;
-            }))
-            {
-                completed.WaitOne(1.Seconds())
-                    .ShouldBeTrue();
-            }
+            var watcher = new CircuitWatcher(new StubCircuit(5, completed), default(CancellationToken));
+
+
+            completed.WaitOne(1.Seconds())
+                .ShouldBeTrue();
+
         }
     }
 
-    public class StubSender : ISender
+    public class StubCircuit : ICircuit
     {
         private readonly int _failureCount;
+        private readonly ManualResetEvent _completed;
 
         public readonly IList<Envelope> Queued = new List<Envelope>();
 
         private int _count;
 
-        public StubSender(int failureCount)
+        public StubCircuit(int failureCount, ManualResetEvent completed)
         {
             _failureCount = failureCount;
+            _completed = completed;
         }
 
         public void Dispose()
@@ -72,14 +72,24 @@ namespace Jasper.Testing.Transports.Sending
             Latched = true;
         }
 
-        public Task Ping()
+        public Task<bool> TryToReconnect(CancellationToken cancellationToken)
         {
             _count++;
 
             if (_count < _failureCount) throw new Exception("No!");
 
+
+
+            return Task.FromResult(true);
+        }
+
+        public Task Resume(CancellationToken cancellationToken)
+        {
+            _completed.Set();
             return Task.CompletedTask;
         }
+
+        public TimeSpan RetryInterval { get; } = 50.Milliseconds();
 
         public bool SupportsNativeScheduledSend { get; } = true;
     }

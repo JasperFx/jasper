@@ -82,12 +82,13 @@ namespace Jasper.Transports.Local
 
         private ISendingAgent addQueue(IMessagingRoot root, ITransportRuntime runtime, LocalQueueSettings queue)
         {
-            var agent = buildAgent(queue, root);
-            _agents = _agents.AddOrUpdate(queue.Name, agent);
+            queue.Agent = buildAgent(queue, root);
+            _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, root));
 
-            runtime.AddSubscriber(agent, queue.Subscriptions.ToArray());
+            runtime.AddSendingAgent(buildAgent(queue, root));
+            runtime.AddSubscriber(queue);
 
-            return agent;
+            return queue.Agent;
         }
 
         private ISendingAgent buildAgent(LocalQueueSettings queue, IMessagingRoot root)
@@ -124,6 +125,8 @@ namespace Jasper.Transports.Local
             if (uri == null) return null;
 
             if (uri == TransportConstants.LocalUri) return TransportConstants.Default;
+
+            if (uri == TransportConstants.DurableLocalUri) return TransportConstants.Durable;
 
             if (uri.Scheme == TransportConstants.Local && uri.Host != TransportConstants.Durable) return uri.Host;
 

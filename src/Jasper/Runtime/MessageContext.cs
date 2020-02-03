@@ -51,36 +51,28 @@ namespace Jasper.Runtime
 
         public IEnvelopeTransaction Transaction { get; private set; }
 
+        /// <summary>
+        ///     Send to a specific destination rather than running the routing rules
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="destination">The destination to send to</param>
+        /// <param name="message"></param>
+        public Task SendToDestination<T>(Uri destination, T message)
+        {
+            var envelope = new Envelope {Message = message, Destination = destination};
+            _root.Router.RouteToDestination(destination, envelope);
+
+            trackEnvelopeCorrelation(envelope);
+
+            return persistOrSend(envelope);
+        }
 
 
         public async Task<Guid> SendEnvelope(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = _root.Router.Route(envelope);
-            if (envelope.IsDelayed(DateTime.UtcNow))
-            {
-                for (int i = 0; i < outgoing.Length; i++)
-                {
-                    _root.Router.ApplyMessageTypeSpecificRules(outgoing[i]);
-
-                    var subscriber = _root.Runtime.GetOrBuildSendingAgent(outgoing[i].Destination);
-
-                    if (!subscriber.SupportsNativeScheduledSend)
-                    {
-                        // TODO -- this could be better memoized to avoid repeated lookups
-                        outgoing[i] = outgoing[i].ForScheduledSend(subscriber);
-                        outgoing[i].Sender = _root.Runtime.GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
-                    }
-                }
-            }
-            else
-            {
-                foreach (var env in outgoing) _root.Router.ApplyMessageTypeSpecificRules(env);
-            }
-
-
-
+            var outgoing = _root.Router.RouteOutgoingByEnvelope(envelope);
 
             trackEnvelopeCorrelation(outgoing);
 
@@ -147,7 +139,7 @@ namespace Jasper.Runtime
                     }
                 };
 
-                var outgoingEnvelopes = _root.Router.Route(envelope);
+                var outgoingEnvelopes = _root.Router.RouteOutgoingByEnvelope(envelope);
 
                 foreach (var outgoing in outgoingEnvelopes)
                 {
@@ -168,7 +160,7 @@ namespace Jasper.Runtime
         public async Task SendAcknowledgement()
         {
             var ack = buildAcknowledgement();
-            var outgoingEnvelopes = _root.Router.Route(ack);
+            var outgoingEnvelopes = _root.Router.RouteOutgoingByMessage(ack);
 
             foreach (var outgoing in outgoingEnvelopes)
             {
@@ -213,7 +205,7 @@ namespace Jasper.Runtime
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = _root.Router.Route(envelope);
+            var outgoing = _root.Router.RouteOutgoingByEnvelope(envelope);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
@@ -230,6 +222,16 @@ namespace Jasper.Runtime
             var envelope = EnvelopeForRequestResponse<TResponse>(message);
 
             customization?.Invoke(envelope);
+
+            return SendEnvelope(envelope);
+        }
+
+        public Task SendToTopic(object message, string topicName)
+        {
+            var envelope = new Envelope(message)
+            {
+                TopicName = topicName
+            };
 
             return SendEnvelope(envelope);
         }
@@ -283,8 +285,15 @@ namespace Jasper.Runtime
 
         public Task Send<T>(T message)
         {
-            var envelope = message as Envelope ?? new Envelope {Message = message};
-            return SendEnvelope(envelope);
+            var outgoing = _root.Router.RouteOutgoingByMessage(message);
+            trackEnvelopeCorrelation(outgoing);
+
+            if (!outgoing.Any())
+            {
+                throw new NoRoutesException(typeof(T));
+            }
+
+            return persistOrSend(outgoing);
         }
 
         public Task Invoke(object message)
@@ -320,22 +329,25 @@ namespace Jasper.Runtime
             return (T)envelope.Response;
         }
 
-        public Task Enqueue<T>(T message, string workerQueue = null)
+        public Task Enqueue<T>(T message)
         {
-            var agent = workerQueue != null ? _root.Runtime.AgentForLocalQueue(workerQueue) : _root.Router.LocalQueueByMessageType(typeof(T));
+            var envelope = _root.Router.RouteLocally(message);
+            return persistOrSend(envelope);
+        }
 
-            var envelope = new Envelope
+        public Task Enqueue<T>(T message, string workerQueue)
+        {
+            var envelope = _root.Router.RouteLocally(message, workerQueue);
+
+            return persistOrSend(envelope);
+        }
+
+        private Task persistOrSend(Envelope envelope)
+        {
+            if (EnlistedInTransaction)
             {
-                Message = message,
-                Destination = agent.Destination,
-                Sender = agent
-            };
-
-            _root.Router.ApplyMessageTypeSpecificRules(envelope);
-
-            if (EnlistedInTransaction && agent.IsDurable)
-            {
-                return Transaction.Persist(envelope);
+                _outstanding.Add(envelope);
+                return envelope.Sender.IsDurable ? Transaction.Persist(envelope) : Task.CompletedTask;
             }
             else
             {
@@ -373,7 +385,7 @@ namespace Jasper.Runtime
         }
 
 
-        private async Task persistOrSend(Envelope[] outgoing)
+        private async Task persistOrSend(params Envelope[] outgoing)
         {
             if (EnlistedInTransaction)
             {
@@ -390,6 +402,8 @@ namespace Jasper.Runtime
             }
         }
 
+
+
         private bool isDurable(Envelope envelope)
         {
             // SUPER HACK-y
@@ -402,16 +416,17 @@ namespace Jasper.Runtime
         {
             foreach (var outbound in outgoing)
             {
-                outbound.CorrelationId = CorrelationId;
-                outbound.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? outbound.SagaId;
+                trackEnvelopeCorrelation(outbound);
             }
+        }
 
-            if (Envelope == null) return;
+        private void trackEnvelopeCorrelation(Envelope outbound)
+        {
+            outbound.Source = _root.Settings.ServiceName;
+            outbound.CorrelationId = CorrelationId;
+            outbound.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? outbound.SagaId;
 
-            foreach (var outbound in outgoing)
-            {
-                outbound.CausationId = Envelope.Id;
-            }
+            if (Envelope != null) outbound.CausationId = Envelope.Id;
         }
 
 

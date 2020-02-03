@@ -129,5 +129,9 @@ namespace Jasper.RabbitMQ.Internal
         {
             return new RabbitMqSender(root.TransportLogger, this, Parent, root.Cancellation);
         }
+
+
     }
+
+
 }

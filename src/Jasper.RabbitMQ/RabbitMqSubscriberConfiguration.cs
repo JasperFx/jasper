@@ -31,5 +31,7 @@ namespace Jasper.RabbitMQ
             _endpoint.Protocol = protocol;
             return this;
         }
+
+
     }
 }

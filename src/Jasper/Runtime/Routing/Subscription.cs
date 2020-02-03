@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Baseline;
-using Jasper.Runtime.Routing;
 using Jasper.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Jasper.Configuration
+namespace Jasper.Runtime.Routing
 {
     public class Subscription
     {

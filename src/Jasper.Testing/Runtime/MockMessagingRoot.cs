@@ -22,7 +22,7 @@ namespace Jasper.Testing.Runtime
     {
         private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
-        public IMessageRouter Router { get; } = Substitute.For<IMessageRouter>();
+        public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger MessageLogger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
@@ -66,7 +66,7 @@ namespace Jasper.Testing.Runtime
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 
-        public readonly Dictionary<Uri, Subscriber> Subscribers = new Dictionary<Uri,Subscriber>();
+        public readonly Dictionary<Uri, ISubscriber> Subscribers = new Dictionary<Uri,ISubscriber>();
 
         public ISendingAgent GetOrBuild(Uri address)
         {
@@ -79,12 +79,12 @@ namespace Jasper.Testing.Runtime
 //            return null;
         }
 
-        public Subscriber[] AllKnown()
+        public ISubscriber[] AllKnown()
         {
             return Subscribers.Values.ToArray();
         }
 
-        public void AddSubscriber(Subscriber subscriber)
+        public void AddSubscriber(ISubscriber subscriber)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Jasper.AzureServiceBus.Internal;
 using Jasper.Util;
 using Shouldly;
@@ -103,5 +104,6 @@ namespace Jasper.AzureServiceBus.Tests
 
 
         }
+
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Baseline;
+using Jasper.Attributes;
 using Jasper.AzureServiceBus.Internal;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
@@ -39,6 +41,27 @@ namespace Jasper.AzureServiceBus.Tests
 
     }
     // ENDSAMPLE
+
+    // SAMPLE: AzureServiceBus-AzureServiceBusTopicSendingApp
+    public class AzureServiceBusTopicSendingApp : JasperOptions
+    {
+        public AzureServiceBusTopicSendingApp( )
+        {
+            Endpoints.ConfigureAzureServiceBus(asb =>
+            {
+                asb.ConnectionString = "an Azure Service Bus connection string";
+            });
+
+            // This directs Jasper to send all messages to
+            // an Azure Service Bus topic name derived from the
+            // message type
+            Endpoints.PublishAllMessages()
+                .ToAzureServiceBusTopics();
+        }
+    }
+    // ENDSAMPLE
+
+
 
 
     public class MySpecialProtocol : IAzureServiceBusProtocol
@@ -221,6 +244,88 @@ namespace Jasper.AzureServiceBus.Tests
             // queue
             Endpoints
                 .ListenToAzureServiceBusTopic("pongs", "pong-subscription");
+        }
+
+        public override void Configure(IHostEnvironment hosting, IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("azureservicebus");
+            Endpoints.ConfigureAzureServiceBus(connectionString);
+        }
+    }
+    // ENDSAMPLE
+
+
+    // SAMPLE: ItemCreatedWithTopic
+    [Topic("items")]
+    public class ItemCreated
+    {
+        public string Name { get; set; }
+    }
+    // ENDSAMPLE
+
+    public static class Sender
+    {
+        // SAMPLE: SendItemCreatedByTopic
+        public static async Task SendMessage(IMessagePublisher publisher)
+        {
+            await publisher.Send(new ItemCreated
+            {
+                Name = "NewItem"
+            });
+        }
+        // ENDSAMPLE
+
+        // SAMPLE: SendItemCreatedToTopic
+        public static async Task SendToTopic(IMessagePublisher publisher)
+        {
+            var @event = new ItemCreated
+            {
+                Name = "New Thing"
+            };
+
+            // This call sends the ItemCreated message to the
+            // "NorthAmerica" topic
+            await publisher.SendToTopic(@event, "NorthAmerica");
+
+        }
+        // ENDSAMPLE
+
+        // SAMPLE: SendLogMessageToTopic
+        public static async Task SendLogMessage(IMessagePublisher publisher)
+        {
+            var message = new LogMessage
+            {
+                Message = "Watch out!",
+                Priority = "High"
+            };
+
+            // In this sample, Jasper will route the LogMessage
+            // message to the "High" topic
+            await publisher.Send(message);
+        }
+        // ENDSAMPLE
+    }
+
+    // SAMPLE: LogMessageWithPriority
+    public class LogMessage
+    {
+        public string Message { get; set; }
+        public string Priority { get; set; }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: AppWithTopicNamingRule
+    public class PublishWithTopicRulesApp : JasperOptions
+    {
+        public PublishWithTopicRulesApp()
+        {
+            Endpoints.PublishAllMessages()
+                .ToAzureServiceBusTopics()
+
+                // This is setting up a topic name rule
+                // for any message of type that can be
+                // cast to LogMessage
+                .OutgoingTopicNameIs<LogMessage>(x => x.Priority);
         }
 
         public override void Configure(IHostEnvironment hosting, IConfiguration config)

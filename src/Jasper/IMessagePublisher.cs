@@ -50,6 +50,24 @@ namespace Jasper
         Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null);
 
 
+        /// <summary>
+        /// Send a message to a specific topic name. This relies
+        /// on having a backing transport endpoint that supports
+        /// topic routing
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="topicName"></param>
+        /// <returns></returns>
+        Task SendToTopic(object message, string topicName);
+
+
+        /// <summary>
+        ///     Send to a specific destination rather than running the routing rules
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="destination">The destination to send to</param>
+        /// <param name="message"></param>
+        Task SendToDestination<T>(Uri destination, T message);
 
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Baseline;
+using Jasper.AzureServiceBus.Internal;
 using Jasper.Configuration;
 
 namespace Jasper.AzureServiceBus
@@ -15,12 +16,16 @@ namespace Jasper.AzureServiceBus
         internal static AzureServiceBusTransport AsbTransport(this IEndpoints endpoints)
         {
             var transports = endpoints.As<TransportCollection>();
+
             var transport = transports.Get<AzureServiceBusTransport>();
+
             if (transport == null)
             {
                 transport = new AzureServiceBusTransport();
                 transports.Add(transport);
             }
+
+            transports.Subscribers.Fill(transport.Topics);
 
             return transport;
         }
@@ -33,7 +38,9 @@ namespace Jasper.AzureServiceBus
         /// <param name="configure"></param>
         public static void ConfigureAzureServiceBus(this IEndpoints endpoints, Action<IAzureServiceBusTransport> configure)
         {
-            configure(endpoints.AsbTransport());
+            var transport = endpoints.AsbTransport();
+            endpoints.As<TransportCollection>().Subscribers.Fill(transport.Topics);
+            configure(transport);
         }
 
         /// <summary>
@@ -99,7 +106,7 @@ namespace Jasper.AzureServiceBus
         /// optionally an exchange
         /// </summary>
         /// <param name="publishing"></param>
-        /// <param name="routingKeyOrQueue">This is used as the routing key when publishing. Can be either a binding key or a queue name or a static topic name if the exchange is topic-based</param>
+        /// <param name="topicName">This is used as the topic name when publishing. Can be either a binding key or a queue name or a static topic name if the exchange is topic-based</param>
         /// <param name="exchangeName">Optional, you only need to supply this if you are using a non-default exchange</param>
         /// <returns></returns>
         public static AzureServiceBusSubscriberConfiguration ToAzureServiceBusTopic(this IPublishToExpression publishing, string topicName)
@@ -112,6 +119,22 @@ namespace Jasper.AzureServiceBus
             publishing.To(endpoint.Uri);
 
             return new AzureServiceBusSubscriberConfiguration(endpoint);
+        }
+
+        /// <summary>
+        /// Publish matching messages to Azure Service Bus using the topic name derived from the message and
+        /// </summary>
+        /// <param name="publishing"></param>
+        /// <returns></returns>
+        public static TopicRouterConfiguration<AzureServiceBusSubscriberConfiguration> ToAzureServiceBusTopics(this IPublishToExpression publishing)
+        {
+            var transports = publishing.As<PublishingExpression>().Parent;
+
+            var router = transports.AsbTransport().Topics;
+
+            publishing.ViaRouter(router);
+
+            return new TopicRouterConfiguration<AzureServiceBusSubscriberConfiguration>(router, transports);
         }
 
 

@@ -36,7 +36,16 @@ namespace Jasper
         /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task Enqueue<T>(T message, string workerQueue = null);
+        Task Enqueue<T>(T message);
+
+        /// <summary>
+        ///     Enqueues the message locally to a specific worker queue.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        Task Enqueue<T>(T message, string workerQueue);
 
 
         /// <summary>

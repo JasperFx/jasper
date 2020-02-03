@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using LamarCodeGeneration;
 
 namespace Jasper.Persistence.Sagas
@@ -16,6 +17,7 @@ namespace Jasper.Persistence.Sagas
         public UnknownSagaStateException(Type sagaStateType, object stateId) : base(
             $"Could not find an expected state document of type {sagaStateType.FullNameInCode()} for id '{stateId}'")
         {
+            Debug.WriteLine("something");
         }
     }
 }

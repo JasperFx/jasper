@@ -105,10 +105,6 @@ namespace Jasper.Testing.Samples
             // Extensions lets you apply or query Jasper extensions
             Extensions.UseMessageTrackingTestingSupport();
 
-            // As the name implies, these are seldom used options
-            // that fine-tune Jasper behavior
-            Advanced.MaximumEnvelopeRetryStorage = 5000;
-
             // Idiomatic Lamar service registrations to be applied to the
             // application's underlying IoC container
             Services.For<IClock>().Use<Clock>();

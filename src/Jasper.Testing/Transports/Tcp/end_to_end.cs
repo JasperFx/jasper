@@ -62,7 +62,7 @@ namespace Jasper.Testing.Transports.Tcp
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.Send(theAddress, new Message2()));
+                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message2()));
 
 
 
@@ -79,7 +79,7 @@ namespace Jasper.Testing.Transports.Tcp
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.Send(theAddress, new Message1()));
+                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message1()));
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Transports.Tcp
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.Send(theAddress, new Message2()));
+                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message2()));
 
 
             var record = session.FindEnvelopesWithMessageType<Message2>(EventType.MessageSucceeded).Single();

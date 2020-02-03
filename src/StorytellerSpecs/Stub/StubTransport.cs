@@ -73,11 +73,11 @@ namespace StorytellerSpecs.Stub
         {
             var pipeline = root.Pipeline;
 
-            foreach (var channel in Endpoints)
+            foreach (var endpoint in Endpoints)
             {
-                channel.Start(pipeline, root.MessageLogger);
+                endpoint.Start(pipeline, root.MessageLogger);
 
-                runtime.AddSubscriber(channel, channel.Subscriptions.ToArray());
+                runtime.AddSubscriber(endpoint);
             }
         }
 

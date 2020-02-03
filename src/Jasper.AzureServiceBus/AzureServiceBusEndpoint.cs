@@ -11,6 +11,8 @@ using Jasper.Util;
 
 namespace Jasper.AzureServiceBus
 {
+
+
     public class AzureServiceBusEndpoint : Endpoint
     {
         public const string Queue = "queue";
@@ -58,6 +60,7 @@ namespace Jasper.AzureServiceBus
                     list.Add(Topic);
                     list.Add(TopicName.ToLowerInvariant());
                 }
+
             }
 
             if (forReply && IsDurable)
@@ -120,6 +123,8 @@ namespace Jasper.AzureServiceBus
                 }
             }
         }
+
+
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {

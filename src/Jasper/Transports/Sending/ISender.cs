@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jasper.Transports.Sending
@@ -20,9 +21,12 @@ namespace Jasper.Transports.Sending
         /// <summary>
         ///     Simply try to reach the endpoint to verify it can receive
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task Ping();
+        Task<bool> Ping(CancellationToken cancellationToken);
 
         bool SupportsNativeScheduledSend { get; }
+
+
     }
 }

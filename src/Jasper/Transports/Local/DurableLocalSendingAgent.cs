@@ -29,11 +29,13 @@ namespace Jasper.Transports.Local
             _messageLogger = messageLogger;
             Destination = endpoint.Uri;
 
-
+            Endpoint = endpoint;
             ReplyUri = TransportConstants.RepliesUri;
         }
 
         public Uri Destination { get; }
+
+        public Endpoint Endpoint { get; }
 
         public Uri ReplyUri { get; set; }
 

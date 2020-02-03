@@ -7,4 +7,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         public Guid Id;
         public string Name;
     }
+
+
 }

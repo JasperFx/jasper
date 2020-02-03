@@ -91,6 +91,16 @@ namespace Jasper.RabbitMQ.Tests.Internals
         }
 
         [Fact]
+        public void build_uri_for_exchange_and_topics()
+        {
+            new RabbitMqEndpoint()
+            {
+                ExchangeName = "ex2"
+
+            }.Uri.ShouldBe("rabbitmq://exchange/ex2".ToUri());
+        }
+
+        [Fact]
         public void generate_reply_uri_for_non_durable()
         {
             new RabbitMqEndpoint
@@ -113,5 +123,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
 
 
         }
+
+
     }
 }

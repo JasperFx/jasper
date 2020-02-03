@@ -42,14 +42,18 @@ namespace Jasper.Testing.Runtime
             {
                 var sender = Substitute.For<ISendingAgent>();
                 sender.IsDurable.Returns(true);
-                theMessagingRoot.Subscribers.Add(env.Destination, new Subscriber(sender, new Subscription[0]));
+
+                var subscriber = Substitute.For<ISubscriber>();
+                subscriber.ShouldSendMessage(null).ReturnsForAnyArgs(false);
+
+                theMessagingRoot.Subscribers.Add(env.Destination, subscriber);
 
             }
 
             if (envelope == null)
-                theMessagingRoot.Router.Route(Arg.Any<Envelope>()).Returns(outgoing);
+                theMessagingRoot.Router.RouteOutgoingByEnvelope(Arg.Any<Envelope>()).Returns(outgoing);
             else
-                theMessagingRoot.Router.Route(envelope).Returns(outgoing);
+                theMessagingRoot.Router.RouteOutgoingByEnvelope(envelope).Returns(outgoing);
         }
 
         [Fact]

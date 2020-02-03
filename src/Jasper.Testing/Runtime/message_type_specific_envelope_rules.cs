@@ -12,6 +12,11 @@ using Xunit;
 
 namespace Jasper.Testing.Runtime
 {
+    public class MySpecialMessageHandler
+    {
+        public void Handle(MySpecialMessage message){}
+    }
+
     public class message_type_specific_envelope_rules : IntegrationContext
     {
         public message_type_specific_envelope_rules(DefaultApp @default) : base(@default)
@@ -21,13 +26,9 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void apply_message_type_rules_from_attributes()
         {
-            var router = Host.Get<IMessageRouter>();
-            var envelope = new Envelope
-            {
-                Message = new MySpecialMessage()
-            };
+            var router = Host.Get<IEnvelopeRouter>();
 
-            router.ApplyMessageTypeSpecificRules(envelope);
+            var envelope = router.RouteOutgoingByMessage(new MySpecialMessage()).Single();
 
             envelope.Headers["special"].ShouldBe("true");
         }
@@ -36,13 +37,10 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void deliver_by_mechanics()
         {
-            var router = Host.Get<IMessageRouter>();
-            var envelope = new Envelope
-            {
-                Message = new MySpecialMessage()
-            };
+            var router = Host.Get<IEnvelopeRouter>();
 
-            router.ApplyMessageTypeSpecificRules(envelope);
+            var envelope = router.RouteOutgoingByMessage(new MySpecialMessage())
+                .Single();
 
             envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow);
         }
@@ -59,7 +57,7 @@ namespace Jasper.Testing.Runtime
 
             var mySpecialMessage = new MySpecialMessage();
 
-            await context.Send("tcp://localhost:2001".ToUri(), mySpecialMessage);
+            await context.SendToDestination("tcp://localhost:2001".ToUri(), mySpecialMessage);
 
             var outgoing = context.As<MessageContext>().Outstanding.Single();
 

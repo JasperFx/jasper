@@ -65,23 +65,7 @@ namespace Jasper
         /// </summary>
         public bool VerboseDurabilityAgentLogging { get; set; } = false;
 
-        /// <summary>
-        /// Duration of time to wait before attempting to "ping" a transport
-        /// in an attempt to resume a broken sending circuit
-        /// </summary>
-        public TimeSpan Cooldown { get; set; } = 1.Seconds();
 
-        /// <summary>
-        /// How many times outgoing message sending can fail before tripping
-        /// off the circuit breaker functionality. Applies to all transport types
-        /// </summary>
-        public int FailuresBeforeCircuitBreaks { get; set; } = 3;
-
-        /// <summary>
-        /// Caps the number of envelopes held in memory for outgoing retries
-        /// if an outgoing transport fails.
-        /// </summary>
-        public int MaximumEnvelopeRetryStorage { get; set; } = 100;
 
         /// <summary>
         /// Governs the page size for how many persisted incoming or outgoing messages

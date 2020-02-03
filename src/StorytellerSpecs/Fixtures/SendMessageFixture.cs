@@ -61,7 +61,7 @@ namespace StorytellerSpecs.Fixtures
             message.Name = name;
 
             _session = await _host.TrackActivity().IncludeExternalTransports()
-                .ExecuteAndWait(x => x.Send(address, message));
+                .ExecuteAndWait(x => x.SendToDestination(address, message));
         }
 
         public IGrammar TheMessagesSentShouldBe()

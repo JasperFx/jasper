@@ -1,4 +1,5 @@
 using System;
+using Jasper.Runtime.Routing;
 
 namespace Jasper.Configuration
 {
@@ -47,5 +48,12 @@ namespace Jasper.Configuration
         ///     local queue
         /// </summary>
         IListenerConfiguration Locally();
+
+        /// <summary>
+        /// Use a routing rule "Subscriber" as a recipient. This is used
+        /// by Jasper's topic routing
+        /// </summary>
+        /// <param name="subscriber"></param>
+        void ViaRouter(Subscriber subscriber);
     }
 }

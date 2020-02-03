@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -19,8 +20,9 @@ namespace Jasper.Persistence.Durability
         private readonly IEnvelopePersistence _persistence;
         private readonly AsyncRetryPolicy _policy;
 
-        public DurableSendingAgent(ISender sender, AdvancedSettings settings, ITransportLogger logger, IMessageLogger messageLogger,
-            IEnvelopePersistence persistence) : base(logger, messageLogger, sender, settings)
+        public DurableSendingAgent(ISender sender, AdvancedSettings settings, ITransportLogger logger,
+            IMessageLogger messageLogger,
+            IEnvelopePersistence persistence, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
         {
             _logger = logger;
 
@@ -56,13 +58,13 @@ namespace Jasper.Persistence.Durability
                 .ToList();
 
             var reassigned = new Envelope[0];
-            if (all.Count > base._settings.MaximumEnvelopeRetryStorage)
-                reassigned = all.Skip(base._settings.MaximumEnvelopeRetryStorage).ToArray();
+            if (all.Count > Endpoint.MaximumEnvelopeRetryStorage)
+                reassigned = all.Skip(Endpoint.MaximumEnvelopeRetryStorage).ToArray();
 
             await _persistence.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
             _logger.DiscardedExpired(expired);
 
-            Queued = all.Take(base._settings.MaximumEnvelopeRetryStorage).ToList();
+            Queued = all.Take(Endpoint.MaximumEnvelopeRetryStorage).ToList();
         }
 
         protected override async Task afterRestarting(ISender sender)

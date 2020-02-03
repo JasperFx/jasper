@@ -5,6 +5,7 @@ using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
 using Jasper.Transports.Tcp;
 using Jasper.Transports.Util;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper.Transports.Sending
 {
@@ -122,10 +123,12 @@ namespace Jasper.Transports.Sending
             Latched = false;
         }
 
-        public Task Ping()
+        public async Task<bool> Ping(CancellationToken cancellationToken)
         {
             var batch = OutgoingMessageBatch.ForPing(Destination);
-            return _protocol.SendBatch(_callback, batch);
+            await _protocol.SendBatch(_callback, batch);
+
+            return true;
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;

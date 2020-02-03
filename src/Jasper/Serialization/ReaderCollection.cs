@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,6 +27,8 @@ namespace Jasper.Serialization
 
             ContentTypes = allContentTypes.ToArray();
         }
+
+        public Type MessageType => typeof(T);
 
         public string[] ContentTypes { get; }
 

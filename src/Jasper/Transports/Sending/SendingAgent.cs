@@ -1,29 +1,34 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports.Tcp;
 
 namespace Jasper.Transports.Sending
 {
-    public abstract class SendingAgent : ISendingAgent, ISenderCallback
+    public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit
     {
         private readonly ITransportLogger _logger;
         private readonly IMessageLogger _messageLogger;
         protected readonly ISender _sender;
         protected readonly AdvancedSettings _settings;
         private int _failureCount;
-        private Pinger _pinger;
+        private CircuitWatcher _circuitWatcher;
 
         public SendingAgent(ITransportLogger logger, IMessageLogger messageLogger, ISender sender,
-            AdvancedSettings settings)
+            AdvancedSettings settings, Endpoint endpoint)
         {
             _logger = logger;
             _messageLogger = messageLogger;
             _sender = sender;
             _settings = settings;
+            Endpoint = endpoint;
         }
+
+        public Endpoint Endpoint { get; }
 
         public Uri ReplyUri { get; set; }
 
@@ -31,7 +36,6 @@ namespace Jasper.Transports.Sending
 
         public void Dispose()
         {
-            _pinger?.Dispose();
             _sender.Dispose();
         }
 
@@ -77,11 +81,13 @@ namespace Jasper.Transports.Sending
 
             _failureCount++;
 
-            if (_failureCount >= _settings.FailuresBeforeCircuitBreaks)
+            if (_failureCount >= Endpoint.FailuresBeforeCircuitBreaks)
             {
                 await _sender.LatchAndDrain();
                 await EnqueueForRetry(batch);
-                _pinger = new Pinger(_sender, _settings.Cooldown, restartSending);
+
+                _circuitWatcher = new CircuitWatcher(this, _settings.Cancellation);
+                //_circuitWatcher = new CircuitWatcher(_sender, _endpoint.PingIntervalForCircuitResume, restartSending);
             }
             else
             {
@@ -94,12 +100,18 @@ namespace Jasper.Transports.Sending
             }
         }
 
+        public Task<bool> TryToReconnect(CancellationToken cancellationToken)
+        {
+            return _sender.Ping(cancellationToken);
+        }
+
+        TimeSpan ICircuit.RetryInterval => Endpoint.PingIntervalForCircuitResume;
+
         public abstract Task EnqueueForRetry(OutgoingMessageBatch batch);
 
-        private Task restartSending()
+        Task ICircuit.Resume(CancellationToken cancellationToken)
         {
-            _pinger.Dispose();
-            _pinger = null;
+            _circuitWatcher = null;
 
             _sender.Unlatch();
 
@@ -112,8 +124,7 @@ namespace Jasper.Transports.Sending
         {
             _failureCount = 0;
             _sender.Unlatch();
-            _pinger?.Dispose();
-            _pinger = null;
+            _circuitWatcher = null;
 
             return Task.CompletedTask;
         }

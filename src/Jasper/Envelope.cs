@@ -48,7 +48,7 @@ namespace Jasper
         }
 
 
-        public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Headers { get; internal set; } = new Dictionary<string, string>();
 
         /// <summary>
         ///     The raw, serialized message data
@@ -285,5 +285,11 @@ namespace Jasper
             ExecutionTime = time.ToUniversalTime();
             return this;
         }
+
+        /// <summary>
+        /// Designates the topic name for outgoing messages to topic-based publish/subscribe
+        /// routing. This property is only used for routing
+        /// </summary>
+        public string TopicName { get; set; }
     }
 }

@@ -13,3 +13,14 @@ implemented like that:
 
 <[sample:DeliverWithinAttribute]>
 
+## By Endpoint
+
+You may want to say that all the envelopes sent to a specific endpoint should have the same customization. As an example,
+let's say that you're sending rapid fire status messages to some kind of monitoring tool where you're not terribly worried about any
+particular message getting dropped and each individual message will soon be obsolete. In this case you might want to set
+a message expiration date on every message sent to this endpoint. You can do that with endpoint specific rules like this:
+
+<[sample:MonitoringDataPublisher]>
+
+
+

@@ -172,7 +172,7 @@ namespace Jasper.Testing.Samples
                 Item = "Cookbook"
             };
 
-            await bus.Send(new Uri("tcp://server1:2222"), @event);
+            await bus.SendToDestination(new Uri("tcp://server1:2222"), @event);
 
             // or
 

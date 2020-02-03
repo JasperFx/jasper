@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using LamarCodeGeneration;
 
 namespace Jasper.Persistence.Sagas

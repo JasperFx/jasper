@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
+using Baseline.Dates;
 using Jasper.Runtime;
+using Jasper.Runtime.Routing;
 using Jasper.Transports.Sending;
 
 namespace Jasper.Configuration
 {
     /// <summary>
-    /// Configuration for a single message listener within a Jasper application
+    ///     Configuration for a single message listener within a Jasper application
     /// </summary>
-    public abstract class Endpoint
+    public abstract class Endpoint : Subscriber, ICircuitParameters
     {
         protected Endpoint()
         {
@@ -21,33 +23,54 @@ namespace Jasper.Configuration
         }
 
         /// <summary>
-        /// Descriptive Name for this listener. Optional.
+        ///     Descriptive Name for this listener. Optional.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Uri as formulated for replies. Should include a notation
-        /// of "durable" as needed
+        ///     The actual address of the listener, including the transport scheme
+        /// </summary>
+        public abstract Uri Uri { get; }
+
+        public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
+
+        public bool IsListener { get; set; }
+
+        public bool IsUsedForReplies { get; set; }
+
+
+        internal IList<Action<Envelope>> Customizations { get; } = new List<Action<Envelope>>();
+
+
+        /// <summary>
+        ///     Duration of time to wait before attempting to "ping" a transport
+        ///     in an attempt to resume a broken sending circuit
+        /// </summary>
+        public TimeSpan PingIntervalForCircuitResume { get; set; } = 1.Seconds();
+
+        /// <summary>
+        ///     How many times outgoing message sending can fail before tripping
+        ///     off the circuit breaker functionality. Applies to all transport types
+        /// </summary>
+        public int FailuresBeforeCircuitBreaks { get; set; } = 3;
+
+        /// <summary>
+        ///     Caps the number of envelopes held in memory for outgoing retries
+        ///     if an outgoing transport fails.
+        /// </summary>
+        public int MaximumEnvelopeRetryStorage { get; set; } = 100;
+
+
+        public ISendingAgent Agent { get; internal set; }
+
+        /// <summary>
+        ///     Uri as formulated for replies. Should include a notation
+        ///     of "durable" as needed
         /// </summary>
         public abstract Uri ReplyUri();
 
 
         public abstract void Parse(Uri uri);
-
-        /// <summary>
-        /// The actual address of the listener, including the transport scheme
-        /// </summary>
-        public abstract Uri Uri { get; }
-
-        /// <summary>
-        /// Mark whether or not the receiver for this listener should use
-        /// message persistence for durability
-        /// </summary>
-        public bool IsDurable { get; set; }
-
-        public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
-
-        public bool IsListener { get; set; }
 
 
         protected internal abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
@@ -61,8 +84,16 @@ namespace Jasper.Configuration
 
         protected abstract ISender CreateSender(IMessagingRoot root);
 
-        public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
-        public bool IsUsedForReplies { get; set; }
+        internal void Customize(Envelope envelope)
+        {
+            foreach (var modification in Customizations) modification(envelope);
+        }
 
+        public override void AddRoute(MessageTypeRouting routing, IMessagingRoot root)
+        {
+            if (Agent == null) throw new InvalidOperationException();
+
+            routing.AddStaticRoute(Agent);
+        }
     }
 }

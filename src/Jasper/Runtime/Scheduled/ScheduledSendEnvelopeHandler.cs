@@ -15,7 +15,7 @@ namespace Jasper.Runtime.Scheduled
         public override Task Handle(IMessageContext context, CancellationToken cancellation)
         {
             var scheduled = (Envelope)context.Envelope.Message;
-            return context.Send(scheduled);
+            return context.SendEnvelope(scheduled);
         }
     }
 }

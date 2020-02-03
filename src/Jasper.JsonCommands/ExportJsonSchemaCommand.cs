@@ -42,7 +42,7 @@ namespace Jasper.JsonCommands
             {
                 var handlers = host.Services.GetRequiredService<HandlerGraph>();
                 var messageTypes = handlers.Chains.Select(x => x.MessageType)
-                    .Where(x => x.Assembly != typeof(MessageRoute).Assembly);
+                    .Where(x => x.Assembly != typeof(JasperOptions).Assembly);
                 foreach (var messageType in messageTypes)
                 {
                     var filename = $"{messageType.ToMessageTypeName()}.json";

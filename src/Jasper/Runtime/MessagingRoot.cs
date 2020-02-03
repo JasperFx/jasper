@@ -47,9 +47,11 @@ namespace Jasper.Runtime
                 this);
 
             Runtime = new TransportRuntime(this);
-            Router = new MessageRouter(Handlers, serialization, Options.Advanced, Runtime);
+
 
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
+
+            Router = new EnvelopeRouter(this, Handlers);
 
             _container = container;
 
@@ -116,7 +118,7 @@ namespace Jasper.Runtime
 
         public JasperOptions Options { get; }
 
-        public IMessageRouter Router { get; }
+        public IEnvelopeRouter Router { get; }
 
         public IHandlerPipeline Pipeline { get; }
 

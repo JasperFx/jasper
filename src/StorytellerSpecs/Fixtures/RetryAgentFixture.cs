@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
+using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Transports.Tcp;
+using NSubstitute;
 using StoryTeller;
 
 namespace StorytellerSpecs.Fixtures
@@ -23,6 +26,7 @@ namespace StorytellerSpecs.Fixtures
         private bool _unlatched;
         protected LightweightSendingAgent theRetryAgent;
         protected AdvancedSettings theSettings;
+        private Endpoint _endpoint;
 
         public RetryAgentFixture()
         {
@@ -61,11 +65,11 @@ namespace StorytellerSpecs.Fixtures
             _unlatched = true;
         }
 
-        Task ISender.Ping()
+        Task<bool> ISender.Ping(CancellationToken cancellationToken)
         {
             if (_pingFails) throw new TimeoutException();
 
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;
@@ -78,8 +82,9 @@ namespace StorytellerSpecs.Fixtures
 
             theSettings = new AdvancedSettings(null);
 
+            _endpoint = Substitute.For<Endpoint>();
             theRetryAgent =
-                new LightweightSendingAgent(TransportLogger.Empty(), MessageLogger.Empty(), this, theSettings);
+                new LightweightSendingAgent(TransportLogger.Empty(), MessageLogger.Empty(), this, theSettings, _endpoint);
 
             for (var i = 0; i < batches.Length; i++) batches[i] = batchForEnvelopes(15);
 
@@ -143,19 +148,19 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("AdvancedSettings.FailuresBeforeCircuitBreaks is {count}")]
         public void FailuresBeforeCircuitBreaks(int count)
         {
-            theSettings.FailuresBeforeCircuitBreaks = count;
+            _endpoint.FailuresBeforeCircuitBreaks = count;
         }
 
-        [FormatAs("AdvancedSettings.Cooldown = 50 ms")]
+        [FormatAs("AdvancedSettings.PingIntervalForCircuitResume = 50 ms")]
         public void CooldownIs50Ms()
         {
-            theSettings.Cooldown = 50.Milliseconds();
+            _endpoint.PingIntervalForCircuitResume = 50.Milliseconds();
         }
 
         [FormatAs("AdvancedSettings.MaximumEnvelopeRetryStorage = {number}")]
         public void MaximumEnvelopeRetryStorage(int number)
         {
-            theSettings.MaximumEnvelopeRetryStorage = number;
+            _endpoint.MaximumEnvelopeRetryStorage = number;
         }
 
         [FormatAs("Batch {index} was MarkFailed()")]

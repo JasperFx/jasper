@@ -625,7 +625,7 @@ namespace Jasper.RabbitMQ.Tests
     // because the projects aren't sharing types
     // You would not do this if you were distributing
     // message types through shared assemblies
-    [MessageIdentity("Ping")]
+    [MessageIdentity("TryToReconnect")]
     public class PingMessage
     {
         public int Number { get; set; }

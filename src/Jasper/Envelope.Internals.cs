@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Serialization;
@@ -55,7 +56,7 @@ namespace Jasper
 
         internal int SentAttempts { get; set; }
 
-        private IMessageSerializer writer { get; set; }
+        internal IMessageSerializer writer { get; set; }
 
 
 
@@ -115,6 +116,7 @@ namespace Jasper
         internal Envelope CloneForWriter(IMessageSerializer writer)
         {
             var envelope = (Envelope)MemberwiseClone();
+            envelope.Headers = new Dictionary<string, string>(Headers);
             envelope.writer = writer;
 
             return envelope;

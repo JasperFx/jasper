@@ -1,5 +1,7 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using LamarCodeGeneration.Frames;
 
 namespace Jasper.Transports.Sending
 {
@@ -40,9 +42,9 @@ namespace Jasper.Transports.Sending
 
         }
 
-        public Task Ping()
+        public Task<bool> Ping(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
         public bool SupportsNativeScheduledSend { get; } = false;

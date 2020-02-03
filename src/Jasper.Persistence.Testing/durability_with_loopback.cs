@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task should_recover_persisted_messages()
         {
-            using (var host1 = JasperHost.For(new DurableSender(true)))
+            using (var host1 = JasperHost.For(new DurableSender(true, true)))
             {
                 await host1.Send(new ReceivedMessage());
 
@@ -32,7 +32,7 @@ namespace Jasper.Persistence.Testing
                 counts.Incoming.ShouldBe(1);
             }
 
-            using (var host1 = JasperHost.For(new DurableSender(true)))
+            using (var host1 = JasperHost.For(new DurableSender(true, false)))
             {
                 var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
 
@@ -41,6 +41,7 @@ namespace Jasper.Persistence.Testing
                 {
                     await Task.Delay(100.Milliseconds());
                     counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                    i++;
                 }
 
                 counts.Incoming.ShouldBe(1);
@@ -53,9 +54,12 @@ namespace Jasper.Persistence.Testing
 
     public class DurableSender : JasperOptions
     {
-        public DurableSender(bool latched)
+        public DurableSender(bool latched, bool initial)
         {
-            Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+            if (initial)
+            {
+                Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+            }
 
             Endpoints.PublishAllMessages()
                 .ToLocalQueue("one")
@@ -63,7 +67,7 @@ namespace Jasper.Persistence.Testing
 
             Extensions.UseMarten(Servers.PostgresConnectionString);
 
-            Services.AddSingleton(new ReceivingSettings {Latched = true});
+            Services.AddSingleton(new ReceivingSettings {Latched = latched});
 
             Extensions.UseMessageTrackingTestingSupport();
         }
