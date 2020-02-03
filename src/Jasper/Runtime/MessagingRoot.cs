@@ -51,7 +51,7 @@ namespace Jasper.Runtime
 
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
 
-            Router = new EnvelopeRouter(this, Handlers);
+            Router = new EnvelopeRouter(this);
 
             _container = container;
 

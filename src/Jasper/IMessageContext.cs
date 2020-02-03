@@ -57,5 +57,14 @@ namespace Jasper
         /// </summary>
         /// <param name="sagaId"></param>
         void EnlistInSaga(object sagaId);
+
+        /// <summary>
+        /// Send a response message back to the original sender of the message being handled.
+        /// This can only be used from within a message handler
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        Task RespondToSender(object response);
     }
 }

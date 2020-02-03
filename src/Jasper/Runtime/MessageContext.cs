@@ -88,6 +88,20 @@ namespace Jasper.Runtime
             return envelope.Id;
         }
 
+        /// <summary>
+        /// Send a response message back to the original sender of the message being handled.
+        /// This can only be used from within a message handler
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        public Task RespondToSender(object response)
+        {
+            if (Envelope == null) throw new InvalidOperationException("This operation can only be performed while in the middle of handling an incoming message");
+
+            return SendToDestination(Envelope.ReplyUri, response);
+        }
+
 
         public async Task EnqueueCascading(object message)
         {
@@ -115,8 +129,7 @@ namespace Jasper.Runtime
 
             if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)
             {
-                var envelope = Envelope.CreateForResponse(message);
-                await SendEnvelope(envelope);
+                await SendToDestination(Envelope.Destination, message);
                 return;
             }
 
@@ -233,7 +246,8 @@ namespace Jasper.Runtime
                 TopicName = topicName
             };
 
-            return SendEnvelope(envelope);
+            var outgoing = _root.Router.RouteToTopic(topicName, envelope);
+            return persistOrSend(outgoing);
         }
 
         public Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)

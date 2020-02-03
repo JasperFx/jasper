@@ -33,19 +33,7 @@ namespace Jasper
             return publisher.ScheduleSend(message, DateTime.UtcNow.Add(delay));
         }
 
-        /// <summary>
-        /// Send a response message back to the original sender of the message being handled.
-        /// This can only be used from within a message handler
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        public static Task RespondToSender(this IMessageContext context, object response)
-        {
-            if (context.Envelope == null) throw new InvalidOperationException("This operation can only be performed while in the middle of handling an incoming message");
 
-            return context.SendToDestination(context.Envelope.ReplyUri, response);
-        }
 
     }
 }

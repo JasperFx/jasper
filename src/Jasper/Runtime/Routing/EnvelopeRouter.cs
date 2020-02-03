@@ -13,20 +13,13 @@ namespace Jasper.Runtime.Routing
     public class EnvelopeRouter : IEnvelopeRouter
     {
         private readonly IMessagingRoot _root;
-        private readonly HandlerGraph _handlers;
         private Util.ImHashMap<Type, MessageTypeRouting> _routes = Util.ImHashMap<Type, MessageTypeRouting>.Empty;
         private readonly ISendingAgent _durableLocalQueue;
 
-        public EnvelopeRouter(IMessagingRoot root, HandlerGraph handlers)
+        public EnvelopeRouter(IMessagingRoot root)
         {
             _root = root;
-            _handlers = handlers;
             _durableLocalQueue = root.Runtime.GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
-        }
-
-        public ISendingAgent LocalQueueByMessageType(Type messageType)
-        {
-            return routingFor(messageType).LocalQueue;
         }
 
         public Envelope[] RouteOutgoingByMessage(object message)
