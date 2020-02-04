@@ -44,7 +44,7 @@ If you're uncomfortable with C# tuples or just don't like the magic, you can eff
 
 <[sample:HappyMealSaga1NoTuple]>
 
-Both the of the examples above assume that the `SodaRequested` messages will be sent to other systems, but it's perfectly possible
+Both of the examples above assume that the `SodaRequested` messages will be sent to other systems, but it's perfectly possible
 to use a stateful saga to manage processing that's handled completely within your system like this:
 
 <[sample:HappyMealSaga1Local]>
