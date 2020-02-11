@@ -6,22 +6,22 @@ namespace Jasper.Runtime
 {
     internal class InvocationCallback : IMessageCallback
     {
-        public Task MarkComplete()
+        public Task Complete()
         {
             return Task.CompletedTask;
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrors(Exception exception)
         {
             return Task.CompletedTask;
         }
 
-        public Task Requeue(Envelope envelope)
+        public Task Defer()
         {
             return Task.CompletedTask;
         }
 
-        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
+        public Task MoveToScheduledUntil(DateTimeOffset time)
         {
             return Task.CompletedTask;
         }

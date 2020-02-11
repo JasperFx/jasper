@@ -30,7 +30,7 @@ namespace Jasper.Testing.Runtime
         {
             await theContinuation.Execute(new MockMessagingRoot(), theContext, DateTime.UtcNow);
 
-            await theEnvelope.Callback.Received().MoveToErrors(theEnvelope, theException);
+            await theEnvelope.Callback.Received().MoveToErrors(theException);
         }
 
         [Fact]

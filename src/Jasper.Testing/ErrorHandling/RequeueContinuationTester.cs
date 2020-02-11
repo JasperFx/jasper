@@ -21,7 +21,7 @@ namespace Jasper.Testing.ErrorHandling
 
             await RequeueContinuation.Instance.Execute(new MockMessagingRoot(), context, DateTime.Now);
 
-            await envelope.Callback.Received(1).Requeue(envelope);
+            await envelope.Callback.Received(1).Defer();
         }
     }
 }

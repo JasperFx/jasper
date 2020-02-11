@@ -19,7 +19,7 @@ namespace Jasper.Runtime
             {
                 await context.SendAllQueuedOutgoingMessages();
 
-                await envelope.Callback.MarkComplete();
+                await envelope.Callback.Complete();
 
                 context.Advanced.Logger.MessageSucceeded(envelope);
             }
@@ -30,7 +30,7 @@ namespace Jasper.Runtime
                 context.Advanced.Logger.LogException(ex, envelope.Id, ex.Message);
                 context.Advanced.Logger.MessageFailed(envelope, ex);
 
-                await envelope.Callback.MoveToErrors(envelope, ex);
+                await envelope.Callback.MoveToErrors(ex);
             }
         }
     }

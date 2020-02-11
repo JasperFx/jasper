@@ -9,11 +9,13 @@ namespace StorytellerSpecs.Stub
     public class StubMessageCallback : IMessageCallback
     {
         private readonly StubEndpoint _endpoint;
+        private readonly Envelope _envelope;
         public readonly IList<Envelope> Sent = new List<Envelope>();
 
-        public StubMessageCallback(StubEndpoint endpoint)
+        public StubMessageCallback(StubEndpoint endpoint, Envelope envelope)
         {
             _endpoint = endpoint;
+            _envelope = envelope;
         }
 
         public bool MarkedSucessful { get; set; }
@@ -28,27 +30,27 @@ namespace StorytellerSpecs.Stub
 
         public bool Requeued { get; set; }
 
-        public Task MarkComplete()
+        public Task Complete()
         {
             MarkedSucessful = true;
             return Task.CompletedTask;
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrors(Exception exception)
         {
             WasMovedToErrors = true;
             return Task.CompletedTask;
         }
 
-        public Task Requeue(Envelope envelope)
+        public Task Defer()
         {
             Requeued = true;
 
 
-            return _endpoint.EnqueueOutgoing(envelope);
+            return _endpoint.EnqueueOutgoing(_envelope);
         }
 
-        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
+        public Task MoveToScheduledUntil(DateTimeOffset time)
         {
             throw new NotImplementedException();
         }

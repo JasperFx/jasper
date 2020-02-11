@@ -81,7 +81,7 @@ namespace StorytellerSpecs.Stub
             envelope.ReceivedAt = Destination;
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri();
 
-            var callback = new StubMessageCallback(this);
+            var callback = new StubMessageCallback(this, envelope);
             Callbacks.Add(callback);
 
             _stubTransport.Callbacks.Add(callback);

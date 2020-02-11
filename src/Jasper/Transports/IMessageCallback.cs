@@ -5,13 +5,21 @@ namespace Jasper.Transports
 {
     public interface IMessageCallback
     {
-        Task MarkComplete();
+        /// <summary>
+        /// Mark the message as having been successfully received and processed
+        /// </summary>
+        /// <returns></returns>
+        Task Complete();
 
-        Task MoveToErrors(Envelope envelope, Exception exception);
+        Task MoveToErrors(Exception exception);
 
 
-        Task Requeue(Envelope envelope);
+        /// <summary>
+        /// Requeue the message for later processing
+        /// </summary>
+        /// <returns></returns>
+        Task Defer();
 
-        Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope);
+        Task MoveToScheduledUntil(DateTimeOffset time);
     }
 }

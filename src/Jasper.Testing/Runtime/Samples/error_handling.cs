@@ -214,7 +214,7 @@ namespace Jasper.Testing.Runtime.Samples
         public async Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             // Clumsy syntax, but you shouldn't need to do this very often:/
-            await context.Envelope.Callback.MoveToScheduledUntil(utcNow.AddHours(1), context.Envelope);
+            await context.Envelope.Callback.MoveToScheduledUntil(utcNow.AddHours(1));
 
             // Raise a separate "alert" event message
             var session = root.NewContext();

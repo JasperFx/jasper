@@ -7,31 +7,33 @@ namespace Jasper.Runtime.WorkerQueues
     public class LightweightCallback : IMessageCallback
     {
         private readonly IWorkerQueue _queue;
+        private readonly Envelope _envelope;
 
-        public LightweightCallback(IWorkerQueue queue)
+        public LightweightCallback(IWorkerQueue queue, Envelope envelope)
         {
             _queue = queue;
+            _envelope = envelope;
         }
 
-        public Task MarkComplete()
+        public Task Complete()
         {
             return Task.CompletedTask;
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrors(Exception exception)
         {
             return Task.CompletedTask;
         }
 
-        public Task Requeue(Envelope envelope)
+        public Task Defer()
         {
-            return _queue.Enqueue(envelope);
+            return _queue.Enqueue(_envelope);
         }
 
-        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
+        public Task MoveToScheduledUntil(DateTimeOffset time)
         {
-            envelope.ExecutionTime = time;
-            return _queue.ScheduleExecution(envelope);
+            _envelope.ExecutionTime = time;
+            return _queue.ScheduleExecution(_envelope);
         }
     }
 }

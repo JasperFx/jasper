@@ -30,7 +30,7 @@ namespace Jasper.Testing.ErrorHandling
 
 
 #pragma warning disable 4014
-            envelope.Callback.Received().MoveToScheduledUntil(now.AddMinutes(5), envelope);
+            envelope.Callback.Received().MoveToScheduledUntil(now.AddMinutes(5));
 #pragma warning restore 4014
         }
     }

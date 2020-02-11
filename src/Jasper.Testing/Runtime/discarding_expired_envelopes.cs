@@ -38,7 +38,7 @@ namespace Jasper.Testing.Runtime
 
 
 #pragma warning disable 4014
-                envelope.Callback.Received().MarkComplete();
+                envelope.Callback.Received().Complete();
 #pragma warning restore 4014
             }
 

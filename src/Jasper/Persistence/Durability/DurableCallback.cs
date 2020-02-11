@@ -34,34 +34,34 @@ namespace Jasper.Persistence.Durability
 
         }
 
-        public Task MarkComplete()
+        public Task Complete()
         {
             return _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelope(_envelope));
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrors(Exception exception)
         {
-            var errorReport = new ErrorReport(envelope, exception);
+            var errorReport = new ErrorReport(_envelope, exception);
 
             return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorage(new[] {errorReport}));
         }
 
-        public async Task Requeue(Envelope envelope)
+        public async Task Defer()
         {
-            envelope.Attempts++;
+            _envelope.Attempts++;
 
-            await _queue.Enqueue(envelope);
+            await _queue.Enqueue(_envelope);
 
-            await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttempts(envelope));
+            await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttempts(_envelope));
         }
 
-        public Task MoveToScheduledUntil(DateTimeOffset time, Envelope envelope)
+        public Task MoveToScheduledUntil(DateTimeOffset time)
         {
-            envelope.OwnerId = TransportConstants.AnyNode;
-            envelope.ExecutionTime = time;
-            envelope.Status = EnvelopeStatus.Scheduled;
+            _envelope.OwnerId = TransportConstants.AnyNode;
+            _envelope.ExecutionTime = time;
+            _envelope.Status = EnvelopeStatus.Scheduled;
 
-            return _policy.ExecuteAsync(() => _persistence.ScheduleExecution(new[] {envelope}));
+            return _policy.ExecuteAsync(() => _persistence.ScheduleExecution(new[] {_envelope}));
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Jasper.ErrorHandling
             await context.Advanced.SendFailureAcknowledgement(
                 $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
-            await envelope.Callback.MoveToErrors(envelope, Exception);
+            await envelope.Callback.MoveToErrors(Exception);
 
             context.Advanced.Logger.MessageFailed(envelope, Exception);
             context.Advanced.Logger.MovedToErrorQueue(envelope, Exception);

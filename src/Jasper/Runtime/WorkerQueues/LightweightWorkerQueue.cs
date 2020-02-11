@@ -55,7 +55,7 @@ namespace Jasper.Runtime.WorkerQueues
         {
             if (envelope.IsPing()) return Task.CompletedTask;
 
-            envelope.Callback = new LightweightCallback(this);
+            envelope.Callback = new LightweightCallback(this, envelope);
             _receiver.Post(envelope);
 
             return Task.CompletedTask;

@@ -67,7 +67,7 @@ namespace Jasper.Runtime
             {
                 // Gotta get the message out of here because it's something that
                 // could never be handled
-                await envelope.Callback.MoveToErrors(envelope, e);
+                await envelope.Callback.MoveToErrors(e);
                 Logger.LogException(e, envelope.Id);
             }
         }
@@ -107,7 +107,7 @@ namespace Jasper.Runtime
             try
             {
                 Logger.DiscardedEnvelope(envelope);
-                await envelope.Callback.MarkComplete();
+                await envelope.Callback.Complete();
             }
             catch (Exception e)
             {
@@ -129,7 +129,7 @@ namespace Jasper.Runtime
             {
                 envelope.MarkCompletion(false);
                 Logger.MessageFailed(envelope, e);
-                await envelope.Callback.MoveToErrors(envelope, e);
+                await envelope.Callback.MoveToErrors(e);
                 return;
             }
             finally
@@ -197,7 +197,7 @@ namespace Jasper.Runtime
 
             if (envelope.AckRequested) await context.Advanced.SendAcknowledgement();
 
-            await envelope.Callback.MarkComplete();
+            await envelope.Callback.Complete();
         }
 
         public Func<IMessageContext, Task<IContinuation>> ExecutorFor(Type messageType)

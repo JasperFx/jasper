@@ -119,7 +119,7 @@ namespace Jasper.Runtime.Scheduled
 
             public async Task Enqueue()
             {
-                Envelope.Callback = new LightweightCallback(_parent._queue);
+                Envelope.Callback = new LightweightCallback(_parent._queue, Envelope);
                 await _parent._queue.Enqueue(Envelope);
                 Cancel();
             }

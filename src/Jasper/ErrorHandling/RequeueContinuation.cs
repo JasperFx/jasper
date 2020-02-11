@@ -15,7 +15,7 @@ namespace Jasper.ErrorHandling
         public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             var envelope = context.Envelope;
-            return envelope.Callback.Requeue(envelope);
+            return envelope.Callback.Defer();
         }
 
         public override string ToString()
