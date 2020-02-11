@@ -100,7 +100,7 @@ namespace Jasper.Transports.Sending
             }
         }
 
-        public Task<bool> TryToReconnect(CancellationToken cancellationToken)
+        public Task<bool> TryToResume(CancellationToken cancellationToken)
         {
             return _sender.Ping(cancellationToken);
         }

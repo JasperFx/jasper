@@ -11,8 +11,9 @@ namespace Jasper.Testing.ErrorHandling
         {
             theOptions.Handlers.ConfigureHandlerForMessage<ErrorCausingMessage>(chain =>
             {
-                chain.MoveToDeadLetterQueueOn<DivideByZeroException>();
-                chain.RetryOn<InvalidOperationException>();
+                chain.OnException<DivideByZeroException>().MoveToErrorQueue();
+                chain.OnException<InvalidOperationException>().RetryNow();
+
                 chain.Retries.MaximumAttempts = 3;
             });
         }

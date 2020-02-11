@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Security;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper.Attributes;
@@ -21,17 +22,20 @@ namespace Jasper.Testing.Runtime.Samples
     }
 
     // SAMPLE: ErrorHandlingPolicy
+    // This error policy will apply to all message types in the namespace
+    // 'MyApp.Messages', and add a "requeue on SqlException" to all of these
+    // message handlers
     public class ErrorHandlingPolicy : IHandlerPolicy
     {
         public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
         {
-            var matchingChains = graph.Chains.Where(x => x.MessageType.IsInNamespace("MyApp.Messages"));
+            var matchingChains = graph
+                .Chains
+                .Where(x => x.MessageType.IsInNamespace("MyApp.Messages"));
 
             foreach (var chain in matchingChains)
             {
-                chain.Retries.MaximumAttempts = 2;
-                chain.Retries.Add(x => x.Handle<SqlException>()
-                    .Requeue());
+                chain.OnException<SqlException>().Requeue(2);
             }
         }
     }
@@ -52,14 +56,14 @@ namespace Jasper.Testing.Runtime.Samples
     {
         public GlobalRetryApp()
         {
-            Handlers.Retries.Add(x => x.Handle<TimeoutException>().Reschedule(5.Seconds()));
-
-            Handlers.Retries.Add(x => x.Handle<SecurityException>().MoveToErrorQueue());
+            Handlers.OnException<TimeoutException>().RetryLater(5.Seconds());
+            Handlers.OnException<SecurityException>().MoveToErrorQueue();
 
             // You can also apply an additional filter on the
             // exception type for finer grained policies
-            Handlers.Retries.Add(x => x.Handle<SocketException>(ex => ex.Message.Contains("not responding"))
-                .Reschedule(5.Seconds()));
+            Handlers
+                .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
+                .RetryLater(5.Seconds());
         }
     }
     // ENDSAMPLE
@@ -68,12 +72,13 @@ namespace Jasper.Testing.Runtime.Samples
     // SAMPLE: configure-error-handling-per-chain-with-configure
     public class MyErrorCausingHandler
     {
+        // This method signature is meaningful
         public static void Configure(HandlerChain chain)
         {
-            chain.Retries.Add(x => x.Handle<IOException>()
-                .Requeue());
-
-            chain.Retries.MaximumAttempts = 3;
+            // Requeue on IOException for a maximum
+            // of 3 attempts
+            chain.OnException<IOException>()
+                .Requeue(3);
         }
 
 
@@ -103,8 +108,8 @@ namespace Jasper.Testing.Runtime.Samples
     // SAMPLE: configuring-error-handling-with-attributes
     public class AttributeUsingHandler
     {
-        [RescheduleLater(typeof(IOException), 5)]
-        [RetryOn(typeof(SqlException))]
+        [RetryLater(typeof(IOException), 5)]
+        [RetryNow(typeof(SqlException))]
         [RequeueOn(typeof(InvalidOperationException))]
         [MoveToErrorQueueOn(typeof(DivideByZeroException))]
         [MaximumAttempts(2)]
@@ -124,9 +129,18 @@ namespace Jasper.Testing.Runtime.Samples
     {
         public FilteredApp()
         {
-            Handlers.Retries.Add(x => x.Handle<SqlException>().Requeue());
 
-            Handlers.Retries.Add(x => x.Handle<InvalidOperationException>().RetryAsync());
+            Handlers
+                // You have all the available exception matching capabilities of Polly
+                .OnException<SqlException>()
+                .Or<InvalidOperationException>(ex => ex.Message.Contains("Intermittent message of some kind"))
+                .OrInner<BadImageFormatException>()
+
+                // And apply the "continuation" action to take if the filters match
+                .Requeue();
+
+            // Use different actions for different exception types
+            Handlers.OnException<InvalidOperationException>().RetryNow();
         }
     }
     // ENDSAMPLE
@@ -136,22 +150,30 @@ namespace Jasper.Testing.Runtime.Samples
     {
         public ContinuationTypes()
         {
-            var policy = Policy<IContinuation>.Handle<SqlException>()
-                .Retry(3);
 
             // Try to execute the message again without going
-            // back through the queue
-            Handlers.Retries.Add(x => x.Handle<SqlException>().RetryAsync());
+            // back through the queue with a maximum number of attempts
+            // The default is 3
+            // The message will be dead lettered if it exceeds the maximum
+            // number of attemts
+            Handlers.OnException<SqlException>().RetryNow(5);
+
 
             // Retry the message again, but wait for the specified time
-            Handlers.Retries.Add(x => x.Handle<SqlException>().Reschedule(3.Seconds()));
+            // The message will be dead lettered if it exhausts the delay
+            // attempts
+            Handlers
+                .OnException<SqlException>()
+                .RetryLater(3.Seconds(), 10.Seconds(), 20.Seconds());
 
             // Put the message back into the queue where it will be
             // attempted again
-            Handlers.Retries.Add(x => x.Handle<SqlException>().Requeue());
+            // The message will be dead lettered if it exceeds the maximum number
+            // of attempts
+            Handlers.OnException<SqlException>().Requeue(5);
 
-            // Move the message into the error queue for this transport
-            Handlers.Retries.Add(x => x.Handle<SqlException>().MoveToErrorQueue());
+            // Immediately move the message into the error queue for this transport
+            Handlers.OnException<SqlException>().MoveToErrorQueue();
         }
     }
     // ENDSAMPLE
@@ -163,6 +185,53 @@ namespace Jasper.Testing.Runtime.Samples
         public FailedOnSecurity(string message)
         {
         }
+    }
+
+    // SAMPLE: AppWithCustomContinuation
+    public class AppWithCustomContinuation : JasperOptions
+    {
+        public AppWithCustomContinuation()
+        {
+            Handlers.OnException<UnauthorizedAccessException>()
+
+                // The With() function takes a lambda factory for
+                // custom IContinuation objects
+                .With((envelope, exception) => new RaiseAlert(exception));
+        }
+    }
+    // ENDSAMPLE
+
+    // SAMPLE: RaiseAlert-Continuation
+    public class RaiseAlert : IContinuation
+    {
+        private readonly Exception _ex;
+
+        public RaiseAlert(Exception ex)
+        {
+            _ex = ex;
+        }
+
+        public async Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
+        {
+            // Clumsy syntax, but you shouldn't need to do this very often:/
+            await context.Envelope.Callback.MoveToScheduledUntil(utcNow.AddHours(1), context.Envelope);
+
+            // Raise a separate "alert" event message
+            var session = root.NewContext();
+            await session.Send(new RescheduledAlert()
+            {
+                Id = context.Envelope.Id,
+                ExceptionText = _ex.ToString()
+
+            });
+        }
+    }
+    // ENDSAMPLE
+
+    public class RescheduledAlert
+    {
+        public Guid Id { get; set; }
+        public string ExceptionText { get; set; }
     }
 
 

@@ -176,7 +176,7 @@ namespace Jasper.Runtime
                 var continuation = await executor(context);
                 Logger.ExecutionFinished(envelope);
 
-                await continuation.Execute(context, DateTime.UtcNow);
+                await continuation.Execute(_root, context, DateTime.UtcNow);
             }
         }
 

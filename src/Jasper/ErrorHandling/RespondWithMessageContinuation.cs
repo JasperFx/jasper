@@ -13,7 +13,7 @@ namespace Jasper.ErrorHandling
 
         public object Message { get; }
 
-        public Task Execute(IMessageContext context, DateTime utcNow)
+        public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             context.Advanced.EnqueueCascading(Message);
             return Task.CompletedTask;

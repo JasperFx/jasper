@@ -13,7 +13,7 @@ namespace Jasper.ErrorHandling
         }
 
 
-        public Task Execute(IMessageContext context, DateTime utcNow)
+        public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             return context.Advanced.Retry();
         }

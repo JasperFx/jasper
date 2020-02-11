@@ -2,6 +2,7 @@
 using Jasper.ErrorHandling;
 using Jasper.Runtime.Handlers;
 using LamarCodeGeneration;
+using LamarCodeGeneration.Util;
 
 namespace Jasper.Attributes
 {
@@ -19,8 +20,7 @@ namespace Jasper.Attributes
 
         public override void Modify(HandlerChain chain, GenerationRules rules)
         {
-            chain.Retries += _exceptionType.HandledBy()
-                .MoveToErrorQueue();
+            chain.OnExceptionOfType(_exceptionType).MoveToErrorQueue();
         }
     }
 }

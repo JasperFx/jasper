@@ -88,7 +88,7 @@ namespace Jasper.Persistence.Testing
 
         public static void Configure(HandlerChain chain)
         {
-            chain.Retries.Add(x => x.Handle<Exception>(e => true).Requeue(1000));
+            chain.OnException(e => true).Requeue(1000);
         }
     }
 

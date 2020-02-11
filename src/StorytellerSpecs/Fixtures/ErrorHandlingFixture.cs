@@ -54,25 +54,25 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Retry on {errorType}")]
         public void RetryOn(ErrorType errorType)
         {
-            _errorHandling.Retries += errorType.Type.HandledBy().RetryAsync(3);
+            _errorHandling.OnExceptionOfType(errorType.Type).RetryNow(3);
         }
 
         [FormatAs("Requeue on {errorType}")]
         public void RequeueOn(ErrorType errorType)
         {
-            _errorHandling.Retries += errorType.Type.HandledBy().Requeue();
+            _errorHandling.OnExceptionOfType(errorType.Type).Requeue();
         }
 
         [FormatAs("Move to error queue on {errorType}")]
         public void MoveToErrorQueue(ErrorType errorType)
         {
-            _errorHandling.Retries += errorType.Type.HandledBy().MoveToErrorQueue();
+            _errorHandling.OnExceptionOfType(errorType.Type).MoveToErrorQueue();
         }
 
         [FormatAs("Retry later in 5 seconds on {errorType}")]
         public void RetryLater(ErrorType errorType)
         {
-            _errorHandling.Retries += errorType.Type.HandledBy().Reschedule(5.Seconds(), 5.Seconds(), 5.Seconds());
+            _errorHandling.OnExceptionOfType(errorType.Type).RetryLater(5.Seconds(), 5.Seconds(), 5.Seconds());
         }
     }
 

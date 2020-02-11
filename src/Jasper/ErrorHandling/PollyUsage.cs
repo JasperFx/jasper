@@ -10,36 +10,7 @@ namespace Jasper.ErrorHandling
     {
         public const string ContextKey = "context";
 
-        public static PolicyBuilder<IContinuation> HandledBy(this Type exceptionType)
-        {
-            return typeof(PolicyBuilderBuilder<>).CloseAndBuildAs<IPolicyBuilderBuilder>(exceptionType)
-                .Build();
-        }
-
-        private interface IPolicyBuilderBuilder
-        {
-            PolicyBuilder<IContinuation> Build();
-        }
-
-        private class PolicyBuilderBuilder<T> : IPolicyBuilderBuilder where T : Exception
-        {
-            public PolicyBuilder<IContinuation> Build()
-            {
-                return Policy<IContinuation>.Handle<T>();
-            }
-        }
-
-        public static void Store(this Context context, IMessageContext messageContext)
-        {
-            context.Add(ContextKey, messageContext);
-        }
-
-        public static IMessageContext MessageContext(this Context context)
-        {
-            return context[ContextKey].As<IMessageContext>();
-        }
-
-        public static IAsyncPolicy<IContinuation> Requeue(this PolicyBuilder<IContinuation> builder, int maxAttempts = 3)
+        internal static IAsyncPolicy<IContinuation> Requeue(this PolicyBuilder<IContinuation> builder, int maxAttempts = 3)
         {
             return builder.FallbackAsync((result, context, token) =>
             {
@@ -53,26 +24,95 @@ namespace Jasper.ErrorHandling
             }, (result, context) => Task.CompletedTask);
         }
 
-        public static IAsyncPolicy<IContinuation> Reschedule(this PolicyBuilder<IContinuation> builder,
-            params TimeSpan[] delays)
+        internal static void Store(this Context context, IMessageContext messageContext)
         {
-            return builder.FallbackAsync((result, context, token) =>
-            {
-                var envelope = context.MessageContext().Envelope;
-
-                var continuation = envelope.Attempts < delays.Length
-                    ? (IContinuation) new ScheduledRetryContinuation(delays[envelope.Attempts - 1])
-                    : new MoveToErrorQueue(result.Exception);
-
-                return Task.FromResult(continuation);
-            }, (result, context) => Task.CompletedTask);
+            context.Add(ContextKey, messageContext);
         }
 
-        public static IAsyncPolicy<IContinuation> MoveToErrorQueue(this PolicyBuilder<IContinuation> builder)
+        internal static IMessageContext MessageContext(this Context context)
         {
-            return builder.FallbackAsync((result, context, token) => Task.FromResult<IContinuation>(new MoveToErrorQueue(result.Exception)),
-                (result, context) =>  Task.CompletedTask);
+            return context[ContextKey].As<IMessageContext>();
         }
+
+
+
+        /// <summary>
+        ///     Specifies the type of exception that this policy can handle.
+        /// </summary>
+        /// <typeparam name="TException">The type of the exception to handle.</typeparam>
+        /// <returns>The PolicyBuilder instance.</returns>
+        public static PolicyExpression OnException<TException>(this IHasRetryPolicies policies) where TException : Exception
+        {
+            var builder = Policy<IContinuation>.Handle<TException>();
+            return new PolicyExpression(policies.Retries, builder);
+        }
+
+        /// <summary>
+        ///     Specifies the type of exception that this policy can handle with additional filters on this exception type.
+        /// </summary>
+        /// <typeparam name="TException">The type of the exception.</typeparam>
+        /// <param name="policies"></param>
+        /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
+        /// <returns>The PolicyBuilder instance.</returns>
+        public static PolicyExpression OnException(this IHasRetryPolicies policies, Func<Exception, bool> exceptionPredicate)
+        {
+            var builder = Policy<IContinuation>.Handle(exceptionPredicate);
+            return new PolicyExpression(policies.Retries, builder);
+        }
+
+        /// <summary>
+        ///     Specifies the type of exception that this policy can handle with additional filters on this exception type.
+        /// </summary>
+        /// <param name="policies"></param>
+        /// <param name="exceptionType">An exception type to match against</param>
+        /// <returns>The PolicyBuilder instance.</returns>
+        public static PolicyExpression OnExceptionOfType(this IHasRetryPolicies policies, Type exceptionType)
+        {
+            return policies.OnException(e => e.GetType().CanBeCastTo(exceptionType));
+        }
+
+
+        /// <summary>
+        ///     Specifies the type of exception that this policy can handle with additional filters on this exception type.
+        /// </summary>
+        /// <typeparam name="TException">The type of the exception.</typeparam>
+        /// <param name="policies"></param>
+        /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
+        /// <returns>The PolicyBuilder instance.</returns>
+        public static PolicyExpression OnException<TException>(this IHasRetryPolicies policies, Func<TException, bool> exceptionPredicate)
+            where TException : Exception
+        {
+            var builder = Policy<IContinuation>.Handle(exceptionPredicate);
+            return new PolicyExpression(policies.Retries, builder);
+        }
+
+        /// <summary>
+        ///     Specifies the type of exception that this policy can handle if found as an InnerException of a regular
+        ///     <see cref="Exception" />, or at any level of nesting within an <see cref="AggregateException" />.
+        /// </summary>
+        /// <typeparam name="TException">The type of the exception to handle.</typeparam>
+        /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
+        public static PolicyExpression HandleInner<TException>(this IHasRetryPolicies policies) where TException : Exception
+        {
+            var builder = Policy<IContinuation>.HandleInner<TException>();
+            return new PolicyExpression(policies.Retries, builder);
+        }
+
+        /// <summary>
+        ///     Specifies the type of exception that this policy can handle, with additional filters on this exception type, if
+        ///     found as an InnerException of a regular <see cref="Exception" />, or at any level of nesting within an
+        ///     <see cref="AggregateException" />.
+        /// </summary>
+        /// <typeparam name="TException">The type of the exception to handle.</typeparam>
+        /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
+        public static PolicyExpression HandleInner<TException>(this IHasRetryPolicies policies, Func<TException, bool> exceptionPredicate)
+            where TException : Exception
+        {
+            var builder = Policy<IContinuation>.HandleInner(exceptionPredicate);
+            return new PolicyExpression(policies.Retries, builder);
+        }
+
+
 
 
 

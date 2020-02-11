@@ -18,8 +18,8 @@ namespace Jasper.Testing.Samples
         {
             // On a SqlException, reschedule the message to be retried
             // at 3 seconds, then 15, then 30 seconds later
-            Handlers.Retries.Add(x => x.Handle<SqlException>()
-                .Reschedule(3.Seconds(), 15.Seconds(), 30.Seconds()));
+            Handlers.OnException<SqlException>()
+                .RetryLater(3.Seconds(), 15.Seconds(), 30.Seconds());
 
 
         }

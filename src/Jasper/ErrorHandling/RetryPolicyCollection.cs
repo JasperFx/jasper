@@ -8,7 +8,7 @@ using Polly;
 
 namespace Jasper.ErrorHandling
 {
-    public class RetryPolicyCollection : IEnumerable<IAsyncPolicy<IContinuation>>
+    public partial class RetryPolicyCollection : IEnumerable<IAsyncPolicy<IContinuation>>
     {
         private readonly IList<IAsyncPolicy<IContinuation>> _policies = new List<IAsyncPolicy<IContinuation>>();
 
@@ -22,83 +22,6 @@ namespace Jasper.ErrorHandling
             _policies.Add(policy);
         }
 
-        public static RetryPolicyCollection operator +(RetryPolicyCollection collection, IAsyncPolicy<IContinuation> policy)
-        {
-            collection.Add(policy);
-            return collection;
-        }
-
-        /// <summary>
-        /// Add a single Polly error handler
-        /// </summary>
-        /// <param name="configure"></param>
-        public void Add(Func<PolicyBuilder, IAsyncPolicy<IContinuation>> configure)
-        {
-            var builder = new PolicyBuilder();
-            var policy = configure(builder);
-            Add(policy);
-        }
-
-        /// <summary>
-        /// Add a single Polly error handler
-        /// </summary>
-        /// <param name="configure"></param>
-        public void AddMany(Func<PolicyBuilder, IEnumerable<IAsyncPolicy<IContinuation>>> configure)
-        {
-            var builder = new PolicyBuilder();
-            var policies = configure(builder);
-            _policies.AddRange(policies);
-        }
-
-
-        public class PolicyBuilder
-        {
-            /// <summary>
-            ///     Specifies the type of exception that this policy can handle.
-            /// </summary>
-            /// <typeparam name="TException">The type of the exception to handle.</typeparam>
-            /// <returns>The PolicyBuilder instance.</returns>
-            public PolicyBuilder<IContinuation> Handle<TException>() where TException : Exception
-            {
-                return Policy<IContinuation>.Handle<TException>();
-            }
-
-            /// <summary>
-            ///     Specifies the type of exception that this policy can handle with additional filters on this exception type.
-            /// </summary>
-            /// <typeparam name="TException">The type of the exception.</typeparam>
-            /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
-            /// <returns>The PolicyBuilder instance.</returns>
-            public PolicyBuilder<IContinuation> Handle<TException>(Func<TException, bool> exceptionPredicate)
-                where TException : Exception
-            {
-                return Policy<IContinuation>.Handle(exceptionPredicate);
-            }
-
-            /// <summary>
-            ///     Specifies the type of exception that this policy can handle if found as an InnerException of a regular
-            ///     <see cref="Exception" />, or at any level of nesting within an <see cref="AggregateException" />.
-            /// </summary>
-            /// <typeparam name="TException">The type of the exception to handle.</typeparam>
-            /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
-            public PolicyBuilder<IContinuation> HandleInner<TException>() where TException : Exception
-            {
-                return Policy<IContinuation>.HandleInner<TException>();
-            }
-
-            /// <summary>
-            ///     Specifies the type of exception that this policy can handle, with additional filters on this exception type, if
-            ///     found as an InnerException of a regular <see cref="Exception" />, or at any level of nesting within an
-            ///     <see cref="AggregateException" />.
-            /// </summary>
-            /// <typeparam name="TException">The type of the exception to handle.</typeparam>
-            /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
-            public PolicyBuilder<IContinuation> HandleInner<TException>(Func<TException, bool> exceptionPredicate)
-                where TException : Exception
-            {
-                return Policy<IContinuation>.HandleInner(exceptionPredicate);
-            }
-        }
 
         public IEnumerator<IAsyncPolicy<IContinuation>> GetEnumerator()
         {
@@ -110,10 +33,6 @@ namespace Jasper.ErrorHandling
             return GetEnumerator();
         }
 
-        public void AddMany(IEnumerable<IAsyncPolicy<IContinuation>> policies)
-        {
-            _policies.AddRange(policies);
-        }
 
         public void Clear()
         {
@@ -127,7 +46,10 @@ namespace Jasper.ErrorHandling
                 yield return policy;
             }
 
-            if (MaximumAttempts.HasValue) yield return Policy<IContinuation>.Handle<Exception>().Requeue(MaximumAttempts.Value);
+            if (MaximumAttempts.HasValue)
+            {
+                yield return Policy<IContinuation>.Handle<Exception>().Requeue(MaximumAttempts.Value);
+            }
 
             foreach (var policy in parent._policies)
             {
@@ -137,7 +59,7 @@ namespace Jasper.ErrorHandling
             if (parent.MaximumAttempts.HasValue) yield return Policy<IContinuation>.Handle<Exception>().Requeue(parent.MaximumAttempts.Value);
         }
 
-        public IAsyncPolicy<IContinuation> BuildPolicy(RetryPolicyCollection parent)
+        internal IAsyncPolicy<IContinuation> BuildPolicy(RetryPolicyCollection parent)
         {
             var policies = combine(parent).Reverse().ToArray();
 

@@ -12,14 +12,14 @@ namespace Jasper.Testing.ErrorHandling
         {
             theOptions.Extensions.UseMessageTrackingTestingSupport();
 
-            theOptions.Handlers.RetryOn<DivideByZeroException>();
-            theOptions.Handlers.RequeueOn<DataMisalignedException>();
-            theOptions.Handlers.MoveToDeadLetterQueueOn<DataMisalignedException>();
+            theOptions.Handlers.OnException<DivideByZeroException>().RetryNow();
+            theOptions.Handlers.OnException<DataMisalignedException>().Requeue();
+            theOptions.Handlers.OnException<DataMisalignedException>().MoveToErrorQueue();
 
             theOptions.Handlers.ConfigureHandlerForMessage<ErrorCausingMessage>(chain =>
             {
-                chain.MoveToDeadLetterQueueOn<DivideByZeroException>();
-                chain.RetryOn<InvalidOperationException>();
+                chain.OnException<DivideByZeroException>().MoveToErrorQueue();
+                chain.OnException<InvalidOperationException>().RetryNow();
                 chain.Retries.MaximumAttempts = 3;
             });
 

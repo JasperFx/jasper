@@ -4,9 +4,14 @@ using System.Threading.Tasks;
 
 namespace Jasper.Transports.Sending
 {
-    public interface ICircuit
+    public interface ICircuitTester
     {
-        Task<bool> TryToReconnect(CancellationToken cancellationToken);
+        Task<bool> TryToResume(CancellationToken cancellationToken);
+    }
+
+    public interface ICircuit : ICircuitTester
+    {
+
         Task Resume(CancellationToken cancellationToken);
 
         TimeSpan RetryInterval { get; }
@@ -34,7 +39,7 @@ namespace Jasper.Transports.Sending
 
                 try
                 {
-                    var pinged = await _circuit.TryToReconnect(_cancellation);
+                    var pinged = await _circuit.TryToResume(_cancellation);
 
                     if (pinged)
                     {

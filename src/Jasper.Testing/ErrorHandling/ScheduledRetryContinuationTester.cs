@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.ErrorHandling;
 using Jasper.Testing.Messaging;
+using Jasper.Testing.Runtime;
 using Jasper.Transports;
 using NSubstitute;
 using Xunit;
@@ -25,7 +26,7 @@ namespace Jasper.Testing.ErrorHandling
 
             var now = DateTime.Today.ToUniversalTime();
 
-            await continuation.Execute(context, now);
+            await continuation.Execute(new MockMessagingRoot(), context, now);
 
 
 #pragma warning disable 4014

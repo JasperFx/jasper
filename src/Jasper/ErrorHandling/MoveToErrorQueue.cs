@@ -13,7 +13,7 @@ namespace Jasper.ErrorHandling
 
         public Exception Exception { get; }
 
-        public async Task Execute(IMessageContext context, DateTime utcNow)
+        public async Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             var envelope = context.Envelope;
 

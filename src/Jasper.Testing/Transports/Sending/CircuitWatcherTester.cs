@@ -72,7 +72,7 @@ namespace Jasper.Testing.Transports.Sending
             Latched = true;
         }
 
-        public Task<bool> TryToReconnect(CancellationToken cancellationToken)
+        public Task<bool> TryToResume(CancellationToken cancellationToken)
         {
             _count++;
 

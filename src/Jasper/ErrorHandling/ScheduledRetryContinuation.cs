@@ -13,7 +13,7 @@ namespace Jasper.ErrorHandling
 
         public TimeSpan Delay { get; }
 
-        public Task Execute(IMessageContext context, DateTime utcNow)
+        public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             var envelope = context.Envelope;
             return envelope.Callback.MoveToScheduledUntil(utcNow.Add(Delay), envelope);

@@ -19,7 +19,7 @@ namespace Jasper.Testing.ErrorHandling
             var advanced = Substitute.For<IAdvancedMessagingActions>();
             theContext.Advanced.Returns(advanced);
 
-            await new RespondWithMessageContinuation(theMessage).Execute(theContext, DateTime.Now);
+            await new RespondWithMessageContinuation(theMessage).Execute(null, theContext, DateTime.Now);
             await advanced.Received().EnqueueCascading(theMessage);
         }
     }

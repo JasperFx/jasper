@@ -19,7 +19,7 @@ namespace Jasper.Testing.ErrorHandling
             context.Advanced.Returns(advanced);
 
             var theEnvelope = ObjectMother.Envelope();
-            await continuation.Execute(context, DateTime.UtcNow);
+            await continuation.Execute(null, context, DateTime.UtcNow);
 
             await advanced.Received(1).Retry();
         }

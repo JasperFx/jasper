@@ -4,6 +4,7 @@ using Baseline.Dates;
 using Jasper.ErrorHandling;
 using Jasper.Runtime.Handlers;
 using LamarCodeGeneration;
+using LamarCodeGeneration.Util;
 
 namespace Jasper.Attributes
 {
@@ -11,12 +12,12 @@ namespace Jasper.Attributes
     ///     Applies an error handling policy to schedule a message to be retried
     ///     in a designated number of seconds after encountering the named exception
     /// </summary>
-    public class RescheduleLaterAttribute : ModifyHandlerChainAttribute
+    public class RetryLaterAttribute : ModifyHandlerChainAttribute
     {
         private readonly Type _exceptionType;
         private readonly int[] _seconds;
 
-        public RescheduleLaterAttribute(Type exceptionType, params int[] seconds)
+        public RetryLaterAttribute(Type exceptionType, params int[] seconds)
         {
             _exceptionType = exceptionType;
             _seconds = seconds;
@@ -24,7 +25,9 @@ namespace Jasper.Attributes
 
         public override void Modify(HandlerChain chain, GenerationRules rules)
         {
-            chain.Retries += _exceptionType.HandledBy().Reschedule(_seconds.Select(x => x.Seconds()).ToArray());
+            var timeSpans = _seconds.Select(x => x.Seconds()).ToArray();
+            chain.OnExceptionOfType(_exceptionType)
+                .RetryLater(timeSpans);
         }
     }
 }

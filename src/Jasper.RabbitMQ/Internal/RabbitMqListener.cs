@@ -8,23 +8,19 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
-        private readonly RabbitMqTransport _transport;
         private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol _mapper;
         private IReceiverCallback _callback;
         private MessageConsumer _consumer;
-        private string _exchangeName;
-        private string _routingKey;
+        private readonly string _routingKey;
 
         public RabbitMqListener(ITransportLogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
             _logger = logger;
             _mapper = endpoint.Protocol;
-            _transport = transport;
             Address = endpoint.Uri;
 
-            _exchangeName = endpoint.ExchangeName ?? "";
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 

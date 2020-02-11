@@ -12,7 +12,7 @@ namespace Jasper.ErrorHandling
         {
         }
 
-        public Task Execute(IMessageContext context, DateTime utcNow)
+        public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             var envelope = context.Envelope;
             return envelope.Callback.Requeue(envelope);

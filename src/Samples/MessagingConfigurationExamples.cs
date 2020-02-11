@@ -13,8 +13,9 @@ namespace Jasper.Testing.Samples
         public MyMessagingApp()
         {
             // Configure handler policies
-            Handlers.Retries.MaximumAttempts = 3;
-            Handlers.Retries.Add(x => x.Handle<SqlException>().Reschedule(3.Seconds()));
+            Handlers
+                .OnException<SqlException>()
+                .RetryLater(3.Seconds());
 
             // Declare published messages
             Endpoints.Publish(x =>

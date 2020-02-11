@@ -11,7 +11,7 @@ namespace Jasper.Testing.ErrorHandling
         {
             theOptions.Handlers.ConfigureHandlerForMessage<ErrorCausingMessage>(chain =>
             {
-                chain.RequeueOn<DivideByZeroException>();
+                chain.OnException<DivideByZeroException>().Requeue();
                 chain.Retries.MaximumAttempts = 3;
             });
         }

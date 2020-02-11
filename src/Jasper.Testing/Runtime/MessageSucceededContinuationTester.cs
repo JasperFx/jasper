@@ -16,7 +16,7 @@ namespace Jasper.Testing.Runtime
             theMessageContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theMessageContext, DateTime.UtcNow);
+                .Execute(new MockMessagingRoot(), theMessageContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Runtime
             theMessageContext.Advanced.Returns(advanced);
 
             MessageSucceededContinuation.Instance
-                .Execute(theMessageContext, DateTime.UtcNow);
+                .Execute(new MockMessagingRoot(), theMessageContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();

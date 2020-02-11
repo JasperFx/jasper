@@ -31,7 +31,8 @@ namespace Jasper.Testing.Runtime
 
                 _.Services.AddSingleton<IMessageLogger>(this);
 
-                _.Handlers.Retries.Add(x => x.Handle<DivideByZeroException>().Requeue());
+                _.Handlers.OnException<DivideByZeroException>().Requeue();
+
                 _.Handlers.Retries.MaximumAttempts = 3;
             });
         }

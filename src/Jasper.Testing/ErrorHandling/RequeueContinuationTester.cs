@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
 using Jasper.Testing.Messaging;
+using Jasper.Testing.Runtime;
 using NSubstitute;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace Jasper.Testing.ErrorHandling
             context.Envelope.Returns(envelope);
 
 
-            await RequeueContinuation.Instance.Execute(context, DateTime.Now);
+            await RequeueContinuation.Instance.Execute(new MockMessagingRoot(), context, DateTime.Now);
 
             await envelope.Callback.Received(1).Requeue(envelope);
         }

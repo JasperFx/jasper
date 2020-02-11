@@ -2,6 +2,7 @@
 using Jasper.ErrorHandling;
 using Jasper.Runtime.Handlers;
 using LamarCodeGeneration;
+using LamarCodeGeneration.Util;
 using Polly;
 
 namespace Jasper.Attributes
@@ -10,12 +11,12 @@ namespace Jasper.Attributes
     ///     Applies an error policy that a message should be retried
     ///     whenever processing encounters the designated exception type
     /// </summary>
-    public class RetryOnAttribute : ModifyHandlerChainAttribute
+    public class RetryNowAttribute : ModifyHandlerChainAttribute
     {
         private readonly Type _exceptionType;
         private readonly int _attempts;
 
-        public RetryOnAttribute(Type exceptionType, int attempts = 3)
+        public RetryNowAttribute(Type exceptionType, int attempts = 3)
         {
             _exceptionType = exceptionType;
             _attempts = attempts;
@@ -23,7 +24,7 @@ namespace Jasper.Attributes
 
         public override void Modify(HandlerChain chain, GenerationRules rules)
         {
-            chain.Retries += _exceptionType.HandledBy().RetryAsync(3);
+            chain.OnExceptionOfType(_exceptionType).RetryNow(_attempts);
         }
     }
 }
