@@ -17,8 +17,10 @@ namespace Jasper.Transports
 
     public static class MessageCallbackExtensions
     {
-        public static Task MoveToErrors(this Envelope envelope, IMessagingRoot root, Exception exception)
+        public static Task MoveToErrors(this IMessageContext context, IMessagingRoot root, Exception exception)
         {
+            var envelope = context.Envelope;
+
             if (envelope.Callback is IHasDeadLetterQueue c) return c.MoveToErrors(exception);
 
             if (root.Persistence is NulloEnvelopePersistence)
@@ -31,9 +33,11 @@ namespace Jasper.Transports
             return root.Persistence.MoveToDeadLetterStorage(new ErrorReport[] {errorReport});
         }
 
-        public static Task MoveToScheduledUntil(this Envelope envelope, IMessagingRoot root,
+        public static Task MoveToScheduledUntil(this IMessageContext context, IMessagingRoot root,
             DateTimeOffset time)
         {
+            var envelope = context.Envelope;
+
             if (envelope.Callback is IHasNativeScheduling c) return c.MoveToScheduledUntil(time);
 
             if (root.Persistence is NulloEnvelopePersistence)

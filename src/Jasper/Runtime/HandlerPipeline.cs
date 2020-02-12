@@ -68,7 +68,6 @@ namespace Jasper.Runtime
             {
                 // Gotta get the message out of here because it's something that
                 // could never be handled
-                await envelope.MoveToErrors(_root, e);
                 Logger.LogException(e, envelope.Id);
             }
         }
@@ -130,7 +129,7 @@ namespace Jasper.Runtime
             {
                 envelope.MarkCompletion(false);
                 Logger.MessageFailed(envelope, e);
-                await envelope.MoveToErrors(_root, e);
+                await context.MoveToErrors(_root, e);
                 return;
             }
             finally
