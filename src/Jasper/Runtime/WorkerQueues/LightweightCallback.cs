@@ -4,7 +4,7 @@ using Jasper.Transports;
 
 namespace Jasper.Runtime.WorkerQueues
 {
-    public class LightweightCallback : IMessageCallback
+    public class LightweightCallback : IMessageCallback, IHasNativeScheduling
     {
         private readonly IWorkerQueue _queue;
         private readonly Envelope _envelope;
@@ -16,11 +16,6 @@ namespace Jasper.Runtime.WorkerQueues
         }
 
         public Task Complete()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task MoveToErrors(Exception exception)
         {
             return Task.CompletedTask;
         }

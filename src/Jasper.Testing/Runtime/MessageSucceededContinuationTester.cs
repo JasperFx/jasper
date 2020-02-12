@@ -1,6 +1,8 @@
 ﻿using System;
 using Jasper.Runtime;
 using Jasper.Testing.Messaging;
+using Jasper.Transports;
+using LamarCodeGeneration.Util;
 using NSubstitute;
 using Xunit;
 
@@ -47,26 +49,28 @@ namespace Jasper.Testing.Runtime
             advanced = Substitute.For<IAdvancedMessagingActions>();
             theMessageContext.Advanced.Returns(advanced);
 
+            theRoot = new MockMessagingRoot();
             MessageSucceededContinuation.Instance
-                .Execute(new MockMessagingRoot(), theMessageContext, DateTime.UtcNow);
+                .Execute(theRoot, theMessageContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
         private readonly IMessageContext theMessageContext = Substitute.For<IMessageContext>();
         private readonly Exception theException = new DivideByZeroException();
         private readonly IAdvancedMessagingActions advanced;
+        private readonly IMessagingRoot theRoot;
 
         [Fact]
         public void should_log_the_exception()
         {
-            theEnvelope.Callback.Received().MoveToErrors(theException);
+            theEnvelope.Callback.As<IFullMessageCallback>().Received().MoveToErrors(theException);
         }
 
 
         [Fact]
         public void should_move_the_envelope_to_the_error_queue()
         {
-            theEnvelope.Callback.Received().MoveToErrors(theException);
+            theEnvelope.Callback.As<IFullMessageCallback>().Received().MoveToErrors(theException);
         }
 
         [Fact]

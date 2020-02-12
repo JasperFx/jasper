@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Runtime;
+using Jasper.Transports;
 
 namespace Jasper.ErrorHandling
 {
@@ -16,7 +17,7 @@ namespace Jasper.ErrorHandling
         public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
             var envelope = context.Envelope;
-            return envelope.Callback.MoveToScheduledUntil(utcNow.Add(Delay));
+            return envelope.MoveToScheduledUntil(root, utcNow.Add(Delay));
         }
 
         public override string ToString()

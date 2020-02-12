@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Transports;
 
 namespace Jasper.Runtime
 {
@@ -30,7 +31,7 @@ namespace Jasper.Runtime
                 context.Advanced.Logger.LogException(ex, envelope.Id, ex.Message);
                 context.Advanced.Logger.MessageFailed(envelope, ex);
 
-                await envelope.Callback.MoveToErrors(ex);
+                await envelope.MoveToErrors(root, ex);
             }
         }
     }

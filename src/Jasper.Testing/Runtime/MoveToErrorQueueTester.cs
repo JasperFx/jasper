@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.ErrorHandling;
 using Jasper.Testing.Messaging;
+using Jasper.Transports;
 using NSubstitute;
 using Xunit;
 
@@ -30,7 +32,7 @@ namespace Jasper.Testing.Runtime
         {
             await theContinuation.Execute(new MockMessagingRoot(), theContext, DateTime.UtcNow);
 
-            await theEnvelope.Callback.Received().MoveToErrors(theException);
+            await theEnvelope.Callback.As<IFullMessageCallback>().Received().MoveToErrors(theException);
         }
 
         [Fact]

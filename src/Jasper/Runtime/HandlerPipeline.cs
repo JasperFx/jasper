@@ -7,6 +7,7 @@ using Jasper.ErrorHandling;
 using Jasper.Logging;
 using Jasper.Runtime.Handlers;
 using Jasper.Serialization;
+using Jasper.Transports;
 using Jasper.Util;
 using Polly;
 
@@ -67,7 +68,7 @@ namespace Jasper.Runtime
             {
                 // Gotta get the message out of here because it's something that
                 // could never be handled
-                await envelope.Callback.MoveToErrors(e);
+                await envelope.MoveToErrors(_root, e);
                 Logger.LogException(e, envelope.Id);
             }
         }
@@ -129,7 +130,7 @@ namespace Jasper.Runtime
             {
                 envelope.MarkCompletion(false);
                 Logger.MessageFailed(envelope, e);
-                await envelope.Callback.MoveToErrors(e);
+                await envelope.MoveToErrors(_root, e);
                 return;
             }
             finally

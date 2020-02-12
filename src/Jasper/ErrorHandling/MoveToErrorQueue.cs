@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Runtime;
+using Jasper.Transports;
 
 namespace Jasper.ErrorHandling
 {
@@ -21,7 +22,7 @@ namespace Jasper.ErrorHandling
             await context.Advanced.SendFailureAcknowledgement(
                 $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
-            await envelope.Callback.MoveToErrors(Exception);
+            await envelope.MoveToErrors(root, Exception);
 
             context.Advanced.Logger.MessageFailed(envelope, Exception);
             context.Advanced.Logger.MovedToErrorQueue(envelope, Exception);

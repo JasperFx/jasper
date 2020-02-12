@@ -5,6 +5,7 @@ using Jasper.ErrorHandling;
 using Jasper.Testing.Messaging;
 using Jasper.Testing.Runtime;
 using Jasper.Transports;
+using LamarCodeGeneration.Util;
 using NSubstitute;
 using Xunit;
 
@@ -20,17 +21,18 @@ namespace Jasper.Testing.ErrorHandling
 
 
             var envelope = ObjectMother.Envelope();
-            envelope.Callback = Substitute.For<IMessageCallback>();
+            envelope.Callback = Substitute.For<IFullMessageCallback>();
 
             context.Envelope.Returns(envelope);
 
             var now = DateTime.Today.ToUniversalTime();
 
-            await continuation.Execute(new MockMessagingRoot(), context, now);
+            var theRoot = new MockMessagingRoot();
+            await continuation.Execute(theRoot, context, now);
 
 
 #pragma warning disable 4014
-            envelope.Callback.Received().MoveToScheduledUntil(now.AddMinutes(5));
+            envelope.Callback.As<IFullMessageCallback>().Received().MoveToScheduledUntil(now.AddMinutes(5));
 #pragma warning restore 4014
         }
     }

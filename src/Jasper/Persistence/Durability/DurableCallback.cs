@@ -9,7 +9,7 @@ using Polly.Retry;
 
 namespace Jasper.Persistence.Durability
 {
-    public class DurableCallback : IMessageCallback
+    public class DurableCallback : IMessageCallback, IHasDeadLetterQueue, IHasNativeScheduling
     {
         private readonly Envelope _envelope;
         private readonly ITransportLogger _logger;

@@ -10,7 +10,7 @@ namespace Jasper.Testing.Messaging
             return new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                Callback = Substitute.For<IMessageCallback>(),
+                Callback = Substitute.For<IFullMessageCallback>(),
                 MessageType = "Something",
                 Destination = TransportConstants.ScheduledUri
             };
