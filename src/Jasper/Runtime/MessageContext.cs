@@ -458,5 +458,34 @@ namespace Jasper.Runtime
                 AcceptedContentTypes = reader.ContentTypes
             };
         }
+
+
+        /// <summary>
+        ///     Send a message that should be executed at the given time
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="time"></param>
+        /// <typeparam name="T"></typeparam>
+        public Task ScheduleSend<T>(T message, DateTime time)
+        {
+            return SendEnvelope(new Envelope
+            {
+                Message = message,
+                ExecutionTime = time.ToUniversalTime(),
+                Status = EnvelopeStatus.Scheduled
+            });
+        }
+
+        /// <summary>
+        ///     Send a message that should be executed after the given delay
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="delay"></param>
+        /// <typeparam name="T"></typeparam>
+        public Task ScheduleSend<T>(T message, TimeSpan delay)
+        {
+            return ScheduleSend(message, DateTime.UtcNow.Add(delay));
+        }
+
     }
 }

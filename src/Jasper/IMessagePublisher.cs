@@ -69,5 +69,20 @@ namespace Jasper
         /// <param name="message"></param>
         Task SendToDestination<T>(Uri destination, T message);
 
+        /// <summary>
+        ///     Send a message that should be executed at the given time
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="time"></param>
+        /// <typeparam name="T"></typeparam>
+        Task ScheduleSend<T>(T message, DateTime time);
+
+        /// <summary>
+        ///     Send a message that should be executed after the given delay
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="delay"></param>
+        /// <typeparam name="T"></typeparam>
+        Task ScheduleSend<T>(T message, TimeSpan delay);
     }
 }
