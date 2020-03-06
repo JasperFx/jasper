@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.Persistence.Durability;
+using Jasper.Transports;
 
 namespace Jasper
 {

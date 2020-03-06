@@ -16,7 +16,6 @@ namespace Jasper.ErrorHandling
 
         public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
         {
-            var envelope = context.Envelope;
             return context.MoveToScheduledUntil(root, utcNow.Add(Delay));
         }
 

@@ -20,7 +20,7 @@ namespace Jasper.ErrorHandling
 
         public override string ToString()
         {
-            return "Requeue Message Locallyf";
+            return "Defer the message for later processing";
         }
     }
 }
