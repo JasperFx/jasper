@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Runtime;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +36,8 @@ namespace Jasper.Tracking
         /// <returns></returns>
         public TrackedSessionConfiguration AlsoTrack(params IHost[] hosts)
         {
-            foreach (var host in hosts)
+            // It's actually important to ignore null here
+            foreach (var host in hosts.Where(x => x != null))
             {
                 _session.WatchOther(host);
             }

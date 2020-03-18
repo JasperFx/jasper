@@ -6,6 +6,5 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
-    <ProjectReference Include="..\TestMessages\TestMessages.csproj" />
   </ItemGroup>
 </Project>

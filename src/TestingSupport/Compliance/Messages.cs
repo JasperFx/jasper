@@ -1,6 +1,6 @@
 using System;
 
-namespace TestMessages
+namespace TestingSupport.Compliance
 {
     public class NewUser
     {

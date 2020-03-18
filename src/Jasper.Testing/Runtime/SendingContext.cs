@@ -4,6 +4,7 @@ using Jasper.Testing.Transports.Tcp;
 using Jasper.Tracking;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
+using TestingSupport.Compliance;
 
 namespace Jasper.Testing.Runtime
 {

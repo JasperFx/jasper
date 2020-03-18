@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Database;
@@ -8,8 +7,6 @@ using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.Testing.SqlServer;
 using Jasper.Runtime.Handlers;
 using Jasper.Tracking;
-using LamarCodeGeneration;
-using Marten;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +29,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
                 _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
-                _.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString), ServiceLifetime.Scoped);
+                _.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
 
                 _.Extensions.Include<EntityFrameworkCoreBackedPersistence>();
 
@@ -54,6 +51,11 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 //            var code = builder.GenerateAllCode();
 //
 //            File.WriteAllText("SagaCode.cs", code);
+        }
+
+        public void Dispose()
+        {
+            _host?.Dispose();
         }
 
         private void rebuildSagaStateDatabase()
@@ -89,7 +91,6 @@ CREATE TABLE [IntWorkflowState] (
 );");
 
 
-
             conn.RunSql(@"
 CREATE TABLE [LongWorkflowState] (
     [Id] bigint NOT NULL,
@@ -118,11 +119,6 @@ CREATE TABLE [StringWorkflowState] (
         private void dropTable(SqlConnection conn, string tableName)
         {
             conn.RunSql($"IF OBJECT_ID('{tableName}', 'U') IS NOT NULL drop table {tableName};");
-        }
-
-        public void Dispose()
-        {
-            _host?.Dispose();
         }
 
         protected string codeFor<T>()
@@ -157,7 +153,6 @@ CREATE TABLE [StringWorkflowState] (
         {
             var session = _host.Get<SagaDbContext>();
             return await session.FindAsync<TSagaState>(id);
-
         }
 
         protected async Task<TSagaState> LoadState(int id)
