@@ -17,9 +17,9 @@ namespace TestingSupport.Compliance
 {
     /*
      * TODOs
-     * Request/Response
+
      * More envelope properties?
-     * Ping?
+
      */
 
     public abstract class SendingCompliance : IDisposable
@@ -43,7 +43,9 @@ namespace TestingSupport.Compliance
 
         private void configureSender<T>(T options) where T : JasperOptions, new()
         {
-            options.Handlers.DisableConventionalDiscovery();
+            options.Handlers
+                .DisableConventionalDiscovery()
+                .IncludeType<PongHandler>();
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
             options.Endpoints.PublishAllMessages().To(theAddress);
@@ -63,7 +65,8 @@ namespace TestingSupport.Compliance
                 .IncludeType<MessageConsumer>()
                 .IncludeType<ExecutedMessageGuy>()
                 .IncludeType<ColorHandler>()
-                .IncludeType<ErrorCausingMessageHandler>();
+                .IncludeType<ErrorCausingMessageHandler>()
+                .IncludeType<PingHandler>();
 
             options.Handlers.OnException<DivideByZeroException>()
                 .MoveToErrorQueue();
@@ -316,7 +319,34 @@ namespace TestingSupport.Compliance
         }
 
 
+        [Fact]
+        public async Task explicit_respond_to_sender()
+        {
+            var ping = new PingMessage();
 
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .Timeout(10.Seconds())
+                .SendMessageAndWait(ping);
+
+            session.FindSingleTrackedMessageOfType<PongMessage>(EventType.MessageSucceeded)
+                .Id.ShouldBe(ping.Id);
+        }
+
+        [Fact]
+        public async Task requested_response()
+        {
+            var ping = new ImplicitPing();
+
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .ExecuteAndWait(x => x.SendAndExpectResponseFor<ImplicitPong>(ping));
+
+            session.FindSingleTrackedMessageOfType<ImplicitPong>(EventType.MessageSucceeded)
+                .Id.ShouldBe(ping.Id);
+        }
 
     }
 

@@ -6,7 +6,10 @@ namespace Jasper.Testing.Transports.Tcp
 {
     public class Sender : JasperOptions
     {
-
+        public Sender()
+        {
+            Endpoints.ListenForMessagesFrom($"tcp://localhost:2289/incoming".ToUri());
+        }
     }
 
     public class Receiver : JasperOptions

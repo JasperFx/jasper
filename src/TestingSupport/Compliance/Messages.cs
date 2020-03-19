@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.Attributes;
 
@@ -23,7 +24,7 @@ namespace TestingSupport.Compliance
     // SAMPLE: PingAndPongMessage
     public class PingMessage
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }
     }
 
@@ -33,6 +34,51 @@ namespace TestingSupport.Compliance
         public string Name { get; set; }
     }
     // ENDSAMPLE
+
+    public class ImplicitPing
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Name { get; set; }
+    }
+
+    public class ImplicitPong
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class PingHandler
+    {
+        public Task Handle(PingMessage message, IMessageContext context)
+        {
+            var pong = new PongMessage{Id = message.Id};
+
+            return context.RespondToSender(pong);
+        }
+
+        public ImplicitPong Handle(ImplicitPing ping)
+        {
+            return new ImplicitPong
+            {
+                Id = ping.Id
+            };
+
+        }
+    }
+
+    public class PongHandler
+    {
+        public void Handle(PongMessage message)
+        {
+
+        }
+
+        public void Handle(ImplicitPong message)
+        {
+
+        }
+    }
+
 
 
     public class UserCreated

@@ -129,7 +129,7 @@ namespace Jasper.Runtime
 
             if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)
             {
-                await SendToDestination(Envelope.Destination, message);
+                await SendToDestination(Envelope.ReplyUri, message);
                 return;
             }
 
