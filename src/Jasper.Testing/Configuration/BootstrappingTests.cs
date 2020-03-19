@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
+using Jasper.Runtime.Scheduled;
+using Jasper.Serialization;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
@@ -132,6 +134,21 @@ namespace Jasper.Testing.Configuration
         {
             Host.Get(serviceType)
                 .ShouldNotBeNull();
+        }
+
+        [Fact]
+        public void reader_writer_is_registered()
+        {
+            Host.Get<IContainer>().ShouldHaveRegistration<IMessageSerializer, EnvelopeReaderWriter>();
+            Host.Get<IContainer>().ShouldHaveRegistration<IMessageDeserializer, EnvelopeReaderWriter>();
+        }
+
+        [Fact]
+        public void handler_graph_already_has_the_scheduled_send_handler()
+        {
+            var handlers = Host.Get<HandlerGraph>();
+
+            handlers.HandlerFor<Envelope>().ShouldBeOfType<ScheduledSendEnvelopeHandler>();
         }
 
     }

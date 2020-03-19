@@ -15,6 +15,7 @@ namespace TestingSupport.Compliance
      * Error Handling
      * Request/Response
      * Scheduled Send
+     * Ping?
      */
 
     public abstract class SendingCompliance : IDisposable
