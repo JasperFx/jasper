@@ -14,10 +14,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
+using TestingSupport.Compliance;
 using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests
 {
+    [Obsolete("try to replace with compliance tests")]
     public class end_to_end
     {
         // TODO -- make this puppy be pulled from an environment variable? Something ignored?
@@ -259,53 +261,5 @@ namespace Jasper.AzureServiceBus.Tests
         }
     }
 
-    public class ColorHandler
-    {
-        public void Handle(ColorChosen message, ColorHistory history, Envelope envelope)
-        {
-            history.Name = message.Name;
-            history.Envelope = envelope;
-        }
-    }
 
-    public class ColorHistory
-    {
-        public string Name { get; set; }
-        public Envelope Envelope { get; set; }
-    }
-
-    public class ColorChosen
-    {
-        public string Name { get; set; }
-    }
-
-    public class TracksMessage<T>
-    {
-        public void Handle(T message)
-        {
-        }
-    }
-
-    [MessageIdentity("A")]
-    public class TopicA
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
-
-    [MessageIdentity("B")]
-    public class TopicB
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
-
-    [MessageIdentity("C")]
-    public class TopicC
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
-
-    public class SpecialTopic
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
 }

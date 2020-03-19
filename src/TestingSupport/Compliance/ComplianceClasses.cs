@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper;
 using Jasper.Tracking;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestMessages;
@@ -14,7 +16,7 @@ namespace TestingSupport.Compliance
      * TODOs
      * Error Handling
      * Request/Response
-     * Scheduled Send
+
      * Ping?
      */
 
@@ -54,9 +56,12 @@ namespace TestingSupport.Compliance
             options.Handlers
                 .DisableConventionalDiscovery()
                 .IncludeType<MessageConsumer>()
-                .IncludeType<ExecutedMessageGuy>();
+                .IncludeType<ExecutedMessageGuy>()
+                .IncludeType<ColorHandler>();
 
             options.Extensions.UseMessageTrackingTestingSupport();
+
+            options.Services.AddSingleton(new ColorHistory());
         }
 
         public void Dispose()
@@ -150,6 +155,18 @@ namespace TestingSupport.Compliance
 
 
                 foreach (var envelope in envelopes) envelope.CorrelationId.ShouldBe(id2);
+        }
+
+        [Fact]
+        public async Task schedule_send()
+        {
+            await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .Timeout(15.Seconds())
+                .ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
+
+            theReceiver.Get<ColorHistory>().Name.ShouldBe("Orange");
         }
     }
 
