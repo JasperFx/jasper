@@ -133,7 +133,7 @@ namespace Jasper.ErrorHandling
                 throw new InvalidOperationException("You must specify at least one delay time");
             }
 
-            With((e, ex) => e.Attempts < delays.Length
+            With((e, ex) => e.Attempts <= delays.Length
                 ? (IContinuation) new ScheduledRetryContinuation(delays[e.Attempts - 1])
                 : new MoveToErrorQueue(ex));
         }

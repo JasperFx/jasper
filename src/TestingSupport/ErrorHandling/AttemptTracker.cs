@@ -1,4 +1,4 @@
-namespace Jasper.Testing.ErrorHandling
+namespace TestingSupport.ErrorHandling
 {
     public class AttemptTracker
     {

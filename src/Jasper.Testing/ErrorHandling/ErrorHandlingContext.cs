@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Tracking;
 using TestingSupport;
+using TestingSupport.ErrorHandling;
 
 namespace Jasper.Testing.ErrorHandling
 {

@@ -1,4 +1,6 @@
-namespace Jasper.Testing.ErrorHandling
+using Jasper;
+
+namespace TestingSupport.ErrorHandling
 {
     public class ErrorCausingMessageHandler
     {

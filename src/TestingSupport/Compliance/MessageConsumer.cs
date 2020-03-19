@@ -1,5 +1,6 @@
 using System;
 using Jasper;
+using Jasper.Attributes;
 using TestMessages;
 
 namespace TestingSupport.Compliance
@@ -12,6 +13,7 @@ namespace TestingSupport.Compliance
         {
         }
 
+        [RequeueOn(typeof(DivideByZeroException))]
         public void Consume(Envelope envelope, Message2 message)
         {
             if (envelope.Attempts < 2) throw new DivideByZeroException();

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
+using TestingSupport.ErrorHandling;
 using Xunit;
 
 namespace Jasper.Testing.ErrorHandling

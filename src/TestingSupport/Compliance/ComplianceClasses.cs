@@ -1,12 +1,15 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
+using Jasper.ErrorHandling;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport.ErrorHandling;
 using TestMessages;
 using Xunit;
 
@@ -14,9 +17,8 @@ namespace TestingSupport.Compliance
 {
     /*
      * TODOs
-     * Error Handling
      * Request/Response
-
+     * More envelope properties?
      * Ping?
      */
 
@@ -25,6 +27,9 @@ namespace TestingSupport.Compliance
         private IHost theSender;
         private IHost theReceiver;
         protected Uri theAddress;
+
+        protected readonly ErrorCausingMessage theMessage = new ErrorCausingMessage();
+        private ITrackedSession _session;
 
         protected SendingCompliance(Uri destination)
         {
@@ -57,7 +62,17 @@ namespace TestingSupport.Compliance
                 .DisableConventionalDiscovery()
                 .IncludeType<MessageConsumer>()
                 .IncludeType<ExecutedMessageGuy>()
-                .IncludeType<ColorHandler>();
+                .IncludeType<ColorHandler>()
+                .IncludeType<ErrorCausingMessageHandler>();
+
+            options.Handlers.OnException<DivideByZeroException>()
+                .MoveToErrorQueue();
+
+            options.Handlers.OnException<DataMisalignedException>()
+                .Requeue(3);
+
+            options.Handlers.OnException<BadImageFormatException>()
+                .RetryLater(3.Seconds());
 
             options.Extensions.UseMessageTrackingTestingSupport();
 
@@ -120,10 +135,10 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message2()));
+                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message1()));
 
 
-            var record = session.FindEnvelopesWithMessageType<Message2>(EventType.MessageSucceeded).Single();
+            var record = session.FindEnvelopesWithMessageType<Message1>(EventType.MessageSucceeded).Single();
             record
                 .ShouldNotBeNull();
 
@@ -168,6 +183,141 @@ namespace TestingSupport.Compliance
 
             theReceiver.Get<ColorHistory>().Name.ShouldBe("Orange");
         }
+
+
+
+
+
+
+
+
+        protected void throwOnAttempt<T>(int attempt) where T : Exception, new()
+        {
+            theMessage.Errors.Add(attempt, new T());
+        }
+
+        protected async Task<EnvelopeRecord> afterProcessingIsComplete()
+        {
+            _session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWait(theMessage);
+
+            return _session.AllRecordsInOrder().LastOrDefault(x =>
+                x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
+
+        }
+
+        protected async Task shouldSucceedOnAttempt(int attempt)
+        {
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .Timeout(10.Seconds())
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWait(theMessage);
+
+            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+                x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
+
+            if (record == null) throw new Exception("No ending activity detected");
+
+            if (record.EventType == EventType.MessageSucceeded && record.AttemptNumber == attempt)
+            {
+                return;
+            }
+
+            var writer = new StringWriter();
+
+            writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
+            foreach (var envelopeRecord in session.AllRecordsInOrder())
+            {
+                writer.WriteLine(envelopeRecord);
+                if (envelopeRecord.Exception != null)
+                {
+                    writer.WriteLine(envelopeRecord.Exception.Message);
+                }
+            }
+
+            throw new Exception(writer.ToString());
+        }
+
+        protected async Task shouldMoveToErrorQueueOnAttempt(int attempt)
+        {
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWait(theMessage);
+
+            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+                x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
+
+            if (record == null) throw new Exception("No ending activity detected");
+
+            if (record.EventType == EventType.MovedToErrorQueue && record.AttemptNumber == attempt)
+            {
+                return;
+            }
+
+            var writer = new StringWriter();
+
+            writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
+            foreach (var envelopeRecord in session.AllRecordsInOrder())
+            {
+                writer.WriteLine(envelopeRecord);
+                if (envelopeRecord.Exception != null)
+                {
+                    writer.WriteLine(envelopeRecord.Exception.Message);
+                }
+            }
+
+            throw new Exception(writer.ToString());
+        }
+
+
+        [Fact]
+        public async Task will_move_to_dead_letter_queue_without_any_exception_match()
+        {
+            throwOnAttempt<InvalidOperationException>(1);
+            throwOnAttempt<InvalidOperationException>(2);
+            throwOnAttempt<InvalidOperationException>(3);
+
+            await shouldMoveToErrorQueueOnAttempt(3);
+        }
+
+        [Fact]
+        public async Task will_move_to_dead_letter_queue_with_exception_match()
+        {
+            throwOnAttempt<DivideByZeroException>(1);
+            throwOnAttempt<DivideByZeroException>(2);
+            throwOnAttempt<DivideByZeroException>(3);
+
+            await shouldMoveToErrorQueueOnAttempt(1);
+        }
+
+
+        [Fact]
+        public async Task will_requeue_and_increment_attempts()
+        {
+            throwOnAttempt<DataMisalignedException>(1);
+            throwOnAttempt<DataMisalignedException>(2);
+
+            await shouldSucceedOnAttempt(3);
+        }
+
+        [Fact]
+        public async Task can_retry_later()
+        {
+            throwOnAttempt<BadImageFormatException>(1);
+
+            await shouldSucceedOnAttempt(2);
+        }
+
+
+
+
     }
 
 

@@ -1,7 +1,7 @@
 using Jasper.Tracking;
 using Shouldly;
 
-namespace Jasper.Testing.ErrorHandling
+namespace TestingSupport.ErrorHandling
 {
     public static class EnvelopeRecordExtensions
     {

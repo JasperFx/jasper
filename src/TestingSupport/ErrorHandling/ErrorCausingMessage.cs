@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jasper.Testing.ErrorHandling
+namespace TestingSupport.ErrorHandling
 {
     public class ErrorCausingMessage
     {
