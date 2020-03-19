@@ -17,7 +17,7 @@ namespace Jasper.Testing.Transports.Tcp
         }
     }
 
-    [Collection("integration")]
+    [Collection("compliance")]
     public class LightweightTcpTransportCompliance : SendingCompliance
     {
         public LightweightTcpTransportCompliance() : base($"tcp://localhost:2288/incoming".ToUri())
