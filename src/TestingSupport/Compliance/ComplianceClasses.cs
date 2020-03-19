@@ -10,6 +10,13 @@ using Xunit;
 
 namespace TestingSupport.Compliance
 {
+    /*
+     * TODOs
+     * Error Handling
+     * Request/Response
+     * Scheduled Send
+     */
+
     public abstract class SendingCompliance : IDisposable
     {
         private IHost theSender;
@@ -26,11 +33,12 @@ namespace TestingSupport.Compliance
             theSender = JasperHost.For<T>(configureSender);
         }
 
-        private static void configureSender<T>(T options) where T : JasperOptions, new()
+        private void configureSender<T>(T options) where T : JasperOptions, new()
         {
             options.Handlers.DisableConventionalDiscovery();
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
+            options.Endpoints.PublishAllMessages().To(theAddress);
         }
 
         public void ReceiverIs<T>() where T : JasperOptions, new()
@@ -40,10 +48,12 @@ namespace TestingSupport.Compliance
 
         private static void configureReceiver<T>(T options) where T : JasperOptions, new()
         {
-            options.Handlers.DisableConventionalDiscovery();
 
             options.Handlers.Retries.MaximumAttempts = 3;
-            options.Handlers.IncludeType<MessageConsumer>();
+            options.Handlers
+                .DisableConventionalDiscovery()
+                .IncludeType<MessageConsumer>()
+                .IncludeType<ExecutedMessageGuy>();
 
             options.Extensions.UseMessageTrackingTestingSupport();
         }
@@ -71,7 +81,7 @@ namespace TestingSupport.Compliance
         }
 
         [Fact]
-        public async Task can_send_from_one_node_to_another()
+        public async Task can_send_from_one_node_to_another_by_destination()
         {
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
@@ -81,6 +91,21 @@ namespace TestingSupport.Compliance
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task can_send_from_one_node_to_another_by_publishing_rule()
+        {
+            var message1 = new Message1();
+
+            var session = await theSender.TrackActivity()
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWait(message1);
+
+
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
+                .Id.ShouldBe(message1.Id);
         }
 
         [Fact]
@@ -98,9 +123,34 @@ namespace TestingSupport.Compliance
 
             record.Envelope.Source.ShouldBe(theSender.Get<JasperOptions>().ServiceName);
         }
+
+        [Fact]
+        public async Task tracking_correlation_id_on_everything()
+        {
+
+                var id2 = Guid.Empty;
+                var session2 = await theSender
+                    .TrackActivity()
+                    .AlsoTrack(theReceiver)
+
+                    .ExecuteAndWait(async context =>
+                {
+                    id2 = context.CorrelationId;
+
+                    await context.Send(new ExecutedMessage());
+                    await context.Publish(new ExecutedMessage());
+                    //await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
+                });
+
+                var envelopes = session2
+                    .AllRecordsInOrder(EventType.Sent)
+                    .Select(x => x.Envelope)
+                    .ToArray();
+
+
+                foreach (var envelope in envelopes) envelope.CorrelationId.ShouldBe(id2);
+        }
     }
 
-    public class TimeoutsMessage
-    {
-    }
+
 }

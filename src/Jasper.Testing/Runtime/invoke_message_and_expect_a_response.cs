@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Shouldly;
 using TestingSupport;
+using TestingSupport.Compliance;
 using Xunit;
 
 namespace Jasper.Testing.Runtime
 {
-    public class invoke_message_and_expect_a_response : SendingContext
+    public class invoke_message_and_expect_a_response : IntegrationContext
     {
         // SAMPLE: using_global_request_and_reply
         internal async Task using_global_request_and_reply(IMessageContext messaging)
@@ -16,12 +17,14 @@ namespace Jasper.Testing.Runtime
             await messaging.SendAndExpectResponseFor<Answer>(new Question());
         }
 
+        public invoke_message_and_expect_a_response(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public async Task invoke_expecting_a_response()
         {
-            StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
-
-            var answer = await theReceiver.Get<IMessagePublisher>().Invoke<Answer>(new Question {One = 3, Two = 4});
+            var answer = await Bus.Invoke<Answer>(new Question {One = 3, Two = 4});
 
             answer.Sum.ShouldBe(7);
             answer.Product.ShouldBe(12);
@@ -31,9 +34,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task invoke_expecting_a_response_with_struct()
         {
-            StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
-
-            var answer = await theReceiver.Get<IMessagePublisher>().Invoke<AnswerStruct>(new QuestionStruct {One = 3, Two = 4});
+            var answer = await Bus.Invoke<AnswerStruct>(new QuestionStruct {One = 3, Two = 4});
 
             answer.Sum.ShouldBe(7);
             answer.Product.ShouldBe(12);
@@ -42,18 +43,16 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task invoke_with_expected_response_when_there_is_no_receiver()
         {
-            StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
             await Should.ThrowAsync<ArgumentOutOfRangeException>(async () =>
             {
-                await theReceiver.Get<IMessagePublisher>().Invoke<Answer>(new QuestionWithNoHandler());
+                await Bus.Invoke<Answer>(new QuestionWithNoHandler());
             });
         }
 
         [Fact]
         public async Task invoke_with_no_known_response_do_not_blow_up()
         {
-            StartTheReceiver(x => { x.Handlers.IncludeType<QuestionAndAnswer>(); });
-            (await theReceiver.Get<IMessagePublisher>().Invoke<Answer>(new QuestionWithNoAnswer()))
+            (await Bus.Invoke<Answer>(new QuestionWithNoAnswer()))
                 .ShouldBeNull();
         }
 
@@ -92,7 +91,7 @@ namespace Jasper.Testing.Runtime
     {
     }
 
-    public class QuestionAndAnswer
+    public class QuestionAndAnswerHandler
     {
         public Answer Handle(Question question)
         {
@@ -116,4 +115,6 @@ namespace Jasper.Testing.Runtime
         {
         }
     }
+
+
 }

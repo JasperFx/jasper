@@ -56,4 +56,21 @@ namespace TestingSupport.Compliance
         public Guid Id { get; set; }
         public string MessageType { get; set; }
     }
+
+
+
+    public class TimeoutsMessage
+    {
+    }
+
+    public class ExecutedMessage
+    {
+    }
+
+    public class ExecutedMessageGuy
+    {
+        public static void Handle(ExecutedMessage message)
+        {
+        }
+    }
 }

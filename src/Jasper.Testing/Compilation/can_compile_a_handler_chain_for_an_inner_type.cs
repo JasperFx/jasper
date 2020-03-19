@@ -3,11 +3,11 @@ using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Compilation
+namespace Jasper.Testing.Compilation
 {
-    public class can_compile_a_handler_chain_for_an_inner_type : Runtime.IntegrationContext
+    public class can_compile_a_handler_chain_for_an_inner_type : IntegrationContext
     {
-        public can_compile_a_handler_chain_for_an_inner_type(Runtime.DefaultApp @default) : base(@default)
+        public can_compile_a_handler_chain_for_an_inner_type(DefaultApp @default) : base(@default)
         {
         }
 

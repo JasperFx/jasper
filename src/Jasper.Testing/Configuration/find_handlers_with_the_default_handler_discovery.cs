@@ -1,18 +1,15 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Attributes;
-using Jasper.Configuration;
-using Jasper.Testing.Messaging;
-using Jasper.Testing.Runtime;
 using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace Jasper.Testing.Configuration
 {
-    public class find_handlers_with_the_default_handler_discovery : Runtime.IntegrationContext
+    public class find_handlers_with_the_default_handler_discovery : IntegrationContext
     {
-        public find_handlers_with_the_default_handler_discovery(Runtime.DefaultApp @default) : base(@default)
+        public find_handlers_with_the_default_handler_discovery(DefaultApp @default) : base(@default)
         {
             @default.RecycleIfNecessary();
         }
@@ -80,9 +77,9 @@ namespace Jasper.Testing.Bootstrapping
         }
     }
 
-    public class customized_finding : Runtime.IntegrationContext
+    public class customized_finding : IntegrationContext
     {
-        public customized_finding(Runtime.DefaultApp @default) : base(@default)
+        public customized_finding(DefaultApp @default) : base(@default)
         {
         }
 

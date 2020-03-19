@@ -4,7 +4,7 @@ using TestingSupport;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Compilation
+namespace Jasper.Testing.Compilation
 {
     public class simple_async_message_handlers : CompilationContext
     {

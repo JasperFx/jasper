@@ -97,7 +97,7 @@ namespace Jasper.Testing.Runtime
             };
 
 
-            await Should.ThrowAsync<DivideByZeroException>(() => Bus.Invoke(message));
+            await Should.ThrowAsync<DivideByZeroException>(() => Publisher.Invoke(message));
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace Jasper.Testing.Runtime
 
             try
             {
-                await Bus.Invoke(new Message5 {FailThisManyTimes = 1});
+                await Publisher.Invoke(new Message5 {FailThisManyTimes = 1});
             }
             catch (Exception)
             {
@@ -123,7 +123,7 @@ namespace Jasper.Testing.Runtime
 
             var message = new Message5();
 
-            await Bus.Invoke(message);
+            await Publisher.Invoke(message);
 
             theTracker.LastMessage.ShouldBeSameAs(message);
         }
@@ -135,7 +135,7 @@ namespace Jasper.Testing.Runtime
 
             var message = new Message5();
 
-            await Bus.Invoke(message);
+            await Publisher.Invoke(message);
 
             var m1 = await theTracker.Message1;
             m1.Id.ShouldBe(message.Id);

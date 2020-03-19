@@ -20,8 +20,6 @@ namespace Jasper.Testing.Transports.Tcp
     [Collection("integration")]
     public class LightweightTcpTransportCompliance : SendingCompliance
     {
-        private static int port = 2114;
-
         public LightweightTcpTransportCompliance() : base($"tcp://localhost:2288/incoming".ToUri())
         {
             SenderIs<Sender>();

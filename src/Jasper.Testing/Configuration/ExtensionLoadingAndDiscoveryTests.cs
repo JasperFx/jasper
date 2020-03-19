@@ -1,14 +1,17 @@
 ﻿using System.Linq;
-using Jasper.Configuration;
 using Lamar;
 using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace Jasper.Testing.Configuration
 {
-    public class including_extensions
+    public class ExtensionLoadingAndDiscoveryTests : IntegrationContext
     {
+        public ExtensionLoadingAndDiscoveryTests(DefaultApp @default) : base(@default)
+        {
+        }
+
         [Fact]
         public void the_application_still_wins()
         {
@@ -56,6 +59,16 @@ namespace Jasper.Testing.Bootstrapping
                     .Count().ShouldBe(1);
             }
         }
+        
+        [Fact]
+        public void picks_up_on_handlers_from_extension()
+        {
+            with(x => x.Extensions.Include<MyExtension>());
+
+            var handlerChain = chainFor<ExtensionMessage>();
+            handlerChain.Handlers.Single()
+                .HandlerType.ShouldBe(typeof(ExtensionThing));
+        }
     }
 
     public interface IColorService
@@ -75,6 +88,25 @@ namespace Jasper.Testing.Bootstrapping
         public void Configure(JasperOptions options)
         {
             options.Services.For<IColorService>().Use<RedService>();
+        }
+    }
+    
+    public class MyExtension : IJasperExtension
+    {
+        public void Configure(JasperOptions options)
+        {
+            options.Handlers.IncludeType<ExtensionThing>();
+        }
+    }
+
+    public class ExtensionMessage
+    {
+    }
+
+    public class ExtensionThing
+    {
+        public void Handle(ExtensionMessage message)
+        {
         }
     }
 }

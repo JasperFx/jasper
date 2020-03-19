@@ -1,6 +1,5 @@
 using System;
 using Jasper.Attributes;
-using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
@@ -9,7 +8,7 @@ using TestingSupport;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Compilation
+namespace Jasper.Testing.Compilation
 {
     public class can_customize_handler_chains_with_attributes
     {

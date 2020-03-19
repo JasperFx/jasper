@@ -19,7 +19,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void envelope_has_accepts_for_known_response_readers()
         {
-            var envelope = Bus.As<MessageContext>().EnvelopeForRequestResponse<Message1>(new Message2());
+            var envelope = Publisher.As<MessageContext>().EnvelopeForRequestResponse<Message1>(new Message2());
 
             envelope.AcceptedContentTypes.ShouldContain("text/message1");
             envelope.AcceptedContentTypes.ShouldContain("text/oddball");

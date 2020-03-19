@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace Jasper.Testing.Configuration
 {
     public class environment_sensitive_configuration
     {

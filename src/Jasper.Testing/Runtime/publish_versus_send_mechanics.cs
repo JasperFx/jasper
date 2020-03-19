@@ -12,18 +12,11 @@ using Xunit;
 
 namespace Jasper.Testing.Runtime
 {
-    public class publish_versus_send_mechanics : IDisposable
+    public class publish_versus_send_mechanics : IntegrationContext
     {
-        public void Dispose()
+        public publish_versus_send_mechanics(DefaultApp @default) : base(@default)
         {
-            theHost?.Dispose();
-        }
-
-        private IHost theHost;
-
-        private void buildHost()
-        {
-            theHost = JasperHost.For(_ =>
+            with(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery();
 
@@ -42,9 +35,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task publish_message_with_no_known_subscribers()
         {
-            buildHost();
-
-            var session = await theHost.ExecuteAndWait(x => x.Publish(new Message3()));
+            var session = await Host.ExecuteAndWait(x => x.Publish(new Message3()));
 
             session.AllRecordsInOrder().Any(x => x.EventType != EventType.NoRoutes).ShouldBeFalse();
         }
@@ -52,9 +43,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task publish_with_known_subscribers()
         {
-            buildHost();
-
-            var session = await theHost.ExecuteAndWait(async c =>
+            var session = await Host.ExecuteAndWait(async c =>
             {
                 await c.Publish(new Message1());
                 await c.Publish(new Message2());
@@ -77,18 +66,15 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task send_message_with_no_known_subscribers()
         {
-            buildHost();
             await Should.ThrowAsync<NoRoutesException>(async () =>
-                await theHost.Get<IMessagePublisher>().Send(new Message3()));
+                await Publisher.Send(new Message3()));
         }
 
 
         [Fact]
         public async Task send_with_known_subscribers()
         {
-            buildHost();
-
-            var session = await theHost.ExecuteAndWait(async c =>
+            var session = await Host.ExecuteAndWait(async c =>
             {
                 await c.Send(new Message1());
                 await c.Send(new Message2());

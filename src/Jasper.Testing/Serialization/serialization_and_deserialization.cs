@@ -6,7 +6,7 @@ using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Transports.Tcp
+namespace Jasper.Testing.Serialization
 {
     public class serialization_and_deserialization_of_single_message
     {

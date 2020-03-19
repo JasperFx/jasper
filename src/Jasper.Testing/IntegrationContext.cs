@@ -1,7 +1,10 @@
 ﻿using System;
 using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
+using Jasper.Tracking;
 using Microsoft.Extensions.Hosting;
+using TestingSupport;
+using TestingSupport.Compliance;
 using Xunit;
 
 namespace Jasper.Testing
@@ -10,7 +13,11 @@ namespace Jasper.Testing
     {
         public DefaultApp()
         {
-            Host = JasperHost.Basic();
+            Host = JasperHost.For(x =>
+            {
+                x.Extensions.UseMessageTrackingTestingSupport();
+                x.Handlers.IncludeType<MessageConsumer>();
+            });
         }
 
         public IHost Host { get; private set; }
@@ -24,6 +31,11 @@ namespace Jasper.Testing
         public void RecycleIfNecessary()
         {
             if (Host == null) Host = JasperHost.Basic();
+        }
+
+        public HandlerChain ChainFor<T>()
+        {
+            return Host.Get<HandlerGraph>().ChainFor<T>();
         }
     }
 
@@ -42,7 +54,8 @@ namespace Jasper.Testing
 
         public IHost Host { get; private set; }
 
-        public IMessageContext Bus => Host.Get<IMessageContext>();
+        public IMessageContext Publisher => Host.Get<IMessageContext>();
+        public ICommandBus Bus => Host.Get<ICommandBus>();
 
         public ITransportRuntime Runtime => Host.Get<IMessagingRoot>().Runtime;
 

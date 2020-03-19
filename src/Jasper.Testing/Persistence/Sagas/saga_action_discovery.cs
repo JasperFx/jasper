@@ -7,11 +7,11 @@ using Xunit;
 namespace Jasper.Testing.Persistence.Sagas
 {
 
-    public class saga_action_discovery : Runtime.IntegrationContext
+    public class saga_action_discovery : IntegrationContext
     {
-        private Runtime.DefaultApp _fixture;
+        private DefaultApp _fixture;
 
-        public saga_action_discovery(Runtime.DefaultApp @default) : base(@default)
+        public saga_action_discovery(DefaultApp @default) : base(@default)
         {
             _fixture = @default;
         }

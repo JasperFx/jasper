@@ -8,7 +8,7 @@ using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Compilation
+namespace Jasper.Testing.Compilation
 {
     public abstract class CompilationContext : IDisposable
     {

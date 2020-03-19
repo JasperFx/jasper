@@ -6,10 +6,10 @@ using Xunit;
 
 namespace Jasper.Testing.Transports.Local
 {
-    public class local_integration_specs : Runtime.IntegrationContext
+    public class local_integration_specs : IntegrationContext
     {
 
-        public local_integration_specs(Runtime.DefaultApp @default) : base(@default)
+        public local_integration_specs(DefaultApp @default) : base(@default)
         {
         }
 

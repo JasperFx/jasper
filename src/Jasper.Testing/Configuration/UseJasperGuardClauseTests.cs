@@ -3,9 +3,9 @@ using Microsoft.Extensions.Hosting;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Bootstrapping
+namespace Jasper.Testing.Configuration
 {
-    public class UseJasperUnitTests
+    public class UseJasperGuardClauseTests
     {
         [Fact]
         public void cannot_call_use_jasper_twice()

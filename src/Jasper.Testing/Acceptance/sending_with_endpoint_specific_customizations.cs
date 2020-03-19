@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.Testing.Compilation;
 using Jasper.Testing.Configuration;
-using Jasper.Testing.Messaging.Compilation;
 using Jasper.Testing.Persistence.Sagas;
 using Jasper.Tracking;
 using Shouldly;

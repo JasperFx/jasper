@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Jasper.Attributes;
-using Jasper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestingSupport;
@@ -8,7 +7,7 @@ using TestingSupport.Fakes;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Compilation
+namespace Jasper.Testing.Compilation
 {
     public class use_wrappers : CompilationContext
     {

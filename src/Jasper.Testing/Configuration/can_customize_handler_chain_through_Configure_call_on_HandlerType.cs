@@ -1,8 +1,8 @@
 ﻿using Jasper.Runtime.Handlers;
-using Jasper.Testing.Messaging.Compilation;
+using Jasper.Testing.Compilation;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Configuration
 {
     public class can_customize_handler_chain_through_Configure_call_on_HandlerType : IntegrationContext
     {

@@ -12,7 +12,7 @@ namespace Jasper.Testing.Runtime
         {
             await Should.ThrowAsync<NoRoutesException>(async () =>
             {
-                await Bus.Send(new MessageWithNoRoutes());
+                await Publisher.Send(new MessageWithNoRoutes());
             });
         }
 

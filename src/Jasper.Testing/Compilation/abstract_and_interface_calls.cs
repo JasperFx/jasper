@@ -3,7 +3,7 @@ using Shouldly;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Messaging.Compilation
+namespace Jasper.Testing.Compilation
 {
     public class abstract_and_interface_calls : CompilationContext
     {

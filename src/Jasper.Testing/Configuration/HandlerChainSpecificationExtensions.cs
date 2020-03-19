@@ -6,13 +6,13 @@ using Jasper.Runtime.Handlers;
 using LamarCodeGeneration.Frames;
 using Shouldly;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Configuration
 {
     public static class HandlerChainSpecificationExtensions
     {
         public static void ShouldHaveHandler<T>(this HandlerChain chain, Expression<Action<T>> expression)
         {
-            ShouldBeNullExtensions.ShouldNotBeNull(chain);
+            chain.ShouldNotBeNull();
 
             var method = ReflectionHelper.GetMethod(expression);
             chain.Handlers.Any(x => x.Method.Name == method.Name).ShouldBeTrue();
@@ -20,7 +20,7 @@ namespace Jasper.Testing.Runtime
 
         public static void ShouldHaveHandler<T>(this HandlerChain chain, string methodName)
         {
-            ShouldBeNullExtensions.ShouldNotBeNull(chain);
+            chain.ShouldNotBeNull();
             chain.Handlers.Any(x => x.Method.Name == methodName && x.HandlerType == typeof(T)).ShouldBeTrue();
         }
 
