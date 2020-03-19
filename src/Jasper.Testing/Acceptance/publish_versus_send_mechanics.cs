@@ -1,16 +1,14 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Runtime.Routing;
 using Jasper.Tracking;
 using Jasper.Util;
-using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
     public class publish_versus_send_mechanics : IntegrationContext
     {

@@ -8,7 +8,7 @@ using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
     public class content_type_preferences_with_request_reply : IntegrationContext
     {

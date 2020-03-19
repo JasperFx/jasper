@@ -10,7 +10,7 @@ using NSubstitute;
 using TestingSupport;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
     public class discarding_expired_envelopes
     {

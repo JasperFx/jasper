@@ -4,7 +4,7 @@ using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
     public class using_error_handling_attributes : IntegrationContext
     {

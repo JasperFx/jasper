@@ -4,19 +4,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
 using Jasper.Logging;
+using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
-    public class consume_a_message_inline : IntegrationContext, IMessageLogger
+    public class CommandBusTests : IntegrationContext, IMessageLogger
     {
         private readonly WorkTracker theTracker = new WorkTracker();
 
 
-        public consume_a_message_inline(DefaultApp @default) : base(@default)
+        public CommandBusTests(DefaultApp @default) : base(@default)
         {
         }
 
@@ -87,6 +88,22 @@ namespace Jasper.Testing.Runtime
         }
 
         [Fact]
+        public async Task enqueue_locally()
+        {
+            var message = new Message1
+            {
+                Id = Guid.NewGuid()
+            };
+
+            var session = await Host.ExecuteAndWait(c => c.Enqueue(message));
+
+            var tracked = session.FindSingleTrackedMessageOfType<Message1>();
+
+            tracked.Id.ShouldBe(message.Id);
+
+        }
+
+        [Fact]
         public async Task exceptions_will_be_thrown_to_caller()
         {
             configure();
@@ -143,7 +160,55 @@ namespace Jasper.Testing.Runtime
             var m2 = await theTracker.Message2;
             m2.Id.ShouldBe(message.Id);
         }
+
+
+
+        // SAMPLE: using_global_request_and_reply
+        internal async Task using_global_request_and_reply(IMessageContext messaging)
+        {
+            // Send a question to another application, and request that the handling
+            // service send back an answer
+            await messaging.SendAndExpectResponseFor<Answer>(new Question());
+        }
+        // ENDSAMPLE
+
+        [Fact]
+        public async Task invoke_expecting_a_response()
+        {
+            var answer = await Bus.Invoke<Answer>(new Question {One = 3, Two = 4});
+
+            answer.Sum.ShouldBe(7);
+            answer.Product.ShouldBe(12);
+        }
+
+
+        [Fact]
+        public async Task invoke_expecting_a_response_with_struct()
+        {
+            var answer = await Bus.Invoke<AnswerStruct>(new QuestionStruct {One = 3, Two = 4});
+
+            answer.Sum.ShouldBe(7);
+            answer.Product.ShouldBe(12);
+        }
+
+        [Fact]
+        public async Task invoke_with_expected_response_when_there_is_no_receiver()
+        {
+            await Should.ThrowAsync<ArgumentOutOfRangeException>(async () =>
+            {
+                await Bus.Invoke<Answer>(new QuestionWithNoHandler());
+            });
+        }
+
+        [Fact]
+        public async Task invoke_with_no_known_response_do_not_blow_up()
+        {
+            (await Bus.Invoke<Answer>(new QuestionWithNoAnswer()))
+                .ShouldBeNull();
+        }
+
     }
+
 
     public class WorkTracker
     {
@@ -195,4 +260,64 @@ namespace Jasper.Testing.Runtime
             _tracker.Record(message);
         }
     }
+
+
+
+    public class Question
+    {
+        public int One { get; set; }
+        public int Two { get; set; }
+    }
+
+    public class Answer
+    {
+        public int Sum { get; set; }
+        public int Product { get; set; }
+    }
+
+    public struct QuestionStruct
+    {
+        public int One { get; set; }
+        public int Two { get; set; }
+    }
+
+    public struct AnswerStruct
+    {
+        public int Sum { get; set; }
+        public int Product { get; set; }
+    }
+
+    public class QuestionWithNoHandler
+    {
+    }
+
+    public class QuestionWithNoAnswer
+    {
+    }
+
+    public class QuestionAndAnswerHandler
+    {
+        public Answer Handle(Question question)
+        {
+            return new Answer
+            {
+                Sum = question.One + question.Two,
+                Product = question.One * question.Two
+            };
+        }
+
+        public AnswerStruct Handle(QuestionStruct question)
+        {
+            return new AnswerStruct
+            {
+                Sum = question.One + question.Two,
+                Product = question.One * question.Two
+            };
+        }
+
+        public void Handle(QuestionWithNoAnswer question)
+        {
+        }
+    }
+
 }

@@ -10,7 +10,7 @@ using Jasper.Util;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
     public class MySpecialMessageHandler
     {

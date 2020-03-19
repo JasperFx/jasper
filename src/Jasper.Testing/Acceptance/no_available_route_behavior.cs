@@ -3,7 +3,7 @@ using Jasper.Runtime.Routing;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace Jasper.Testing.Acceptance
 {
     public class no_available_route_behavior : IntegrationContext
     {
