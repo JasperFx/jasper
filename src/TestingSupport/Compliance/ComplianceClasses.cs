@@ -30,6 +30,7 @@ namespace TestingSupport.Compliance
         {
             options.Handlers.DisableConventionalDiscovery();
             options.Extensions.UseMessageTrackingTestingSupport();
+            options.ServiceName = "SenderService";
         }
 
         public void ReceiverIs<T>() where T : JasperOptions, new()
@@ -45,24 +46,6 @@ namespace TestingSupport.Compliance
             options.Handlers.IncludeType<MessageConsumer>();
 
             options.Extensions.UseMessageTrackingTestingSupport();
-        }
-
-        public void SenderIs(Action<JasperOptions> configure)
-        {
-            theSender = JasperHost.For(x =>
-            {
-                configure(x);
-                configureSender(x);
-            });
-        }
-
-        public void ReceiverIs(Action<JasperOptions> configure)
-        {
-            theReceiver = JasperHost.For(x =>
-            {
-                configure(x);
-                configureReceiver(x);
-            });
         }
 
         public void Dispose()
