@@ -59,6 +59,8 @@ namespace Jasper.Runtime
         /// <param name="message"></param>
         public Task SendToDestination<T>(Uri destination, T message)
         {
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
+
             var envelope = new Envelope {Message = message, Destination = destination};
             _root.Router.RouteToDestination(destination, envelope);
 

@@ -84,6 +84,7 @@ namespace Jasper.Runtime.Scheduled
                 _cancellation = new CancellationTokenSource();
                 var delayTime = ExecutionTime.Subtract(DateTime.UtcNow);
                 _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(publish);
+
                 ReceivedAt = DateTime.UtcNow;
             }
 

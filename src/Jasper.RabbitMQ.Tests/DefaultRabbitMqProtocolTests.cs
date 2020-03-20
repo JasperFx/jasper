@@ -127,7 +127,7 @@ namespace Jasper.RabbitMQ.Tests
         public void reply_requested()
         {
             theOriginal.ReplyRequested = "somemessagetype";
-            theEnvelope.ReplyRequested.ShouldBe(theOriginal.ReplyRequested);
+            theEnvelope.ReplyRequested.ShouldBe("somemessagetype");
         }
 
         [Fact]

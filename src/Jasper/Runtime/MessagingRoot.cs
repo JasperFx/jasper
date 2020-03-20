@@ -160,6 +160,9 @@ namespace Jasper.Runtime
             ScheduledJobs =
                 new InMemoryScheduledJobProcessor((IWorkerQueue) Runtime.AgentForLocalQueue(TransportConstants.Replies));
 
+            // Bit of a hack, but it's necessary. Came up in compliance tests
+            if (Persistence is NulloEnvelopePersistence p) p.ScheduledJobs = ScheduledJobs;
+
             switch (Settings.StorageProvisioning)
             {
                 case StorageProvisioning.Rebuild:

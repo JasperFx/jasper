@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 
 namespace Jasper
@@ -14,7 +15,12 @@ namespace Jasper
         {
             foreach (var pair in dictionary)
             {
-                if (pair.Value is string value)
+                if (pair.Value is byte[] data)
+                {
+                    var raw = Encoding.Default.GetString(data);
+                    readData(pair.Key, raw);
+                }
+                else if (pair.Value is string value)
                 {
                     readData(pair.Key, value);
                 }

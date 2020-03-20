@@ -17,21 +17,29 @@ namespace TestingSupport.Compliance
 {
     public abstract class SendingCompliance : IDisposable
     {
-        private IHost theSender;
-        private IHost theReceiver;
-        protected Uri theAddress;
+        protected IHost theSender;
+        protected IHost theReceiver;
+        protected Uri theOutboundAddress;
 
         protected readonly ErrorCausingMessage theMessage = new ErrorCausingMessage();
         private ITrackedSession _session;
 
         protected SendingCompliance(Uri destination)
         {
-            theAddress = destination;
+            theOutboundAddress = destination;
         }
 
         public void SenderIs<T>() where T : JasperOptions, new()
         {
             theSender = JasperHost.For<T>(configureSender);
+
+        }
+
+        public void SenderIs(JasperOptions options)
+        {
+            configureSender(options);
+            theSender = JasperHost.For(options);
+
         }
 
         private void configureSender<T>(T options) where T : JasperOptions, new()
@@ -41,12 +49,18 @@ namespace TestingSupport.Compliance
                 .IncludeType<PongHandler>();
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
-            options.Endpoints.PublishAllMessages().To(theAddress);
+            options.Endpoints.PublishAllMessages().To(theOutboundAddress);
         }
 
         public void ReceiverIs<T>() where T : JasperOptions, new()
         {
             theReceiver = JasperHost.For<T>(configureReceiver);
+        }
+
+        public void ReceiverIs(JasperOptions options)
+        {
+            configureReceiver(options);
+            theReceiver = JasperHost.For(options);
         }
 
         private static void configureReceiver<T>(T options) where T : JasperOptions, new()
@@ -88,7 +102,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message2()));
+                .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message2()));
 
 
 
@@ -103,7 +117,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message1()));
+                .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
@@ -131,7 +145,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestination(theAddress, new Message1()));
+                .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
 
 
             var record = session.FindEnvelopesWithMessageType<Message1>(EventType.MessageSucceeded).Single();
@@ -171,20 +185,16 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task schedule_send()
         {
-            await theSender
+            var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
+                .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver)
                 .ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
 
-            theReceiver.Get<ColorHistory>().Name.ShouldBe("Orange");
+            var message = session.FindSingleTrackedMessageOfType<ColorChosen>(EventType.MessageSucceeded);
+            message.Name.ShouldBe("Orange");
         }
-
-
-
-
-
-
 
 
         protected void throwOnAttempt<T>(int attempt) where T : Exception, new()
@@ -210,7 +220,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .Timeout(10.Seconds())
+                .Timeout(30.Seconds())
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(theMessage);
 
@@ -245,6 +255,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
+                .Timeout(30.Seconds())
                 .SendMessageAndWait(theMessage);
 
             var record = session.AllRecordsInOrder().LastOrDefault(x =>
@@ -320,7 +331,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .Timeout(10.Seconds())
+                .Timeout(30.Seconds())
                 .SendMessageAndWait(ping);
 
             session.FindSingleTrackedMessageOfType<PongMessage>(EventType.MessageSucceeded)
@@ -335,6 +346,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
+                .Timeout(30.Seconds())
                 .ExecuteAndWait(x => x.SendAndExpectResponseFor<ImplicitPong>(ping));
 
             session.FindSingleTrackedMessageOfType<ImplicitPong>(EventType.MessageSucceeded)

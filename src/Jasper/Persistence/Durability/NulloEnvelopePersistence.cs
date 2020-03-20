@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
+using Jasper.Runtime.Scheduled;
 
 namespace Jasper.Persistence.Durability
 {
@@ -9,6 +11,7 @@ namespace Jasper.Persistence.Durability
     {
         public IEnvelopeStorageAdmin Admin => this;
         public IDurabilityAgentStorage AgentStorage { get; } = null;
+        public IScheduledJobProcessor ScheduledJobs { get; set; }
 
         public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
@@ -66,11 +69,20 @@ namespace Jasper.Persistence.Durability
 
         public Task StoreIncoming(Envelope envelope)
         {
+            if (envelope.Status == EnvelopeStatus.Scheduled)
+            {
+                ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
+            }
             return Task.CompletedTask;
         }
 
         public Task StoreIncoming(Envelope[] envelopes)
         {
+            foreach (var envelope in envelopes.Where(x => x.Status == EnvelopeStatus.Scheduled))
+            {
+                ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
+            }
+
             return Task.CompletedTask;
         }
 
@@ -118,7 +130,12 @@ namespace Jasper.Persistence.Durability
 
         public Task ScheduleJob(Envelope envelope)
         {
-            throw new NotSupportedException();
+            if (ScheduledJobs != null)
+            {
+                ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+            }
+
+            return Task.CompletedTask;
         }
 
 
