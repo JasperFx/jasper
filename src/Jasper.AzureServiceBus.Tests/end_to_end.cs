@@ -26,6 +26,55 @@ namespace Jasper.AzureServiceBus.Tests
         public const string ConnectionString =
             "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
 
+
+
+
+        public class Sender : JasperOptions
+        {
+
+            public Sender()
+            {
+
+                Endpoints.ConfigureAzureServiceBus(ConnectionString);
+
+                Endpoints.ListenToAzureServiceBusQueue("replies").UseForReplies();
+
+            }
+
+            public string QueueName { get; set; }
+        }
+
+        public class Receiver : JasperOptions
+        {
+            public Receiver(string queueName)
+            {
+                Endpoints.ConfigureAzureServiceBus(ConnectionString);
+
+                Endpoints.ListenToAzureServiceBusQueue("messages");
+
+
+            }
+        }
+
+
+        public class AzureServiceBusSendingComplianceTests : SendingCompliance
+        {
+            public AzureServiceBusSendingComplianceTests() : base($"asb://queue/messages".ToUri())
+            {
+                var sender = new Sender();
+
+                SenderIs(sender);
+
+                var receiver = new Receiver(sender.QueueName);
+
+                ReceiverIs(receiver);
+            }
+        }
+
+
+
+
+
         // SAMPLE: can_stop_and_start_ASB
         [Fact]
         public async Task can_stop_and_start()
@@ -37,7 +86,7 @@ namespace Jasper.AzureServiceBus.Tests
                     // that gives you fine-grained control over the
                     // message tracking
                     .TrackActivity()
-
+                    .Timeout(30.Seconds())
                     // Include the external transports in the determination
                     // of "completion"
                     .IncludeExternalTransports()
@@ -72,6 +121,8 @@ namespace Jasper.AzureServiceBus.Tests
 
             var receiver = JasperHost.For(_ =>
             {
+                _.Handlers.IncludeType<ColorHandler>();
+
                 _.Endpoints.ConfigureAzureServiceBus(ConnectionString);
                 _.Endpoints.ListenToAzureServiceBusQueue("messages");
 
@@ -158,6 +209,8 @@ namespace Jasper.AzureServiceBus.Tests
                     opts.AutoCreateSchemaObjects = AutoCreate.All;
                     opts.DatabaseSchemaName = "receiver";
                 });
+
+                _.Handlers.IncludeType<ColorHandler>();
             });
 
             receiver.RebuildMessageStorage();
@@ -168,7 +221,7 @@ namespace Jasper.AzureServiceBus.Tests
                 await publisher
                     .TrackActivity()
                     .AlsoTrack(receiver)
-                    .Timeout(10.Seconds())
+                    .Timeout(30.Seconds())
                     .SendMessageAndWait(new ColorChosen {Name = "Orange"});
 
                 receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
@@ -198,6 +251,8 @@ namespace Jasper.AzureServiceBus.Tests
                     opts.DatabaseSchemaName = "sender";
                 });
 
+
+
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
@@ -217,6 +272,9 @@ namespace Jasper.AzureServiceBus.Tests
                     opts.AutoCreateSchemaObjects = AutoCreate.All;
                     opts.DatabaseSchemaName = "receiver";
                 });
+
+                _.Handlers.IncludeType<ColorHandler>();
+
             });
 
             receiver.RebuildMessageStorage();
@@ -250,6 +308,8 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.PublishAllMessages().ToAzureServiceBusQueue("messages");
             Endpoints.ConfigureAzureServiceBus(end_to_end.ConnectionString);
 
+            Handlers.IncludeType<ColorHandler>();
+
             Services.AddSingleton<ColorHistory>();
 
             Extensions.UseMessageTrackingTestingSupport();
@@ -257,7 +317,7 @@ namespace Jasper.AzureServiceBus.Tests
 
         public override void Configure(IHostEnvironment hosting, IConfiguration config)
         {
-            Endpoints.ConfigureAzureServiceBus(config.GetValue<string>("AzureServiceBusConnectionString"));
+            //Endpoints.ConfigureAzureServiceBus(config.GetValue<string>("AzureServiceBusConnectionString"));
         }
     }
 

@@ -19,6 +19,14 @@ namespace Jasper.AzureServiceBus
 
         public AzureServiceBusTopicRouter Topics { get; } = new AzureServiceBusTopicRouter();
 
+        public override void Initialize(IMessagingRoot root)
+        {
+            if (ConnectionString.IsEmpty() && _endpoints.Any())
+            {
+                throw new InvalidOperationException("No connection string for Azure Service Bus has been configured, or is empty");
+            }
+        }
+
         /// <summary>
         /// Azure Service Bus connection string as read from configuration
         /// </summary>

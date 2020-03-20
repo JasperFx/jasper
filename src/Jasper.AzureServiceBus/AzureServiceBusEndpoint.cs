@@ -130,12 +130,15 @@ namespace Jasper.AzureServiceBus
         {
             if (!IsListener) return;
 
+            if (Parent.ConnectionString == null) throw new InvalidOperationException("There is no configured connection string for Azure Service Bus, or it is empty");
+
             var listener = new AzureServiceBusListener(this, Parent, root.TransportLogger, root.Cancellation);
             runtime.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
+            if (Parent.ConnectionString == null) throw new InvalidOperationException("There is no configured connection string for Azure Service Bus, or it is empty");
             return new AzureServiceBusSender(this, Parent, root.TransportLogger, root.Cancellation);
         }
     }

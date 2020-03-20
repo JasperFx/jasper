@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -83,6 +84,7 @@ namespace TestingSupport.Compliance
 
             options.Handlers.OnException<BadImageFormatException>()
                 .RetryLater(3.Seconds());
+
 
             options.Extensions.UseMessageTrackingTestingSupport();
 
