@@ -90,10 +90,10 @@ namespace Jasper
         ///     Number of times that Jasper has tried to process this message. Will
         ///     reflect the current attempt number
         /// </summary>
-        public int Attempts { get; set; }
+        public int Attempts { get; internal set; }
 
 
-        public DateTime SentAt { get; set; } = DateTime.UtcNow;
+        public DateTime SentAt { get; internal set; } = DateTime.UtcNow;
 
         /// <summary>
         ///     Instruct Jasper to throw away this message if it is not successfully sent and processed
@@ -109,14 +109,14 @@ namespace Jasper
         /// <summary>
         ///     Identifies the listener at which this envelope was received at
         /// </summary>
-        public Uri ReceivedAt { get; set; }
+        public Uri ReceivedAt { get; internal set; }
 
 
 
         /// <summary>
         ///     The name of the service that sent this envelope
         /// </summary>
-        public string Source { get; set; }
+        public string Source { get; internal set; }
 
 
         /// <summary>
@@ -127,28 +127,28 @@ namespace Jasper
         /// <summary>
         ///     Location where any replies should be sent
         /// </summary>
-        public Uri ReplyUri { get; set; }
+        public Uri ReplyUri { get; internal set; }
 
         /// <summary>
         ///     Mimetype of the serialized data
         /// </summary>
-        public string ContentType { get; set; }
+        public string ContentType { get; internal set; }
 
         /// <summary>
         ///     Correlating identifier for the logical workflow or system action
         /// </summary>
-        public Guid CorrelationId { get; set; }
+        public Guid CorrelationId { get; internal set; }
 
         /// <summary>
         ///     If this message is part of a stateful saga, this property identifies
         ///     the underlying saga state object
         /// </summary>
-        public string SagaId { get; set; }
+        public string SagaId { get; internal set; }
 
         /// <summary>
         ///     Id of the immediate message or workflow that caused this envelope to be sent
         /// </summary>
-        public Guid CausationId { get; set; }
+        public Guid CausationId { get; internal set; }
 
         /// <summary>
         ///     Location that this message should be sent
@@ -163,17 +163,17 @@ namespace Jasper
         /// <summary>
         ///     Specific message id for this envelope
         /// </summary>
-        public Guid Id { get; set; } = CombGuidIdGeneration.NewGuid();
+        public Guid Id { get; internal set; } = CombGuidIdGeneration.NewGuid();
 
         /// <summary>
         ///     If specified, the message type alias for the reply message that is requested for this message
         /// </summary>
-        public string ReplyRequested { get; set; }
+        public string ReplyRequested { get; internal set; }
 
         /// <summary>
         ///     Is an acknowledgement requested
         /// </summary>
-        public bool AckRequested { get; set; }
+        public bool AckRequested { get; internal set; }
 
         /// <summary>
         ///     Used by scheduled jobs to have this message processed by the receiving application at or after the designated time

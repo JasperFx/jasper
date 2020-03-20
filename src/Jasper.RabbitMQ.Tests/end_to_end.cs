@@ -16,6 +16,7 @@ using Oakton;
 using Shouldly;
 using TestingSupport;
 using Xunit;
+using ConsoleWriter = Oakton.ConsoleWriter;
 
 namespace Jasper.RabbitMQ.Tests
 {

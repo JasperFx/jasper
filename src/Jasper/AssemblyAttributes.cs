@@ -10,7 +10,9 @@ using Lamar;
 
 [assembly: InternalsVisibleTo("Jasper.Testing")]
 [assembly: InternalsVisibleTo("Jasper.RabbitMq")]
+[assembly: InternalsVisibleTo("Jasper.RabbitMq.Tests")]
 [assembly: InternalsVisibleTo("Jasper.AzureServiceBus")]
+[assembly: InternalsVisibleTo("Jasper.AzureServiceBus.Tests")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.Testing")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.Database")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.Marten")]

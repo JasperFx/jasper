@@ -16,18 +16,12 @@ namespace Jasper.Testing.Samples
                 // Override the message routing by a Uri
                 Destination = new Uri("tcp://server1:2000"),
 
-                // Force Jasper to send the message serialized
-                // with a certain content-type
-                ContentType = "application/xml",
-
                 // Make this a scheduled message
                 ExecutionTime = DateTime.UtcNow.AddDays(1),
 
                 // Direct the receiver that the sender is interested in any response
                 // with this message type
 
-                // Probably easier to use this extension method though
-                ReplyRequested = "other-message-type"
             };
 
             // This envelope should be discarded if not processed
