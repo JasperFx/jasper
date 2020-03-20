@@ -120,7 +120,7 @@ namespace Jasper
 
 
         /// <summary>
-        ///     Message type alias for the contents of this Envelpe
+        ///     Message type alias for the contents of this Envelope
         /// </summary>
         public string MessageType { get; set; }
 

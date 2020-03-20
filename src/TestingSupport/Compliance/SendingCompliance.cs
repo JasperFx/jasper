@@ -15,13 +15,6 @@ using Xunit;
 
 namespace TestingSupport.Compliance
 {
-    /*
-     * TODOs
-
-     * More envelope properties?
-
-     */
-
     public abstract class SendingCompliance : IDisposable
     {
         private IHost theSender;
@@ -152,12 +145,12 @@ namespace TestingSupport.Compliance
         public async Task tracking_correlation_id_on_everything()
         {
 
-                var id2 = Guid.Empty;
-                var session2 = await theSender
-                    .TrackActivity()
-                    .AlsoTrack(theReceiver)
+            var id2 = Guid.Empty;
+            var session2 = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
 
-                    .ExecuteAndWait(async context =>
+                .ExecuteAndWait(async context =>
                 {
                     id2 = context.CorrelationId;
 
@@ -166,13 +159,13 @@ namespace TestingSupport.Compliance
                     //await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
                 });
 
-                var envelopes = session2
-                    .AllRecordsInOrder(EventType.Sent)
-                    .Select(x => x.Envelope)
-                    .ToArray();
+            var envelopes = session2
+                .AllRecordsInOrder(EventType.Sent)
+                .Select(x => x.Envelope)
+                .ToArray();
 
 
-                foreach (var envelope in envelopes) envelope.CorrelationId.ShouldBe(id2);
+            foreach (var envelope in envelopes) envelope.CorrelationId.ShouldBe(id2);
         }
 
         [Fact]
@@ -349,6 +342,4 @@ namespace TestingSupport.Compliance
         }
 
     }
-
-
 }
