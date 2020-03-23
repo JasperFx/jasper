@@ -103,8 +103,7 @@ namespace Jasper.Runtime.Handlers
 
             handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
                 $"context.{nameof(IMessageContext.Envelope)}"));
-            handleMethod.DerivedVariables.Add(new Variable(typeof(IAdvancedMessagingActions),
-                $"context.{nameof(IMessageContext.Advanced)}"));
+
         }
 
         internal MessageHandler CreateHandler(IContainer container)

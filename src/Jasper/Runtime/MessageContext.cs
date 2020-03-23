@@ -12,7 +12,7 @@ using Jasper.Util;
 
 namespace Jasper.Runtime
 {
-    public class MessageContext : IMessageContext, IAdvancedMessagingActions
+    public class MessageContext : IMessageContext, IQueuedOutgoingMessages
     {
         private readonly List<Envelope> _outstanding = new List<Envelope>();
         private readonly IMessagingRoot _root;
@@ -27,20 +27,20 @@ namespace Jasper.Runtime
 
         public MessageContext(IMessagingRoot root, Envelope originalEnvelope) : this(root)
         {
-            Envelope = originalEnvelope;
+            Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));
             _sagaId = originalEnvelope.SagaId;
 
             CorrelationId = originalEnvelope.CorrelationId;
 
-            var persistor = new InMemoryEnvelopeTransaction();
+            var transaction = new InMemoryEnvelopeTransaction();
             EnlistedInTransaction = true;
-            Transaction = persistor;
+            Transaction = transaction;
 
             if (Envelope.AckRequested)
             {
-                var ack = buildAcknowledgement();
+                var ack = _root.Acknowledgements.BuildAcknowledgement(Envelope);
 
-                persistor.Queued.Fill(ack);
+                transaction.Queued.Fill(ack);
                 _outstanding.Add(ack);
             }
         }
@@ -139,49 +139,10 @@ namespace Jasper.Runtime
             await Publish(message);
         }
 
-        public async Task SendFailureAcknowledgement(string message)
-        {
-            if (Envelope.AckRequested || Envelope.ReplyRequested.IsNotEmpty())
-            {
-                var envelope = new Envelope
-                {
-                    CausationId = Envelope.Id,
-                    Destination = Envelope.ReplyUri,
-                    Message = new FailureAcknowledgement
-                    {
-                        CorrelationId = Envelope.Id,
-                        Message = message
-                    }
-                };
-
-                var outgoingEnvelopes = _root.Router.RouteOutgoingByEnvelope(envelope);
-
-                foreach (var outgoing in outgoingEnvelopes)
-                {
-                    await outgoing.Send();
-                }
-            }
-        }
-
-        public Task Retry()
-        {
-            _outstanding.Clear();
-
-            return _root.Pipeline.Invoke(Envelope);
-        }
 
         public IMessageLogger Logger => _root.MessageLogger;
 
-        public async Task SendAcknowledgement()
-        {
-            var ack = buildAcknowledgement();
-            var outgoingEnvelopes = _root.Router.RouteOutgoingByMessage(ack);
 
-            foreach (var outgoing in outgoingEnvelopes)
-            {
-                await outgoing.Send();
-            }
-        }
 
         public Guid CorrelationId { get; } = CombGuidIdGeneration.NewGuid();
         public Envelope Envelope { get; }
@@ -212,6 +173,11 @@ namespace Jasper.Runtime
                 }
             }
 
+            _outstanding.Clear();
+        }
+
+        public void AbortAllQueuedOutgoingMessages()
+        {
             _outstanding.Clear();
         }
 
@@ -316,7 +282,6 @@ namespace Jasper.Runtime
         {
             return _root.Pipeline.InvokeNow(new Envelope(message)
             {
-                Callback = new InvocationCallback(),
                 ReplyUri = TransportConstants.RepliesUri,
                 CorrelationId = CorrelationId
             });
@@ -328,7 +293,6 @@ namespace Jasper.Runtime
 
             var envelope = new Envelope(message)
             {
-                Callback = new InvocationCallback(),
                 ReplyUri = TransportConstants.RepliesUri,
                 ReplyRequested = typeof(T).ToMessageTypeName(),
                 ResponseType = typeof(T),
@@ -378,8 +342,6 @@ namespace Jasper.Runtime
             return PublishEnvelope(envelope);
         }
 
-        public IAdvancedMessagingActions Advanced => this;
-
         public void EnlistInSaga(object sagaId)
         {
             _sagaId = sagaId ?? throw new ArgumentNullException(nameof(sagaId));
@@ -387,18 +349,6 @@ namespace Jasper.Runtime
         }
 
 
-        private Envelope buildAcknowledgement()
-        {
-            var writer = _root.Serialization.JsonWriterFor(typeof(Acknowledgement));
-            var ack = new Envelope(new Acknowledgement {CorrelationId = Envelope.Id}, writer)
-            {
-                CausationId = Envelope.Id,
-                Destination = Envelope.ReplyUri,
-                SagaId = Envelope.SagaId,
-            };
-
-            return ack;
-        }
 
 
         private async Task persistOrSend(params Envelope[] outgoing)
@@ -419,13 +369,13 @@ namespace Jasper.Runtime
         }
 
 
-
         private bool isDurable(Envelope envelope)
         {
-            // SUPER HACK-y
-            if (envelope.Callback is InvocationCallback) return false;
+            if (envelope.Sender != null) return envelope.Sender.IsDurable;
 
-            return envelope.Sender?.IsDurable ?? _root.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
+            if (envelope.Destination != null) return _root.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
+
+            return false;
         }
 
         private void trackEnvelopeCorrelation(Envelope[] outgoing)
@@ -489,6 +439,7 @@ namespace Jasper.Runtime
         {
             return ScheduleSend(message, DateTime.UtcNow.Add(delay));
         }
+
 
     }
 }

@@ -1,21 +1,25 @@
 using System;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Baseline.Dates;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
+using Polly;
+using Polly.Retry;
 
 namespace Jasper.Runtime.WorkerQueues
 {
-    public class DurableWorkerQueue : IWorkerQueue
+    public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling, IHasDeadLetterQueue
     {
         private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
         private readonly ITransportLogger _logger;
         private readonly ActionBlock<Envelope> _receiver;
         private IListener _agent;
+        private readonly AsyncRetryPolicy _policy;
 
         public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
             AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger)
@@ -32,7 +36,7 @@ namespace Jasper.Runtime.WorkerQueues
                 {
                     envelope.ContentType = envelope.ContentType ?? "application/json";
 
-                    await pipeline.Invoke(envelope);
+                    await pipeline.Invoke(envelope, this);
                 }
                 catch (Exception e)
                 {
@@ -40,13 +44,18 @@ namespace Jasper.Runtime.WorkerQueues
                     logger.LogException(e);
                 }
             }, endpoint.ExecutionOptions);
+
+            _policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
+                    , (e, timeSpan) => {
+                        _logger.LogException(e);
+                    });
         }
 
         public int QueuedCount => _receiver.InputCount;
         public Task Enqueue(Envelope envelope)
         {
-
-            envelope.Callback = new DurableCallback(envelope, this, _persistence, _logger);
             _receiver.Post(envelope);
 
             return Task.CompletedTask;
@@ -126,6 +135,36 @@ namespace Jasper.Runtime.WorkerQueues
                 _logger.LogException(e);
                 return ReceivedStatus.ProcessFailure;
             }
+        }
+
+        public Task Complete(Envelope envelope)
+        {
+            return _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelope(envelope));
+        }
+
+        public Task MoveToErrors(Envelope envelope, Exception exception)
+        {
+            var errorReport = new ErrorReport(envelope, exception);
+
+            return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorage(new[] {errorReport}));
+        }
+
+        public async Task Defer(Envelope envelope)
+        {
+            envelope.Attempts++;
+
+            await Enqueue(envelope);
+
+            await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttempts(envelope));
+        }
+
+        public Task MoveToScheduledUntil(Envelope envelope, DateTimeOffset time)
+        {
+            envelope.OwnerId = TransportConstants.AnyNode;
+            envelope.ExecutionTime = time;
+            envelope.Status = EnvelopeStatus.Scheduled;
+
+            return _policy.ExecuteAsync(() => _persistence.ScheduleExecution(new[] {envelope}));
         }
     }
 }

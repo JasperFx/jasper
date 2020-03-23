@@ -16,7 +16,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
         public EFCoreEnvelopeTransaction(DbContext db, IMessageContext messaging)
         {
-            if (messaging.Advanced.Persistence is DatabaseBackedEnvelopePersistence persistence)
+            if (messaging.Persistence is DatabaseBackedEnvelopePersistence persistence)
             {
                 _settings = persistence.DatabaseSettings;
                 _nodeId = persistence.Settings.UniqueNodeId;

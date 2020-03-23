@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -78,6 +79,11 @@ values
             return builder.ApplyAndExecuteOnce(_cancellation);
         }
 
+
+        public Task MoveToDeadLetterStorage(Envelope envelope, Exception ex)
+        {
+            return MoveToDeadLetterStorage(new ErrorReport[] {new ErrorReport(envelope, ex)});
+        }
 
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {

@@ -68,7 +68,6 @@ namespace Jasper.Persistence.Durability
             foreach (var envelope in incoming)
             {
                 envelope.OwnerId = _settings.UniqueNodeId;
-                envelope.Callback = new DurableCallback(envelope, _workers, _persistence,_logger);
                 await _workers.Enqueue(envelope);
             }
 

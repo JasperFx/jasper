@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Testing.Samples
@@ -6,11 +7,10 @@ namespace Jasper.Testing.Samples
     // SAMPLE: MyMissingHandler
     public class MyMissingHandler : IMissingHandler
     {
-        public Task Handle(Envelope envelope, IMessageContext context)
+        public Task Handle(Envelope envelope, IMessagingRoot root)
         {
-            return context
-                .Advanced
-                .SendFailureAcknowledgement("I don't know how to process this message");
+            return root.Acknowledgements
+                .SendFailureAcknowledgement(envelope,"I don't know how to process this message");
         }
     }
     // ENDSAMPLE

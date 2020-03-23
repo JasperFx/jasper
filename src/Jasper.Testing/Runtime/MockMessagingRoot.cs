@@ -24,12 +24,14 @@ namespace Jasper.Testing.Runtime
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
-        public IMessageLogger MessageLogger { get; } = new MessageLogger(new LoggerFactory(), new NulloMetrics());
+        public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();
         public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
         public JasperOptions Options { get; } = new JasperOptions();
 
         public ITransport[] Transports { get; } =
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
+
+        public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
 
         public IMessageContext NewContext()
         {

@@ -9,6 +9,7 @@ using Baseline.Dates;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
+using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
 using Jasper.Transports;
@@ -212,19 +213,21 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
+        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
+            IQueuedOutgoingMessages messages,
+            DateTime utcNow)
         {
-            // Clumsy syntax, but you shouldn't need to do this very often:/
-            await context.MoveToScheduledUntil(root, utcNow.AddHours(1));
-
             // Raise a separate "alert" event message
             var session = root.NewContext();
+            await session.Schedule(envelope, utcNow.AddHours(1));
             await session.Send(new RescheduledAlert()
             {
-                Id = context.Envelope.Id,
+                Id = envelope.Id,
                 ExceptionText = _ex.ToString()
 
             });
+
+
         }
     }
     // ENDSAMPLE

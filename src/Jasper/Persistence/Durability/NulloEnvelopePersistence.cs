@@ -38,6 +38,11 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
+        public Task MoveToDeadLetterStorage(Envelope envelope, Exception ex)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task ScheduleExecution(Envelope[] envelopes)
         {
             return Task.CompletedTask;
@@ -130,10 +135,7 @@ namespace Jasper.Persistence.Durability
 
         public Task ScheduleJob(Envelope envelope)
         {
-            if (ScheduledJobs != null)
-            {
-                ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
-            }
+            ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
 
             return Task.CompletedTask;
         }

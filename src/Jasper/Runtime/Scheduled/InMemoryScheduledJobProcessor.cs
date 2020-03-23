@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime.WorkerQueues;
+using Jasper.Transports;
 
 namespace Jasper.Runtime.Scheduled
 {
@@ -28,21 +29,27 @@ namespace Jasper.Runtime.Scheduled
         {
             var outstanding = _outstandingJobs.ToArray();
             foreach (var job in outstanding)
+            {
                 await job.Enqueue();
+            }
         }
 
         public async Task PlayAt(DateTime executionTime)
         {
             var outstanding = _outstandingJobs.Where(x => x.ExecutionTime <= executionTime).ToArray();
             foreach (var job in outstanding)
+            {
                 await job.Enqueue();
+            }
         }
 
         public Task EmptyAll()
         {
             var outstanding = _outstandingJobs.ToArray();
             foreach (var job in outstanding)
+            {
                 job.Cancel();
+            }
 
             return Task.CompletedTask;
         }
@@ -120,7 +127,6 @@ namespace Jasper.Runtime.Scheduled
 
             public async Task Enqueue()
             {
-                Envelope.Callback = new LightweightCallback(_parent._queue, Envelope);
                 await _parent._queue.Enqueue(Envelope);
                 Cancel();
             }

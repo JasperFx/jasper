@@ -6,13 +6,13 @@ using Jasper.Transports;
 
 namespace StorytellerSpecs.Stub
 {
-    public class StubMessageCallback : IMessageCallback
+    public class StubChannelCallback : IChannelCallback
     {
         private readonly StubEndpoint _endpoint;
         private readonly Envelope _envelope;
         public readonly IList<Envelope> Sent = new List<Envelope>();
 
-        public StubMessageCallback(StubEndpoint endpoint, Envelope envelope)
+        public StubChannelCallback(StubEndpoint endpoint, Envelope envelope)
         {
             _endpoint = endpoint;
             _envelope = envelope;
@@ -30,7 +30,7 @@ namespace StorytellerSpecs.Stub
 
         public bool Requeued { get; set; }
 
-        public Task Complete()
+        public Task Complete(Envelope envelope)
         {
             MarkedSucessful = true;
             return Task.CompletedTask;
@@ -42,7 +42,7 @@ namespace StorytellerSpecs.Stub
             return Task.CompletedTask;
         }
 
-        public Task Defer()
+        public Task Defer(Envelope envelope)
         {
             Requeued = true;
 

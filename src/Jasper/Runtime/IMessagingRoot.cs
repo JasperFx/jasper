@@ -25,5 +25,7 @@ namespace Jasper.Runtime
         AdvancedSettings Settings { get; }
         ITransportRuntime Runtime { get; }
         CancellationToken Cancellation { get; }
+
+        IAcknowledgementSender Acknowledgements { get; }
     }
 }

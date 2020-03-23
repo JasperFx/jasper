@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
 
@@ -14,9 +15,14 @@ namespace Jasper.ErrorHandling
 
         public TimeSpan Delay { get; }
 
-        public Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
+        public Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
+            IQueuedOutgoingMessages messages, DateTime utcNow)
         {
-            return context.MoveToScheduledUntil(root, utcNow.Add(Delay));
+            envelope.ExecutionTime = utcNow.Add(Delay);
+
+            if (channel is IHasNativeScheduling c) return c.MoveToScheduledUntil(envelope, envelope.ExecutionTime.Value);
+
+            return root.Persistence.ScheduleJob(envelope);
         }
 
         public override string ToString()

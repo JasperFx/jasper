@@ -35,7 +35,6 @@ namespace Jasper.Transports.Local
             _messageLogger.Sent(envelope);
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
             envelope.ReceivedAt = Destination;
-            envelope.Callback = new LightweightCallback(this, envelope);
 
             return envelope.IsDelayed(DateTime.UtcNow)
                 ? ScheduleExecution(envelope)

@@ -1,7 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
+using Jasper.Runtime;
 using Jasper.Testing.Messaging;
+using Jasper.Testing.Runtime;
+using Jasper.Transports;
 using NSubstitute;
 using Xunit;
 
@@ -14,14 +17,16 @@ namespace Jasper.Testing.ErrorHandling
         {
             var continuation = RetryNowContinuation.Instance;
 
-            var context = Substitute.For<IMessageContext>();
-            var advanced = Substitute.For<IAdvancedMessagingActions>();
-            context.Advanced.Returns(advanced);
+            var envelope = ObjectMother.Envelope();
+            envelope.Attempts = 1;
+            var channel = Substitute.For<IChannelCallback>();
 
-            var theEnvelope = ObjectMother.Envelope();
-            await continuation.Execute(null, context, DateTime.UtcNow);
+            var root = new MockMessagingRoot();
+            root.Pipeline.Invoke(envelope, channel).Returns(Task.CompletedTask);
 
-            await advanced.Received(1).Retry();
+            await continuation.Execute(root, channel, envelope, null, DateTime.UtcNow);
+
+            await root.Pipeline.Received(1).Invoke(envelope, channel);
         }
     }
 }

@@ -81,7 +81,7 @@ namespace StorytellerSpecs.Fixtures
         public async Task SendMessageWithUnknownContentType([SelectionList("Channels")] Uri address)
         {
             var bytes = Encoding.UTF8.GetBytes("<garbage/>");
-            var envelope = Envelope.ForData(bytes, null);
+            var envelope = new Envelope{Data = bytes};
             envelope.Message = new Garbled();
             envelope.ContentType = "text/xml";
 
@@ -95,7 +95,7 @@ namespace StorytellerSpecs.Fixtures
         public async Task SendGarbledMessage([SelectionList("Channels")] Uri address)
         {
             var bytes = Encoding.UTF8.GetBytes("<garbage/>");
-            var envelope = Envelope.ForData(bytes, null);
+            var envelope = new Envelope{Data = bytes};
             envelope.Message = new Garbled();
 
             envelope.ContentType = "application/json";

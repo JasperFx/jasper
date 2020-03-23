@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.Logging;
+using Jasper.Transports;
 
 namespace Jasper.Runtime
 {
@@ -12,11 +14,14 @@ namespace Jasper.Runtime
         /// <summary>
         /// Post-message handling action
         /// </summary>
-        /// <param name="root">A "hub" object giving you access to the Jasper messaging infrastructure</param>
-        /// <param name="context">The message context for the just processed message</param>
+        /// <param name="root"></param>
+        /// <param name="channel"></param>
+        /// <param name="envelope"></param>
+        /// <param name="messages"></param>
         /// <param name="utcNow">The current time</param>
         /// <returns></returns>
-        Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow);
+        Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
+            IQueuedOutgoingMessages messages, DateTime utcNow);
     }
 
     // ENDSAMPLE

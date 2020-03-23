@@ -14,7 +14,7 @@ namespace StorytellerSpecs.Stub
     public class StubEndpoint : Endpoint, ISendingAgent, ISender, IDisposable
     {
         private readonly StubTransport _stubTransport;
-        public readonly IList<StubMessageCallback> Callbacks = new List<StubMessageCallback>();
+        public readonly IList<StubChannelCallback> Callbacks = new List<StubChannelCallback>();
 
         public readonly IList<Envelope> Sent = new List<Envelope>();
         private ISenderCallback _callback;
@@ -43,7 +43,7 @@ namespace StorytellerSpecs.Stub
         public Task Enqueue(Envelope envelope)
         {
             Sent.Add(envelope);
-            return _pipeline?.Invoke(envelope) ?? Task.CompletedTask;
+            return _pipeline?.Invoke(envelope, new StubChannelCallback(this, envelope)) ?? Task.CompletedTask;
         }
 
         public Task LatchAndDrain()
@@ -81,7 +81,7 @@ namespace StorytellerSpecs.Stub
             envelope.ReceivedAt = Destination;
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri();
 
-            var callback = new StubMessageCallback(this, envelope);
+            var callback = new StubChannelCallback(this, envelope);
             Callbacks.Add(callback);
 
             _stubTransport.Callbacks.Add(callback);
@@ -89,13 +89,12 @@ namespace StorytellerSpecs.Stub
             Sent.Add(envelope);
 
 
-            envelope.Callback = callback;
 
             envelope.ReceivedAt = Destination;
 
             _logger.Sent(envelope);
 
-            _pipeline.Invoke(envelope).Wait();
+            _pipeline.Invoke(envelope, callback).Wait();
 
             return Task.CompletedTask;
         }

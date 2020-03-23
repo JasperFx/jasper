@@ -14,7 +14,7 @@ namespace Jasper.Persistence.Database
 
         public DatabaseEnvelopeTransaction(IMessageContext context, DbTransaction tx)
         {
-            _persistence = context.Advanced.Persistence as DatabaseBackedEnvelopePersistence ??
+            _persistence = context.Persistence as DatabaseBackedEnvelopePersistence ??
                            throw new InvalidOperationException(
                                "This message context is not using Sql Server-backed messaging persistence");
             _tx = tx;

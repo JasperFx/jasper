@@ -29,16 +29,16 @@ namespace Jasper.Testing.Acceptance
 
                 var envelope = ObjectMother.Envelope();
                 envelope.DeliverBy = DateTime.UtcNow.Subtract(1.Minutes());
-                envelope.Callback = Substitute.For<IMessageCallback>();
+                var channel = Substitute.For<IChannelCallback>();
 
-                await pipeline.Invoke(envelope);
+                await pipeline.Invoke(envelope, channel);
 
                 // Log the discard
                 logger.Received().DiscardedEnvelope(envelope);
 
 
 #pragma warning disable 4014
-                envelope.Callback.Received().Complete();
+                channel.Received().Complete(envelope);
 #pragma warning restore 4014
             }
 

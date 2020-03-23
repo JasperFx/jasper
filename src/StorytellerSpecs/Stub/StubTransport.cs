@@ -41,7 +41,7 @@ namespace StorytellerSpecs.Stub
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
         }
 
-        public IList<StubMessageCallback> Callbacks { get; } = new List<StubMessageCallback>();
+        public IList<StubChannelCallback> Callbacks { get; } = new List<StubChannelCallback>();
 
         public Endpoint ReplyEndpoint()
         {
@@ -97,7 +97,7 @@ namespace StorytellerSpecs.Stub
             return null;
         }
 
-        public StubMessageCallback LastCallback()
+        public StubChannelCallback LastCallback()
         {
             return Callbacks.LastOrDefault();
         }

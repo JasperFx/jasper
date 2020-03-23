@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.ErrorHandling;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Handlers;
@@ -42,8 +43,10 @@ namespace Jasper.Runtime
 
             MessageLogger = messageLogger;
 
+
+
             Pipeline = new HandlerPipeline(Serialization, Handlers, MessageLogger,
-                container.QuickBuildAll<IMissingHandler>(),
+                container.GetInstance<NoHandlerContinuation>(),
                 this);
 
             Runtime = new TransportRuntime(this);
@@ -52,6 +55,8 @@ namespace Jasper.Runtime
             _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
 
             Router = new EnvelopeRouter(this);
+
+            Acknowledgements = new AcknowledgementSender(Router, Serialization);
 
             _container = container;
 
@@ -107,6 +112,8 @@ namespace Jasper.Runtime
             Settings.Cancel();
         }
 
+        public IAcknowledgementSender Acknowledgements { get; }
+
         public ITransportRuntime Runtime { get; }
         public CancellationToken Cancellation { get; }
 
@@ -135,6 +142,7 @@ namespace Jasper.Runtime
 
         public IMessageContext ContextFor(Envelope envelope)
         {
+            // TODO -- make this take in the callback as well
             return new MessageContext(this, envelope);
         }
 
@@ -193,5 +201,7 @@ namespace Jasper.Runtime
                 await Durability.StartAsync(Options.Advanced.Cancellation);
             }
         }
+
+
     }
 }

@@ -213,7 +213,7 @@ namespace Jasper
 
         protected bool Equals(Envelope other)
         {
-            return Equals(Data, other.Data) && Equals(Message, other.Message) && Equals(Callback, other.Callback) &&
+            return Equals(Data, other.Data) && Equals(Message, other.Message) &&
                    Equals(Headers, other.Headers);
         }
 
@@ -231,7 +231,6 @@ namespace Jasper
             {
                 var hashCode = Data != null ? Data.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Callback != null ? Callback.GetHashCode() : 0);
                 return hashCode;
             }
         }

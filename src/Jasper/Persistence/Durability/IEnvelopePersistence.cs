@@ -35,6 +35,8 @@ namespace Jasper.Persistence.Durability
         // Used by DurableCallback
         Task MoveToDeadLetterStorage(ErrorReport[] errors);
 
+        Task MoveToDeadLetterStorage(Envelope envelope, Exception ex);
+
         // Used by DurableCallback
         Task IncrementIncomingEnvelopeAttempts(Envelope envelope);
 

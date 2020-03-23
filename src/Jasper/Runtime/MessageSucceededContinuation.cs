@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling;
+using Jasper.Logging;
 using Jasper.Transports;
 
 namespace Jasper.Runtime
@@ -12,26 +14,26 @@ namespace Jasper.Runtime
         {
         }
 
-        public async Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
+        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
+            IQueuedOutgoingMessages messages,
+            DateTime utcNow)
         {
-            var envelope = context.Envelope;
-
             try
             {
-                await context.SendAllQueuedOutgoingMessages();
+                await messages.SendAllQueuedOutgoingMessages();
 
-                await envelope.Callback.Complete();
+                await channel.Complete(envelope);
 
-                context.Advanced.Logger.MessageSucceeded(envelope);
+                root.MessageLogger.MessageSucceeded(envelope);
             }
             catch (Exception ex)
             {
-                await context.Advanced.SendFailureAcknowledgement("Sending cascading message failed: " + ex.Message);
+                await root.Acknowledgements.SendFailureAcknowledgement(envelope,"Sending cascading message failed: " + ex.Message);
 
-                context.Advanced.Logger.LogException(ex, envelope.Id, ex.Message);
-                context.Advanced.Logger.MessageFailed(envelope, ex);
+                root.MessageLogger.LogException(ex, envelope.Id, ex.Message);
+                root.MessageLogger.MessageFailed(envelope, ex);
 
-                await context.MoveToErrors(root, ex);
+                await new MoveToErrorQueue(ex).Execute(root, channel, envelope, messages, utcNow);
             }
         }
     }

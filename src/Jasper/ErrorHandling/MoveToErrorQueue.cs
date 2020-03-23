@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Logging;
+using Jasper.Persistence.Durability;
 using Jasper.Runtime;
 using Jasper.Transports;
 
@@ -14,18 +16,29 @@ namespace Jasper.ErrorHandling
 
         public Exception Exception { get; }
 
-        public async Task Execute(IMessagingRoot root, IMessageContext context, DateTime utcNow)
+        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
+            IQueuedOutgoingMessages messages,
+            DateTime utcNow)
         {
-            var envelope = context.Envelope;
+            envelope.MarkCompletion(false);
 
-
-            await context.Advanced.SendFailureAcknowledgement(
+            await root.Acknowledgements.SendFailureAcknowledgement(envelope,
                 $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
-            await context.MoveToErrors(root, Exception);
+            if (channel is IHasDeadLetterQueue c)
+            {
+                await c.MoveToErrors(envelope, Exception);
+            }
+            else
+            {
+                // If persistable, persist
+                await root.Persistence.MoveToDeadLetterStorage(envelope, Exception);
+            }
 
-            context.Advanced.Logger.MessageFailed(envelope, Exception);
-            context.Advanced.Logger.MovedToErrorQueue(envelope, Exception);
+            root.MessageLogger.MessageFailed(envelope, Exception);
+            root.MessageLogger.MovedToErrorQueue(envelope, Exception);
+
+
         }
 
         public override string ToString()

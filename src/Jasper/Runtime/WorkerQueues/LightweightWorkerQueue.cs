@@ -10,7 +10,7 @@ using Jasper.Transports.Tcp;
 
 namespace Jasper.Runtime.WorkerQueues
 {
-    public class LightweightWorkerQueue : IWorkerQueue
+    public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling
     {
         private readonly ITransportLogger _logger;
         private readonly AdvancedSettings _settings;
@@ -38,7 +38,7 @@ namespace Jasper.Runtime.WorkerQueues
                         envelope.ContentType = "application/json";
                     }
 
-                    await Pipeline.Invoke(envelope);
+                    await Pipeline.Invoke(envelope, this);
                 }
                 catch (Exception e)
                 {
@@ -55,7 +55,6 @@ namespace Jasper.Runtime.WorkerQueues
         {
             if (envelope.IsPing()) return Task.CompletedTask;
 
-            envelope.Callback = new LightweightCallback(this, envelope);
             _receiver.Post(envelope);
 
             return Task.CompletedTask;
@@ -143,6 +142,22 @@ namespace Jasper.Runtime.WorkerQueues
                 _logger.LogException(e);
                 return ReceivedStatus.ProcessFailure;
             }
+        }
+
+        Task IChannelCallback.Complete(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
+
+        Task IChannelCallback.Defer(Envelope envelope)
+        {
+            return Enqueue(envelope);
+        }
+
+        Task IHasNativeScheduling.MoveToScheduledUntil(Envelope envelope, DateTimeOffset time)
+        {
+            envelope.ExecutionTime = time;
+            return ScheduleExecution(envelope);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Jasper.Persistence.Marten
 
         public MartenEnvelopeTransaction(IDocumentSession session, IMessageContext bus)
         {
-            if (bus.Advanced.Persistence is PostgresqlEnvelopePersistence persistence)
+            if (bus.Persistence is PostgresqlEnvelopePersistence persistence)
             {
                 _settings = (PostgresqlSettings) persistence.DatabaseSettings;
                 _nodeId = persistence.Settings.UniqueNodeId;

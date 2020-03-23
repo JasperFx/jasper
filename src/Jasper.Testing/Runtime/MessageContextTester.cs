@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
+using Jasper.Serialization;
 using Jasper.Testing.Messaging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -109,10 +110,7 @@ namespace Jasper.Testing.Runtime
 
             theEnvelope.AckRequested = true;
 
-            var root = new MockMessagingRoot();
-            var bus = root.ContextFor(theEnvelope);
-
-            theAcknowledgement = bus.As<MessageContext>().Outstanding.Single();
+            theAcknowledgement = new AcknowledgementSender(null, MessagingSerializationGraph.Basic()).BuildAcknowledgement(theEnvelope);
         }
 
         private readonly Envelope theEnvelope;

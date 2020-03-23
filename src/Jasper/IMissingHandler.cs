@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Jasper.Runtime;
 
 namespace Jasper
 {
@@ -13,9 +14,9 @@ namespace Jasper
         ///     Executes for unhandled envelopes
         /// </summary>
         /// <param name="envelope"></param>
-        /// <param name="context"></param>
+        /// <param name="root"></param>
         /// <returns></returns>
-        Task Handle(Envelope envelope, IMessageContext context);
+        Task Handle(Envelope envelope, IMessagingRoot root);
     }
 
     // ENDSAMPLE

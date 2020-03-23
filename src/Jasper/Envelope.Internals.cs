@@ -49,11 +49,6 @@ namespace Jasper
             }
         }
 
-        /// <summary>
-        ///     Used internally to track the completion of an Envelope.
-        /// </summary>
-        internal IMessageCallback Callback { get; set; }
-
         internal int SentAttempts { get; set; }
 
         internal IMessageSerializer writer { get; set; }
@@ -165,21 +160,6 @@ namespace Jasper
             return MessageType == PingMessageType;
         }
 
-
-        /// <summary>
-        ///     Create an Envelope for the given callback and raw data
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        internal static Envelope ForData(byte[] data, IMessageCallback callback)
-        {
-            return new Envelope
-            {
-                Data = data,
-                Callback = callback
-            };
-        }
 
 
 

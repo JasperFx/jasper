@@ -98,12 +98,12 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)
         {
-            thePipeline.Received().Invoke(envelope);
+            thePipeline.Received().Invoke(envelope, theWorkerQueue);
         }
 
         protected void assertEnvelopeWasNotEnqueued(Envelope envelope)
         {
-            thePipeline.DidNotReceive().Invoke(envelope);
+            thePipeline.DidNotReceive().Invoke(envelope, theWorkerQueue);
         }
     }
 }

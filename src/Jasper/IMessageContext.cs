@@ -26,12 +26,6 @@ namespace Jasper
         bool EnlistedInTransaction { get; }
 
 
-        /// <summary>
-        ///     Rarely used functions that are mostly consumed
-        ///     by Jasper itself
-        /// </summary>
-        IAdvancedMessagingActions Advanced { get; }
-
 
         /// <summary>
         ///     If a messaging context is enlisted in a transaction, calling this
@@ -67,5 +61,20 @@ namespace Jasper
         /// <param name="response"></param>
         /// <returns></returns>
         Task RespondToSender(object response);
+
+        /// <summary>
+        /// The active envelope persistence for the application. This is used
+        /// by the "outbox" support in Jasper
+        /// </summary>
+        IEnvelopePersistence Persistence { get; }
+
+        /// <summary>
+        ///     Enqueue a cascading message to the outstanding context transaction
+        ///     Can be either the message itself, any kind of ISendMyself object,
+        ///     or an IEnumerable<object>
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Task EnqueueCascading(object message);
     }
 }

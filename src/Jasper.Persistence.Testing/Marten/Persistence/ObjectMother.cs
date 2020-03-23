@@ -10,7 +10,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             return new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                Callback = Substitute.For<IMessageCallback>(),
                 MessageType = "Something",
                 Destination = TransportConstants.ScheduledUri
             };

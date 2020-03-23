@@ -6,6 +6,7 @@ using Baseline;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
+using Jasper.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -135,8 +136,6 @@ namespace Jasper.Persistence.Durability
 
         public Task EnqueueLocally(Envelope envelope)
         {
-            envelope.Callback = new DurableCallback(envelope, _workers, _persistence, Logger);
-
             return _workers.Enqueue(envelope);
         }
 

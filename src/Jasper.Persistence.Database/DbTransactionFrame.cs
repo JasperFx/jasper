@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
@@ -38,7 +39,9 @@ namespace Jasper.Persistence.Database
 
 
             if (ShouldFlushOutgoingMessages)
+            {
                 writer.Write($"await {_context.Usage}.{nameof(IMessageContext.SendAllQueuedOutgoingMessages)}();");
+            }
 
             writer.Write($"{_connection.Usage}.{nameof(DbConnection.Close)}();");
         }
