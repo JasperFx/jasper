@@ -235,20 +235,17 @@ namespace Jasper.Testing.Samples
         // SAMPLE: completing-saga
         public void Handle(
             SodaFetched soda, // The first argument is the message type
-            HappyMealOrderState state, // This matches the state document type, so it will be the
-            // state document matching the current saga identified by
-            // the incoming message envelope
             IOrderService service // Additional arguments are injected services
         )
         {
-            state.DrinkReady = true;
+            State.DrinkReady = true;
 
             // Determine if the happy meal is completely ready
-            if (state.IsOrderComplete())
+            if (State.IsOrderComplete())
             {
                 // Maybe you need to remove this
                 // order from some kind of screen display
-                service.Close(state.Id);
+                service.Close(State.Id);
 
                 // And we're done here, so let's mark the Saga as complete
                 MarkCompleted();
@@ -258,16 +255,16 @@ namespace Jasper.Testing.Samples
 
 
         // SAMPLE: passing-saga-state-id-through-message
-        public void Handle(ToyOnTray toyReady, HappyMealOrderState state)
+        public void Handle(ToyOnTray toyReady)
         {
-            state.ToyReady = true;
-            if (state.IsOrderComplete()) MarkCompleted();
+            State.ToyReady = true;
+            if (State.IsOrderComplete()) MarkCompleted();
         }
 
-        public void Handle(BurgerReady burgerReady, HappyMealOrderState state)
+        public void Handle(BurgerReady burgerReady)
         {
-            state.MainReady = true;
-            if (state.IsOrderComplete()) MarkCompleted();
+            State.MainReady = true;
+            if (State.IsOrderComplete()) MarkCompleted();
         }
 
         // ENDSAMPLE

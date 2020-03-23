@@ -12,5 +12,10 @@
         {
             IsCompleted = true;
         }
+
+        /// <summary>
+        /// The current state of the saga
+        /// </summary>
+        public TState State { get; set; }
     }
 }

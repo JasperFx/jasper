@@ -66,7 +66,18 @@ namespace Jasper.Persistence.Sagas
             if (persistenceFrame != null) chain.Middleware.Add(persistenceFrame);
 
             if (existence == SagaStateExistence.Existing)
+            {
                 chain.Middleware.Add(new AssertSagaStateExistsFrame(existingState, sagaIdVariable));
+
+                foreach (var handlerType in chain.Handlers.Where(x => x.HandlerType.Closes(typeof(StatefulSagaOf<>))).Select(x => x.HandlerType))
+                {
+                    chain.Middleware.Add(new SetStateFrame(handlerType, sagaStateType));
+                }
+            }
+
+
+
+
 
             var enlistInSagaId = MethodCall.For<IMessageContext>(x => x.EnlistInSaga(null));
             enlistInSagaId.Arguments[0] = sagaIdVariable;

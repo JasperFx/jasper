@@ -111,29 +111,29 @@ namespace Jasper.Testing.Persistence.Sagas
             return state;
         }
 
-        public CompleteTwo Handle(CompleteOne one, TState state)
+        public CompleteTwo Handle(CompleteOne one)
         {
-            state.OneCompleted = true;
+            State.OneCompleted = true;
             return new CompleteTwo();
         }
 
-        public void Handle(CompleteTwo message, TState state)
+        public void Handle(CompleteTwo message)
         {
-            state.TwoCompleted = true;
+            State.TwoCompleted = true;
         }
 
-        public void Handle(CompleteFour message, TState state)
+        public void Handle(CompleteFour message)
         {
-            state.FourCompleted = true;
+            State.FourCompleted = true;
         }
 
 
-        public void Handle(TCompleteThree three, TState state)
+        public void Handle(TCompleteThree three)
         {
-            state.ThreeCompleted = true;
+            State.ThreeCompleted = true;
         }
 
-        public void Handle(FinishItAll finish, TState state)
+        public void Handle(FinishItAll finish)
         {
             MarkCompleted();
         }

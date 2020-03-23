@@ -20,9 +20,9 @@ namespace Jasper.Testing.Persistence.Sagas
             };
         }
 
-        public void Handles(GuidDoThree message, GuidWorkflowState state)
+        public void Handles(GuidDoThree message)
         {
-            state.ThreeCompleted = true;
+            State.ThreeCompleted = true;
         }
     }
 

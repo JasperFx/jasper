@@ -19,9 +19,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
         }
 
 
-        public void Handles(IntDoThree message, IntWorkflowState state)
+        public void Handles(IntDoThree message)
         {
-            state.ThreeCompleted = true;
+            State.ThreeCompleted = true;
         }
 
         public (IntWorkflowState, CompleteFour) Start(StartAndDoThings message)
