@@ -18,7 +18,7 @@ namespace Jasper
             if (_extensions != null) return _extensions;
 
             _extensions = AssemblyFinder
-                .FindAssemblies(txt => { }, false)
+                .FindAssemblies(a => a.HasAttribute<JasperModuleAttribute>(), txt => { }, false)
                 .Concat(AppDomain.CurrentDomain.GetAssemblies())
                 .Distinct()
                 .Where(a => a.HasAttribute<JasperModuleAttribute>())
