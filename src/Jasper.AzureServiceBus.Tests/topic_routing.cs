@@ -12,6 +12,7 @@ namespace Jasper.AzureServiceBus.Tests
 {
     public class topics_routing
     {
+        // SAMPLE: AzureServiceBus-TopicSendingApp
         public class TopicSendingApp : JasperOptions
         {
             public TopicSendingApp( )
@@ -29,6 +30,8 @@ namespace Jasper.AzureServiceBus.Tests
                     .OutgoingTopicNameIs<NumberMessage>(x => x.Topic);
             }
         }
+
+        // ENDSAMPLE
 
         public class ImplicitTopicSendingApp : JasperOptions
         {

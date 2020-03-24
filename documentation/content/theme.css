@@ -46,11 +46,12 @@ i.command-description {
 
 .card{
     height: 100%;
+    object-fit: fill;
 }
 
 .card .card-body{
     vertical-align: bottom;
-    
+    height: 100%;
 }
 
 .card-body .btn{
@@ -61,3 +62,8 @@ pre {
     background-color: #eee;
     padding: 5px;
 }
+
+#leftCol img{
+    width: 100%;
+}
+
