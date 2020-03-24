@@ -229,7 +229,7 @@ namespace StorytellerSpecs.Fixtures
             ServiceName = serviceName;
             MessageType = message.GetType().Name;
             Name = message.Name;
-            ReceivedAt = receivedAt.ToLocalHostUri();
+            ReceivedAt = receivedAt?.ToLocalHostUri();
         }
 
         public string ServiceName { get; set; }

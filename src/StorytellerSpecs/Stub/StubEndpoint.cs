@@ -27,6 +27,7 @@ namespace StorytellerSpecs.Stub
         {
             _stubTransport = stubTransport;
             Destination = destination;
+            Agent = this;
         }
 
         public Endpoint Endpoint => this;

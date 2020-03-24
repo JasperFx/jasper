@@ -91,7 +91,7 @@ namespace Jasper.Configuration
 
         public override void AddRoute(MessageTypeRouting routing, IMessagingRoot root)
         {
-            if (Agent == null) throw new InvalidOperationException();
+            if (Agent == null) throw new InvalidOperationException($"The agent has not been initialized for this endpoint");
 
             routing.AddStaticRoute(Agent);
         }
