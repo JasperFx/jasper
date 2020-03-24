@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>JasperService</AssemblyName>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Jasper.AzureServiceBus" Version="0.9.17" />
+    <PackageReference Include="Jasper.AzureServiceBus" Version="1.0.0" />
   </ItemGroup>
     <ItemGroup>
     <None Update="appsettings.json">
