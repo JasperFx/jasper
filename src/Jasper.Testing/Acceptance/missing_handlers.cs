@@ -29,6 +29,16 @@ namespace Jasper.Testing.Acceptance
 
                 await host.ExecuteAndWait(x => x.Enqueue(message));
 
+                for (int i = 0; i < 4; i++)
+                {
+                    if (RecordingMissingHandler.Recorded.Any())
+                    {
+                        break;
+                    }
+
+                    await Task.Delay(250);
+                }
+
                 RecordingMissingHandler.Recorded.Single().Message.ShouldBeSameAs(message);
                 RecordingMissingHandler2.Recorded.Single().Message.ShouldBeSameAs(message);
                 RecordingMissingHandler3.Recorded.Single().Message.ShouldBeSameAs(message);
