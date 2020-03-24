@@ -6,7 +6,7 @@ BUILD_VERSION =  ENV['version'].nil? ? '1.0.0' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
-TEMPLATE_VERSION = '1.0.0'
+TEMPLATE_VERSION = '1.0.1'
 COMPILE_TARGET = ENV['config'].nil? ? "debug" : ENV['config']
 RESULTS_DIR = "artifacts"
 
