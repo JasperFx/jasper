@@ -1,5 +1,11 @@
 <!--title:Stateful Sagas-->
 
+<[info]>
+A single stateful sagas can received command messages from any combination of external messages coming in from 
+transports like Rabbit MQ or Azure Service Bus and local command messages through the `ICommandBus`. A `StatefulSagaOf<T>`
+handler is just like any other Jasper handler, but with some extra conventions around the saga state.
+<[/info]>
+
 
 As is so common in these docs, I would direct you to this from the old "EIP" book: [Process Manager](http://www.enterpriseintegrationpatterns.com/patterns/messaging/ProcessManager.html). A stateful saga in Jasper is used
 to coordinate long running workflows or to break large, logical transactions into a series of smaller steps. A stateful saga
@@ -8,6 +14,10 @@ consists of a couple parts:
 1. A saga state document type that is persisted between saga messages
 1. A saga message handler that inherits from `StatefulSagaOf<T>`, where the "T" is the saga state document type
 1. A saga persistence strategy registered in Jasper that knows how to load and persist the saga state documents
+
+The `StatefulSagaOf<T>` base class looks like this:
+
+<[sample:StatefulSagaOf]>
 
 Right now the options for saga persistence are 
 
@@ -49,6 +59,11 @@ to use a stateful saga to manage processing that's handled completely within you
 
 <[sample:HappyMealSaga1Local]>
 
+<[info]>
+The logical saga can be split across multiple classes inheriting from the `SagaStatefulOf<T>` abstract class, as long as the 
+handler types all use the same *state* type
+<[/info]>
+
 ## Updating and Completing Saga State
 
 As we saw above, methods named `Start` or `Starts` are assumed to create a brand new state document for a logical saga. The next step is to handle additional methods that perform additional work within the saga, update the state document, and potentially close out the saga.
@@ -65,6 +80,16 @@ Things to note in the sample up above:
 * If the `StatefulSagaOf<T>.MarkCompleted()` method is called while handling the message, the state document will be deleted
   from storage after the message handler is called
 
+
+## Sagas, Outbox, and Transactions
+
+The stateful saga support heavily uses Jasper's <[linkto:documentation/durability;title=message persistance]>. Handler actions involving a saga automatically opt into the transaction and *outbox* support for every saga action. This means an all or nothing, atomic action to:
+
+1. Execute the incoming command
+1. Update the saga state
+1. Persist the outgoing messages in the "outbox" message storage
+
+If any of those actions fail, the entire transaction is rolled back and the outgoing messages **do not go out**. The normal Jasper error handling does apply though.
 
 ## Saga State Identity
 
