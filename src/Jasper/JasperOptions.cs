@@ -137,7 +137,7 @@ namespace Jasper
         /// <summary>
         ///     Applies the extension with optional configuration to the application
         /// </summary>
-        /// <param name="configure"></param>
+        /// <param name="configure">Optional configuration of the extension</param>
         /// <typeparam name="T"></typeparam>
         void IExtensions.Include<T>(Action<T> configure = null)
         {
