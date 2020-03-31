@@ -76,6 +76,7 @@ namespace Jasper.Persistence.Durability
         {
             if (envelope.Status == EnvelopeStatus.Scheduled)
             {
+                if (envelope.ExecutionTime == null) throw new ArgumentOutOfRangeException($"The envelope {envelope} is marked as Scheduled, but does not have an ExecutionTime");
                 ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
             }
             return Task.CompletedTask;

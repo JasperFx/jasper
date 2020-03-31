@@ -8,6 +8,29 @@ namespace Jasper.Persistence.Database
 {
     public static class EnvelopeReadingExtensions
     {
+
+        public static async Task<Envelope[]> ExecuteToEnvelopesWithAttempts(this DbCommand command, CancellationToken cancellation = default(CancellationToken),
+            DbTransaction tx = null)
+        {
+            if (tx != null) command.Transaction = tx;
+            using (var reader = await command.ExecuteReaderAsync(cancellation))
+            {
+                var list = new List<Envelope>();
+
+                while (await reader.ReadAsync(cancellation))
+                {
+                    var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
+                    var envelope = Envelope.Deserialize(bytes);
+                    envelope.Attempts = await reader.GetFieldValueAsync<int>(1, cancellation);
+
+
+                    list.Add(envelope);
+                }
+
+                return list.ToArray();
+            }
+        }
+
         public static async Task<Envelope[]> ExecuteToEnvelopes(this DbCommand command, CancellationToken cancellation = default(CancellationToken),
             DbTransaction tx = null)
         {

@@ -110,7 +110,9 @@ namespace Jasper.Logging
         public virtual void ScheduledJobsQueuedForExecution(IEnumerable<Envelope> envelopes)
         {
             foreach (var envelope in envelopes)
-                _scheduledJobsQueued(_logger, envelope, envelope.ExecutionTime.Value, null);
+            {
+                _scheduledJobsQueued(_logger, envelope, envelope.ExecutionTime ?? DateTimeOffset.UtcNow, null);
+            }
         }
 
         public virtual void RecoveredIncoming(IEnumerable<Envelope> envelopes)

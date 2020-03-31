@@ -56,6 +56,8 @@ namespace Jasper.Runtime.WorkerQueues
         public int QueuedCount => _receiver.InputCount;
         public Task Enqueue(Envelope envelope)
         {
+            envelope.ReceivedAt = Address;
+            envelope.ReplyUri = envelope.ReplyUri ?? Address;
             _receiver.Post(envelope);
 
             return Task.CompletedTask;
@@ -70,9 +72,12 @@ namespace Jasper.Runtime.WorkerQueues
         {
             _agent = listener;
             _agent.Start(this);
+
+            Address = _agent.Address;
         }
 
-        public Uri Address => _agent.Address;
+        public Uri Address { get; set; }
+
 
         public ListeningStatus Status
         {

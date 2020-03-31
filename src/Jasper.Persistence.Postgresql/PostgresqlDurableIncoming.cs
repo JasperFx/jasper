@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Postgresql
         {
             _session = session;
             _findAtLargeEnvelopesSql =
-                $"select body from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
+                $"select body, attempts from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
 
             _reassignSql =
                 $"UPDATE {databaseSettings.SchemaName}.{IncomingTable} SET owner_id = @owner, status = '{EnvelopeStatus.Incoming}' WHERE id = ANY(@ids)";
@@ -33,7 +33,7 @@ namespace Jasper.Persistence.Postgresql
         {
             return _session
                 .CreateCommand(_findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopes(_cancellation);
+                .ExecuteToEnvelopesWithAttempts(_cancellation);
         }
 
         public Task Reassign(int ownerId, Envelope[] incoming)

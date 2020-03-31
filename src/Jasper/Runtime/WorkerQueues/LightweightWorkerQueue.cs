@@ -73,9 +73,12 @@ namespace Jasper.Runtime.WorkerQueues
         {
             _agent = listener;
             _agent.Start(this);
+
+            Address = _agent.Address;
         }
 
-         public Uri Address => _agent.Address;
+        public Uri Address { get; set; }
+
 
         public ListeningStatus Status
         {

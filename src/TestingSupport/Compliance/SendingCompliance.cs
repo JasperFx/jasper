@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
+using Jasper.Persistence;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +35,17 @@ namespace TestingSupport.Compliance
         {
             theSender = JasperHost.For<T>(configureSender);
 
+        }
+
+        public void TheOnlyAppIs<T>() where T : JasperOptions, new()
+        {
+            var options = new T();
+            configureReceiver(options);
+            configureSender(options);
+
+            theSender = JasperHost.For(options);
+
+            theSender.RebuildMessageStorage();
         }
 
         public void SenderIs(JasperOptions options)
@@ -191,7 +203,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
-                .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver)
+                .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver ?? theSender)
                 .ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
 
             var message = session.FindSingleTrackedMessageOfType<ColorChosen>(EventType.MessageSucceeded);
@@ -222,7 +234,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .Timeout(30.Seconds())
+                .Timeout(15.Seconds())
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(theMessage);
 

@@ -31,6 +31,8 @@ namespace Jasper.Transports.Local
 
             Endpoint = endpoint;
             ReplyUri = TransportConstants.RepliesUri;
+
+            Address = Destination;
         }
 
         public Uri Destination { get; }

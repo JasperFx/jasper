@@ -17,7 +17,7 @@ namespace Jasper.Transports.Local
             IHandlerPipeline pipeline, AdvancedSettings settings, IMessageLogger messageLogger) : base(endpoint, logger, pipeline, settings)
         {
             _messageLogger = messageLogger;
-            Destination = endpoint.Uri;
+            Destination = Address = endpoint.Uri;
             Endpoint = endpoint;
         }
 

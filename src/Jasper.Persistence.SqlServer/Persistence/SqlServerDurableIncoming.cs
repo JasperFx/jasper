@@ -20,7 +20,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _session = session;
             _databaseSettings = databaseSettings;
             _findAtLargeEnvelopesSql =
-                $"select top {settings.RecoveryBatchSize} body from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
+                $"select top {settings.RecoveryBatchSize} body, attempts from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
 
             _cancellation = settings.Cancellation;
         }
@@ -28,7 +28,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public Task<Envelope[]> LoadPageOfLocallyOwned()
         {
             return _session.CreateCommand(_findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopes(_cancellation);
+                .ExecuteToEnvelopesWithAttempts(_cancellation);
         }
 
         public Task Reassign(int ownerId, Envelope[] incoming)

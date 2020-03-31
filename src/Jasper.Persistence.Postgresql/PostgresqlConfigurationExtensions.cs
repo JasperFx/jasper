@@ -15,6 +15,7 @@ namespace Jasper.Persistence.Postgresql
         {
             extensions.Include<PostgresqlBackedPersistence>(o =>
             {
+
                 o.Settings.ConnectionString = connectionString;
                 if (schema.IsNotEmpty()) o.Settings.SchemaName = schema;
             });

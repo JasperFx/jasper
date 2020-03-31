@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Database
             Outgoing = buildDurableOutgoing(transaction, databaseSettings, settings);
 
             _findReadyToExecuteJobs =
-                $"select body from {databaseSettings.SchemaName}.{IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time";
+                $"select body, attempts from {databaseSettings.SchemaName}.{IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time";
 
             _cancellation = settings.Cancellation;
         }
@@ -49,7 +49,7 @@ namespace Jasper.Persistence.Database
             return _session
                 .CreateCommand(_findReadyToExecuteJobs)
                 .With("time", utcNow)
-                .ExecuteToEnvelopes(_cancellation, _session.Transaction);
+                .ExecuteToEnvelopesWithAttempts(_cancellation, _session.Transaction);
         }
 
         public void Dispose()
