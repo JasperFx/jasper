@@ -83,6 +83,19 @@ namespace Jasper.ErrorHandling
         }
 
         /// <summary>
+        /// Use to script out particular actions to take on failures in sequential
+        /// order. Use this for fine-grained control over subsequent failures.
+        /// </summary>
+        /// <param name="configure"></param>
+        public void TakeActions(Action<IContinuationFactory> configure)
+        {
+            var factory = new ContinuationFactory();
+            configure(factory);
+
+            With(factory.Build);
+        }
+
+        /// <summary>
         /// Use a custom IContinuation factory for matching exceptions
         /// </summary>
         /// <param name="continuationSource"></param>
@@ -118,6 +131,14 @@ namespace Jasper.ErrorHandling
             With((e, ex) => e.Attempts < maxAttempts
                 ? (IContinuation) RequeueContinuation.Instance
                 : new MoveToErrorQueue(ex));
+        }
+
+        /// <summary>
+        /// Discard the message without any further attempt to process the message
+        /// </summary>
+        public void Discard()
+        {
+            With((env, ex) => DiscardExpiredEnvelope.Instance);
         }
 
         /// <summary>

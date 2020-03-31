@@ -45,5 +45,23 @@ namespace Jasper.ErrorHandling
         {
             return "Move to Error Queue";
         }
+
+        protected bool Equals(MoveToErrorQueue other)
+        {
+            return Equals(Exception, other.Exception);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((MoveToErrorQueue) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Exception != null ? Exception.GetHashCode() : 0);
+        }
     }
 }

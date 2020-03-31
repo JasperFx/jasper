@@ -18,6 +18,8 @@ Today, Jasper has the ability to:
 * Choose to re-execute the message later
 * Re-queue the message for later execution at the back of the line
 * Just bail out and move the message out to the error queues
+* Discard the message
+* Script out how an error is handled on various attempts
 * Apply error handling policies globally, by configured policies, or explicitly by chain
 * Use custom error handling to do whatever you want utilizing Jasper's `IContinuation` interface
 
@@ -79,6 +81,12 @@ The `RetryLater()` function uses <[linkto:documentation/integration/scheduled]>.
 
 See also <[linkto:documentation/execution/dead_letter_queue]> for more information.
 
+## Scripting Error Handling by Attempt
+
+Using the `TakeActions()` method, you can script out fine-grained retry/requeue/discard policies for an exception
+by attempt number as shown below:
+
+<[linkto:AppWithScriptedErrorHandling]>
 
 
 ## Exponential Backoff Policies

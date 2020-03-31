@@ -11,7 +11,8 @@ namespace Jasper.Testing.Messaging
             {
                 Data = new byte[] {1, 2, 3, 4},
                 MessageType = "Something",
-                Destination = TransportConstants.ScheduledUri
+                Destination = TransportConstants.ScheduledUri,
+                Attempts = 1
             };
         }
     }

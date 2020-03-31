@@ -29,5 +29,23 @@ namespace Jasper.ErrorHandling
         {
             return $"Schedule Retry in {Delay.TotalSeconds} seconds";
         }
+
+        protected bool Equals(ScheduledRetryContinuation other)
+        {
+            return Delay.Equals(other.Delay);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ScheduledRetryContinuation) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Delay.GetHashCode();
+        }
     }
 }
