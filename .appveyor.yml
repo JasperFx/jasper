@@ -1,4 +1,4 @@
-version: 1.0.1.{build}
+version: 1.1.0.{build}
 image: Visual Studio 2017
 
 
@@ -25,21 +25,10 @@ install:
   - bundle install
   - dotnet --version
 
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  version: '1.0.1'
-  package_version: '1.0.1'
-  assembly_version: '1.0.1'
-  file_version: '{version}'
-  informational_version: '{version}'
-
-
-
 
 build_script:
 - cmd: >-
-    rake ci version=1.0.1
+    rake ci version=1.1.0
 test: off
 
 deploy:

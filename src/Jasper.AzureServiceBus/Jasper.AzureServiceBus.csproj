@@ -21,5 +21,9 @@
       <ProjectReference Include="..\Jasper\Jasper.csproj" />
       <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.2.1" />
     </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
 </Project>

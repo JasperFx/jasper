@@ -25,4 +25,10 @@
       <PackageReference Include="System.Data.Common" Version="4.3.0" />
     </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
 </Project>

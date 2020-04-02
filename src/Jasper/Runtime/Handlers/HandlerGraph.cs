@@ -101,8 +101,11 @@ namespace Jasper.Runtime.Handlers
             if (_chains.TryFind(messageType, out var chain))
             {
                 if (chain.Handler != null)
+                {
                     handler = chain.Handler;
+                }
                 else
+                {
                     lock (chain)
                     {
                         if (chain.Handler == null)
@@ -120,6 +123,7 @@ namespace Jasper.Runtime.Handlers
                             handler = chain.Handler;
                         }
                     }
+                }
 
                 _handlers = _handlers.AddOrUpdate(messageType, handler);
 

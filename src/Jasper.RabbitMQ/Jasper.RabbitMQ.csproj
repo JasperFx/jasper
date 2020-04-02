@@ -6,7 +6,7 @@
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.RabbitMQ</AssemblyName>
     <PackageId>Jasper.RabbitMQ</PackageId>
-    
+
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
     <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
@@ -21,5 +21,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

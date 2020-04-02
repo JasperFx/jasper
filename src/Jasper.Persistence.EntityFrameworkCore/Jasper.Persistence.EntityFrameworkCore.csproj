@@ -2,6 +2,21 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
+
+      <Description>EF Core-backed Persistence for JasperFx Applications</Description>
+      <Authors>Jeremy D. Miller, Mark Warpool</Authors>
+      <TargetFramework>netstandard2.1</TargetFramework>
+      <DebugType>portable</DebugType>
+      <AssemblyName>Jasper.Persistence.EntityFrameworkCore</AssemblyName>
+      <PackageId>Jasper.Persistence.EntityFrameworkCore</PackageId>
+      <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
+      <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
+      <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
+      <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+      <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+      <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+      <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+      <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,5 +28,15 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.0.0" />
     </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="obj\Debug\netstandard2.1" />
+  </ItemGroup>
 
 </Project>

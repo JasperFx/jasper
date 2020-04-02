@@ -2,7 +2,7 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '1.0.0' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '1.1.0' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 
@@ -18,11 +18,11 @@ BUILD_NUMBER = build_number
 
 CI = ENV["CI"].nil? ? false : true
 
-task :ci => [:commands, :compile, :pack, :appVeyorPush]
+task :ci => [:version, :commands, :compile, :pack, :appVeyorPush]
 #task :ci => [:default, :commands, :pack, :appVeyorPush]
 
 
-task :default => [:test, :integrationtests, :commands]
+task :default => [:version, :test, :integrationtests, :commands]
 task :full => [:default, :storyteller]
 
 
@@ -51,7 +51,7 @@ task :version do
   options = {
 	:description => '',
 	:product_name => 'JasperFx Applications',
-	:copyright => 'Copyright 2019 Jeremy D. Miller, et al. All rights reserved.',
+	:copyright => 'Copyright 2020 Jeremy D. Miller, et al. All rights reserved.',
 	:trademark => commit,
 	:version => asm_version,
 	:file_version => build_number,

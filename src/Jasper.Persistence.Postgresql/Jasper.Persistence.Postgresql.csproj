@@ -5,8 +5,8 @@
       <Authors>Jeremy D. Miller</Authors>
       <TargetFramework>netstandard2.1</TargetFramework>
       <DebugType>portable</DebugType>
-      <AssemblyName>Jasper.Postgresql</AssemblyName>
-      <PackageId>Jasper.Postgresql</PackageId>
+      <AssemblyName>Jasper.Persistence.Postgresql</AssemblyName>
+      <PackageId>Jasper.Persistence.Postgresql</PackageId>
       <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
       <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
       <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>

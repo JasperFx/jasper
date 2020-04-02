@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Alternative HTTP service and axynchronous messaging framework</Description>
-    <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
+    <Description>In-memory command bus and asynchronous messaging framework</Description>
+    <Authors>Jeremy D. Miller, Mark Warpool</Authors>
     <TargetFramework>netstandard2.1</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper</AssemblyName>
@@ -36,5 +36,10 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="[4.11.0, 5.0.0)" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="Oakton.AspNetCore" Version="[2.1.3, 3.0.0)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>CommonAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

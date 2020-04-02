@@ -56,7 +56,7 @@ namespace Jasper.Testing.Samples
                     // On the 3rd failure, retry the message again after a configurable
                     // cool-off period. This schedules the message
                     x.RetryLater(15.Seconds());
-                    
+
                     // On the 4th failure, move the message to the dead letter queue
                     x.MoveToErrorQueue();
 
