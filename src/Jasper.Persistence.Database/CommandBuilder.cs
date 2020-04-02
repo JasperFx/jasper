@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -12,11 +12,12 @@ namespace Jasper.Persistence.Database
         private readonly DbCommand _command;
 
 
-        private readonly StringBuilder _sql = new StringBuilder();
+        private readonly StringBuilder _sql;
 
         public CommandBuilder(DbCommand command)
         {
             _command = command;
+            _sql = new StringBuilder(command.CommandText);
         }
 
 
