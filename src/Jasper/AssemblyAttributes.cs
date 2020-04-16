@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Lamar;
@@ -12,6 +12,7 @@ using Lamar;
 [assembly: InternalsVisibleTo("Jasper.RabbitMq")]
 [assembly: InternalsVisibleTo("Jasper.RabbitMq.Tests")]
 [assembly: InternalsVisibleTo("Jasper.AzureServiceBus")]
+[assembly: InternalsVisibleTo("Jasper.ConfluentKafka")]
 [assembly: InternalsVisibleTo("Jasper.AzureServiceBus.Tests")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.Testing")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.Database")]
