@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Attributes;
 using Jasper.AzureServiceBus.Internal;
+using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Primitives;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.AzureServiceBus.Tests
@@ -64,7 +64,7 @@ namespace Jasper.AzureServiceBus.Tests
 
 
 
-    public class MySpecialProtocol : IAzureServiceBusProtocol
+    public class MySpecialProtocol : ITransportProtocol<Message>
     {
         public Message WriteFromEnvelope(Envelope envelope)
         {

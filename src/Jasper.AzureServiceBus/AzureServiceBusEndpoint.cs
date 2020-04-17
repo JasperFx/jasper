@@ -8,6 +8,7 @@ using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
+using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus
 {
@@ -33,7 +34,7 @@ namespace Jasper.AzureServiceBus
         public string QueueName { get; set; }
         public string TopicName { get; set; }
 
-        public IAzureServiceBusProtocol Protocol { get; set; } = new DefaultAzureServiceBusProtocol();
+        public ITransportProtocol<Message> Protocol { get; set; } = new DefaultAzureServiceBusProtocol();
 
         public override Uri Uri => buildUri(false);
 
