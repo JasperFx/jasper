@@ -2,6 +2,7 @@ using System;
 using Baseline;
 using Confluent.Kafka;
 using Jasper.Configuration;
+using Jasper.Kafka;
 
 namespace Jasper.ConfluentKafka
 {
@@ -61,14 +62,13 @@ namespace Jasper.ConfluentKafka
         /// <param name="endpoints"></param>
         /// <param name="queueName">The name of the Rabbit MQ queue</param>
         /// <returns></returns>
-        //public static KafkaListenerConfiguration ListenToKafkaTopic(this IEndpoints endpoints, string topicName, string subscriptionName)
-        //{
-        //    var raw = new KafkaEndpoint { TopicName = topicName, SubscriptionName = subscriptionName }.Uri;
-        //    var endpoint = endpoints.KafkaTransport().GetOrCreateEndpoint(raw);
-        //    endpoint.IsListener = true;
-        //    return new KafkaListenerConfiguration((KafkaEndpoint)endpoint);
-        //}
-
+        public static KafkaListenerConfiguration ListenToKafkaTopic<TKey, TVal>(this IEndpoints endpoints, string topicName, ConsumerConfig consumerConfig)
+        {
+            var endpoint = endpoints.KafkaTransport().EndpointForTopic<TKey, TVal>(topicName, consumerConfig);
+            endpoint.IsListener = true;
+            return new KafkaListenerConfiguration((KafkaEndpoint)endpoint);
+        }
+        
         /// <summary>
         /// Publish matching messages to Rabbit MQ using the named routing key or queue name and
         /// optionally an exchange
@@ -104,5 +104,6 @@ namespace Jasper.ConfluentKafka
 
             return new TopicRouterConfiguration<KafkaSubscriberConfiguration>(router, transports);
         }
+
     }
 }

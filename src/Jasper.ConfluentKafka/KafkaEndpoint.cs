@@ -17,6 +17,7 @@ namespace Jasper.ConfluentKafka
         private const string TopicToken = "topic";
         public string TopicName { get; set; }
         public ProducerConfig ProducerConfig { get; set; }
+        public ConsumerConfig ConsumerConfig { get; set; }
         public override Uri Uri => BuildUri();
         private Uri BuildUri(bool forReply = false)
         {
