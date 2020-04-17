@@ -4,19 +4,16 @@ using Jasper.Transports;
 
 namespace Jasper.ConfluentKafka
 {
-    public class KafkaTransportProtocol<TKey> : ITransportProtocol<Message<TKey, byte[]>>
+    public class KafkaTransportProtocol<TKey, TVal> : ITransportProtocol<Message<TKey, TVal>>
     {
-        public Message<TKey, byte[]> WriteFromEnvelope(Envelope envelope)
-        {
-            var msg = new Message<TKey, byte[]>();
+        public Message<TKey, TVal> WriteFromEnvelope(Envelope envelope) =>
+            new Message<TKey, TVal>
+            {
+                Headers = new Headers(),
+                Value = (TVal) envelope.Message
+            };
 
-            msg.Value = envelope.Data;
-
-            
-            return msg;
-        }
-
-        public Envelope ReadEnvelope(Message<TKey, byte[]> message)
+        public Envelope ReadEnvelope(Message<TKey, TVal> message)
         {
             var env = new Envelope();
 
@@ -25,7 +22,7 @@ namespace Jasper.ConfluentKafka
                 env.Headers.Add(header.Key, Encoding.UTF8.GetString(header.GetValueBytes()));
             }
 
-            env.Data = message.Value;
+            env.Message = message.Value;
 
             return env;
         }

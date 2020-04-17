@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Baseline;
+using Confluent.Kafka;
 using Jasper.ConfluentKafka.Internal;
 using Jasper.Transports;
 
@@ -13,22 +13,31 @@ namespace Jasper.ConfluentKafka
     }
     public class KafkaTransport : TransportBase<KafkaEndpoint>
     {
-        private readonly LightweightCache<Uri, KafkaEndpoint> _endpoints;
+        private readonly Dictionary<Uri, KafkaEndpoint> _endpoints;
 
         public KafkaTopicRouter Topics { get; } = new KafkaTopicRouter();
+        public Config Config { get; set; }
 
         public KafkaTransport() : base(Protocols.Kafka)
         {
+            _endpoints = new Dictionary<Uri, KafkaEndpoint>();
         }
 
-        protected override IEnumerable<KafkaEndpoint> endpoints() => _endpoints;
+        protected override IEnumerable<KafkaEndpoint> endpoints() => _endpoints.Values;
 
         protected override KafkaEndpoint findEndpointByUri(Uri uri) => _endpoints[uri];
 
-        public KafkaEndpoint EndpointForTopic(string topicName)
+        public KafkaEndpoint<TKey, TVal> EndpointForTopic<TKey, TVal>(string topicName, ProducerConfig conifg)
         {
-            var uri = new KafkaEndpoint { TopicName = topicName }.Uri;
-            return _endpoints[uri];
+            var endpoint = new KafkaEndpoint<TKey, TVal>
+                {
+                    TopicName = topicName,
+                    ProducerConfig = conifg
+                };
+
+            _endpoints.Add(endpoint.Uri, endpoint);
+
+            return endpoint;
         }
     }
 }

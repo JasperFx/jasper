@@ -16,7 +16,7 @@ namespace Jasper.ConfluentKafka
     {
         private const string TopicToken = "topic";
         public string TopicName { get; set; }
-        public ProducerConfig ProducerConfig { get; private set; }
+        public ProducerConfig ProducerConfig { get; set; }
         public override Uri Uri => BuildUri();
         private Uri BuildUri(bool forReply = false)
         {
@@ -91,12 +91,11 @@ namespace Jasper.ConfluentKafka
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
-            throw new NotImplementedException();
         }
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            return new ConfluentKafkaSender<TKey, TVal>(this, Parent, root.TransportLogger, root.Cancellation);
+            return new ConfluentKafkaSender<TKey, TVal>(this, root.TransportLogger, root.Cancellation);
         }
     }
 }
