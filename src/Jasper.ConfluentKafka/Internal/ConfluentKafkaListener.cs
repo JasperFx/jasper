@@ -50,6 +50,8 @@ namespace Jasper.Kafka.Internal
             _consumer.Subscribe(_endpoint.TopicName);
 
             _consumerTask = ConsumeAsync();
+
+            Thread.Sleep(1000); // let the consumer start consuming
         }
 
         private async Task ConsumeAsync()
@@ -59,7 +61,7 @@ namespace Jasper.Kafka.Internal
                 ConsumeResult<TKey, TVal> message;
                 try
                 {
-                    message = _consumer.Consume();
+                    message = await Task.Run(() => _consumer.Consume(), _cancellation);
                 }
                 catch (Exception ex)
                 {
@@ -81,9 +83,17 @@ namespace Jasper.Kafka.Internal
 
                 try
                 {
-                    await _callback.Received(Address, new[] { envelope });
+                    await _callback.Received(Address, new[] {envelope});
 
                     _consumer.Commit();
+                }
+                catch (KafkaException ke)
+                {
+                    if (ke.Error?.Code == ErrorCode.Local_NoOffset)
+                    {
+                        return;
+                    }
+                    _logger.LogException(ke, envelope.Id, "Error trying to receive a message from " + Address);
                 }
                 catch (Exception e)
                 {
