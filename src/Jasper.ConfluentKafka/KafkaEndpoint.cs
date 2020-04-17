@@ -24,7 +24,7 @@ namespace Jasper.ConfluentKafka
 
             if (TopicName.IsNotEmpty())
             {
-                list.Add(TopicName);
+                list.Add(TopicToken);
                 list.Add(TopicName.ToLowerInvariant());
             }
 
@@ -82,10 +82,7 @@ namespace Jasper.ConfluentKafka
             throw new NotImplementedException();
         }
 
-        public override Uri ReplyUri()
-        {
-            throw new NotImplementedException();
-        }
+        public override Uri ReplyUri() => BuildUri(true);
     }
 
     public class KafkaEndpoint<TKey, TVal> : KafkaEndpoint
