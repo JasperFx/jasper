@@ -4,10 +4,13 @@ using Jasper.Transports;
 
 namespace Jasper.ConfluentKafka
 {
+    public static class Protocols
+    {
+        public const string Kafka = "kafka";
+
+    }
     public class KafkaTransport<TKey, TVal> : TransportBase<KafkaEndpoint<TKey, TVal>>
     {
-        public static readonly string ProtocolName = "kafka";
-
         public KafkaTransport(string protocol) : base(protocol)
         {
         }

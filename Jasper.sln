@@ -55,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.AzureServiceBus", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.AzureServiceBus.Tests", "src\Jasper.AzureServiceBus.Tests\Jasper.AzureServiceBus.Tests.csproj", "{6EC1EA66-63C7-4DF6-8DCB-40DFBEA4E07A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.ConfluentKafka", "Jasper.ConfluentKafka\Jasper.ConfluentKafka.csproj", "{DD65A67C-2B52-416E-8017-ED1E4D678ED6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.ConfluentKafka", "Jasper.ConfluentKafka\Jasper.ConfluentKafka.csproj", "{DD65A67C-2B52-416E-8017-ED1E4D678ED6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,12 +12,11 @@ using Jasper.Util;
 
 namespace Jasper.ConfluentKafka
 {
-    public class KafkaEndpoint<TKey, TVal> : Endpoint
+    public class KafkaEndpoint : Endpoint
     {
-        private const string TopicToken = "stream";
-        public string TopicName { get; private set; }
+        private const string TopicToken = "topic";
+        public string TopicName { get; set; }
         public ProducerConfig ProducerConfig { get; private set; }
-        internal KafkaTransport<TKey, TVal> Parent { get; set; }
         public override Uri Uri => BuildUri();
         private Uri BuildUri(bool forReply = false)
         {
@@ -34,18 +33,16 @@ namespace Jasper.ConfluentKafka
                 list.Add(TransportConstants.Durable);
             }
 
-            var uri = $"{KafkaTransport<TKey, TVal>.ProtocolName}://{list.Join("/")}".ToUri();
+            var uri = $"{Protocols.Kafka}://{list.Join("/")}".ToUri();
 
             return uri;
         }
 
-        public override Uri ReplyUri() => BuildUri();
-
         public override void Parse(Uri uri)
         {
-            if (uri.Scheme != KafkaTransport<TKey, TVal>.ProtocolName)
+            if (uri.Scheme != Protocols.Kafka)
             {
-                throw new ArgumentOutOfRangeException($"This is not a {nameof(KafkaTransport<TKey, TVal>)} Uri");
+                throw new ArgumentOutOfRangeException($"This is not a Kafka Transport Uri");
             }
 
             var raw = uri.Segments.Where(x => x != "/").Select(x => x.Trim('/'));
@@ -55,7 +52,6 @@ namespace Jasper.ConfluentKafka
             {
                 segments.Enqueue(segment);
             }
-
 
             while (segments.Any())
             {
@@ -71,10 +67,30 @@ namespace Jasper.ConfluentKafka
                 }
                 else
                 {
-                    throw new InvalidOperationException($"The Uri '{uri}' is invalid for an {nameof(KafkaTransport<TKey, TVal>)} endpoint");
+                    throw new InvalidOperationException($"The Uri '{uri}' is invalid for a  Kafka Transport endpoint");
                 }
             }
         }
+
+        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ISender CreateSender(IMessagingRoot root)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Uri ReplyUri()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class KafkaEndpoint<TKey, TVal> : KafkaEndpoint
+    {
+        internal KafkaTransport<TKey, TVal> Parent { get; set; }
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
