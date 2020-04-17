@@ -17,11 +17,18 @@ namespace Jasper.ConfluentKafka.Tests
     [Obsolete("try to replace with compliance tests")]
     public class end_to_end
     {
+        private static string KafkaServer = "b-1.jj-test.y7lv7k.c5.kafka.us-east-1.amazonaws.com:9094,b-2.jj-test.y7lv7k.c5.kafka.us-east-1.amazonaws.com:9094";
         private static ProducerConfig ProducerConfig = new ProducerConfig
         {
-            BootstrapServers =
-                "b-1.jj-test.y7lv7k.c5.kafka.us-east-1.amazonaws.com:9094,b-2.jj-test.y7lv7k.c5.kafka.us-east-1.amazonaws.com:9094",
+            BootstrapServers = KafkaServer,
             SecurityProtocol = SecurityProtocol.Ssl
+        };
+
+        private static ConsumerConfig ConsumerConfig = new ConsumerConfig
+        {
+            BootstrapServers = KafkaServer,
+            SecurityProtocol = SecurityProtocol.Ssl,
+            GroupId = nameof(end_to_end),
         };
 
         public class Sender : JasperOptions
@@ -92,6 +99,7 @@ namespace Jasper.ConfluentKafka.Tests
             public KafkaUsingApp()
             {
                 Endpoints.ConfigureKafka();
+                Endpoints.ListenToKafkaTopic<string, ColorChosen>("messages", ConsumerConfig);
                 Endpoints.PublishAllMessages().ToKafkaTopic<string, ColorChosen>("messages", ProducerConfig);
 
                 Handlers.IncludeType<ColorHandler>();
