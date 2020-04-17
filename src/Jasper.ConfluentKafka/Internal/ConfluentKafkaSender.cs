@@ -112,7 +112,7 @@ namespace Jasper.ConfluentKafka.Internal
                 }
                 else
                 {
-                    await _publisher.ProduceAsync(_endpoint.TopicName, new Message<TKey, TVal>(), _cancellation);
+                    await _publisher.ProduceAsync(_endpoint.TopicName, message, _cancellation);
                 }
 
                 await _callback.Successful(envelope);
