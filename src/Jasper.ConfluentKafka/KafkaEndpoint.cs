@@ -5,6 +5,7 @@ using Baseline;
 using Confluent.Kafka;
 using Jasper.Configuration;
 using Jasper.ConfluentKafka.Internal;
+using Jasper.Kafka.Internal;
 using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -92,6 +93,10 @@ namespace Jasper.ConfluentKafka
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
+            if (!IsListener) return;
+
+            var listener = new ConfluentKafkaListener<TKey, TVal>(this, root.TransportLogger, root.Cancellation);
+            runtime.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IMessagingRoot root)
