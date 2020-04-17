@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Confluent.Kafka;
+using Confluent.Kafka.SyncOverAsync;
 using Jasper.ConfluentKafka.Exceptions;
+using Jasper.ConfluentKafka.Serialization;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -15,20 +17,19 @@ namespace Jasper.ConfluentKafka.Internal
     {
         private readonly ITransportProtocol<Message<TKey, TVal>> _protocol;
         private readonly KafkaEndpoint<TKey, TVal> _endpoint;
-        private readonly KafkaTransport _transport;
         private readonly ITransportLogger _logger;
         private readonly CancellationToken _cancellation;
         private ActionBlock<Envelope> _sending;
         private ISenderCallback _callback;
         private IProducer<TKey, TVal> _publisher;
 
-        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, KafkaTransport transport, ITransportLogger logger, CancellationToken cancellation)
+        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
             _endpoint = endpoint;
-            _transport = transport;
             _logger = logger;
             _cancellation = cancellation;
             Destination = endpoint.Uri;
+            _protocol = new KafkaTransportProtocol<TKey, TVal>();
         }
 
         public void Dispose()
@@ -45,7 +46,10 @@ namespace Jasper.ConfluentKafka.Internal
         {
             _callback = callback;
 
-            _publisher = new ProducerBuilder<TKey, TVal>(_endpoint.ProducerConfig).Build();
+            _publisher = new ProducerBuilder<TKey, TVal>(_endpoint.ProducerConfig)
+                .SetKeySerializer(new DefaultJsonSerializer<TKey>().AsSyncOverAsync())
+                .SetValueSerializer(new DefaultJsonSerializer<TVal>().AsSyncOverAsync())
+                .Build();
 
             _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
             {
