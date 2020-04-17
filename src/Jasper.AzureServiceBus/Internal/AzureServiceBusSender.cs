@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Logging;
+using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
@@ -14,7 +15,7 @@ namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusSender : ISender
     {
-        private readonly IAzureServiceBusProtocol _protocol;
+        private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusEndpoint _endpoint;
         private readonly AzureServiceBusTransport _transport;
         private readonly ITransportLogger _logger;

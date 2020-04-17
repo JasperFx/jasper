@@ -1,11 +1,12 @@
 using System;
 using Baseline;
+using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus.Internal
 {
     // SAMPLE: DefaultAzureServiceBusProtocol
-    public class DefaultAzureServiceBusProtocol : IAzureServiceBusProtocol
+    public class DefaultAzureServiceBusProtocol : ITransportProtocol<Message>
     {
         public virtual Message WriteFromEnvelope(Envelope envelope)
         {
