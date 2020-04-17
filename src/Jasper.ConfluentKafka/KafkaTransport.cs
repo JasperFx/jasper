@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Baseline;
+using Jasper.ConfluentKafka.Internal;
 using Jasper.Transports;
 
 namespace Jasper.ConfluentKafka
@@ -9,20 +11,24 @@ namespace Jasper.ConfluentKafka
         public const string Kafka = "kafka";
 
     }
-    public class KafkaTransport<TKey, TVal> : TransportBase<KafkaEndpoint<TKey, TVal>>
+    public class KafkaTransport : TransportBase<KafkaEndpoint>
     {
-        public KafkaTransport(string protocol) : base(protocol)
+        private readonly LightweightCache<Uri, KafkaEndpoint> _endpoints;
+
+        public KafkaTopicRouter Topics { get; } = new KafkaTopicRouter();
+
+        public KafkaTransport() : base(Protocols.Kafka)
         {
         }
 
-        protected override IEnumerable<KafkaEndpoint<TKey, TVal>> endpoints()
-        {
-            throw new NotImplementedException();
-        }
+        protected override IEnumerable<KafkaEndpoint> endpoints() => _endpoints;
 
-        protected override KafkaEndpoint<TKey, TVal> findEndpointByUri(Uri uri)
+        protected override KafkaEndpoint findEndpointByUri(Uri uri) => _endpoints[uri];
+
+        public KafkaEndpoint EndpointForTopic(string topicName)
         {
-            throw new NotImplementedException();
+            var uri = new KafkaEndpoint { TopicName = topicName }.Uri;
+            return _endpoints[uri];
         }
     }
 }

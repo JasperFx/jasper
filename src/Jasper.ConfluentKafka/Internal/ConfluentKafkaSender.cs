@@ -15,14 +15,14 @@ namespace Jasper.ConfluentKafka.Internal
     {
         private readonly ITransportProtocol<Message<TKey, TVal>> _protocol;
         private readonly KafkaEndpoint<TKey, TVal> _endpoint;
-        private readonly KafkaTransport<TKey, TVal> _transport;
+        private readonly KafkaTransport _transport;
         private readonly ITransportLogger _logger;
         private readonly CancellationToken _cancellation;
         private ActionBlock<Envelope> _sending;
         private ISenderCallback _callback;
         private IProducer<TKey, TVal> _publisher;
 
-        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, KafkaTransport<TKey, TVal> transport, ITransportLogger logger, CancellationToken cancellation)
+        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, KafkaTransport transport, ITransportLogger logger, CancellationToken cancellation)
         {
             _endpoint = endpoint;
             _transport = transport;

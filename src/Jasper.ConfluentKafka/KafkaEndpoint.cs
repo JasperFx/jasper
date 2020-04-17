@@ -90,7 +90,7 @@ namespace Jasper.ConfluentKafka
 
     public class KafkaEndpoint<TKey, TVal> : KafkaEndpoint
     {
-        internal KafkaTransport<TKey, TVal> Parent { get; set; }
+        internal KafkaTransport Parent { get; set; }
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
