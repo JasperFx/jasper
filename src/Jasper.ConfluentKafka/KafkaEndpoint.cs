@@ -5,6 +5,7 @@ using Baseline;
 using Confluent.Kafka;
 using Jasper.Configuration;
 using Jasper.ConfluentKafka.Internal;
+using Jasper.ConfluentKafka.Serialization;
 using Jasper.Kafka.Internal;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -91,6 +92,11 @@ namespace Jasper.ConfluentKafka
     {
         internal KafkaTransport Parent { get; set; }
 
+        public ISerializer<TKey> KeySerializer = new DefaultJsonSerializer<TKey>().AsSyncOverAsync();
+        public ISerializer<TVal> ValueSerializer= new DefaultJsonSerializer<TVal>().AsSyncOverAsync();
+        public IDeserializer<TKey> KeyDeserializer = new DefaultJsonDeserializer<TKey>().AsSyncOverAsync();
+        public IDeserializer<TVal> ValueDeserializer = new DefaultJsonDeserializer<TVal>().AsSyncOverAsync();
+
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
@@ -101,7 +107,7 @@ namespace Jasper.ConfluentKafka
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            return new ConfluentKafkaSender<TKey, TVal>(this, root.TransportLogger, root.Cancellation);
+            return new ConfluentKafkaSender<TKey, TVal>(this, root.TransportLogger, KeySerializer, ValueSerializer, root.Cancellation);
         }
     }
 }
