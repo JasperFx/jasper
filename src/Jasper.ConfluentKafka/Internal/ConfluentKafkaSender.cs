@@ -23,13 +23,18 @@ namespace Jasper.ConfluentKafka.Internal
         private ISenderCallback _callback;
         private IProducer<TKey, TVal> _publisher;
 
-        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, ITransportLogger logger, CancellationToken cancellation)
+        private readonly ISerializer<TKey> _keySerializer = new DefaultJsonSerializer<TKey>().AsSyncOverAsync();
+        private readonly ISerializer<TVal> _valueSerializer = new DefaultJsonSerializer<TVal>().AsSyncOverAsync();
+
+        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, ITransportLogger logger, ISerializer<TKey> keySerializer, ISerializer<TVal> valueSerializer, CancellationToken cancellation)
         {
             _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
             Destination = endpoint.Uri;
             _protocol = new KafkaTransportProtocol<TKey, TVal>();
+            _keySerializer = keySerializer;
+            _valueSerializer = valueSerializer;
         }
 
         public void Dispose()
@@ -46,10 +51,11 @@ namespace Jasper.ConfluentKafka.Internal
         {
             _callback = callback;
 
-            _publisher = new ProducerBuilder<TKey, TVal>(_endpoint.ProducerConfig)
-                .SetKeySerializer(new DefaultJsonSerializer<TKey>().AsSyncOverAsync())
-                .SetValueSerializer(new DefaultJsonSerializer<TVal>().AsSyncOverAsync())
-                .Build();
+            var publisherBuilder = new ProducerBuilder<TKey, TVal>(_endpoint.ProducerConfig)
+                .SetKeySerializer(_keySerializer)
+                .SetValueSerializer(_valueSerializer);
+            
+            _publisher = publisherBuilder.Build();
 
             _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
             {

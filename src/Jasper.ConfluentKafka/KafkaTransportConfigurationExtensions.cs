@@ -57,21 +57,42 @@ namespace Jasper.ConfluentKafka
         }
 
         /// <summary>
-        /// Listen for incoming messages at the designated Rabbit MQ queue by name
+        /// Listen for incoming messages at the designated Kafka Topic by name
         /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TVal"></typeparam>
         /// <param name="endpoints"></param>
-        /// <param name="queueName">The name of the Rabbit MQ queue</param>
+        /// <param name="topicName"></param>
+        /// <param name="consumerConfig"></param>
         /// <returns></returns>
         public static KafkaListenerConfiguration ListenToKafkaTopic<TKey, TVal>(this IEndpoints endpoints, string topicName, ConsumerConfig consumerConfig)
         {
             var endpoint = endpoints.KafkaTransport().EndpointForTopic<TKey, TVal>(topicName, consumerConfig);
             endpoint.IsListener = true;
-            return new KafkaListenerConfiguration((KafkaEndpoint)endpoint);
+            return new KafkaListenerConfiguration(endpoint);
         }
-        
+
         /// <summary>
-        /// Publish matching messages to Rabbit MQ using the named routing key or queue name and
-        /// optionally an exchange
+        /// Listen for incoming messages at the designated Kafka Topic by name
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="endpoints"></param>
+        /// <param name="topicName"></param>
+        /// <param name="consumerConfig"></param>
+        /// <param name="keyDeserializer"></param>
+        /// <param name="valueDeserializer"></param>
+        /// <returns></returns>
+        public static KafkaListenerConfiguration ListenToKafkaTopic<TKey, TVal>(this IEndpoints endpoints, string topicName, ConsumerConfig consumerConfig,
+            IDeserializer<TKey> keyDeserializer, IDeserializer<TVal> valueDeserializer)
+        {
+            var endpoint = endpoints.KafkaTransport().EndpointForTopic<TKey, TVal>(topicName, consumerConfig, keyDeserializer, valueDeserializer);
+            endpoint.IsListener = true;
+            return new KafkaListenerConfiguration(endpoint);
+        }
+
+        /// <summary>
+        /// Publish matching messages to Kafka Topic using provided Producer Configuration
         /// </summary>
         /// <param name="publishing"></param>
         /// <param name="topicName">This is used as the topic name when publishing. Can be either a binding key or a queue name or a static topic name if the exchange is topic-based</param>
@@ -90,20 +111,26 @@ namespace Jasper.ConfluentKafka
         }
 
         /// <summary>
-        /// Publish matching messages to Azure Service Bus using the topic name derived from the message and
+        /// Publish matching messages to Kafka Topic using provided Producer Configuration and Serializers
         /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TVal"></typeparam>
         /// <param name="publishing"></param>
+        /// <param name="topicName"></param>
+        /// <param name="producerConfig"></param>
+        /// <param name="keySerializer"></param>
+        /// <param name="valueSerializer"></param>
         /// <returns></returns>
-        public static TopicRouterConfiguration<KafkaSubscriberConfiguration> ToKafkaTopics(this IPublishToExpression publishing)
+        public static KafkaSubscriberConfiguration ToKafkaTopic<TKey, TVal>(this IPublishToExpression publishing, string topicName, ProducerConfig producerConfig, ISerializer<TKey> keySerializer, ISerializer<TVal> valueSerializer)
         {
             var transports = publishing.As<PublishingExpression>().Parent;
+            var transport = transports.Get<KafkaTransport>();
+            var endpoint = transport.EndpointForTopic(topicName, producerConfig, keySerializer, valueSerializer);
 
-            var router = transports.KafkaTransport().Topics;
+            // This is necessary unfortunately to hook up the subscription rules
+            publishing.To(endpoint.Uri);
 
-            publishing.ViaRouter(router);
-
-            return new TopicRouterConfiguration<KafkaSubscriberConfiguration>(router, transports);
+            return new KafkaSubscriberConfiguration(endpoint);
         }
-
     }
 }
