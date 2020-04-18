@@ -101,7 +101,7 @@ namespace Jasper.ConfluentKafka
         {
             if (!IsListener) return;
 
-            var listener = new ConfluentKafkaListener<TKey, TVal>(this, root.TransportLogger, root.Cancellation);
+            var listener = new ConfluentKafkaListener<TKey, TVal>(this, root.TransportLogger, KeyDeserializer, ValueDeserializer, root.Cancellation);
             runtime.AddListener(listener, this);
         }
 

@@ -6,6 +6,7 @@ using Jasper.ConfluentKafka;
 using Jasper.ConfluentKafka.Serialization;
 using Jasper.Logging;
 using Jasper.Transports;
+using Lamar.IoC.Instances;
 
 namespace Jasper.Kafka.Internal
 {
@@ -18,14 +19,19 @@ namespace Jasper.Kafka.Internal
         private readonly KafkaTransportProtocol<TKey, TVal> _protocol = new KafkaTransportProtocol<TKey, TVal>();
         private IReceiverCallback _callback;
         private IConsumer<TKey, TVal> _consumer;
+        private readonly IDeserializer<TKey> _keyDeserializer = new DefaultJsonDeserializer<TKey>().AsSyncOverAsync();
+        private readonly IDeserializer<TVal> _valueDeserializer = new DefaultJsonDeserializer<TVal>().AsSyncOverAsync();
+
         private Task _consumerTask;
 
-        public ConfluentKafkaListener(KafkaEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
+        public ConfluentKafkaListener(KafkaEndpoint endpoint, ITransportLogger logger, IDeserializer<TKey> keyDeserializer, IDeserializer<TVal> valueDeserializer, CancellationToken cancellation)
         {
             _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
             Address = endpoint.Uri;
+            _keyDeserializer = keyDeserializer;
+            _valueDeserializer = valueDeserializer;
         }
 
 
@@ -43,8 +49,8 @@ namespace Jasper.Kafka.Internal
             _callback = callback;
 
             _consumer = new ConsumerBuilder<TKey, TVal>(_endpoint.ConsumerConfig)
-                .SetKeyDeserializer(new DefaultJsonDeserializer<TKey>().AsSyncOverAsync())
-                .SetValueDeserializer(new DefaultJsonDeserializer<TVal>().AsSyncOverAsync())
+                .SetKeyDeserializer(_keyDeserializer)
+                .SetValueDeserializer(_valueDeserializer)
                 .Build();
 
             _consumer.Subscribe(_endpoint.TopicName);
