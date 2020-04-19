@@ -27,10 +27,10 @@ namespace Jasper.TestSupport.Storyteller
 
         public static JasperStorytellerHost<JasperOptions> Basic(Action<JasperOptions> configure = null)
         {
-            var jasperRegistry = new JasperOptions();
-            configure?.Invoke(jasperRegistry);
+            var JasperOptions = new JasperOptions();
+            configure?.Invoke(JasperOptions);
 
-            return new JasperStorytellerHost<JasperOptions>(jasperRegistry);
+            return new JasperStorytellerHost<JasperOptions>(JasperOptions);
         }
     }
 

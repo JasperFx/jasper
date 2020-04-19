@@ -104,7 +104,7 @@ namespace Bootstrapping.Configuration
 
 namespace Bootstrapping.Configuration2
 {
-    // SAMPLE: CustomJasperRegistry
+    // SAMPLE: CustomJasperOptions
     public class MyJasperApp : JasperOptions
     {
         public MyJasperApp()
