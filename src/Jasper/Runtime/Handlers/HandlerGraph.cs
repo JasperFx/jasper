@@ -202,11 +202,6 @@ namespace Jasper.Runtime.Handlers
             return _chains.TryFind(messageType, out var chain);
         }
 
-        public string[] ValidMessageTypeNames()
-        {
-            return Chains.Select(x => x.MessageType.ToMessageTypeName()).ToArray();
-        }
-
         IServiceVariableSource IGeneratesCode.AssemblyTypes(GenerationRules rules, GeneratedAssembly assembly)
         {
             foreach (var chain in Chains)

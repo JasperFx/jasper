@@ -88,7 +88,7 @@ namespace Jasper.Testing
         }
 
         [Fact]
-        public void determine_name_from_JasperRegistry_type_name()
+        public void determine_name_from_JasperOptions_type_name()
         {
             new MyAppJasperOptions().ServiceName.ShouldBe("MyApp");
             new MyApp2Options().ServiceName.ShouldBe("MyApp2");

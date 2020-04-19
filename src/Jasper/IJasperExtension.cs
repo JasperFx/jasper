@@ -9,7 +9,7 @@
         /// <summary>
         ///     Make any alterations to the JasperOptions for the application
         /// </summary>
-        /// <param name="optionsy"></param>
+        /// <param name="options"></param>
         void Configure(JasperOptions options);
     }
 

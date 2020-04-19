@@ -25,7 +25,7 @@
             // This gives you the ability to programmatically
             // construct the application based on the command line
             // arguments
-            var registry = new JasperRegistry();
+            var registry = new JasperOptions();
 
 
             return JasperAgent.Run(args, registry);

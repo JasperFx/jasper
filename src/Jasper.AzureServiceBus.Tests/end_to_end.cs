@@ -19,7 +19,6 @@ using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests
 {
-    [Obsolete("try to replace with compliance tests")]
     public class end_to_end
     {
         // TODO -- make this puppy be pulled from an environment variable? Something ignored?

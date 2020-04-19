@@ -84,6 +84,7 @@ task :test => [:compile] do
   FileUtils.mkdir_p RESULTS_DIR
 
 	sh "dotnet test src/Jasper.Testing/Jasper.Testing.csproj --no-restore"
+	sh "dotnet test src/Jasper.Http.Testing/Jasper.Http.Testing.csproj --no-restore"
 	sh "dotnet test src/Jasper.TestSupport.Tests/Jasper.TestSupport.Tests.csproj --no-restore"
 
 end
@@ -143,6 +144,7 @@ task :pack do
   pack_nuget 'Jasper.AzureServiceBus'
   pack_nuget 'Jasper.JsonCommands'
   pack_nuget 'Jasper.Persistence.EntityFrameworkCore'
+  pack_nuget 'Jasper.Http'
 end
 
 def pack_nuget(project)
