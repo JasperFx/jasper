@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Confluent.Kafka;
-using Confluent.Kafka.SyncOverAsync;
 using Jasper.ConfluentKafka.Exceptions;
 using Jasper.ConfluentKafka.Serialization;
 using Jasper.Logging;
@@ -57,10 +56,7 @@ namespace Jasper.ConfluentKafka.Internal
             
             _publisher = publisherBuilder.Build();
 
-            _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
-            {
-                CancellationToken = _cancellation
-            });
+            _sending = new ActionBlock<Envelope>(sendBySession, _endpoint.ExecutionOptions);
         }
 
 
