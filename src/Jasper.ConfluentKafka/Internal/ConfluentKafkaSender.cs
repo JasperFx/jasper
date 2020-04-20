@@ -45,7 +45,6 @@ namespace Jasper.ConfluentKafka.Internal
         public int QueuedCount => _sending.InputCount;
         public bool Latched { get; private set; }
 
-
         public void Start(ISenderCallback callback)
         {
             _callback = callback;
@@ -67,7 +66,7 @@ namespace Jasper.ConfluentKafka.Internal
             return Task.CompletedTask;
         }
 
-        public async Task LatchAndDrain()
+        public Task LatchAndDrain()
         {
             Latched = true;
 
@@ -76,6 +75,8 @@ namespace Jasper.ConfluentKafka.Internal
             _sending.Complete();
 
             _logger.CircuitBroken(Destination);
+
+            return Task.CompletedTask;
         }
 
         public void Unlatch()
