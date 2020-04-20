@@ -112,10 +112,8 @@ namespace Jasper.ConfluentKafka.Internal
                 {
                     throw new UnsupportedFeatureException("Delayed Message Delivery");
                 }
-                else
-                {
-                    await _publisher.ProduceAsync(_endpoint.TopicName, message, _cancellation);
-                }
+
+                await _publisher.ProduceAsync(_endpoint.TopicName, message, _cancellation);
 
                 await _callback.Successful(envelope);
             }
