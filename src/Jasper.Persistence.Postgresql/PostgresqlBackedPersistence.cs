@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Postgresql
             options.Services.Add(new NpgsqlConnectionInstance(typeof(NpgsqlConnection)));
             options.Services.Add(new NpgsqlConnectionInstance(typeof(DbConnection)));
 
-            options.Advanced.CodeGeneration.SetTransactions(new PostgresqlTransactionFrameProvider());
+            options.Advanced.CodeGeneration.SetTransactionsIfNone(new PostgresqlTransactionFrameProvider());
         }
 
         public PostgresqlSettings Settings { get; } = new PostgresqlSettings();

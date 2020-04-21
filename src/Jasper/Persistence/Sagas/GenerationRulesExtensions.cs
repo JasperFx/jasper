@@ -58,6 +58,17 @@ namespace Jasper.Persistence.Sagas
         /// <summary>
         ///     The currently known strategy for code generating transaction middleware
         /// </summary>
+        public static void SetTransactionsIfNone(this GenerationRules rules, ITransactionFrameProvider value)
+        {
+            if (!rules.Properties.ContainsKey(TRANSACTIONS))
+            {
+                rules.Properties.Add(TRANSACTIONS, value);
+            }
+        }
+
+        /// <summary>
+        ///     The currently known strategy for code generating transaction middleware
+        /// </summary>
         public static ITransactionFrameProvider GetTransactions(this GenerationRules rules)
         {
             if (rules.Properties.TryGetValue(TRANSACTIONS, out var transactions))
