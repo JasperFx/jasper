@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Confluent.Kafka;
 using Jasper.ConfluentKafka.Exceptions;
-using Jasper.ConfluentKafka.Serialization;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -22,8 +21,8 @@ namespace Jasper.ConfluentKafka.Internal
         private ISenderCallback _callback;
         private IProducer<TKey, TVal> _publisher;
 
-        private readonly ISerializer<TKey> _keySerializer = new DefaultJsonSerializer<TKey>().AsSyncOverAsync();
-        private readonly ISerializer<TVal> _valueSerializer = new DefaultJsonSerializer<TVal>().AsSyncOverAsync();
+        private readonly ISerializer<TKey> _keySerializer;
+        private readonly ISerializer<TVal> _valueSerializer;
 
         public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, ITransportLogger logger, ISerializer<TKey> keySerializer, ISerializer<TVal> valueSerializer, CancellationToken cancellation)
         {
