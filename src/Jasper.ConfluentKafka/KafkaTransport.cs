@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Confluent.Kafka;
-using Confluent.SchemaRegistry;
 using Jasper.ConfluentKafka.Internal;
 using Jasper.Transports;
-using Lamar.IoC.Instances;
 
 namespace Jasper.ConfluentKafka
 {
