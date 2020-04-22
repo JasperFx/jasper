@@ -23,6 +23,11 @@ to `modelBuilder.MapEnvelopeStorage()` in the `OnModelCreating()` method. This a
 to Jasper's <[linkto:documentation/durability;title=message persistence]> and allowing
 the `ItemsDbContext` objects to enroll in Jasper outbox transactions.
 
+<[warning]>
+You will have to explicitly opt into a specific database persistence for the messaging **and**
+also explicitly add in the EF Core transactional support. 
+<[/warning]>
+
 Now, to wire up EF Core into our Jasper application and add Sql Server-backed message persistence, use
 this <[linkto:documentation/bootstrapping;title=JasperOptions]> class:
 
