@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Jasper.Persistence.EntityFrameworkCore\Jasper.Persistence.EntityFrameworkCore.csproj" />
+      <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
+      <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LamarCodeGeneration.Commands" Version="1.0.4" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.3" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.3" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.3" />
+    </ItemGroup>
+
+</Project>
