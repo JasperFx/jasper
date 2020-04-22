@@ -28,7 +28,7 @@ install:
 
 build_script:
 - cmd: >-
-    rake ci version=1.1.1
+    rake ci version=1.1.2
 test: off
 
 deploy:
