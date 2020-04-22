@@ -31,9 +31,9 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
                 _.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
 
-                _.Extensions.Include<EntityFrameworkCoreBackedPersistence>();
+                _.Extensions.UseEntityFrameworkCorePersistence();
 
-                _.Extensions.Include<MessageTrackingExtension>();
+                _.Extensions.UseMessageTrackingTestingSupport();
 
                 _.Endpoints.PublishAllMessages().Locally();
 

@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Http", "src\Jasper.H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jasper.Http.Testing", "src\Jasper.Http.Testing\Jasper.Http.Testing.csproj", "{39F644C3-832A-471D-8827-BDC6B270F73B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFPlusSqlServerConsole", "src\EFPlusSqlServerConsole\EFPlusSqlServerConsole.csproj", "{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -359,6 +361,18 @@ Global
 		{39F644C3-832A-471D-8827-BDC6B270F73B}.Release|x64.Build.0 = Release|Any CPU
 		{39F644C3-832A-471D-8827-BDC6B270F73B}.Release|x86.ActiveCfg = Release|Any CPU
 		{39F644C3-832A-471D-8827-BDC6B270F73B}.Release|x86.Build.0 = Release|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Debug|x64.Build.0 = Debug|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Debug|x86.Build.0 = Debug|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Release|x64.ActiveCfg = Release|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Release|x64.Build.0 = Release|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Release|x86.ActiveCfg = Release|Any CPU
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -387,6 +401,7 @@ Global
 		{6EC1EA66-63C7-4DF6-8DCB-40DFBEA4E07A} = {CA5A0AA5-2CAD-4F42-AF73-980469934F27}
 		{AB120B77-376F-4F84-8FAC-297A066E9434} = {7687741C-5880-464B-A51D-CAA0C0B1CE0D}
 		{39F644C3-832A-471D-8827-BDC6B270F73B} = {7687741C-5880-464B-A51D-CAA0C0B1CE0D}
+		{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B} = {A806095A-9D66-4D55-8662-1FC67E90F6FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D92D723F-44EC-4C1E-AAC3-C162FCEAAA08}

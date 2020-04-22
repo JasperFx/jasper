@@ -4,8 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {
+    public static class JasperEntityFrameworkCoreConfigurationExtensions
+    {
+        /// <summary>
+        /// Uses Entity Framework Core for Saga persistence and transactional
+        /// middleware
+        /// </summary>
+        /// <param name="extensions"></param>
+        public static void UseEntityFrameworkCorePersistence(this IExtensions extensions)
+        {
+            extensions.Include<EntityFrameworkCoreBackedPersistence>();
+        }
+    }
+
     public static class JasperEnvelopeEntityFrameworkCoreExtensions
     {
+
+
         /// <summary>
         /// Enlists the current IMessagingContext in the EF Core DbContext's transaction
         /// lifecycle. Note, you will need to call IMessageContext.SendAllQueuedOutgoingMessages()

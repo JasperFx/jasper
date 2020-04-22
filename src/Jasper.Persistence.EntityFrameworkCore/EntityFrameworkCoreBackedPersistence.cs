@@ -20,4 +20,5 @@ namespace Jasper.Persistence.EntityFrameworkCore
             options.Advanced.CodeGeneration.SetTransactions(frameProvider);
         }
     }
+
 }

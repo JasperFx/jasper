@@ -56,7 +56,13 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 
             var saveChangesAsync = dbType.GetMethod(nameof(DbContext.SaveChangesAsync), new Type[]{typeof(CancellationToken)});
             var @call = new MethodCall(dbType, saveChangesAsync);
+
             chain.Postprocessors.Add(@call);
+
+            if (chain.ShouldFlushOutgoingMessages())
+            {
+                chain.Postprocessors.Add(MethodCall.For<IMessageContext>(x => x.SendAllQueuedOutgoingMessages()));
+            }
         }
 
         public static Type DetermineDbContextType(IChain chain, IContainer container)
