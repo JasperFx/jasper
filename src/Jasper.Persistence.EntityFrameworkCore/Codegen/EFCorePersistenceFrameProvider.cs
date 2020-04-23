@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Jasper.Configuration;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Baseline;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Handlers;
+using LamarCodeGeneration;
 
 namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 {
@@ -50,12 +52,48 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
             return frame;
         }
 
+        public class EnrollDbContextInTransaction : SyncFrame
+        {
+            private readonly Type _dbContextType;
+            private Variable _context;
+            private Variable _dbContext;
+
+            public EnrollDbContextInTransaction(Type dbContextType)
+            {
+                _dbContextType = dbContextType;
+
+
+            }
+
+            public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+            {
+                writer.WriteComment("Enroll the DbContext & IMessagingContext in the outgoing Jasper outbox transaction");
+                writer.Write(
+                    $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInTransaction)}({_context.Usage}, {_dbContext.Usage});");
+
+                Next?.GenerateCode(method, writer);
+            }
+
+            public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
+            {
+                _context = chain.FindVariable(typeof(IMessageContext));
+                yield return _context;
+
+                _dbContext = chain.FindVariable(_dbContextType);
+                yield return _dbContext;
+            }
+        }
+
         public void ApplyTransactionSupport(IChain chain, IContainer container)
         {
             var dbType = DetermineDbContextType(chain, container);
 
+            chain.Middleware.Insert(0, new EnrollDbContextInTransaction(dbType));
+
+
             var saveChangesAsync = dbType.GetMethod(nameof(DbContext.SaveChangesAsync), new Type[]{typeof(CancellationToken)});
             var @call = new MethodCall(dbType, saveChangesAsync);
+            @call.CommentText = "Added by EF Core Transaction Middleware";
 
             chain.Postprocessors.Add(@call);
 

@@ -2,7 +2,7 @@ require 'json'
 
 APIKEY = ENV['api_key'].nil? ? '' : ENV['api_key']
 
-BUILD_VERSION =  ENV['version'].nil? ? '1.1.2' : ENV['version']
+BUILD_VERSION =  ENV['version'].nil? ? '1.1.3' : ENV['version']
 puts "Build version is #{BUILD_VERSION}"
 
 

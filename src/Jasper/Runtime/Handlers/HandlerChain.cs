@@ -90,6 +90,7 @@ namespace Jasper.Runtime.Handlers
                     $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
 
             var call = new MethodCall(handlerType, method);
+            call.CommentText = "Core message handling method";
 
             return new HandlerChain(call);
         }
