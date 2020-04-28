@@ -26,6 +26,18 @@ namespace Jasper.ConfluentKafka
 
             message.Headers = headers;
 
+            if (envelopHeaders.TryGetValue("MessageKey", out var msgKey))
+            {
+                if (msgKey is byte[])
+                {
+                    message.Key = (byte[])msgKey;
+                }
+                else
+                {
+                    message.Key = Encoding.UTF8.GetBytes(msgKey.ToString());
+                }
+            }
+
             return message;
         }
 
@@ -40,7 +52,7 @@ namespace Jasper.ConfluentKafka
                 .ToDictionary(k => k.Key, v => (object)Encoding.UTF8.GetString(v.Value));
             
             env.ReadPropertiesFromDictionary(incomingHeaders);
-            
+
             return env;
         }
     }

@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using AutoFixture.Xunit2;
 using Baseline.Dates;
 using Confluent.Kafka;
 using Jasper.Tracking;
@@ -72,25 +76,61 @@ namespace Jasper.ConfluentKafka.Tests
 
         // SAMPLE: can_stop_and_start_ASB
         [Fact]
-        public async Task can_stop_and_start()
+        public async Task can_send_and_receive_from_kafka()
         {
-            using (var host = JasperHost.For<KafkaUsingApp>())
+            using var host = JasperHost.For<KafkaUsingApp>();
+            await host
+                // The TrackActivity() method starts a Fluent Interface
+                // that gives you fine-grained control over the
+                // message tracking
+                .TrackActivity()
+                .Timeout(30.Seconds())
+                // Include the external transports in the determination
+                // of "completion"
+                .IncludeExternalTransports()
+                .SendMessageAndWait(new ColorChosen { Name = "Red" });
+
+            var colors = host.Get<ColorHistory>();
+
+            colors.Name.ShouldBe("Red");
+        }
+
+
+        [Fact]
+        public async Task send_multiple_messages_in_order()
+        {
+            var colorsChosens = Enumerable.Range(0, 100).Select(i => new ColorChosen {Name = i.ToString()});
+            var sequence = Guid.NewGuid().ToString();
+            using var host = JasperHost.For(host =>
             {
-                await host
-                    // The TrackActivity() method starts a Fluent Interface
-                    // that gives you fine-grained control over the
-                    // message tracking
-                    .TrackActivity()
-                    .Timeout(30.Seconds())
-                    // Include the external transports in the determination
-                    // of "completion"
-                    .IncludeExternalTransports()
-                    .SendMessageAndWait(new ColorChosen {Name = "Red"});
+                host.Endpoints.ConfigureKafka();
+                host.Endpoints.ListenToKafkaTopic("messages", ConsumerConfig).Sequential();
+                host.Endpoints.Publish(pub => pub.Message<ColorChosen>().ToKafkaTopic("messages", ProducerConfig)
+                    .CustomizeOutgoing(e => e.Headers.Add("MessageKey", sequence)) // use the same message key in Kafka
+                );
+                host.Handlers.IncludeType<ColorHandler>();
+                host.Services.AddSingleton<ColorHistory>();
+                host.Extensions.UseMessageTrackingTestingSupport();
+            });
 
-                var colors = host.Get<ColorHistory>();
+            ITrackedSession session = await host
+                .TrackActivity()
+                .Timeout(60.Seconds())
+                .IncludeExternalTransports()
+                .ExecuteAndWait(async ctx =>
+                {
+                    foreach (ColorChosen colorsChosen in colorsChosens)
+                    {
+                        await ctx.Publish(colorsChosen);
+                    }
+                });
 
-                colors.Name.ShouldBe("Red");
-            }
+            IEnumerable<string> colorsSent = session.AllRecordsInOrder()
+                .Where(e => e.EventType == EventType.Sent)
+                .Select(e => e.Envelope.Message).Cast<ColorChosen>().Select(c => c.Name);
+            IEnumerable<string> colorsPublished = colorsChosens.Select(c => c.Name);
+
+            colorsSent.ShouldBe(colorsPublished);
         }
 
         // ENDSAMPLE
