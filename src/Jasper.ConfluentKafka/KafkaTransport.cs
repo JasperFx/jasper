@@ -26,39 +26,22 @@ namespace Jasper.ConfluentKafka
 
         protected override KafkaEndpoint findEndpointByUri(Uri uri) => _endpoints[uri];
 
-        public KafkaEndpoint<TKey, TVal> EndpointForTopic<TKey, TVal>(string topicName, ProducerConfig producerConifg) =>
-            AddOrUpdateEndpoint<TKey, TVal>(topicName, endpoint => endpoint.ProducerConfig = producerConifg);
+        public KafkaEndpoint EndpointForTopic(string topicName, ProducerConfig producerConifg) =>
+            AddOrUpdateEndpoint(topicName, endpoint => endpoint.ProducerConfig = producerConifg);
 
-        public KafkaEndpoint<TKey, TVal> EndpointForTopic<TKey, TVal>(string topicName, ConsumerConfig consumerConifg) =>
-            AddOrUpdateEndpoint<TKey, TVal>(topicName, endpoint => endpoint.ConsumerConfig = consumerConifg);
+        public KafkaEndpoint EndpointForTopic(string topicName, ConsumerConfig consumerConifg) =>
+            AddOrUpdateEndpoint(topicName, endpoint => endpoint.ConsumerConfig = consumerConifg);
 
-        public KafkaEndpoint<TKey, TVal> EndpointForTopic<TKey, TVal>(string topicName, ProducerConfig producerConifg, ISerializer<TKey> keySerializer, ISerializer<TVal> valueSerializer) =>
-            AddOrUpdateEndpoint<TKey, TVal>(topicName, endpoint =>
-            {
-                endpoint.KeySerializer = keySerializer;
-                endpoint.ValueSerializer = valueSerializer;
-                endpoint.ProducerConfig = producerConifg;
-            });
-
-        public KafkaEndpoint<TKey, TVal> EndpointForTopic<TKey, TVal>(string topicName, ConsumerConfig consumerConifg, IDeserializer<TKey> keyDeserializer, IDeserializer<TVal> valueDeserializer) =>
-            AddOrUpdateEndpoint<TKey, TVal>(topicName, endpoint =>
-            {
-                endpoint.KeyDeserializer = keyDeserializer;
-                endpoint.ValueDeserializer = valueDeserializer;
-                endpoint.ConsumerConfig = consumerConifg;
-            });
-
-
-        KafkaEndpoint<TKey, TVal> AddOrUpdateEndpoint<TKey, TVal>(string topicName, Action<KafkaEndpoint<TKey, TVal>> configure)
+        KafkaEndpoint AddOrUpdateEndpoint(string topicName, Action<KafkaEndpoint> configure)
         {
-            var endpoint = new KafkaEndpoint<TKey, TVal>
+            var endpoint = new KafkaEndpoint
             {
                 TopicName = topicName
             };
 
             if (_endpoints.ContainsKey(endpoint.Uri))
             {
-                endpoint = (KafkaEndpoint<TKey, TVal>)_endpoints[endpoint.Uri];
+                endpoint = _endpoints[endpoint.Uri];
                 configure(endpoint);
             }
             else

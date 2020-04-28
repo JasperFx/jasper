@@ -65,28 +65,9 @@ namespace Jasper.ConfluentKafka
         /// <param name="topicName"></param>
         /// <param name="consumerConfig"></param>
         /// <returns></returns>
-        public static KafkaListenerConfiguration ListenToKafkaTopic<TKey, TVal>(this IEndpoints endpoints, string topicName, ConsumerConfig consumerConfig)
+        public static KafkaListenerConfiguration ListenToKafkaTopic(this IEndpoints endpoints, string topicName, ConsumerConfig consumerConfig)
         {
-            var endpoint = endpoints.KafkaTransport().EndpointForTopic<TKey, TVal>(topicName, consumerConfig);
-            endpoint.IsListener = true;
-            return new KafkaListenerConfiguration(endpoint);
-        }
-
-        /// <summary>
-        /// Listen for incoming messages at the designated Kafka Topic by name
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TVal"></typeparam>
-        /// <param name="endpoints"></param>
-        /// <param name="topicName"></param>
-        /// <param name="consumerConfig"></param>
-        /// <param name="keyDeserializer"></param>
-        /// <param name="valueDeserializer"></param>
-        /// <returns></returns>
-        public static KafkaListenerConfiguration ListenToKafkaTopic<TKey, TVal>(this IEndpoints endpoints, string topicName, ConsumerConfig consumerConfig,
-            IDeserializer<TKey> keyDeserializer, IDeserializer<TVal> valueDeserializer)
-        {
-            var endpoint = endpoints.KafkaTransport().EndpointForTopic<TKey, TVal>(topicName, consumerConfig, keyDeserializer, valueDeserializer);
+            var endpoint = endpoints.KafkaTransport().EndpointForTopic(topicName, consumerConfig);
             endpoint.IsListener = true;
             return new KafkaListenerConfiguration(endpoint);
         }
@@ -98,11 +79,11 @@ namespace Jasper.ConfluentKafka
         /// <param name="topicName">This is used as the topic name when publishing. Can be either a binding key or a queue name or a static topic name if the exchange is topic-based</param>
         /// <param name="exchangeName">Optional, you only need to supply this if you are using a non-default exchange</param>
         /// <returns></returns>
-        public static KafkaSubscriberConfiguration ToKafkaTopic<TKey, TVal>(this IPublishToExpression publishing, string topicName, ProducerConfig producerConfig)
+        public static KafkaSubscriberConfiguration ToKafkaTopic(this IPublishToExpression publishing, string topicName, ProducerConfig producerConfig)
         {
             var transports = publishing.As<PublishingExpression>().Parent;
             var transport = transports.Get<KafkaTransport>();
-            var endpoint = transport.EndpointForTopic<TKey, TVal>(topicName, producerConfig);
+            var endpoint = transport.EndpointForTopic(topicName, producerConfig);
 
             // This is necessary unfortunately to hook up the subscription rules
             publishing.To(endpoint.Uri);
@@ -110,27 +91,5 @@ namespace Jasper.ConfluentKafka
             return new KafkaSubscriberConfiguration(endpoint);
         }
 
-        /// <summary>
-        /// Publish matching messages to Kafka Topic using provided Producer Configuration and Serializers
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TVal"></typeparam>
-        /// <param name="publishing"></param>
-        /// <param name="topicName"></param>
-        /// <param name="producerConfig"></param>
-        /// <param name="keySerializer"></param>
-        /// <param name="valueSerializer"></param>
-        /// <returns></returns>
-        public static KafkaSubscriberConfiguration ToKafkaTopic<TKey, TVal>(this IPublishToExpression publishing, string topicName, ProducerConfig producerConfig, ISerializer<TKey> keySerializer, ISerializer<TVal> valueSerializer)
-        {
-            var transports = publishing.As<PublishingExpression>().Parent;
-            var transport = transports.Get<KafkaTransport>();
-            var endpoint = transport.EndpointForTopic(topicName, producerConfig, keySerializer, valueSerializer);
-
-            // This is necessary unfortunately to hook up the subscription rules
-            publishing.To(endpoint.Uri);
-
-            return new KafkaSubscriberConfiguration(endpoint);
-        }
     }
 }

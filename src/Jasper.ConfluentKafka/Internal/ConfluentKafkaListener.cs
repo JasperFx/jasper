@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Jasper.ConfluentKafka;
+using Jasper.ConfluentKafka.Internal;
 using Jasper.ConfluentKafka.Serialization;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -10,35 +12,28 @@ using Lamar.IoC.Instances;
 
 namespace Jasper.Kafka.Internal
 {
-    public class ConfluentKafkaListener<TKey, TVal> : IListener
+    public class ConfluentKafkaListener : IListener
     {
         private readonly CancellationToken _cancellation;
-
-        private readonly KafkaEndpoint _endpoint;
+        private readonly KafkaConsumer<byte[], byte[]> _consumer;
         private readonly ITransportLogger _logger;
-        private readonly KafkaTransportProtocol<TKey, TVal> _protocol = new KafkaTransportProtocol<TKey, TVal>();
         private IReceiverCallback _callback;
-        private IConsumer<TKey, TVal> _consumer;
-        private readonly IDeserializer<TKey> _keyDeserializer = new DefaultJsonDeserializer<TKey>().AsSyncOverAsync();
-        private readonly IDeserializer<TVal> _valueDeserializer = new DefaultJsonDeserializer<TVal>().AsSyncOverAsync();
+        
 
         private Task _consumerTask;
 
-        public ConfluentKafkaListener(KafkaEndpoint endpoint, ITransportLogger logger, IDeserializer<TKey> keyDeserializer, IDeserializer<TVal> valueDeserializer, CancellationToken cancellation)
+        public ConfluentKafkaListener(KafkaEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
-            _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
             Address = endpoint.Uri;
-            _keyDeserializer = keyDeserializer;
-            _valueDeserializer = valueDeserializer;
+            _consumer= new KafkaConsumer<byte[], byte[]>(endpoint);
         }
 
 
         public void Dispose()
         {
             _consumerTask?.Dispose();
-            _consumer?.Dispose();
         }
 
         public Uri Address { get; }
@@ -47,13 +42,6 @@ namespace Jasper.Kafka.Internal
         public void Start(IReceiverCallback callback)
         {
             _callback = callback;
-
-            _consumer = new ConsumerBuilder<TKey, TVal>(_endpoint.ConsumerConfig)
-                .SetKeyDeserializer(_keyDeserializer)
-                .SetValueDeserializer(_valueDeserializer)
-                .Build();
-
-            _consumer.Subscribe(_endpoint.TopicName);
 
             _consumerTask = ConsumeAsync();
 
@@ -64,34 +52,15 @@ namespace Jasper.Kafka.Internal
         {
             while (!_cancellation.IsCancellationRequested)
             {
-                ConsumeResult<TKey, TVal> message;
+                Envelope envelope = null;
                 try
                 {
-                    message = await Task.Run(() => _consumer.Consume(), _cancellation);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogException(ex, message: $"Error consuming message from Kafka topic {_endpoint.TopicName}");
-                    return;
-                }
+                    (Envelope Envelope, TopicPartitionOffset TopicPartitionOffset) receivedMessage = await _consumer.ConsumeEnvelopeAsync(_cancellation);
+                    envelope = receivedMessage.Envelope;
 
-                Envelope envelope;
+                    await _callback.Received(Address, new[] { envelope });
 
-                try
-                {
-                    envelope = _protocol.ReadEnvelope(message.Message);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogException(ex, message: $"Error trying to map an incoming Kafka {_endpoint.TopicName} Topic message to an Envelope. See the Dead Letter Queue");
-                    return;
-                }
-
-                try
-                {
-                    await _callback.Received(Address, new[] {envelope});
-
-                    _consumer.Commit();
+                    _consumer.Commit(receivedMessage.TopicPartitionOffset);
                 }
                 catch (KafkaException ke)
                 {

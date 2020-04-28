@@ -7,6 +7,8 @@ using Jasper.Transports;
 
 namespace Jasper.ConfluentKafka
 {
+
+
     public class KafkaTransportProtocol<TKey, TVal> : ITransportProtocol<Message<TKey, TVal>>
     {
         private const string JasperMessageIdHeader = "Jasper_MessageId";

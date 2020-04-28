@@ -99,8 +99,8 @@ namespace Jasper.ConfluentKafka.Tests
             public KafkaUsingApp()
             {
                 Endpoints.ConfigureKafka();
-                Endpoints.ListenToKafkaTopic<string, ColorChosen>("messages", ConsumerConfig);
-                Endpoints.PublishAllMessages().ToKafkaTopic<string, ColorChosen>("messages", ProducerConfig);
+                Endpoints.ListenToKafkaTopic("messages", ConsumerConfig);
+                Endpoints.Publish(pub => pub.Message<ColorChosen>().ToKafkaTopic("messages", ProducerConfig));
 
                 Handlers.IncludeType<ColorHandler>();
 
