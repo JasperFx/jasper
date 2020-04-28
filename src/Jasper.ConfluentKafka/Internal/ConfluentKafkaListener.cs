@@ -1,47 +1,45 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Jasper.ConfluentKafka;
-using Jasper.ConfluentKafka.Internal;
-using Jasper.ConfluentKafka.Serialization;
 using Jasper.Logging;
 using Jasper.Transports;
-using Lamar.IoC.Instances;
 
 namespace Jasper.Kafka.Internal
 {
     public class ConfluentKafkaListener : IListener
     {
         private readonly CancellationToken _cancellation;
-        private readonly KafkaConsumer<byte[], byte[]> _consumer;
+        private readonly IConsumer<byte[], byte[]> _consumer;
+        private readonly KafkaEndpoint _endpoint;
         private readonly ITransportLogger _logger;
         private IReceiverCallback _callback;
-        
-
+        private readonly ITransportProtocol<Message<byte[], byte[]>> _protocol;
         private Task _consumerTask;
 
         public ConfluentKafkaListener(KafkaEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
+            _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
-            Address = endpoint.Uri;
-            _consumer= new KafkaConsumer<byte[], byte[]>(endpoint);
+            _protocol = new KafkaTransportProtocol();
+            _consumer = new ConsumerBuilder<byte[], byte[]>(endpoint.ConsumerConfig).Build();
         }
-
 
         public void Dispose()
         {
             _consumerTask?.Dispose();
         }
 
-        public Uri Address { get; }
+        public Uri Address => _endpoint.Uri;
         public ListeningStatus Status { get; set; }
 
         public void Start(IReceiverCallback callback)
         {
             _callback = callback;
+
+            _consumer.Subscribe(new []{ _endpoint.TopicName });
 
             _consumerTask = ConsumeAsync();
 
@@ -52,15 +50,34 @@ namespace Jasper.Kafka.Internal
         {
             while (!_cancellation.IsCancellationRequested)
             {
-                Envelope envelope = null;
+                ConsumeResult<byte[], byte[]> message;
                 try
                 {
-                    (Envelope Envelope, TopicPartitionOffset TopicPartitionOffset) receivedMessage = await _consumer.ConsumeEnvelopeAsync(_cancellation);
-                    envelope = receivedMessage.Envelope;
+                    message = await Task.Run(() => _consumer.Consume(), _cancellation);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogException(ex, message: $"Error consuming message from Kafka topic {_endpoint.TopicName}");
+                    return;
+                }
 
+                Envelope envelope;
+
+                try
+                {
+                    envelope = _protocol.ReadEnvelope(message.Message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogException(ex, message: $"Error trying to map an incoming Kafka {_endpoint.TopicName} Topic message to an Envelope. See the Dead Letter Queue");
+                    return;
+                }
+
+                try
+                {
                     await _callback.Received(Address, new[] { envelope });
 
-                    _consumer.Commit(receivedMessage.TopicPartitionOffset);
+                    _consumer.Commit();
                 }
                 catch (KafkaException ke)
                 {
@@ -76,6 +93,5 @@ namespace Jasper.Kafka.Internal
                 }
             }
         }
-
     }
 }
