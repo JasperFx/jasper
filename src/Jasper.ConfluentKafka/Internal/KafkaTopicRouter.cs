@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Baseline;
-using Confluent.Kafka;
 using Jasper.Configuration;
 using Jasper.Runtime.Routing;
 
@@ -9,11 +7,6 @@ namespace Jasper.ConfluentKafka.Internal
 {
     public class KafkaTopicRouter : TopicRouter<KafkaSubscriberConfiguration>
     {
-        //Dictionary<Uri, ProducerConfig> producerConfigs;
-        //public KafkaTopicRouter(Dictionary<Uri, ProducerConfig> producerConfigs)
-        //{
-        //}
-
         public override Uri BuildUriForTopic(string topicName)
         {
             var endpoint = new KafkaEndpoint
@@ -33,7 +26,5 @@ namespace Jasper.ConfluentKafka.Internal
 
             return new KafkaSubscriberConfiguration((KafkaEndpoint) endpoint);
         }
-
     }
-
 }
