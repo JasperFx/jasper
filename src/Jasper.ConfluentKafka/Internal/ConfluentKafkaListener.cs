@@ -42,8 +42,6 @@ namespace Jasper.Kafka.Internal
             _consumer.Subscribe(new []{ _endpoint.TopicName });
 
             _consumerTask = ConsumeAsync();
-
-            Thread.Sleep(1000); // let the consumer start consuming
         }
 
         private async Task ConsumeAsync()
