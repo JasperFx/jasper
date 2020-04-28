@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using Confluent.Kafka;
@@ -10,7 +8,6 @@ namespace Jasper.ConfluentKafka
 {
     public class KafkaTransportProtocol : ITransportProtocol<Message<byte[], byte[]>>
     {
-        private const string JasperMessageIdHeader = "Jasper_MessageId";
         public Message<byte[], byte[]> WriteFromEnvelope(Envelope envelope)
         {
             var message = new Message<byte[], byte[]>
