@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using Confluent.Kafka;
@@ -18,30 +19,31 @@ namespace Jasper.ConfluentKafka
                 Value = envelope.Data
             };
 
-            foreach (KeyValuePair<string, string> h in envelope.Headers)
+            IDictionary<string, object> envelopHeaders = new Dictionary<string, object>();
+            envelope.WriteToDictionary(envelopHeaders);
+            var headers = new Headers();
+            foreach (Header header in envelopHeaders.Select(h => new Header(h.Key, Encoding.UTF8.GetBytes(h.Value.ToString()))))
             {
-                Header header = new Header(h.Key, Encoding.UTF8.GetBytes(h.Value));
-                message.Headers.Add(header);
+                headers.Add(header);
             }
 
-            message.Headers.Add(JasperMessageIdHeader, Encoding.UTF8.GetBytes(envelope.Id.ToString()));
+            message.Headers = headers;
 
             return message;
         }
 
         public Envelope ReadEnvelope(Message<byte[], byte[]> message)
         {
-            var env = new Envelope();
-
-            foreach (var header in message.Headers.Where(h => !h.Key.StartsWith("Jasper")))
+            var env = new Envelope()
             {
-                env.Headers.Add(header.Key, Encoding.UTF8.GetString(header.GetValueBytes()));
-            }
+                Data = message.Value
+            };
 
-            var messageIdHeader = message.Headers.Single(h => h.Key.Equals(JasperMessageIdHeader));
-            env.Id = Guid.Parse(Encoding.UTF8.GetString(messageIdHeader.GetValueBytes()));
-            env.Data = message.Value;
-
+            Dictionary<string, object> incomingHeaders = message.Headers.Select(h => new {h.Key, Value = h.GetValueBytes()})
+                .ToDictionary(k => k.Key, v => (object)Encoding.UTF8.GetString(v.Value));
+            
+            env.ReadPropertiesFromDictionary(incomingHeaders);
+            
             return env;
         }
     }
