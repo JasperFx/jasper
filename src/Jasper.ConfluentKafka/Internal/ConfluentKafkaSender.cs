@@ -1,62 +1,48 @@
 using System;
-using System.Text;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Confluent.Kafka;
-using Jasper.ConfluentKafka.Exceptions;
 using Jasper.Logging;
-using Jasper.Transports;
 using Jasper.Transports.Sending;
+using LamarCodeGeneration.Util;
 
 namespace Jasper.ConfluentKafka.Internal
 {
-    public class ConfluentKafkaSender<TKey, TVal> : ISender
+    public class ConfluentKafkaSender : ISender
     {
-        private readonly ITransportProtocol<Message<TKey, TVal>> _protocol;
-        private readonly KafkaEndpoint<TKey, TVal> _endpoint;
+        private Dictionary<Type, KafkaPublisher> _publishers = new Dictionary<Type, KafkaPublisher>();
+        private readonly KafkaEndpoint _endpoint;
         private readonly ITransportLogger _logger;
         private readonly CancellationToken _cancellation;
         private ActionBlock<Envelope> _sending;
         private ISenderCallback _callback;
-        private IProducer<TKey, TVal> _publisher;
 
-        private readonly ISerializer<TKey> _keySerializer;
-        private readonly ISerializer<TVal> _valueSerializer;
-
-        public ConfluentKafkaSender(KafkaEndpoint<TKey, TVal> endpoint, ITransportLogger logger, ISerializer<TKey> keySerializer, ISerializer<TVal> valueSerializer, CancellationToken cancellation)
+        public ConfluentKafkaSender(KafkaEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
             _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
-            Destination = endpoint.Uri;
-            _protocol = new KafkaTransportProtocol<TKey, TVal>();
-            _keySerializer = keySerializer;
-            _valueSerializer = valueSerializer;
         }
 
         public void Dispose()
         {
-            _publisher?.Dispose();
+            foreach (KafkaPublisher publisher in _publishers.Values)
+            {
+                publisher.Dispose();
+            }
         }
 
-        public Uri Destination { get; }
-        public int QueuedCount => _sending.InputCount;
+        public Uri Destination => _endpoint.Uri;
+        public int QueuedCount { get; }
         public bool Latched { get; private set; }
-
         public void Start(ISenderCallback callback)
         {
             _callback = callback;
 
-            var publisherBuilder = new ProducerBuilder<TKey, TVal>(_endpoint.ProducerConfig)
-                .SetKeySerializer(_keySerializer)
-                .SetValueSerializer(_valueSerializer);
-            
-            _publisher = publisherBuilder.Build();
-
             _sending = new ActionBlock<Envelope>(sendBySession, _endpoint.ExecutionOptions);
         }
-
 
         public Task Enqueue(Envelope envelope)
         {
@@ -68,8 +54,6 @@ namespace Jasper.ConfluentKafka.Internal
         public Task LatchAndDrain()
         {
             Latched = true;
-
-            _publisher.Flush(_cancellation);
 
             _sending.Complete();
 
@@ -86,34 +70,18 @@ namespace Jasper.ConfluentKafka.Internal
             Latched = false;
         }
 
-        public async Task<bool> Ping(CancellationToken cancellationToken)
-        {
-            Envelope envelope = Envelope.ForPing(Destination);
-            Message<TKey, TVal> message = _protocol.WriteFromEnvelope(envelope);
-
-            message.Headers.Add("MessageGroupId", Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
-            message.Headers.Add("Jasper_SessionId", Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
-
-            await _publisher.ProduceAsync("jasper-ping", message, cancellationToken);
-
-            return true;
-        }
-
-        public bool SupportsNativeScheduledSend { get; } = false;
-
         private async Task sendBySession(Envelope envelope)
         {
             try
             {
-                Message<TKey, TVal> message = _protocol.WriteFromEnvelope(envelope);
-                message.Headers.Add("Jasper_SessionId",  Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
-
-                if (envelope.IsDelayed(DateTime.UtcNow))
+                Type messageType = envelope.Message.GetType();
+                if (!_publishers.ContainsKey(messageType))
                 {
-                    throw new UnsupportedFeatureException("Delayed Message Delivery");
+                    KafkaPublisher publisher = typeof(KafkaPublisher<,>).CloseAndBuildAs<KafkaPublisher>(_endpoint.ProducerConfig, typeof(string), messageType);
+                    _publishers.Add(messageType, publisher);
                 }
 
-                await _publisher.ProduceAsync(_endpoint.TopicName, message, _cancellation);
+                await _publishers[messageType].SendAsync(_endpoint.TopicName, envelope, CancellationToken.None);
 
                 await _callback.Successful(envelope);
             }
@@ -129,5 +97,17 @@ namespace Jasper.ConfluentKafka.Internal
                 }
             }
         }
+
+        public async Task<bool> Ping(CancellationToken cancellationToken)
+        {
+            Envelope envelope = Envelope.ForPing(Destination);
+            KafkaPublisher publisher = new KafkaPublisher<string, Ping>(_endpoint.ProducerConfig);
+            await publisher.SendAsync("jasper-ping", envelope, cancellationToken);
+            return true;
+        }
+
+        public bool SupportsNativeScheduledSend { get; }
+
     }
+
 }

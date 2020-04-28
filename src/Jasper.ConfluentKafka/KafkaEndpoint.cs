@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using Baseline;
 using Confluent.Kafka;
 using Jasper.Configuration;
 using Jasper.ConfluentKafka.Internal;
-using Jasper.ConfluentKafka.Serialization;
 using Jasper.Kafka.Internal;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -77,37 +77,17 @@ namespace Jasper.ConfluentKafka
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override ISender CreateSender(IMessagingRoot root)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Uri ReplyUri() => BuildUri(true);
-    }
-
-    public class KafkaEndpoint<TKey, TVal> : KafkaEndpoint
-    {
-        internal KafkaTransport Parent { get; set; }
-
-        public ISerializer<TKey> KeySerializer = new DefaultJsonSerializer<TKey>().AsSyncOverAsync();
-        public ISerializer<TVal> ValueSerializer= new DefaultJsonSerializer<TVal>().AsSyncOverAsync();
-        public IDeserializer<TKey> KeyDeserializer = new DefaultJsonDeserializer<TKey>().AsSyncOverAsync();
-        public IDeserializer<TVal> ValueDeserializer = new DefaultJsonDeserializer<TVal>().AsSyncOverAsync();
-
-        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
-        {
             if (!IsListener) return;
 
-            var listener = new ConfluentKafkaListener<TKey, TVal>(this, root.TransportLogger, KeyDeserializer, ValueDeserializer, root.Cancellation);
+            var listener = new ConfluentKafkaListener(this, root.TransportLogger, root.Cancellation);
             runtime.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            return new ConfluentKafkaSender<TKey, TVal>(this, root.TransportLogger, KeySerializer, ValueSerializer, root.Cancellation);
+            return new ConfluentKafkaSender(this, root.TransportLogger, root.Cancellation);
         }
+
+        public override Uri ReplyUri() => BuildUri(true);
     }
 }
