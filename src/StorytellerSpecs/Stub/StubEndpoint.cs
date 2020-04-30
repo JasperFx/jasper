@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,7 +41,7 @@ namespace StorytellerSpecs.Stub
             _callback = callback;
         }
 
-        public Task Enqueue(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             Sent.Add(envelope);
             return _pipeline?.Invoke(envelope, new StubChannelCallback(this, envelope)) ?? Task.CompletedTask;

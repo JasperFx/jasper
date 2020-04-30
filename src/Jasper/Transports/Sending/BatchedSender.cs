@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -133,7 +133,7 @@ namespace Jasper.Transports.Sending
 
         public bool SupportsNativeScheduledSend { get; } = true;
 
-        public Task Enqueue(Envelope message)
+        public Task Send(Envelope message)
         {
             if (_batching == null) throw new InvalidOperationException("This agent has not been started");
 

@@ -45,7 +45,7 @@ namespace Jasper.ConfluentKafka.Internal
             _callback = callback;
         }
 
-        public Task Enqueue(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             _sending.Post(envelope);
 

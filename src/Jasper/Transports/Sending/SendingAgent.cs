@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,7 +52,7 @@ namespace Jasper.Transports.Sending
         public async Task EnqueueOutgoing(Envelope envelope)
         {
             setDefaults(envelope);
-            await _sender.Enqueue(envelope);
+            await _sender.Send(envelope);
             _messageLogger.Sent(envelope);
         }
 
@@ -94,7 +94,7 @@ namespace Jasper.Transports.Sending
                 foreach (var envelope in batch.Messages)
                 {
 #pragma warning disable 4014
-                    _sender.Enqueue(envelope);
+                    _sender.Send(envelope);
 #pragma warning restore 4014
                 }
             }

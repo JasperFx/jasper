@@ -19,7 +19,7 @@ namespace Jasper.Testing.Transports.Sending
 
             var env = ObjectMother.Envelope();
 
-            await sender.Enqueue(env);
+            await sender.Send(env);
 
             callback.Received().Successful(env);
         }
