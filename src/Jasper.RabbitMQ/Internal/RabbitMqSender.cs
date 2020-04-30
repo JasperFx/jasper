@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Authentication.ExtendedProtection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,8 +34,6 @@ namespace Jasper.RabbitMQ.Internal
             _exchangeName = endpoint.ExchangeName == TransportConstants.Default ? "" : endpoint.ExchangeName;
             _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
-
-
 
         public void Start(ISenderCallback callback)
         {
