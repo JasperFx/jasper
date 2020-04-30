@@ -76,7 +76,7 @@ namespace Jasper.AzureServiceBus.Internal
         }
 
 
-        public Task Enqueue(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             _sending.Post(envelope);
 

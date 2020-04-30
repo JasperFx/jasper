@@ -26,7 +26,7 @@ namespace Jasper.Transports.Sending
             _callback = callback;
         }
 
-        public Task Enqueue(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             _callback.Successful(envelope);
             return Task.CompletedTask;

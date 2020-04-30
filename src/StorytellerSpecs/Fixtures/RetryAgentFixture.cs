@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -42,7 +42,7 @@ namespace StorytellerSpecs.Fixtures
         {
         }
 
-        Task ISender.Enqueue(Envelope envelope)
+        Task ISender.Send(Envelope envelope)
         {
             _enqueued.Add(envelope);
             return Task.CompletedTask;
