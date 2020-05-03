@@ -107,7 +107,7 @@ namespace Jasper.Runtime
 
         public async Task EnqueueCascading(object message)
         {
-            if (Envelope.ResponseType != null && message?.GetType() == Envelope.ResponseType)
+            if (Envelope.ResponseType != null && (message?.GetType() == Envelope.ResponseType || Envelope.ResponseType.IsAssignableFrom(message?.GetType())))
             {
                 Envelope.Response = message;
                 return;
