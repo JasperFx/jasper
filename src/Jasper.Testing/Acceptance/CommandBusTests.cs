@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -207,6 +207,14 @@ namespace Jasper.Testing.Acceptance
                 .ShouldBeNull();
         }
 
+        [Fact]
+        public async Task should_return_result_for_command_with_castable_result()
+        {
+            var answer = await Bus.Invoke<IAnswer>(new Question { One = 3, Two = 4 });
+
+            answer.Sum.ShouldBe(7);
+            answer.Product.ShouldBe(12);
+        }
     }
 
 
@@ -269,7 +277,13 @@ namespace Jasper.Testing.Acceptance
         public int Two { get; set; }
     }
 
-    public class Answer
+    public interface IAnswer
+    {
+        int Sum { get; }
+        int Product { get; }
+    }
+
+    public class Answer : IAnswer
     {
         public int Sum { get; set; }
         public int Product { get; set; }
