@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Logging;
@@ -30,6 +30,13 @@ namespace Jasper.Tracking
         public static TrackedSessionConfiguration TrackActivity(this IHost host)
         {
             var session = new TrackedSession(host);
+            return new TrackedSessionConfiguration(session);
+        }
+
+        public static TrackedSessionConfiguration TrackActivity(this IHost host, TimeSpan trackingTimeout)
+        {
+            var session = new TrackedSession(host);
+            session.Timeout = trackingTimeout;
             return new TrackedSessionConfiguration(session);
         }
 

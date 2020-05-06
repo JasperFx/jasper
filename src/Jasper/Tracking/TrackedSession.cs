@@ -262,12 +262,23 @@ namespace Jasper.Tracking
 
         public void LogException(Exception exception, string serviceName)
         {
+            Debug.WriteLine($"Exception Occurred in {serviceName}: {exception}");
             _exceptions.Add(exception);
         }
 
         public void AddCondition(ITrackedCondition condition)
         {
+            Debug.WriteLine($"Condition Added: {condition}");
             _conditions.Add(condition);
+        }
+
+        public override string ToString()
+        {
+            var conditionas = $"Conditions:\n{ _conditions.Select(x => x.ToString()).Join("\n")}";
+            var activity = $"Activity:\n{ AllRecordsInOrder().Select(x => x.ToString()).Join("\n")}";
+            var exceptions = $"Exceptions:\n{ _exceptions.Select(x => x.ToString()).Join("\n")}";
+
+            return $"{conditionas}\n\n{activity}\\{exceptions}";
         }
     }
 }

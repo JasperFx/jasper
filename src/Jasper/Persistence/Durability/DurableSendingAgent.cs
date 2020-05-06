@@ -80,7 +80,6 @@ namespace Jasper.Persistence.Durability
                 await _sender.Send(envelope);
             }
         }
-
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
             return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()), _settings.Cancellation);
