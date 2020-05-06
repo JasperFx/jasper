@@ -67,9 +67,13 @@ namespace Jasper.Transports
                     : new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
 
                 agent.ReplyUri = replyUri;
-                sender.Start((ISenderCallback) agent);
 
                 endpoint.Agent = agent;
+
+                if (sender is ISenderRequiresCallback senderRequiringCallback && agent is ISenderCallback callbackAgent)
+                {
+                    senderRequiringCallback.RegisterCallback(callbackAgent);
+                }
 
                 AddSendingAgent(agent);
                 AddSubscriber(endpoint);
@@ -156,10 +160,8 @@ namespace Jasper.Transports
                 ? (IWorkerQueue) new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,
                     _root.TransportLogger)
                 : new LightweightWorkerQueue(settings, _root.TransportLogger, _root.Pipeline, _root.Settings);
-
-
+            
             _listeners.Add(worker);
-
 
             worker.StartListening(listener);
         }

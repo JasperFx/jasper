@@ -41,30 +41,31 @@ namespace Jasper.ConfluentKafka.Tests
             public Sender()
             {
                 Endpoints.ConfigureKafka();
-
+                Endpoints.PublishAllMessages().ToKafkaTopic(Topic, ProducerConfig);
             }
 
-            public string QueueName { get; set; }
+            public string Topic = "messages";
         }
 
         public class Receiver : JasperOptions
         {
-            public Receiver(string queueName)
+            public Receiver(string topic)
             {
                 Endpoints.ConfigureKafka();
+                Endpoints.ListenToKafkaTopic(topic, ConsumerConfig).UseForReplies();
             }
         }
 
 
         public class KafkaSendingComplianceTests : SendingCompliance
         {
-            public KafkaSendingComplianceTests() : base($"kafka://topic/messages".ToUri())
+            public KafkaSendingComplianceTests() : base($"kafka://topic/messages".ToUri(), 15.Seconds())
             {
                 var sender = new Sender();
 
                 SenderIs(sender);
 
-                var receiver = new Receiver(sender.QueueName);
+                var receiver = new Receiver(sender.Topic);
 
                 ReceiverIs(receiver);
             }
