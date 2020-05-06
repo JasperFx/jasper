@@ -1,9 +1,6 @@
 using System;
-using System.Security.Authentication.ExtendedProtection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using RabbitMQ.Client;
@@ -12,75 +9,39 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqSender : RabbitMqConnectionAgent, ISender
     {
-        private readonly CancellationToken _cancellation;
-        private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol _protocol;
-        private ISenderCallback _callback;
-        private ActionBlock<Envelope> _sending;
         private readonly string _exchangeName;
         private readonly string _key;
         private readonly bool _isDurable;
+        public bool SupportsNativeScheduledSend { get; } = false;
+        public Uri Destination { get; }
 
-        public RabbitMqSender(ITransportLogger logger, RabbitMqEndpoint endpoint, RabbitMqTransport transport,
-            CancellationToken cancellation) : base(transport)
+        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
             _protocol = endpoint.Protocol;
-            _logger = logger;
-            _cancellation = cancellation;
             Destination = endpoint.Uri;
-
+            
             _isDurable = endpoint.IsDurable;
 
             _exchangeName = endpoint.ExchangeName == TransportConstants.Default ? "" : endpoint.ExchangeName;
             _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 
-        public void Start(ISenderCallback callback)
+#pragma warning disable 1998
+        public async Task Send(Envelope envelope)
+#pragma warning restore 1998
         {
-            Connect();
+            EnsureConnected();
 
-            _callback = callback;
+            if (State == AgentState.Disconnected)
+                throw new InvalidOperationException($"The RabbitMQ agent for {Destination} is disconnected");
 
-            _sending = new ActionBlock<Envelope>(send, new ExecutionDataflowBlockOptions
-            {
-                CancellationToken = _cancellation
-            });
-        }
+            var props = Channel.CreateBasicProperties();
+            props.Persistent = _isDurable;
 
-        public Task Send(Envelope envelope)
-        {
-            _sending.Post(envelope);
+            _protocol.WriteFromEnvelope(envelope, props);
 
-            return Task.CompletedTask;
-        }
-
-        public Uri Destination { get; }
-        public int QueuedCount => _sending.InputCount;
-
-        public bool Latched { get; private set; }
-
-        public Task LatchAndDrain()
-        {
-            Latched = true;
-
-            Stop();
-
-            _sending.Complete();
-
-
-            _logger.CircuitBroken(Destination);
-
-            return Task.CompletedTask;
-        }
-
-
-
-        public void Unlatch()
-        {
-            _logger.CircuitResumed(Destination);
-
-            Start(_callback);
-            Latched = false;
+            Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
         }
 
         public Task<bool> Ping(CancellationToken cancellationToken)
@@ -99,37 +60,6 @@ namespace Jasper.RabbitMQ.Internal
                 {
                     teardownConnection();
                     return Task.FromResult(false);
-                }
-            }
-        }
-
-        public bool SupportsNativeScheduledSend { get; } = false;
-
-        private async Task send(Envelope envelope)
-        {
-            if (State == AgentState.Disconnected)
-                throw new InvalidOperationException($"The RabbitMQ agent for {Destination} is disconnected");
-
-            try
-            {
-                var props = Channel.CreateBasicProperties();
-                props.Persistent = _isDurable;
-
-                _protocol.WriteFromEnvelope(envelope, props);
-
-                Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
-
-                await _callback.Successful(envelope);
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    await _callback.ProcessingFailure(envelope, e);
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogException(exception);
                 }
             }
         }

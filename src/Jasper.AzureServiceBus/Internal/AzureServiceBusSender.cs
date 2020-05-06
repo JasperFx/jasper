@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -16,37 +15,16 @@ namespace Jasper.AzureServiceBus.Internal
         private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusEndpoint _endpoint;
         private readonly AzureServiceBusTransport _transport;
-        private readonly ITransportLogger _logger;
-        private readonly CancellationToken _cancellation;
         private ISenderClient _sender;
-        private ActionBlock<Envelope> _sending;
-        private ISenderCallback _callback;
-
-        public AzureServiceBusSender(AzureServiceBusEndpoint endpoint, AzureServiceBusTransport transport, ITransportLogger logger,
-            CancellationToken cancellation)
+        public bool SupportsNativeScheduledSend { get; } = true;
+        public Uri Destination => _endpoint.Uri;
+        
+        public AzureServiceBusSender(AzureServiceBusEndpoint endpoint, AzureServiceBusTransport transport)
         {
             _protocol = endpoint.Protocol;
             _endpoint = endpoint;
             _transport = transport;
-            _logger = logger;
-            _cancellation = cancellation;
-            Destination = endpoint.Uri;
-        }
-
-        public void Dispose()
-        {
-            _sender?.CloseAsync().GetAwaiter().GetResult();
-        }
-
-        public Uri Destination { get; }
-        public int QueuedCount => _sending.InputCount;
-        public bool Latched { get; private set; }
-
-
-        public void Start(ISenderCallback callback)
-        {
-            _callback = callback;
-
+            
             // The variance here should be in constructing the sending & buffer blocks
             if (_endpoint.TopicName.IsEmpty())
             {
@@ -54,11 +32,6 @@ namespace Jasper.AzureServiceBus.Internal
                     ? new MessageSender(_transport.ConnectionString, _endpoint.QueueName, _transport.TokenProvider,
                         _transport.TransportType, _transport.RetryPolicy)
                     : new MessageSender(_transport.ConnectionString, _endpoint.QueueName, _transport.RetryPolicy);
-
-                _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
-                {
-                    CancellationToken = _cancellation
-                });
             }
             else
             {
@@ -67,84 +40,37 @@ namespace Jasper.AzureServiceBus.Internal
                         _transport.TransportType, _transport.RetryPolicy)
                     : new TopicClient(_transport.ConnectionString, _endpoint.TopicName,
                         _transport.RetryPolicy);
-
-                _sending = new ActionBlock<Envelope>(sendBySession, new ExecutionDataflowBlockOptions
-                {
-                    CancellationToken = _cancellation
-                });
             }
         }
 
+        public void Dispose()
+        {
+            _sender?.CloseAsync().GetAwaiter().GetResult();
+        }
 
         public Task Send(Envelope envelope)
         {
-            _sending.Post(envelope);
+            var message = _protocol.WriteFromEnvelope(envelope);
+            message.SessionId = Guid.NewGuid().ToString();
 
-            return Task.CompletedTask;
+
+            if (envelope.IsDelayed(DateTime.UtcNow))
+            {
+                return _sender.ScheduleMessageAsync(message, envelope.ExecutionTime.Value);
+            }
+
+            return _sender.SendAsync(message);
         }
-
-        public async Task LatchAndDrain()
-        {
-            Latched = true;
-
-            await _sender.CloseAsync();
-
-            _sending.Complete();
-
-            _logger.CircuitBroken(Destination);
-        }
-
-        public void Unlatch()
-        {
-            _logger.CircuitResumed(Destination);
-
-            Start(_callback);
-            Latched = false;
-        }
-
+        
         public async Task<bool> Ping(CancellationToken cancellationToken)
         {
-            var envelope = Envelope.ForPing(Destination);
+            var envelope = Envelope.ForPing(_endpoint.Uri);
             var message = _protocol.WriteFromEnvelope(envelope);
             message.SessionId = Guid.NewGuid().ToString();
 
             await _sender.SendAsync(message);
 
             return true;
-        }
-
-        public bool SupportsNativeScheduledSend { get; } = true;
-
-        private async Task sendBySession(Envelope envelope)
-        {
-            try
-            {
-                var message = _protocol.WriteFromEnvelope(envelope);
-                message.SessionId = Guid.NewGuid().ToString();
-
-
-                if (envelope.IsDelayed(DateTime.UtcNow))
-                {
-                    await _sender.ScheduleMessageAsync(message, envelope.ExecutionTime.Value);
-                }
-                else
-                {
-                    await _sender.SendAsync(message);
-                }
-
-                await _callback.Successful(envelope);
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    await _callback.ProcessingFailure(envelope, e);
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogException(exception);
-                }
-            }
         }
     }
 }
