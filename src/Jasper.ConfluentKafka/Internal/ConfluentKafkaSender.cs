@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Jasper.ConfluentKafka.Exceptions;
+using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 
@@ -17,8 +18,19 @@ namespace Jasper.ConfluentKafka.Internal
         public Uri Destination => _endpoint.Uri;
         public ConfluentKafkaSender(KafkaEndpoint endpoint)
         {
+            if(endpoint?.ProducerConfig == null)
+                throw new ArgumentNullException(nameof(KafkaEndpoint.ProducerConfig));
+
             _endpoint = endpoint;
-            _publisher = new ProducerBuilder<byte[], byte[]>(endpoint.ProducerConfig).Build();
+            _publisher = new ProducerBuilder<byte[], byte[]>(endpoint.ProducerConfig)
+                .SetErrorHandler((producer, error) =>
+                {
+                    if (error.IsFatal)
+                    {
+                        throw new KafkaSenderException(error);
+                    }
+                })
+                .Build();
             _protocol = new KafkaTransportProtocol();
         }
 
@@ -36,7 +48,7 @@ namespace Jasper.ConfluentKafka.Internal
 
                 await _publisher.ProduceAsync("jasper-ping", message, cancellationToken);
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -44,7 +56,7 @@ namespace Jasper.ConfluentKafka.Internal
             return true;
         }
 
-        public async Task Send(Envelope envelope)
+        public Task Send(Envelope envelope)
         {
             if (envelope.IsDelayed(DateTime.UtcNow))
             {
@@ -52,16 +64,8 @@ namespace Jasper.ConfluentKafka.Internal
             }
 
             Message<byte[], byte[]> message = _protocol.WriteFromEnvelope(envelope);
-            try
-            {
-                var result = await _publisher.ProduceAsync(_endpoint.TopicName, message);
-                Console.WriteLine(result.Status);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            
+            return _publisher.ProduceAsync(_endpoint.TopicName, message);
         }
     }
 }
