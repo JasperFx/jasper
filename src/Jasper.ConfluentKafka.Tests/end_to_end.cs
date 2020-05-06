@@ -37,14 +37,14 @@ namespace Jasper.ConfluentKafka.Tests
 
         public class Sender : JasperOptions
         {
-
+            public const string Topic = "jasper-compliance";
+            public static string ReplyTopic = $"{Topic}-reply";
             public Sender()
             {
                 Endpoints.ConfigureKafka();
                 Endpoints.PublishAllMessages().ToKafkaTopic(Topic, ProducerConfig);
+                Endpoints.ListenToKafkaTopic(ReplyTopic, ConsumerConfig).UseForReplies();
             }
-
-            public string Topic = "messages";
         }
 
         public class Receiver : JasperOptions
@@ -52,20 +52,21 @@ namespace Jasper.ConfluentKafka.Tests
             public Receiver(string topic)
             {
                 Endpoints.ConfigureKafka();
-                Endpoints.ListenToKafkaTopic(topic, ConsumerConfig).UseForReplies();
+                Endpoints.PublishAllMessages().ToKafkaTopic(Sender.ReplyTopic, ProducerConfig);
+                Endpoints.ListenToKafkaTopic(topic, ConsumerConfig);
             }
         }
 
 
         public class KafkaSendingComplianceTests : SendingCompliance
         {
-            public KafkaSendingComplianceTests() : base($"kafka://topic/messages".ToUri(), 15.Seconds())
+            public KafkaSendingComplianceTests() : base($"kafka://topic/{Sender.Topic}".ToUri(), 15.Seconds())
             {
                 var sender = new Sender();
 
                 SenderIs(sender);
 
-                var receiver = new Receiver(sender.Topic);
+                var receiver = new Receiver(Sender.Topic);
 
                 ReceiverIs(receiver);
             }
