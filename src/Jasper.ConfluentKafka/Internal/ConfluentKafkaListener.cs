@@ -83,20 +83,9 @@ namespace Jasper.Kafka.Internal
 
                 try
                 {
-                    await _callback.Received(Address, new[] {envelope}).ContinueWith(t =>
-                    {
-                        try
-                        {
-                            _consumer.Commit();
-                        }
-                        catch (KafkaException ke)
-                        {
-                            if (ke.Error?.Code != ErrorCode.Local_NoOffset)
-                            {
-                                throw;
-                            }
-                        }
-                    });
+                    await _callback.Received(Address, new[] {envelope});
+                    
+                    _consumer.Commit(message);
                 }
                 catch (Exception e)
                 {
