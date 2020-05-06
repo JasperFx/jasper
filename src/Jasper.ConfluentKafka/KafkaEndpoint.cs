@@ -17,9 +17,20 @@ namespace Jasper.ConfluentKafka
     {
         private const string TopicToken = "topic";
         public string TopicName { get; set; }
-        public ProducerConfig ProducerConfig { get; set; }
-        public ConsumerConfig ConsumerConfig { get; set; }
+        public ProducerConfig ProducerConfig { get; set; } = new ProducerConfig();
+        public ConsumerConfig ConsumerConfig { get; set; } = new ConsumerConfig();
         public override Uri Uri => BuildUri();
+
+        public KafkaEndpoint()
+        {
+            
+        }
+        public KafkaEndpoint(Uri uri) : base(uri)
+        {
+
+        }
+
+
         private Uri BuildUri(bool forReply = false)
         {
             var list = new List<string>();
@@ -84,7 +95,7 @@ namespace Jasper.ConfluentKafka
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            return new ConfluentKafkaSender(this, root.TransportLogger, root.Cancellation);
+            return new ConfluentKafkaSender(this);
         }
 
         public override Uri ReplyUri() => BuildUri(true);
