@@ -24,7 +24,15 @@ namespace Jasper.ConfluentKafka
 
         protected override IEnumerable<KafkaEndpoint> endpoints() => _endpoints.Values;
 
-        protected override KafkaEndpoint findEndpointByUri(Uri uri) => _endpoints[uri];
+        protected override KafkaEndpoint findEndpointByUri(Uri uri)
+        {
+            if (!_endpoints.ContainsKey(uri))
+            {
+                _endpoints.Add(uri, new KafkaEndpoint(uri));
+            }
+
+            return _endpoints[uri];
+        }
 
         public KafkaEndpoint EndpointForTopic(string topicName, ProducerConfig producerConifg) =>
             AddOrUpdateEndpoint(topicName, endpoint => endpoint.ProducerConfig = producerConifg);
