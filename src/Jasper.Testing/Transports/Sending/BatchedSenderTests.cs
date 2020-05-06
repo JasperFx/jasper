@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Logging;
@@ -16,7 +16,8 @@ namespace Jasper.Testing.Transports.Sending
         {
             theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token,
                 TransportLogger.Empty());
-            theSender.Start(theSenderCallback);
+
+            theSender.RegisterCallback(theSenderCallback);
 
             theBatch = new OutgoingMessageBatch(theSender.Destination, new[]
             {
