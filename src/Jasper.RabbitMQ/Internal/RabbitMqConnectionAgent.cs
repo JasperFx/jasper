@@ -21,7 +21,7 @@ namespace Jasper.RabbitMQ.Internal
             teardownConnection();
         }
 
-        internal void Connect()
+        internal void EnsureConnected()
         {
             lock (_locker)
             {
