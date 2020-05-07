@@ -45,6 +45,7 @@ namespace Jasper.Tracking
         public TimeSpan Timeout { get; set; } = 5.Seconds();
 
         public bool AssertNoExceptions { get; set; } = true;
+        public bool AssertNoTimeout { get; set; } = true;
 
         public Func<IMessageContext, Task> Execution { get; set; } = c => Task.CompletedTask;
 
@@ -166,9 +167,6 @@ namespace Jasper.Tracking
 
             _stopwatch.Start();
 
-
-
-
             try
             {
                 using (var scope = _primaryHost.Services.As<IContainer>().GetNestedContainer())
@@ -191,7 +189,7 @@ namespace Jasper.Tracking
 
             if (AssertNoExceptions) AssertNoExceptionsWereThrown();
 
-            AssertNotTimedOut();
+            if (AssertNoExceptions) AssertNotTimedOut();
         }
 
         public Task Track()
