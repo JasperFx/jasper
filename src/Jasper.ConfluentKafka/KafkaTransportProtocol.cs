@@ -8,6 +8,8 @@ namespace Jasper.ConfluentKafka
 {
     public class KafkaTransportProtocol : ITransportProtocol<Message<byte[], byte[]>>
     {
+        public const string KafkaMessageKeyHeader = "Confluent.Kafka.Message.Key";
+
         public Message<byte[], byte[]> WriteFromEnvelope(Envelope envelope)
         {
             var message = new Message<byte[], byte[]>
@@ -18,6 +20,7 @@ namespace Jasper.ConfluentKafka
 
             IDictionary<string, object> envelopHeaders = new Dictionary<string, object>();
             envelope.WriteToDictionary(envelopHeaders);
+
             var headers = new Headers();
             foreach (Header header in envelopHeaders.Select(h => new Header(h.Key, Encoding.UTF8.GetBytes(h.Value.ToString()))))
             {
@@ -26,16 +29,15 @@ namespace Jasper.ConfluentKafka
 
             message.Headers = headers;
 
-            if (envelopHeaders.TryGetValue("MessageKey", out var msgKey))
+            if (!envelopHeaders.TryGetValue(KafkaMessageKeyHeader, out object msgKey)) return message;
+
+            if (msgKey is byte[] key)
             {
-                if (msgKey is byte[])
-                {
-                    message.Key = (byte[])msgKey;
-                }
-                else
-                {
-                    message.Key = Encoding.UTF8.GetBytes(msgKey.ToString());
-                }
+                message.Key = key;
+            }
+            else
+            {
+                message.Key = Encoding.UTF8.GetBytes(msgKey.ToString());
             }
 
             return message;
@@ -50,6 +52,11 @@ namespace Jasper.ConfluentKafka
 
             Dictionary<string, object> incomingHeaders = message.Headers.Select(h => new {h.Key, Value = h.GetValueBytes()})
                 .ToDictionary(k => k.Key, v => (object)Encoding.UTF8.GetString(v.Value));
+
+            if(message.Key != null && !incomingHeaders.ContainsKey(KafkaMessageKeyHeader))
+            {
+                env.Headers.Add(KafkaMessageKeyHeader, Encoding.UTF8.GetString(message.Key));
+            }
             
             env.ReadPropertiesFromDictionary(incomingHeaders);
 
