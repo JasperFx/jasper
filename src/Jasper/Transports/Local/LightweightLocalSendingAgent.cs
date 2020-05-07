@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
@@ -41,7 +41,7 @@ namespace Jasper.Transports.Local
                 : Enqueue(envelope);
         }
 
-        public Task StoreAndForward(Envelope envelope)
+        public Task Forward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
         }

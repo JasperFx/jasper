@@ -77,7 +77,7 @@ namespace StorytellerSpecs.Stub
             return Task.CompletedTask;
         }
 
-        public Task StoreAndForward(Envelope envelope)
+        public Task Forward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
         }
