@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestingSupport.Compliance;
+using TestingSupport.ErrorHandling;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.ConfluentKafka.Tests
@@ -26,6 +28,11 @@ namespace Jasper.ConfluentKafka.Tests
         {
             BootstrapServers = KafkaServer,
             SecurityProtocol = SecurityProtocol.Ssl
+        };
+        private static ProducerConfig FailureProducerConfig = new ProducerConfig
+        {
+            BootstrapServers = "badaddress",
+            MessageTimeoutMs = 1000
         };
 
         private static ConsumerConfig ConsumerConfig = new ConsumerConfig
@@ -44,6 +51,16 @@ namespace Jasper.ConfluentKafka.Tests
                 Endpoints.ConfigureKafka();
                 Endpoints.PublishAllMessages().ToKafkaTopic(Topic, ProducerConfig);
                 Endpoints.ListenToKafkaTopic(ReplyTopic, ConsumerConfig).UseForReplies();
+            }
+        }
+
+        public class FailureSender : JasperOptions
+        {
+            public const string Topic = "jasper-compliance";
+            public FailureSender()
+            {
+                Endpoints.ConfigureKafka();
+                Endpoints.PublishAllMessages().ToKafkaTopic(Topic, FailureProducerConfig);
             }
         }
 
@@ -69,6 +86,22 @@ namespace Jasper.ConfluentKafka.Tests
                 var receiver = new Receiver(Sender.Topic);
 
                 ReceiverIs(receiver);
+            }
+
+            [Fact]
+            public async Task publish_failures_reported_to_caller()
+            {
+                theSender = null;
+                SenderIs<FailureSender>();
+
+                _ = await theSender.TrackActivity(60.Seconds())
+                    .DoNotAssertOnExceptionsDetected()
+                    .DoNotAssertTimeout()
+                    .ExecuteAndWait(c =>
+                    {
+                        Should.Throw<Exception>(c.Publish(new Message1()));
+                        return Task.CompletedTask;
+                    });
             }
         }
 
@@ -96,7 +129,6 @@ namespace Jasper.ConfluentKafka.Tests
 
             colors.Name.ShouldBe("Red");
         }
-
 
         [Fact]
         public async Task send_multiple_messages_in_order()
