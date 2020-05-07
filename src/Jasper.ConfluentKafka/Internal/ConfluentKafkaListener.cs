@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -43,6 +44,8 @@ namespace Jasper.Kafka.Internal
             _consumer.Subscribe(new []{ _endpoint.TopicName });
 
             _consumerTask = ConsumeAsync();
+
+            _logger.ListeningStatusChange(ListeningStatus.Accepting);
         }
 
         private async Task ConsumeAsync()
