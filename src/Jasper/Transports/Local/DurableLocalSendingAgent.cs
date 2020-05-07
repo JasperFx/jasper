@@ -52,7 +52,7 @@ namespace Jasper.Transports.Local
             return Enqueue(envelope);
         }
 
-        public async Task StoreAndForward(Envelope envelope)
+        public async Task Forward(Envelope envelope)
         {
             _messageLogger.Sent(envelope);
             writeMessageData(envelope);
