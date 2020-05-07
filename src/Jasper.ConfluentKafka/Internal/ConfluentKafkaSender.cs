@@ -44,9 +44,7 @@ namespace Jasper.ConfluentKafka.Internal
             Envelope envelope = Envelope.ForPing(Destination);
             try
             {
-                Message<byte[], byte[]> message = _protocol.WriteFromEnvelope(envelope);
-
-                await _publisher.ProduceAsync("jasper-ping", message, cancellationToken);
+                await Send(envelope);
             }
             catch
             {
