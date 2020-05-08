@@ -23,7 +23,7 @@ namespace Jasper.Testing.Configuration
         public void add_transport()
         {
             var transport = Substitute.For<ITransport>();
-            transport.Protocol.Returns("fake");
+            transport.Protocols.Returns(new []{"fake"});
 
             var collection = new TransportCollection(new JasperOptions()) {transport};
 
@@ -133,7 +133,7 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public string Protocol { get; } = "fake";
+            public ICollection<string> Protocols { get; } = new []{"fake"};
             public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
             {
                 throw new NotImplementedException();

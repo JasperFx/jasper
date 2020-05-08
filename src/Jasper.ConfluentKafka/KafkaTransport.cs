@@ -17,7 +17,7 @@ namespace Jasper.ConfluentKafka
         private readonly Dictionary<Uri, KafkaEndpoint> _endpoints;
 
         public KafkaTopicRouter Topics { get; } = new KafkaTopicRouter();
-        public KafkaTransport() : base(Protocols.Kafka)
+        public KafkaTransport() : base(ConfluentKafka.Protocols.Kafka)
         {
             _endpoints = new Dictionary<Uri, KafkaEndpoint>();
         }

@@ -11,10 +11,18 @@ namespace Jasper.Transports
     {
         public TransportBase(string protocol)
         {
-            Protocol = protocol;
+            Protocols.Add(protocol);
         }
 
-        public string Protocol { get; }
+        public TransportBase(IEnumerable<string> protocols)
+        {
+            foreach (string protocol in protocols)
+            {
+                Protocols.Add(protocol);
+            }
+        }
+
+        public ICollection<string> Protocols { get; } = new List<string>();
 
         public IEnumerable<Endpoint> Endpoints()
         {
