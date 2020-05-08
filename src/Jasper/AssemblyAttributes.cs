@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using Jasper.Attributes;
-using Jasper.Configuration;
 using Lamar;
 
 [assembly: IgnoreAssembly]
@@ -19,4 +18,6 @@ using Lamar;
 [assembly: InternalsVisibleTo("Jasper.Persistence.Database")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.Marten")]
 [assembly: InternalsVisibleTo("Jasper.Persistence.EntityFrameworkCore")]
+[assembly: InternalsVisibleTo("Jasper.Pulsar")]
+[assembly: InternalsVisibleTo("Jasper.Pulsar.Tests")]
 [assembly: InternalsVisibleTo("StorytellerSpecs")]
