@@ -27,4 +27,8 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="dotpulsar" Version="0.8.4" />
+  </ItemGroup>
+
 </Project>
