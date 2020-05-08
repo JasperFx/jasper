@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.ConfluentKafka\Jasper.Pulsar.csproj" />
+    <ProjectReference Include="..\Jasper.Pulsar\Jasper.Pulsar.csproj" />
     <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
     <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
 
