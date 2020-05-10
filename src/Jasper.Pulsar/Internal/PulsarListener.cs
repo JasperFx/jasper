@@ -53,7 +53,7 @@ namespace Jasper.Pulsar.Internal
 
                 try
                 {
-                    envelope = _protocol.ReadEnvelope(new PulsarMessage(message.Data, new MessageMetadata()));
+                    envelope = _protocol.ReadEnvelope(new PulsarMessage(message.Data, message.Properties));
                 }
                 catch (Exception ex)
                 {

@@ -46,20 +46,13 @@ namespace Jasper.Pulsar
 
         private void SetMetaDataFromHeaderValue(MessageMetadata metadata, IDictionary<string, object> envelopHeaders, string propertyName, Action<MessageMetadata, object> propertySetter)
         {
-            if (envelopHeaders.TryGetValue(propertyName, out object headerValue))
-            {
-                propertySetter(metadata, headerValue);
-            }
+            if (envelopHeaders.TryGetValue(propertyName, out object headerValue)) propertySetter(metadata, headerValue);
         }
 
-        public Envelope ReadEnvelope(PulsarMessage message)
-        {
-            var env = new Envelope()
+        public Envelope ReadEnvelope(PulsarMessage message) => new Envelope
             {
-                Data = message.Data.ToArray()
+                Data = message.Data.ToArray(),
+                Headers = message.Properties.ToDictionary(ks => ks.Key, vs => vs.Value)
             };
-
-            return env;
-        }
     }
 }
