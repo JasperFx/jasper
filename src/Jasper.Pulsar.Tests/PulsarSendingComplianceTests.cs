@@ -18,25 +18,12 @@ namespace Jasper.Pulsar.Tests
 
         public class Sender : JasperOptions
         {
-            public const string Topic = "persistent://public/default/jasper-compliance";
-            public static string ReplyTopic = $"{Topic}-reply";
-            
-            public Sender()
+            public Sender(string topic)
             {
                 Endpoints.ConfigurePulsar(new PulsarClientBuilder()
                     .ServiceUrl(new Uri(Server)));
-                Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(Topic));
-                Endpoints.ListenToPulsarTopic("sender", ReplyTopic).UseForReplies();
-            }
-        }
-
-        public class FailureSender : JasperOptions
-        {
-            public const string Topic = "persistent://public/default/jasper-compliance";
-            public FailureSender()
-            {
-                Endpoints.ConfigurePulsar(new PulsarClientBuilder().ServiceUrl(new Uri("pulsar://localhost:6651")));
-                Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(Topic));
+                Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(topic));
+                Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic + "-reply").UseForReplies();
             }
         }
 
@@ -45,20 +32,22 @@ namespace Jasper.Pulsar.Tests
             public Receiver(string topic)
             {
                 Endpoints.ConfigurePulsar(new PulsarClientBuilder().ServiceUrl(new Uri(Server)));
-                Endpoints.PublishAllMessages().ToPulsarTopic(Sender.ReplyTopic);
-                Endpoints.ListenToPulsarTopic("receiver", topic);
+                Endpoints.PublishAllMessages().ToPulsarTopic(topic + "-reply");
+                Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic);
             }
         }
 
         public class PulsarSendingComplianceTests : SendingCompliance
         {
-            public PulsarSendingComplianceTests() : base(new Uri(Sender.Topic))
+            public static string Topic { get; } = "persistent://public/default/jasper";
+
+            public PulsarSendingComplianceTests() : base(new Uri(Topic))
             {
-                var sender = new Sender();
+                var sender = new Sender(Topic);
 
                 SenderIs(sender);
 
-                var receiver = new Receiver(Sender.Topic);
+                var receiver = new Receiver(Topic);
 
                 ReceiverIs(receiver);
             }
@@ -67,9 +56,6 @@ namespace Jasper.Pulsar.Tests
 
             public async Task publish_failures_reported_to_caller()
             {
-                theSender = null;
-                SenderIs<FailureSender>();
-
                 _ = await theSender.TrackActivity(10.Seconds())
                     .DoNotAssertOnExceptionsDetected()
                     .DoNotAssertTimeout()
