@@ -4,6 +4,7 @@ using Baseline.Dates;
 using DotPulsar;
 using DotPulsar.Internal;
 using Jasper.Tracking;
+using Newtonsoft.Json;
 using Shouldly;
 using TestingSupport.Compliance;
 using TestMessages;
@@ -23,14 +24,9 @@ namespace Jasper.Pulsar.Tests
             public Sender()
             {
                 Endpoints.ConfigurePulsar(new PulsarClientBuilder()
-                    .ExceptionHandler(context =>
-                    {
-
-                        return new ValueTask(Task.CompletedTask);
-                    })
                     .ServiceUrl(new Uri(Server)));
                 Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(Topic));
-                Endpoints.ListenToPulsarTopic("compliance-tests", ReplyTopic).UseForReplies();
+                Endpoints.ListenToPulsarTopic("sender", ReplyTopic).UseForReplies();
             }
         }
 
@@ -39,7 +35,7 @@ namespace Jasper.Pulsar.Tests
             public const string Topic = "persistent://public/default/jasper-compliance";
             public FailureSender()
             {
-                Endpoints.ConfigurePulsar(new PulsarClientBuilder().ServiceUrl(new Uri(Server)));
+                Endpoints.ConfigurePulsar(new PulsarClientBuilder().ServiceUrl(new Uri("pulsar://localhost:6651")));
                 Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(Topic));
             }
         }
@@ -74,12 +70,13 @@ namespace Jasper.Pulsar.Tests
                 theSender = null;
                 SenderIs<FailureSender>();
 
-                _ = await theSender.TrackActivity(60.Seconds())
+                _ = await theSender.TrackActivity(10.Seconds())
                     .DoNotAssertOnExceptionsDetected()
                     .DoNotAssertTimeout()
                     .ExecuteAndWait(c =>
                     {
-                        Should.Throw<Exception>(c.Publish(new Message1()));
+                        var serializationException = Should.Throw<JsonSerializationException>(c.Publish(new PoisonEnvelop()));
+                        serializationException.InnerException.ShouldBeOfType<PoisionMessageException>();
                         return Task.CompletedTask;
                     });
             }
@@ -88,11 +85,25 @@ namespace Jasper.Pulsar.Tests
 
             public async Task publish_succeeds()
             {
-                _ = await theSender.TrackActivity(60.Seconds())
+                _ = await theSender.TrackActivity(10.Seconds())
                     .DoNotAssertOnExceptionsDetected()
                     .DoNotAssertTimeout()
                     .ExecuteAndWait(c => c.Publish(new Message1()));
             }
         }
+    }
+
+    public class PoisionMessageException : Exception
+    {
+        public const string PoisonMessage = "Poison message";
+        public PoisionMessageException() : base(PoisonMessage)
+        {
+            
+        }
+    }
+    
+    public class PoisonEnvelop : Envelope
+    {
+        public new byte[] Data => throw new PoisionMessageException();
     }
 }
