@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using DotPulsar;
@@ -41,7 +42,7 @@ namespace Jasper.Pulsar.Tests
         {
             public static string Topic { get; } = "persistent://public/default/jasper";
 
-            public PulsarSendingComplianceTests() : base(new Uri(Topic))
+            public PulsarSendingComplianceTests() : base(new Uri(Topic), 30.Seconds())
             {
                 var sender = new Sender(Topic);
 
@@ -50,6 +51,8 @@ namespace Jasper.Pulsar.Tests
                 var receiver = new Receiver(Topic);
 
                 ReceiverIs(receiver);
+
+                Thread.Sleep(2000);
             }
 
             [Fact]
