@@ -12,11 +12,13 @@ namespace Jasper.Pulsar.Internal
         private readonly ITransportProtocol<PulsarMessage> _protocol;
         private readonly IProducer _publisher;
         private readonly PulsarEndpoint _endpoint;
+        private readonly CancellationToken _cancellationToken;
         public bool SupportsNativeScheduledSend { get; } = false;
         public Uri Destination => _endpoint.Uri;
-        public PulsarSender(PulsarEndpoint endpoint)
+        public PulsarSender(PulsarEndpoint endpoint, CancellationToken cancellationToken)
         {
             _endpoint = endpoint;
+            _cancellationToken = cancellationToken;
             _publisher = endpoint.PulsarClient.CreateProducer(endpoint.ProducerOptions);
             _protocol = new PulsarTransportProtocol();
         }
@@ -50,7 +52,7 @@ namespace Jasper.Pulsar.Internal
 
             var message = _protocol.WriteFromEnvelope(envelope);
             
-            _ = await _publisher.Send(message.Metadata, message.Data);
+            _ = await _publisher.Send(message.Metadata, message.Data, _cancellationToken);
         }
     }
 }

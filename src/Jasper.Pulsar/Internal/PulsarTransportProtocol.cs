@@ -49,10 +49,17 @@ namespace Jasper.Pulsar
             if (envelopHeaders.TryGetValue(propertyName, out object headerValue)) propertySetter(metadata, headerValue);
         }
 
-        public Envelope ReadEnvelope(PulsarMessage message) => new Envelope
+        public Envelope ReadEnvelope(PulsarMessage message)
+        {
+            var envelope = new Envelope
             {
                 Data = message.Data.ToArray(),
                 Headers = message.Properties.ToDictionary(ks => ks.Key, vs => vs.Value)
             };
+
+            envelope.ReadPropertiesFromDictionary(message.Properties.ToDictionary(ks => ks.Key, vs => (object)vs.Value));
+
+            return envelope;
+        }
     }
 }
