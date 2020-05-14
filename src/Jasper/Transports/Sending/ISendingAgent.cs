@@ -21,7 +21,7 @@ namespace Jasper.Transports.Sending
 
         // This would be called by the EnvelopeSender if invoked
         // indirectly
-        Task Forward(Envelope envelope);
+        Task StoreAndForward(Envelope envelope);
 
         Endpoint Endpoint { get; }
 

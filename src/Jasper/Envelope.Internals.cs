@@ -136,7 +136,7 @@ namespace Jasper
             _enqueued = true;
 
 
-            return Sender.Forward(this);
+            return Sender.StoreAndForward(this);
         }
 
         internal Task QuickSend()

@@ -62,7 +62,7 @@ namespace Jasper.Transports.Sending
            _messageLogger.Sent(envelope);
         }
 
-        public async Task Forward(Envelope envelope)
+        public async Task StoreAndForward(Envelope envelope)
         {
             setDefaults(envelope);
 
