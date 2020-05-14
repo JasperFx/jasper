@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Jasper.Configuration;
 using Jasper.Runtime;
@@ -7,7 +7,7 @@ namespace Jasper.Transports
 {
     public interface ITransport : IDisposable
     {
-        string Protocol { get; }
+        ICollection<string> Protocols { get; }
 
         Endpoint ReplyEndpoint();
 

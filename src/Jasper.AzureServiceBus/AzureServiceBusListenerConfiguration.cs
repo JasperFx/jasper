@@ -1,4 +1,6 @@
 using Jasper.Configuration;
+using Jasper.Transports;
+using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus
 {
@@ -14,7 +16,7 @@ namespace Jasper.AzureServiceBus
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public AzureServiceBusListenerConfiguration Protocol<T>() where T : IAzureServiceBusProtocol, new()
+        public AzureServiceBusListenerConfiguration Protocol<T>() where T : ITransportProtocol<Message>, new()
         {
             return Protocol(new T());
         }
@@ -25,7 +27,7 @@ namespace Jasper.AzureServiceBus
         /// </summary>
         /// <param name="protocol"></param>
         /// <returns></returns>
-        public AzureServiceBusListenerConfiguration Protocol(IAzureServiceBusProtocol protocol)
+        public AzureServiceBusListenerConfiguration Protocol(ITransportProtocol<Message> protocol)
         {
             endpoint.Protocol = protocol;
             return this;

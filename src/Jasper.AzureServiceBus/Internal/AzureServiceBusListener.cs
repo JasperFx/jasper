@@ -16,7 +16,7 @@ namespace Jasper.AzureServiceBus.Internal
         private readonly IList<IClientEntity> _clientEntities = new List<IClientEntity>();
         private readonly AzureServiceBusEndpoint _endpoint;
         private readonly ITransportLogger _logger;
-        private readonly IAzureServiceBusProtocol _protocol;
+        private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusTransport _transport;
         private IReceiverCallback _callback;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jasper.Configuration;
@@ -11,10 +11,18 @@ namespace Jasper.Transports
     {
         public TransportBase(string protocol)
         {
-            Protocol = protocol;
+            Protocols.Add(protocol);
         }
 
-        public string Protocol { get; }
+        public TransportBase(IEnumerable<string> protocols)
+        {
+            foreach (string protocol in protocols)
+            {
+                Protocols.Add(protocol);
+            }
+        }
+
+        public ICollection<string> Protocols { get; } = new List<string>();
 
         public IEnumerable<Endpoint> Endpoints()
         {
@@ -82,7 +90,9 @@ namespace Jasper.Transports
 
             var endpoint = findEndpointByUri(canonicizeUri(uri));
 
-            // It's coded this way so you don't override
+            if(endpoint == null)
+
+                // It's coded this way so you don't override
             // durability if it's already set
             if (shouldBeDurable) endpoint.IsDurable = true;
 

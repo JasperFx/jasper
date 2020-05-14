@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using ImTools;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Jasper.RabbitMQ.Internal
 {
@@ -127,10 +125,8 @@ namespace Jasper.RabbitMQ.Internal
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            return new RabbitMqSender(root.TransportLogger, this, Parent, root.Cancellation);
+            return new RabbitMqSender(this, this.Parent);
         }
-
-
     }
 
 
