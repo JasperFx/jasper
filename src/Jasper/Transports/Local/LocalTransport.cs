@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
@@ -50,7 +50,7 @@ namespace Jasper.Transports.Local
         }
 
 
-        public string Protocol { get; } = TransportConstants.Local;
+        public ICollection<string> Protocols { get; } = new []{ TransportConstants.Local };
 
         void ITransport.StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {

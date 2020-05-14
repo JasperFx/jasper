@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
@@ -67,7 +67,7 @@ namespace StorytellerSpecs.Stub
         {
         }
 
-        public string Protocol { get; } = "stub";
+        public ICollection<string> Protocols { get; } = new []{"stub"};
 
         public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
         {
