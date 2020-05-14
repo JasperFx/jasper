@@ -8,9 +8,9 @@ namespace StorytellerSpecs_Generated
     public class StorytellerSpecs_Fixtures_Message1 : Jasper.Messaging.Model.MessageHandler
     {
         private readonly MessageTracker _messageTracker;
-        private readonly JasperRuntime _jasperRuntime;
+        private readonly IHost _jasperRuntime;
 
-        public StorytellerSpecs_Fixtures_Message1(MessageTracker messageTracker, JasperRuntime jasperRuntime)
+        public StorytellerSpecs_Fixtures_Message1(MessageTracker messageTracker, IHost jasperRuntime)
         {
             _messageTracker = messageTracker;
             _jasperRuntime = jasperRuntime;
@@ -28,7 +28,7 @@ namespace StorytellerSpecs_Generated
     }
 
     // END: StorytellerSpecs_Fixtures_Message1
-    
-    
+
+
 }
 

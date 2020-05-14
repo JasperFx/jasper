@@ -90,6 +90,7 @@ namespace Jasper.Runtime.Handlers
                     $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
 
             var call = new MethodCall(handlerType, method);
+            call.CommentText = "Core message handling method";
 
             return new HandlerChain(call);
         }
@@ -145,7 +146,9 @@ namespace Jasper.Runtime.Handlers
 
             var cascadingHandlers = determineCascadingMessages().ToArray();
 
-            return Middleware.Concat(Handlers).Concat(Postprocessors).Concat(cascadingHandlers).ToList();
+            // The Enqueue cascading needs to happen before the post processors because of the
+            // transactional & outbox support
+            return Middleware.Concat(Handlers).Concat(cascadingHandlers).Concat(Postprocessors).ToList();
         }
 
         private IEnumerable<CaptureCascadingMessages> determineCascadingMessages()

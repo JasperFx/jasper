@@ -15,6 +15,7 @@ namespace Jasper.Runtime.Handlers
             _method)
         {
             Arguments[0] = messages;
+            CommentText = "Outgoing, cascaded message";
         }
     }
 }

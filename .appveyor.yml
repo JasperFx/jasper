@@ -1,5 +1,5 @@
-version: 1.1.0.{build}
-image: Visual Studio 2017
+version: 1.1.4.{build}
+image: Visual Studio 2019
 
 
 init:
@@ -18,7 +18,7 @@ nuget:
   disable_publish_on_pr: true
 
 install:
-  - cmd: choco install dotnetcore-sdk -y
+  # - cmd: choco install dotnetcore-sdk -y
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
   - ruby --version
   - bundle config --local path vendor/bundle
@@ -28,7 +28,7 @@ install:
 
 build_script:
 - cmd: >-
-    rake ci version=1.1.0
+    rake ci version=1.1.4
 test: off
 
 deploy:

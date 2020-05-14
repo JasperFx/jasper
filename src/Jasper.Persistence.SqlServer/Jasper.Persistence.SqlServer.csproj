@@ -16,7 +16,7 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="[4.5.1, 5.0.0)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj" />

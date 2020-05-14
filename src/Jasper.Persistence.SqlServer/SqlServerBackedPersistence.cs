@@ -32,7 +32,8 @@ namespace Jasper.Persistence.SqlServer
             options.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
             options.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
 
-            options.Advanced.CodeGeneration.SetTransactions(new SqlServerTransactionFrameProvider());
+            // Don't overwrite the EF Core transaction support if it's there
+            options.Advanced.CodeGeneration.SetTransactionsIfNone(new SqlServerTransactionFrameProvider());
         }
     }
 }

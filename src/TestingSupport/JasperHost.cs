@@ -24,7 +24,7 @@ namespace Jasper
         }
 
         /// <summary>
-        ///     Builds and initializes a JasperRuntime for the options
+        ///     Builds and initializes a IHost for the options
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
@@ -34,7 +34,7 @@ namespace Jasper
         }
 
         /// <summary>
-        ///     Builds and initializes a JasperRuntime for the JasperOptions of
+        ///     Builds and initializes a IHost for the JasperOptions of
         ///     type T
         /// </summary>
         /// <param name="configure"></param>
@@ -49,7 +49,7 @@ namespace Jasper
         }
 
         /// <summary>
-        ///     Builds and initializes a JasperRuntime for the configured JasperOptions
+        ///     Builds and initializes a IHost for the configured JasperOptions
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
