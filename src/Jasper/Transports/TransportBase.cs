@@ -90,9 +90,7 @@ namespace Jasper.Transports
 
             var endpoint = findEndpointByUri(canonicizeUri(uri));
 
-            if(endpoint == null)
-
-                // It's coded this way so you don't override
+            // It's coded this way so you don't override
             // durability if it's already set
             if (shouldBeDurable) endpoint.IsDurable = true;
 
