@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
@@ -14,6 +15,8 @@ using Shouldly;
 using TestingSupport.ErrorHandling;
 using TestMessages;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace TestingSupport.Compliance
 {
@@ -22,6 +25,8 @@ namespace TestingSupport.Compliance
         protected IHost theSender;
         protected IHost theReceiver;
         protected Uri theOutboundAddress;
+        private readonly ITestOutputHelper _testOutputHelper = new TestOutputHelper();
+        private readonly TimeSpan _defaultTimeout = 5.Seconds();
 
         protected readonly ErrorCausingMessage theMessage = new ErrorCausingMessage();
         private ITrackedSession _session;
@@ -31,10 +36,15 @@ namespace TestingSupport.Compliance
             theOutboundAddress = destination;
         }
 
+        protected SendingCompliance(Uri destination, TimeSpan defaultTimeout)
+        {
+            theOutboundAddress = destination;
+            _defaultTimeout = defaultTimeout;
+        }
+
         public void SenderIs<T>() where T : JasperOptions, new()
         {
             theSender = JasperHost.For<T>(configureSender);
-
         }
 
         public void TheOnlyAppIs<T>() where T : JasperOptions, new()
@@ -113,13 +123,13 @@ namespace TestingSupport.Compliance
         public async Task can_apply_requeue_mechanics()
         {
 
-            var session = await theSender.TrackActivity()
+            var session = await theSender.TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message2()));
 
 
-
+            
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
 
@@ -128,7 +138,7 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task can_send_from_one_node_to_another_by_destination()
         {
-            var session = await theSender.TrackActivity()
+            var session = await theSender.TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
@@ -143,7 +153,7 @@ namespace TestingSupport.Compliance
         {
             var message1 = new Message1();
 
-            var session = await theSender.TrackActivity()
+            var session = await theSender.TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(message1);
@@ -156,7 +166,7 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task tags_the_envelope_with_the_source()
         {
-            var session = await theSender.TrackActivity()
+            var session = await theSender.TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
@@ -175,7 +185,7 @@ namespace TestingSupport.Compliance
 
             var id2 = Guid.Empty;
             var session2 = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
 
                 .ExecuteAndWait(async context =>
@@ -200,7 +210,7 @@ namespace TestingSupport.Compliance
         public async Task schedule_send()
         {
             var session = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver ?? theSender)
@@ -219,7 +229,7 @@ namespace TestingSupport.Compliance
         protected async Task<EnvelopeRecord> afterProcessingIsComplete()
         {
             _session = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(theMessage);
@@ -232,7 +242,7 @@ namespace TestingSupport.Compliance
         protected async Task shouldSucceedOnAttempt(int attempt)
         {
             var session = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .DoNotAssertOnExceptionsDetected()
@@ -266,7 +276,7 @@ namespace TestingSupport.Compliance
         protected async Task shouldMoveToErrorQueueOnAttempt(int attempt)
         {
             var session = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(30.Seconds())
@@ -343,7 +353,7 @@ namespace TestingSupport.Compliance
             var ping = new PingMessage();
 
             var session = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
                 .SendMessageAndWait(ping);
@@ -358,7 +368,7 @@ namespace TestingSupport.Compliance
             var ping = new ImplicitPing();
 
             var session = await theSender
-                .TrackActivity()
+                .TrackActivity(_defaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
                 .ExecuteAndWait(x => x.SendAndExpectResponseFor<ImplicitPong>(ping));

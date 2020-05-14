@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -29,6 +30,7 @@ namespace Jasper.Kafka.Internal
 
         public void Dispose()
         {
+            _consumer?.Dispose();
             _consumerTask?.Dispose();
         }
 
@@ -42,6 +44,8 @@ namespace Jasper.Kafka.Internal
             _consumer.Subscribe(new []{ _endpoint.TopicName });
 
             _consumerTask = ConsumeAsync();
+
+            _logger.ListeningStatusChange(ListeningStatus.Accepting);
         }
 
         private async Task ConsumeAsync()
@@ -53,10 +57,19 @@ namespace Jasper.Kafka.Internal
                 {
                     message = await Task.Run(() => _consumer.Consume(), _cancellation);
                 }
+                catch (Confluent.Kafka.ConsumeException cex)
+                {
+                    if (cex.Error.Code == ErrorCode.PolicyViolation)
+                    {
+                        throw;
+                    }
+
+                    continue; 
+                }
                 catch (Exception ex)
                 {
                     _logger.LogException(ex, message: $"Error consuming message from Kafka topic {_endpoint.TopicName}");
-                    return;
+                    continue;
                 }
 
                 Envelope envelope;
@@ -68,22 +81,14 @@ namespace Jasper.Kafka.Internal
                 catch (Exception ex)
                 {
                     _logger.LogException(ex, message: $"Error trying to map an incoming Kafka {_endpoint.TopicName} Topic message to an Envelope. See the Dead Letter Queue");
-                    return;
+                    continue;
                 }
 
                 try
                 {
-                    await _callback.Received(Address, new[] { envelope });
-
-                    _consumer.Commit();
-                }
-                catch (KafkaException ke)
-                {
-                    if (ke.Error?.Code == ErrorCode.Local_NoOffset)
-                    {
-                        return;
-                    }
-                    _logger.LogException(ke, envelope.Id, "Error trying to receive a message from " + Address);
+                    await _callback.Received(Address, new[] {envelope});
+                    
+                    _consumer.Commit(message);
                 }
                 catch (Exception e)
                 {

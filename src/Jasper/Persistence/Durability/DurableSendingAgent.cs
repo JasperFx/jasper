@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -77,10 +77,9 @@ namespace Jasper.Persistence.Durability
 
             foreach (var envelope in toRetry)
             {
-                await _sender.Enqueue(envelope);
+                await _sender.Send(envelope);
             }
         }
-
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
             return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()), _settings.Cancellation);
@@ -97,7 +96,7 @@ namespace Jasper.Persistence.Durability
         {
             await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
-            await _sender.Enqueue(envelope);
+            await _sender.Send(envelope);
         }
 
     }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -39,7 +39,7 @@ namespace Jasper.Transports.Sending
             foreach (var envelope in toRetry)
             {
                 // It's perfectly okay to not wait on the task here
-                _sender.Enqueue(envelope);
+                _sender.Send(envelope);
             }
 
             return Task.CompletedTask;
@@ -57,7 +57,7 @@ namespace Jasper.Transports.Sending
 
         protected override Task storeAndForward(Envelope envelope)
         {
-            return _sender.Enqueue(envelope);
+            return _sender.Send(envelope);
         }
 
         public override bool IsDurable { get; } = false;

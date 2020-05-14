@@ -20,7 +20,7 @@ namespace Jasper.Testing.Runtime
                 var sender = new BatchedSender("tcp://localhost:2222".ToUri(), new SocketSenderProtocol(),
                     CancellationToken.None, TransportLogger.Empty());
 
-                sender.Start(new StubSenderCallback());
+                sender.RegisterCallback(new StubSenderCallback());
 
                 await sender.Ping(CancellationToken.None);
             }

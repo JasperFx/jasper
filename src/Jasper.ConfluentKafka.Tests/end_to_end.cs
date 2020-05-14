@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestingSupport.Compliance;
+using TestingSupport.ErrorHandling;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.ConfluentKafka.Tests
@@ -27,6 +29,11 @@ namespace Jasper.ConfluentKafka.Tests
             BootstrapServers = KafkaServer,
             SecurityProtocol = SecurityProtocol.Ssl
         };
+        private static ProducerConfig FailureProducerConfig = new ProducerConfig
+        {
+            BootstrapServers = "badaddress",
+            MessageTimeoutMs = 1000
+        };
 
         private static ConsumerConfig ConsumerConfig = new ConsumerConfig
         {
@@ -37,36 +44,64 @@ namespace Jasper.ConfluentKafka.Tests
 
         public class Sender : JasperOptions
         {
-
+            public const string Topic = "jasper-compliance";
+            public static string ReplyTopic = $"{Topic}-reply";
             public Sender()
             {
                 Endpoints.ConfigureKafka();
-
+                Endpoints.PublishAllMessages().ToKafkaTopic(Topic, ProducerConfig);
+                Endpoints.ListenToKafkaTopic(ReplyTopic, ConsumerConfig).UseForReplies();
             }
+        }
 
-            public string QueueName { get; set; }
+        public class FailureSender : JasperOptions
+        {
+            public const string Topic = "jasper-compliance";
+            public FailureSender()
+            {
+                Endpoints.ConfigureKafka();
+                Endpoints.PublishAllMessages().ToKafkaTopic(Topic, FailureProducerConfig);
+            }
         }
 
         public class Receiver : JasperOptions
         {
-            public Receiver(string queueName)
+            public Receiver(string topic)
             {
                 Endpoints.ConfigureKafka();
+                Endpoints.PublishAllMessages().ToKafkaTopic(Sender.ReplyTopic, ProducerConfig);
+                Endpoints.ListenToKafkaTopic(topic, ConsumerConfig);
             }
         }
 
 
         public class KafkaSendingComplianceTests : SendingCompliance
         {
-            public KafkaSendingComplianceTests() : base($"kafka://topic/messages".ToUri())
+            public KafkaSendingComplianceTests() : base($"kafka://topic/{Sender.Topic}".ToUri(), 15.Seconds())
             {
                 var sender = new Sender();
 
                 SenderIs(sender);
 
-                var receiver = new Receiver(sender.QueueName);
+                var receiver = new Receiver(Sender.Topic);
 
                 ReceiverIs(receiver);
+            }
+
+            [Fact]
+            public async Task publish_failures_reported_to_caller()
+            {
+                theSender = null;
+                SenderIs<FailureSender>();
+
+                _ = await theSender.TrackActivity(60.Seconds())
+                    .DoNotAssertOnExceptionsDetected()
+                    .DoNotAssertTimeout()
+                    .ExecuteAndWait(c =>
+                    {
+                        Should.Throw<Exception>(c.Publish(new Message1()));
+                        return Task.CompletedTask;
+                    });
             }
         }
 
@@ -94,7 +129,6 @@ namespace Jasper.ConfluentKafka.Tests
 
             colors.Name.ShouldBe("Red");
         }
-
 
         [Fact]
         public async Task send_multiple_messages_in_order()

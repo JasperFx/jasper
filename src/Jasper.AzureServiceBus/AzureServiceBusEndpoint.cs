@@ -140,7 +140,7 @@ namespace Jasper.AzureServiceBus
         protected override ISender CreateSender(IMessagingRoot root)
         {
             if (Parent.ConnectionString == null) throw new InvalidOperationException("There is no configured connection string for Azure Service Bus, or it is empty");
-            return new AzureServiceBusSender(this, Parent, root.TransportLogger, root.Cancellation);
+            return new AzureServiceBusSender(this, Parent);
         }
     }
 }
