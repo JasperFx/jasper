@@ -41,7 +41,7 @@ namespace Jasper.Transports.Local
                 : Enqueue(envelope);
         }
 
-        public Task Forward(Envelope envelope)
+        public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
         }
