@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 
@@ -14,8 +14,6 @@ namespace Jasper.Transports.Sending
         bool IsDurable { get; }
 
         bool SupportsNativeScheduledSend { get; }
-
-
 
         // This would be called in the future by the outbox, assuming
         // that the envelope is already persisted and just needs to be sent out

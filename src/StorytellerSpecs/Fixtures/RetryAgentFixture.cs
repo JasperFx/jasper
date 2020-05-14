@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -38,11 +38,7 @@ namespace StorytellerSpecs.Fixtures
         {
         }
 
-        void ISender.Start(ISenderCallback callback)
-        {
-        }
-
-        Task ISender.Enqueue(Envelope envelope)
+        Task ISender.Send(Envelope envelope)
         {
             _enqueued.Add(envelope);
             return Task.CompletedTask;
@@ -50,17 +46,15 @@ namespace StorytellerSpecs.Fixtures
 
         Uri ISender.Destination { get; }
 
-        int ISender.QueuedCount { get; }
+        bool Latched => _latched;
 
-        bool ISender.Latched => _latched;
-
-        Task ISender.LatchAndDrain()
+        Task LatchAndDrain()
         {
             _latched = true;
             return Task.CompletedTask;
         }
 
-        void ISender.Unlatch()
+        void Unlatch()
         {
             _unlatched = true;
         }

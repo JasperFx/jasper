@@ -8,6 +8,7 @@ using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
+using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus
 {
@@ -33,7 +34,7 @@ namespace Jasper.AzureServiceBus
         public string QueueName { get; set; }
         public string TopicName { get; set; }
 
-        public IAzureServiceBusProtocol Protocol { get; set; } = new DefaultAzureServiceBusProtocol();
+        public ITransportProtocol<Message> Protocol { get; set; } = new DefaultAzureServiceBusProtocol();
 
         public override Uri Uri => buildUri(false);
 
@@ -139,7 +140,7 @@ namespace Jasper.AzureServiceBus
         protected override ISender CreateSender(IMessagingRoot root)
         {
             if (Parent.ConnectionString == null) throw new InvalidOperationException("There is no configured connection string for Azure Service Bus, or it is empty");
-            return new AzureServiceBusSender(this, Parent, root.TransportLogger, root.Cancellation);
+            return new AzureServiceBusSender(this, Parent);
         }
     }
 }

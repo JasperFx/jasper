@@ -1,15 +1,14 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
 using Jasper.Transports.Tcp;
 using Jasper.Transports.Util;
-using LamarCodeGeneration.Frames;
 
 namespace Jasper.Transports.Sending
 {
-    public class BatchedSender : ISender
+    public class BatchedSender : ISender, ISenderRequiresCallback
     {
         private readonly CancellationToken _cancellation;
         private readonly ITransportLogger _logger;
@@ -22,20 +21,12 @@ namespace Jasper.Transports.Sending
         private ActionBlock<OutgoingMessageBatch> _sender;
         private ActionBlock<Envelope> _serializing;
 
-        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation,
-            ITransportLogger logger)
+        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, ITransportLogger logger)
         {
             Destination = destination;
             _protocol = protocol;
             _cancellation = cancellation;
             _logger = logger;
-        }
-
-        public Uri Destination { get; }
-
-        public void Start(ISenderCallback callback)
-        {
-            _callback = callback;
 
             _sender = new ActionBlock<OutgoingMessageBatch>(SendBatch, new ExecutionDataflowBlockOptions
             {
@@ -50,16 +41,16 @@ namespace Jasper.Transports.Sending
             }, _cancellation);
 
             _serializing = new ActionBlock<Envelope>(async e =>
+            {
+                try
                 {
-                    try
-                    {
-                        await _batching.SendAsync(e);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogException(ex, message: $"Error while trying to serialize envelope {e}");
-                    }
-                },
+                    await _batching.SendAsync(e);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogException(ex, message: $"Error while trying to serialize envelope {e}");
+                }
+            },
                 new ExecutionDataflowBlockOptions
                 {
                     CancellationToken = _cancellation,
@@ -81,7 +72,7 @@ namespace Jasper.Transports.Sending
                     return batch;
                 },
                 new ExecutionDataflowBlockOptions
-                    {BoundedCapacity = DataflowBlockOptions.Unbounded, MaxDegreeOfParallelism = 10, CancellationToken = _cancellation});
+                { BoundedCapacity = DataflowBlockOptions.Unbounded, MaxDegreeOfParallelism = 10, CancellationToken = _cancellation });
 
             _batchWriting.Completion.ContinueWith(x =>
             {
@@ -96,6 +87,8 @@ namespace Jasper.Transports.Sending
                 if (x.IsFaulted) _logger.LogException(x.Exception);
             }, _cancellation);
         }
+
+        public Uri Destination { get; }
 
         public int QueuedCount => _queued + _batching.ItemCount + _serializing.InputCount;
 
@@ -119,7 +112,6 @@ namespace Jasper.Transports.Sending
         {
             _logger.CircuitResumed(Destination);
 
-            Start(_callback);
             Latched = false;
         }
 
@@ -133,7 +125,7 @@ namespace Jasper.Transports.Sending
 
         public bool SupportsNativeScheduledSend { get; } = true;
 
-        public Task Enqueue(Envelope message)
+        public Task Send(Envelope message)
         {
             if (_batching == null) throw new InvalidOperationException("This agent has not been started");
 
@@ -149,6 +141,8 @@ namespace Jasper.Transports.Sending
             _sender?.Complete();
             _batching?.Dispose();
         }
+
+        public void RegisterCallback(ISenderCallback senderCallback) => _callback = senderCallback;
 
         public async Task SendBatch(OutgoingMessageBatch batch)
         {

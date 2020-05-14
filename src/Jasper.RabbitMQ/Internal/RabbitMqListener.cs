@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Baseline;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -48,7 +48,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             if (callback == null) return;
 
-            Connect();
+            EnsureConnected();
 
             _callback = callback;
             _consumer = new MessageConsumer(callback, _logger, Channel, _mapper, Address)

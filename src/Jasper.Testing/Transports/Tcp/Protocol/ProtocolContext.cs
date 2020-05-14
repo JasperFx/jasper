@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -21,7 +21,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         private readonly IPAddress theAddress = IPAddress.Loopback;
         private readonly int thePort = ++NextPort;
         private readonly ListeningAgent _listener;
-        private readonly Uri destination;
+        public readonly Uri Destination;
         private readonly OutgoingMessageBatch theMessageBatch;
 
 
@@ -30,7 +30,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
 
         public ProtocolContext()
         {
-            destination = $"durable://localhost:{thePort}/incoming".ToUri();
+            Destination = $"durable://localhost:{thePort}/incoming".ToUri();
             _listener = new ListeningAgent(theReceiver, theAddress, thePort, "durable", CancellationToken.None);
 
 
@@ -44,7 +44,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
                 outgoingMessage()
             };
 
-            theMessageBatch = new OutgoingMessageBatch(destination, messages);
+            theMessageBatch = new OutgoingMessageBatch(Destination, messages);
         }
 
         public void Dispose()
@@ -57,8 +57,8 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         {
             return new Envelope
             {
-                Destination = destination,
-                Data = new byte[] {1, 2, 3, 4, 5, 6, 7},
+                Destination = Destination,
+                Data = new byte[] { 1, 2, 3, 4, 5, 6, 7 },
                 SentAt = DateTime.Today.ToUniversalTime()
             };
         }
@@ -69,10 +69,10 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
 
             using (var client = new TcpClient())
             {
-                if (Dns.GetHostName() == destination.Host)
-                    await client.ConnectAsync(IPAddress.Loopback, destination.Port);
+                if (Dns.GetHostName() == Destination.Host)
+                    await client.ConnectAsync(IPAddress.Loopback, Destination.Port);
 
-                await client.ConnectAsync(destination.Host, destination.Port);
+                await client.ConnectAsync(Destination.Host, Destination.Port);
 
                 await WireProtocol.Send(client.GetStream(), theMessageBatch, null, theSender);
             }

@@ -31,7 +31,10 @@ namespace Jasper.Configuration
 
         public void Add(ITransport transport)
         {
-            _transports.SmartAdd(transport.Protocol, transport);
+            foreach (var protocol in transport.Protocols)
+            {
+                _transports.SmartAdd(protocol, transport);
+            }
         }
 
         public T Get<T>() where T : ITransport, new()

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -20,14 +20,14 @@ namespace Jasper.Logging
         private readonly Action<ILogger, string, Guid, Exception> _executionStarted;
 
         private readonly ILogger _logger;
-        private readonly Action<ILogger, string, Guid, Uri, Exception> _messageFailed;
-        private readonly Action<ILogger, string, Guid, Uri, Exception> _messageSucceeded;
+        private readonly Action<ILogger, string, Guid, string, Exception> _messageFailed;
+        private readonly Action<ILogger, string, Guid, string, Exception> _messageSucceeded;
         private readonly IMetrics _metrics;
         private readonly Action<ILogger, Envelope, Exception> _movedToErrorQueue;
-        private readonly Action<ILogger, string, Guid, Uri, Exception> _noHandler;
+        private readonly Action<ILogger, string, Guid, string, Exception> _noHandler;
         private readonly Action<ILogger, Envelope, Exception> _noRoutes;
-        private readonly Action<ILogger, string, Guid, Uri, Uri, Exception> _received;
-        private readonly Action<ILogger, string, Guid, Uri, Exception> _sent;
+        private readonly Action<ILogger, string, Guid, string, string, Exception> _received;
+        private readonly Action<ILogger, string, Guid, string, Exception> _sent;
         private readonly Action<ILogger, Envelope, Exception> _undeliverable;
 
         public static MessageLogger Empty()
@@ -40,10 +40,10 @@ namespace Jasper.Logging
             _metrics = metrics;
             _logger = factory.CreateLogger("Jasper.Messages");
 
-            _sent = LoggerMessage.Define<string, Guid, Uri>(LogLevel.Debug, SentEventId,
+            _sent = LoggerMessage.Define<string, Guid, string>(LogLevel.Debug, SentEventId,
                 "Enqueued for sending {Name}#{Id} to {Destination}");
 
-            _received = LoggerMessage.Define<string, Guid, Uri, Uri>(LogLevel.Debug, ReceivedEventId,
+            _received = LoggerMessage.Define<string, Guid, string, string>(LogLevel.Debug, ReceivedEventId,
                 "Received {Name}#{Id} at {Destination} from {ReplyUri}");
 
             _executionStarted = LoggerMessage.Define<string, Guid>(LogLevel.Debug, ExecutionStartedEventId,
@@ -53,13 +53,13 @@ namespace Jasper.Logging
                 "Finished processing {Name}#{Id}");
 
             _messageSucceeded =
-                LoggerMessage.Define<string, Guid, Uri>(LogLevel.Information, MessageSucceededEventId,
+                LoggerMessage.Define<string, Guid, string>(LogLevel.Information, MessageSucceededEventId,
                     "Successfully processed message {Name}#{envelope} from {ReplyUri}");
 
-            _messageFailed = LoggerMessage.Define<string, Guid, Uri>(LogLevel.Error, MessageFailedEventId,
+            _messageFailed = LoggerMessage.Define<string, Guid, string>(LogLevel.Error, MessageFailedEventId,
                 "Failed to process message {Name}#{envelope} from {ReplyUri}");
 
-            _noHandler = LoggerMessage.Define<string, Guid, Uri>(LogLevel.Information, NoHandlerEventId,
+            _noHandler = LoggerMessage.Define<string, Guid, string>(LogLevel.Information, NoHandlerEventId,
                 "No known handler for {Name}#{Id} from {ReplyUri}");
 
             _noRoutes = LoggerMessage.Define<Envelope>(LogLevel.Information, NoRoutesEventId,
@@ -74,13 +74,13 @@ namespace Jasper.Logging
 
         public virtual void Sent(Envelope envelope)
         {
-            _sent(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.Destination, null);
+            _sent(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.Destination?.ToString(), null);
         }
 
         public virtual void Received(Envelope envelope)
         {
-            _received(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.Destination,
-                envelope.ReplyUri, null);
+            _received(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.Destination?.ToString(),
+                envelope.ReplyUri?.ToString(), null);
         }
 
         public virtual void ExecutionStarted(Envelope envelope)
@@ -96,18 +96,18 @@ namespace Jasper.Logging
         public virtual void MessageSucceeded(Envelope envelope)
         {
             _metrics.MessageExecuted(envelope);
-            _messageSucceeded(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri, null);
+            _messageSucceeded(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri?.ToString(), null);
         }
 
         public virtual void MessageFailed(Envelope envelope, Exception ex)
         {
             _metrics.MessageExecuted(envelope);
-            _messageFailed(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri, ex);
+            _messageFailed(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri?.ToString(), ex);
         }
 
         public virtual void NoHandlerFor(Envelope envelope)
         {
-            _noHandler(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri, null);
+            _noHandler(_logger, envelope.GetMessageTypeName(), envelope.Id, envelope.ReplyUri?.ToString(), null);
         }
 
         public virtual void NoRoutesFor(Envelope envelope)

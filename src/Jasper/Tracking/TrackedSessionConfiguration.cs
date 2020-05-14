@@ -68,6 +68,12 @@ namespace Jasper.Tracking
             return this;
         }
 
+        public TrackedSessionConfiguration DoNotAssertTimeout()
+        {
+            _session.AssertNoTimeout = false;
+            return this;
+        }
+
         public TrackedSessionConfiguration WaitForMessageToBeReceivedAt<T>(IHost host)
         {
             var condition = new WaitForMessage<T>
@@ -87,6 +93,13 @@ namespace Jasper.Tracking
         /// <param name="action"></param>
         /// <returns></returns>
         public async Task<ITrackedSession> ExecuteAndWait(Func<IMessageContext, Task> action)
+        {
+            _session.Execution = action;
+            await _session.ExecuteAndTrack();
+            return _session;
+        }
+
+        public async Task<ITrackedSession> ExecuteWithoutWaiting(Func<IMessageContext, Task> action)
         {
             _session.Execution = action;
             await _session.ExecuteAndTrack();

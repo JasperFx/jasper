@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +17,6 @@ namespace StorytellerSpecs.Stub
         public readonly IList<StubChannelCallback> Callbacks = new List<StubChannelCallback>();
 
         public readonly IList<Envelope> Sent = new List<Envelope>();
-        private ISenderCallback _callback;
         private IMessageLogger _logger;
         private IHandlerPipeline _pipeline;
         private Uri _replyUri;
@@ -31,43 +30,21 @@ namespace StorytellerSpecs.Stub
         }
 
         public Endpoint Endpoint => this;
+        public bool Latched { get; set; }
 
         public override Uri Uri => $"stub://{Name}".ToUri();
-
-        public int QueuedCount { get; }
-
-        public void Start(ISenderCallback callback)
-        {
-            _callback = callback;
-        }
-
-        public Task Enqueue(Envelope envelope)
+        
+        public Task Send(Envelope envelope)
         {
             Sent.Add(envelope);
             return _pipeline?.Invoke(envelope, new StubChannelCallback(this, envelope)) ?? Task.CompletedTask;
         }
 
-        public Task LatchAndDrain()
-        {
-            return Task.CompletedTask;
-        }
-
-        public void Unlatch()
-        {
-            Latched = false;
-        }
-
-        public Task<bool> Ping(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(true);
-        }
-
+        public Task<bool> Ping(CancellationToken cancellationToken) => Task.FromResult(true);
 
         public void Dispose()
         {
         }
-
-        public bool Latched { get; set; }
 
         public Uri Destination { get; }
 
