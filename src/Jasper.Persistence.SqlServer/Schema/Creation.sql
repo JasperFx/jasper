@@ -29,7 +29,7 @@ create table %SCHEMA%.jasper_dead_letters
   explanation VARCHAR(250),
   exception_text VARCHAR(MAX),
   exception_type VARCHAR(250),
-  exception_message VARCHAR(MAX)
+  exception_message VARCHAR(MAX),
 
 	body varbinary(max) not null
 );
