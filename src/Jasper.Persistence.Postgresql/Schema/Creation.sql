@@ -27,9 +27,9 @@ create table if not exists %SCHEMA%.jasper_dead_letters
   source VARCHAR(250),
   message_type VARCHAR(250),
   explanation VARCHAR(250),
-  exception_text VARCHAR,
+  exception_text VARCHAR(MAX),
   exception_type VARCHAR(250),
-  exception_message VARCHAR(250),
+  exception_message VARCHAR(MAX),
 
 	body bytea not null
 );
