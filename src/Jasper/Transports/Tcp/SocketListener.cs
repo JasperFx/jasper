@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Transports.Util;
 using Jasper.Util;
 
 namespace Jasper.Transports.Tcp
@@ -15,9 +15,7 @@ namespace Jasper.Transports.Tcp
         private readonly CancellationToken _cancellationToken;
         private readonly IPAddress _ipaddr;
         private readonly int _port;
-        private TcpListener _listener;
-        private Task _receivingLoop;
-        private ActionBlock<Socket> _socketHandling;
+        private TcpListener _tcpListener;
 
         public SocketListener(IPAddress ipaddr, int port, CancellationToken cancellationToken)
         {
@@ -28,47 +26,50 @@ namespace Jasper.Transports.Tcp
             Address = $"tcp://{ipaddr}:{port}/".ToUri();
         }
 
-        public void Start(IReceiverCallback callback)
+        public async IAsyncEnumerable<Envelope> Consume()
         {
-            _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
-            _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _tcpListener = new TcpListener(new IPEndPoint(_ipaddr, _port));
+            _tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _tcpListener.Start();
 
-            _socketHandling = new ActionBlock<Socket>(async s =>
+            while (!_cancellationToken.IsCancellationRequested)
             {
-                using (var stream = new NetworkStream(s, true))
-                {
-                    await HandleStream(callback, stream);
-                }
-            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
+                Socket socket = await _tcpListener.AcceptSocketAsync();
 
-            _receivingLoop = Task.Run(async () =>
-            {
-                _listener.Start();
-
-                while (!_cancellationToken.IsCancellationRequested)
+                await using var stream = new NetworkStream(socket, true);
+                
+                if (Status == ListeningStatus.TooBusy)
                 {
-                    var socket = await _listener.AcceptSocketAsync();
-                    await _socketHandling.SendAsync(socket, _cancellationToken);
+                    await WireProtocol.EndReceive(stream, ReceivedStatus.ProcessFailure);
+                    continue;
                 }
-            }, _cancellationToken);
+
+                WireProtocol.BeginReceiveResult result = await WireProtocol.BeginReceive(stream, Address);
+
+                if (result.Status != ReceivedStatus.Successful) continue;
+
+                foreach (Envelope resultMessage in result.Messages)
+                {
+                    yield return resultMessage;
+                }
+
+                await WireProtocol.EndReceive(stream, ReceivedStatus.Successful);
+            }
+        }
+
+        public Task<bool> Acknowledge(Envelope envelope)
+        {
+            throw new NotImplementedException();
         }
 
         public Uri Address { get; }
 
         public void Dispose()
         {
-            _socketHandling?.Complete();
-            _listener?.Stop();
-            _listener?.Server.Dispose();
+            _tcpListener?.Stop();
+            _tcpListener?.Server.Dispose();
         }
 
         public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
-
-        public Task HandleStream(IReceiverCallback callback, Stream stream)
-        {
-            if (Status == ListeningStatus.TooBusy) return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
-
-            return WireProtocol.Receive(stream, callback, Address);
-        }
     }
 }

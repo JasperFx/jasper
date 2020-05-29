@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Jasper.Transports.Sending;
 using Jasper.Transports.Util;
 
 namespace Jasper.Transports.Tcp
@@ -31,87 +30,89 @@ namespace Jasper.Transports.Tcp
 
         // Nothing but actually sending here. Worry about timeouts and retries somewhere
         // else
-        public static async Task Send(Stream stream, OutgoingMessageBatch batch, byte[] messageBytes,
-            ISenderCallback callback)
+        public static async Task<SendStatus> Send(Stream stream, OutgoingMessageBatch batch, byte[] messageBytes)
         {
-            messageBytes = messageBytes ?? Envelope.Serialize(batch.Messages);
+            messageBytes ??= Envelope.Serialize(batch.Messages);
 
-            var lengthBytes = BitConverter.GetBytes(messageBytes.Length);
-
+            byte[] lengthBytes = BitConverter.GetBytes(messageBytes.Length);
 
             await stream.WriteAsync(lengthBytes, 0, lengthBytes.Length);
-
             await stream.WriteAsync(messageBytes, 0, messageBytes.Length);
 
             // All four of the possible receive confirmation messages are the same length: 8 characters long encoded in UTF-16.
-            var confirmationBytes = await stream.ReadBytesAsync(ReceivedBuffer.Length).ConfigureAwait(false);
+            byte[] confirmationBytes = await stream.ReadBytesAsync(ReceivedBuffer.Length).ConfigureAwait(false);
             if (confirmationBytes.SequenceEqual(ReceivedBuffer))
             {
-                await callback.Successful(batch);
-
-                await stream.WriteAsync(AcknowledgedBuffer, 0, AcknowledgedBuffer.Length);
+                return SendStatus.Success;
             }
             else if (confirmationBytes.SequenceEqual(ProcessingFailureBuffer))
             {
-                await callback.ProcessingFailure(batch);
+                return SendStatus.Failure;
             }
             else if (confirmationBytes.SequenceEqual(SerializationFailureBuffer))
             {
-                await callback.SerializationFailure(batch);
+                return SendStatus.SerializationFailure;
             }
             else if (confirmationBytes.SequenceEqual(QueueDoesNotExistBuffer))
             {
-                await callback.QueueDoesNotExist(batch);
+                return SendStatus.QueueDoesNotExist;
+            }
+
+            return SendStatus.Failure;
+        }
+
+        public static Task Ack(Stream stream)  => stream.WriteAsync(AcknowledgedBuffer, 0, AcknowledgedBuffer.Length);
+
+        public enum SendStatus
+        {
+            Failure,
+            Success,
+            SerializationFailure,
+            QueueDoesNotExist
+        }
+
+        public class BeginReceiveResult
+        {
+            public ReceivedStatus Status { get; }
+            public Envelope[] Messages { get; }
+            public Exception Exception { get; }
+
+            BeginReceiveResult(ReceivedStatus status)
+            {
+                Status = status;
+            }
+
+            public BeginReceiveResult(ReceivedStatus status, Envelope[] messages) : this(status)
+            {
+                Messages = messages;
+            }
+
+            public BeginReceiveResult(ReceivedStatus status, Exception exception) : this(status)
+            {
+                Exception = exception;
             }
         }
 
-
-        public static async Task Receive(Stream stream, IReceiverCallback callback, Uri uri)
+        public static async Task<BeginReceiveResult> BeginReceive(Stream stream, Uri uri)
         {
-            Envelope[] messages = null;
-
             try
             {
                 var lengthBytes = await stream.ReadBytesAsync(sizeof(int));
                 var length = BitConverter.ToInt32(lengthBytes, 0);
-                if (length == 0) return;
+                if (length == 0) return new BeginReceiveResult(ReceivedStatus.Successful, new Envelope[0]);
 
                 var bytes = await stream.ReadBytesAsync(length);
-                messages = Envelope.ReadMany(bytes);
+                var messages = Envelope.ReadMany(bytes);
+                return new BeginReceiveResult(ReceivedStatus.Successful, messages);
             }
             catch (Exception e)
             {
-                await callback.Failed(e, messages);
-                await stream.SendBuffer(SerializationFailureBuffer);
-                return;
-            }
-
-            try
-            {
-                await receive(stream, callback, messages, uri);
-            }
-            catch (Exception ex)
-            {
-                await callback.Failed(ex, messages);
-                await stream.SendBuffer(ProcessingFailureBuffer);
+                return new BeginReceiveResult(ReceivedStatus.SerializationFailure, e);
             }
         }
 
-        private static async Task receive(Stream stream, IReceiverCallback callback, Envelope[] messages, Uri uri)
+        public static async Task<ReceivedStatus> EndReceive(Stream stream, ReceivedStatus status)
         {
-            // Just a ping
-            if (messages.Any() && messages.First().IsPing())
-            {
-                await stream.SendBuffer(ReceivedBuffer);
-
-                // We aren't gonna use this in this case
-                var ack = await stream.ReadExpectedBuffer(AcknowledgedBuffer);
-
-                return;
-            }
-
-
-            var status = await callback.Received(uri, messages);
             switch (status)
             {
                 case ReceivedStatus.ProcessFailure:
@@ -126,14 +127,12 @@ namespace Jasper.Transports.Tcp
                 default:
                     await stream.SendBuffer(ReceivedBuffer);
 
-                    var ack = await stream.ReadExpectedBuffer(AcknowledgedBuffer);
+                    bool ack = await stream.ReadExpectedBuffer(AcknowledgedBuffer);
 
-                    if (ack)
-                        await callback.Acknowledged(messages);
-                    else
-                        await callback.NotAcknowledged(messages);
-                    break;
+                    return ack ? ReceivedStatus.Acknowledged : ReceivedStatus.NotAcknowledged;
             }
+
+            return status;
         }
     }
 }

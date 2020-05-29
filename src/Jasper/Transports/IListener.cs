@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Jasper.Transports
 {
@@ -6,6 +8,7 @@ namespace Jasper.Transports
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        void Start(IReceiverCallback callback);
+        IAsyncEnumerable<Envelope> Consume();
+        Task<bool> Acknowledge(Envelope envelope);
     }
 }

@@ -1,10 +1,12 @@
-﻿using System;
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Transports.Tcp;
+using Jasper.Transports.Util;
 using Jasper.Util;
 
 namespace Jasper.Transports
@@ -33,10 +35,28 @@ namespace Jasper.Transports
 
             _socketHandling = new ActionBlock<Socket>(async s =>
             {
-                using (var stream = new NetworkStream(s, true))
+                await using var stream = new NetworkStream(s, true);
+                WireProtocol.BeginReceiveResult result = await WireProtocol.BeginReceive(stream, _uri);
+                
+                if (result.Status == ReceivedStatus.Successful)
                 {
-                    await WireProtocol.Receive(stream, _callback, _uri);
+                    try
+                    {
+                        if (result.Messages.Any() && result.Messages.First().IsPing())
+                        {
+                            await WireProtocol.EndReceive(stream, ReceivedStatus.Successful);
+                            return;
+                        }
+
+                        await _callback.Received(_uri, result.Messages);
+                    }
+                    catch (Exception)
+                    {
+                        await WireProtocol.EndReceive(stream, ReceivedStatus.ProcessFailure);
+                    }
                 }
+
+                await WireProtocol.EndReceive(stream, result.Status);
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _uri = $"{protocol}://{ipaddr}:{port}/".ToUri();

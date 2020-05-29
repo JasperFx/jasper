@@ -1,9 +1,12 @@
-﻿namespace Jasper.Transports.Tcp
+namespace Jasper.Transports.Tcp
 {
     public enum ReceivedStatus
     {
         Successful,
         QueueDoesNotExist,
-        ProcessFailure
+        SerializationFailure,
+        ProcessFailure,
+        Acknowledged,
+        NotAcknowledged
     }
 }
