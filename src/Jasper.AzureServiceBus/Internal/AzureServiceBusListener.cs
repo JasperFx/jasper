@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -43,10 +44,25 @@ namespace Jasper.AzureServiceBus.Internal
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        private readonly BufferBlock<Envelope> _buffer = new BufferBlock<Envelope>(new DataflowBlockOptions
+        {// DO NOT CHANGE THESE SETTINGS THEY ARE IMPORTANT TO LINK RECEIVE DELEGATE WITH CONSUME()
+            BoundedCapacity =  1,
+            MaxMessagesPerTask = 1,
+            EnsureOrdered = true
+        });
+        
+        public async IAsyncEnumerable<Envelope> Consume()
         {
-            _callback = callback;
+            Start();
 
+            while(!_cancellation.IsCancellationRequested)
+            {
+                yield return await _buffer.ReceiveAsync(_cancellation);
+            }
+        }
+
+        public void Start()
+        {
             var options = new SessionHandlerOptions(handleException);
 
             var connectionString = _transport.ConnectionString;
@@ -66,7 +82,6 @@ namespace Jasper.AzureServiceBus.Internal
                     : new QueueClient(connectionString, queueName, receiveMode, retryPolicy);
 
                 client.RegisterSessionHandler(handleMessage, options);
-
                 _clientEntities.Add(client);
             }
             else
@@ -110,16 +125,18 @@ namespace Jasper.AzureServiceBus.Internal
                 return;
             }
 
-            try
-            {
-                await _callback.Received(Address, new[] {envelope});
-                await session.CompleteAsync(lockToken);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
-                await session.AbandonAsync(lockToken);
-            }
+            _buffer.SendAsync(envelope);
+
+            //try
+            //{
+            //    await _callback.Received(Address, new[] {envelope});
+            //    await session.CompleteAsync(lockToken);
+            //}
+            //catch (Exception e)
+            //{
+            //    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
+            //    await session.AbandonAsync(lockToken);
+            //}
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DotPulsar;
@@ -14,9 +15,7 @@ namespace Jasper.Pulsar.Internal
         private readonly IConsumer _consumer;
         private readonly PulsarEndpoint _endpoint;
         private readonly ITransportLogger _logger;
-        private IReceiverCallback _callback;
         private readonly ITransportProtocol<PulsarMessage> _protocol;
-        private Task _consumerTask;
 
         public PulsarListener(PulsarEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
@@ -27,26 +26,13 @@ namespace Jasper.Pulsar.Internal
             _consumer = endpoint.PulsarClient.CreateConsumer(endpoint.ConsumerOptions);
         }
 
-        public void Dispose()
-        {
-            _consumer?.DisposeAsync();
-            _consumerTask?.Dispose();
-        }
-
         public Uri Address => _endpoint.Uri;
         public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        public async IAsyncEnumerable<Envelope> Consume()
         {
-            _callback = callback;
-            
-            _consumerTask = ConsumeAsync();
-
             _logger.ListeningStatusChange(ListeningStatus.Accepting);
-        }
 
-        private async Task ConsumeAsync()
-        {
             await foreach (Message message in _consumer.Messages(_cancellation))
             {
                 Envelope envelope;
@@ -57,21 +43,24 @@ namespace Jasper.Pulsar.Internal
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogException(ex, message: $"Error trying to map an incoming Pulsar {_endpoint.Topic} Topic message to an Envelope. See the Dead Letter Queue");
+                    _logger.LogException(ex, message: $"Error trying to map an incoming Pulsar {_endpoint.Topic} Topic message to an Envelope");
                     continue;
                 }
 
-                try
-                {
-                    await _callback.Received(Address, new[] {envelope});
-
-                    await _consumer.Acknowledge(message, _cancellation);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
-                }
+                yield return envelope;
             }
+        }
+
+        public async Task<bool> Acknowledge(Envelope envelope)
+        {
+            PulsarMessage message = _protocol.WriteFromEnvelope(envelope);
+            await _consumer.Acknowledge(message.MessageId, _cancellation);
+            return true;
+        }
+
+        public void Dispose()
+        {
+            _consumer.DisposeAsync();
         }
     }
 }
