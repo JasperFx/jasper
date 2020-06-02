@@ -39,7 +39,7 @@ namespace Jasper.Transports.Sending
             foreach (var envelope in toRetry)
             {
                 // It's perfectly okay to not wait on the task here
-                _sender.Send(envelope);
+                _senderDelegate(envelope);
             }
 
             return Task.CompletedTask;
@@ -57,7 +57,7 @@ namespace Jasper.Transports.Sending
 
         protected override Task storeAndForward(Envelope envelope)
         {
-            return _sender.Send(envelope);
+            return _senderDelegate(envelope);
         }
 
         public override bool IsDurable { get; } = false;

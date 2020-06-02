@@ -334,7 +334,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         void IDisposable.Dispose()
         {
-            throw new NotImplementedException();
+
         }
 
         Uri IListeningWorkerQueue.Address { get; }

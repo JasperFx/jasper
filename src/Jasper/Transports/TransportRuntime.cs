@@ -62,9 +62,7 @@ namespace Jasper.Transports
         {
             try
             {
-                var agent = endpoint.IsDurable
-                    ? (ISendingAgent)new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger, _root.Persistence, endpoint)
-                    : new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
+                var agent = buildSendingAgent(sender, endpoint);
 
                 agent.ReplyUri = replyUri;
 
@@ -84,6 +82,20 @@ namespace Jasper.Transports
             {
                 throw new TransportEndpointException(sender.Destination, "Could not build sending sendingAgent. See inner exception.", e);
             }
+        }
+
+        private ISendingAgent buildSendingAgent(ISender sender, Endpoint endpoint)
+        {
+            // This is for the stub transport in the Storyteller specs
+            if (sender is ISendingAgent a) return a;
+
+            if (endpoint.IsDurable)
+            {
+                return new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger,
+                    _root.Persistence, endpoint);
+            }
+
+            return new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
         }
 
         public void AddSendingAgent(ISendingAgent sendingAgent)
@@ -160,7 +172,7 @@ namespace Jasper.Transports
                 ? (IWorkerQueue) new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,
                     _root.TransportLogger)
                 : new LightweightWorkerQueue(settings, _root.TransportLogger, _root.Pipeline, _root.Settings);
-            
+
             _listeners.Add(worker);
 
             worker.StartListening(listener);

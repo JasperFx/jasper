@@ -96,7 +96,7 @@ namespace Jasper.Persistence.Durability
         {
             await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
-            await _sender.Send(envelope);
+            await _senderDelegate(envelope);
         }
 
     }
