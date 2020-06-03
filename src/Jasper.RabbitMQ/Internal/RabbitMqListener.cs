@@ -117,7 +117,7 @@ namespace Jasper.RabbitMQ.Internal
                     return;
                 }
 
-                _callback.Received(_address, new[] {envelope}).ContinueWith(t =>
+                _callback.Received(_address, envelope).ContinueWith(t =>
                 {
                     if (t.IsFaulted)
                     {

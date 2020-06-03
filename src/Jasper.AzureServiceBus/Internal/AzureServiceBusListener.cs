@@ -112,7 +112,7 @@ namespace Jasper.AzureServiceBus.Internal
 
             try
             {
-                await _callback.Received(Address, new[] {envelope});
+                await _callback.Received(Address, envelope);
                 await session.CompleteAsync(lockToken);
             }
             catch (Exception e)

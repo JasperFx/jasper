@@ -322,6 +322,11 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             return Task.CompletedTask;
         }
 
+        public Task Received(Uri uri, Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
 
         void IDisposable.Dispose()
         {

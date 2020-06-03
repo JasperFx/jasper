@@ -317,6 +317,11 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
+        public Task Received(Uri uri, Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
         void IDisposable.Dispose()
         {
 

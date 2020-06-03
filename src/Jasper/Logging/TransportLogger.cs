@@ -34,6 +34,7 @@ namespace Jasper.Logging
         private readonly Action<ILogger, int, Exception> _recoveredIncoming;
         private readonly Action<ILogger, int, Exception> _recoveredOutgoing;
         private readonly Action<ILogger, Envelope, DateTimeOffset, Exception> _scheduledJobsQueued;
+        private readonly Action<ILogger, Uri, Exception> _incomingReceived;
 
 
         public TransportLogger(ILoggerFactory factory, IMetrics metrics)
@@ -49,6 +50,9 @@ namespace Jasper.Logging
 
             _incomingBatchReceived = LoggerMessage.Define<int, Uri>(LogLevel.Debug, IncomingBatchReceivedEventId,
                 "Received {Count} message(s) from {ReplyUri}");
+
+            _incomingReceived = LoggerMessage.Define<Uri>(LogLevel.Debug, IncomingBatchReceivedEventId,
+                "Received message from {ReplyUri}");
 
             _circuitBroken = LoggerMessage.Define<Uri>(LogLevel.Error, CircuitBrokenEventId,
                 "Sending agent for {destination} is latched");
@@ -95,6 +99,12 @@ namespace Jasper.Logging
             _incomingBatchReceived(_logger, envelopes.Count(), envelopes.FirstOrDefault()?.ReplyUri, null);
         }
 
+        public void IncomingReceived(Envelope envelope)
+        {
+            _metrics.MessageReceived(envelope);
+            _incomingReceived(_logger, envelope.ReplyUri, null);
+        }
+
         public virtual void CircuitBroken(Uri destination)
         {
             _metrics.CircuitBroken(destination);
@@ -139,6 +149,8 @@ namespace Jasper.Logging
         {
             _listeningStatusChanged(_logger, status, null);
         }
+
+
 
         public virtual void LogException(Exception ex, Guid correlationId = default(Guid),
             string message = "Exception detected:")

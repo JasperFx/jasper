@@ -93,6 +93,25 @@ namespace Jasper.Runtime.WorkerQueues
             return ProcessReceivedMessages(now, uri, messages);
         }
 
+        public async Task Received(Uri uri, Envelope envelope)
+        {
+            var now = DateTime.UtcNow;
+            envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
+
+            if (envelope.IsExpired()) return;
+
+            if (envelope.Status == EnvelopeStatus.Scheduled)
+            {
+                _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
+            }
+            else
+            {
+                await Enqueue(envelope);
+            }
+
+            _logger.IncomingReceived(envelope);
+        }
+
         public void Dispose()
         {
             // nothing

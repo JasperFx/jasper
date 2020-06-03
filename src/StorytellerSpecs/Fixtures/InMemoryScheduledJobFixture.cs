@@ -60,6 +60,11 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
+        public Task Received(Uri uri, Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
         void IDisposable.Dispose()
         {
             throw new NotImplementedException();

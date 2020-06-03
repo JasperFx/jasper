@@ -109,6 +109,11 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
             return Task.CompletedTask;
         }
 
+        public Task Received(Uri uri, Envelope envelope)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void Dispose()
         {

@@ -85,6 +85,8 @@ namespace Jasper.Logging
         /// </summary>
         /// <param name="status"></param>
         void ListeningStatusChange(ListeningStatus status);
+
+        void IncomingReceived(Envelope envelope);
     }
 
     // ENDSAMPLE

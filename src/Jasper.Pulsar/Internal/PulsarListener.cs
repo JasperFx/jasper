@@ -63,12 +63,13 @@ namespace Jasper.Pulsar.Internal
 
                 try
                 {
-                    await _callback.Received(Address, new[] {envelope});
+                    await _callback.Received(Address, envelope);
 
                     await _consumer.Acknowledge(message, _cancellation);
                 }
                 catch (Exception e)
                 {
+                    // TODO -- Got to either discard this or defer it back to the queue
                     _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
                 }
             }
