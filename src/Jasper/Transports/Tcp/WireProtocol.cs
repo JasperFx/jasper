@@ -90,7 +90,7 @@ namespace Jasper.Transports.Tcp
 
             try
             {
-                await receive(stream, callback, messages, uri);
+                await receive(logger, stream, callback, messages, uri);
             }
             catch (Exception ex)
             {
@@ -99,7 +99,8 @@ namespace Jasper.Transports.Tcp
             }
         }
 
-        private static async Task receive(Stream stream, IListeningWorkerQueue callback, Envelope[] messages, Uri uri)
+        private static async Task receive(ITransportLogger logger, Stream stream, IListeningWorkerQueue callback,
+            Envelope[] messages, Uri uri)
         {
             // Just a ping
             if (messages.Any() && messages.First().IsPing())
@@ -113,20 +114,19 @@ namespace Jasper.Transports.Tcp
             }
 
 
-            var status = await callback.Received(uri, messages);
-
-            switch (status)
+            try
             {
-                case ReceivedStatus.ProcessFailure:
-                    await stream.SendBuffer(ProcessingFailureBuffer);
-                    break;
 
-                default:
-                    await stream.SendBuffer(ReceivedBuffer);
-
-                    await stream.ReadExpectedBuffer(AcknowledgedBuffer);
-                    break;
+                await callback.Received(uri, messages);
+                await stream.SendBuffer(ReceivedBuffer);
+                await stream.ReadExpectedBuffer(AcknowledgedBuffer);
             }
+            catch (Exception e)
+            {
+                logger.LogException(e);
+                await stream.SendBuffer(ProcessingFailureBuffer);
+            }
+
         }
     }
 }

@@ -317,9 +317,9 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             // Nothing
         }
 
-        Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
-            return Task.FromResult(ReceivedStatus.Successful);
+            return Task.CompletedTask;
         }
 
 

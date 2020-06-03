@@ -312,7 +312,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             throw new NotImplementedException();
         }

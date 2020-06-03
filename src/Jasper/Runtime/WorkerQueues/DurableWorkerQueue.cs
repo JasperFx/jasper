@@ -80,11 +80,11 @@ namespace Jasper.Runtime.WorkerQueues
 
 
 
-        async Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;
 
-            return await ProcessReceivedMessages(now, uri, messages);
+            return ProcessReceivedMessages(now, uri, messages);
         }
 
 
@@ -94,31 +94,20 @@ namespace Jasper.Runtime.WorkerQueues
         }
 
         // Separated for testing here.
-        public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
+        public async Task ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
         {
-            if (_settings.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
+            if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
-            try
+            Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
+
+            await _persistence.StoreIncoming(envelopes);
+
+            foreach (var message in incoming)
             {
-                Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
-
-                await _persistence.StoreIncoming(envelopes);
-
-
-                foreach (var message in incoming)
-                {
-                    await Enqueue(message);
-                }
-
-                _logger.IncomingBatchReceived(envelopes);
-
-                return ReceivedStatus.Successful;
+                await Enqueue(message);
             }
-            catch (Exception e)
-            {
-                _logger.LogException(e);
-                return ReceivedStatus.ProcessFailure;
-            }
+
+            _logger.IncomingBatchReceived(envelopes);
         }
 
         public Task Complete(Envelope envelope)

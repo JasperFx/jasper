@@ -89,7 +89,6 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
 
     public class StubReceiverCallback : IListeningWorkerQueue
     {
-        public ReceivedStatus StatusToReturn;
         public bool ThrowErrorOnReceived;
 
         public Envelope[] MessagesReceived { get; set; }
@@ -101,13 +100,13 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             if (ThrowErrorOnReceived) throw new DivideByZeroException();
 
             MessagesReceived = messages;
 
-            return Task.FromResult(StatusToReturn);
+            return Task.CompletedTask;
         }
 
 

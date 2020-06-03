@@ -86,11 +86,11 @@ namespace Jasper.Runtime.WorkerQueues
             set => _agent.Status = value;
         }
 
-        async Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;
 
-            return await ProcessReceivedMessages(now, uri, messages);
+            return ProcessReceivedMessages(now, uri, messages);
         }
 
         public void Dispose()
@@ -99,35 +99,25 @@ namespace Jasper.Runtime.WorkerQueues
         }
 
         // Separated for testing here.
-        public async Task<ReceivedStatus> ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
+        public async Task ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
         {
-            if (_settings.Cancellation.IsCancellationRequested) return ReceivedStatus.ProcessFailure;
+            if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
-            try
+            Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
+
+            foreach (var envelope in scheduled)
             {
-                Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
-
-
-                foreach (var envelope in scheduled)
-                {
-                    _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
-                }
-
-
-                foreach (var message in incoming)
-                {
-                    await Enqueue(message);
-                }
-
-                _logger.IncomingBatchReceived(envelopes);
-
-                return ReceivedStatus.Successful;
+                _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
             }
-            catch (Exception e)
+
+
+            foreach (var message in incoming)
             {
-                _logger.LogException(e);
-                return ReceivedStatus.ProcessFailure;
+                await Enqueue(message);
             }
+
+            _logger.IncomingBatchReceived(envelopes);
+
         }
 
         Task IChannelCallback.Complete(Envelope envelope)
