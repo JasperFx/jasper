@@ -26,11 +26,6 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
             theSender.ProcessingFailed.ShouldBeTrue();
         }
 
-        [Fact]
-        public async Task logs_the_exception_on_the_receiving_side()
-        {
-            await afterSending();
-            theReceiver.FailureException.ShouldBeOfType<DivideByZeroException>();
-        }
+
     }
 }

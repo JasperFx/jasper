@@ -323,11 +323,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         }
 
 
-        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
-
         void IDisposable.Dispose()
         {
         }

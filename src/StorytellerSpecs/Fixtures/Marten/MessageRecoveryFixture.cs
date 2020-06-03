@@ -317,11 +317,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
-        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
         void IDisposable.Dispose()
         {
 

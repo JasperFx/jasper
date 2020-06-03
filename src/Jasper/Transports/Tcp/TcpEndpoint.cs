@@ -84,11 +84,11 @@ namespace Jasper.Transports.Tcp
 
             if (hostNameType != UriHostNameType.IPv4 && hostNameType != UriHostNameType.IPv6)
                 return HostName == "localhost"
-                    ? new SocketListener(IPAddress.Loopback, Port, cancellation)
-                    : new SocketListener(IPAddress.Any, Port, cancellation);
+                    ? new SocketListener(root.TransportLogger,IPAddress.Loopback, Port, cancellation)
+                    : new SocketListener(root.TransportLogger,IPAddress.Any, Port, cancellation);
 
             var ipaddr = IPAddress.Parse(HostName);
-            return new SocketListener(ipaddr, Port, cancellation);
+            return new SocketListener(root.TransportLogger, ipaddr, Port, cancellation);
         }
     }
 }

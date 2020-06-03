@@ -111,12 +111,6 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         }
 
 
-        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
-        {
-            FailureException = exception;
-            return Task.CompletedTask;
-        }
-
         public void Dispose()
         {
 

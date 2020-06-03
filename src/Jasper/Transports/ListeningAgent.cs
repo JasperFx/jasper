@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Logging;
 using Jasper.Transports.Tcp;
 using Jasper.Util;
 
@@ -35,7 +36,7 @@ namespace Jasper.Transports
             {
                 using (var stream = new NetworkStream(s, true))
                 {
-                    await WireProtocol.Receive(stream, _callback, _uri);
+                    await WireProtocol.Receive(TransportLogger.Empty(), stream, _callback, _uri);
                 }
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jasper.Logging;
 using Jasper.Transports.Sending;
 using Jasper.Transports.Util;
 
@@ -66,7 +67,8 @@ namespace Jasper.Transports.Tcp
         }
 
 
-        public static async Task Receive(Stream stream, IListeningWorkerQueue callback, Uri uri)
+        public static async Task Receive(ITransportLogger logger, Stream stream, IListeningWorkerQueue callback,
+            Uri uri)
         {
             Envelope[] messages = null;
 
@@ -81,7 +83,7 @@ namespace Jasper.Transports.Tcp
             }
             catch (Exception e)
             {
-                await callback.Failed(e, messages);
+                logger.LogException(new MessageFailureException(messages, e));
                 await stream.SendBuffer(SerializationFailureBuffer);
                 return;
             }
@@ -92,7 +94,7 @@ namespace Jasper.Transports.Tcp
             }
             catch (Exception ex)
             {
-                await callback.Failed(ex, messages);
+                logger.LogException(new MessageFailureException(messages, ex));
                 await stream.SendBuffer(ProcessingFailureBuffer);
             }
         }

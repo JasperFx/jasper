@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Logging;
 using Jasper.Transports.Util;
 using Jasper.Util;
 
@@ -14,13 +15,16 @@ namespace Jasper.Transports.Tcp
     {
         private readonly CancellationToken _cancellationToken;
         private readonly IPAddress _ipaddr;
+        private readonly ITransportLogger _logger;
         private readonly int _port;
         private TcpListener _listener;
         private Task _receivingLoop;
         private ActionBlock<Socket> _socketHandling;
 
-        public SocketListener(IPAddress ipaddr, int port, CancellationToken cancellationToken)
+        public SocketListener(ITransportLogger logger, IPAddress ipaddr, int port,
+            CancellationToken cancellationToken)
         {
+            _logger = logger;
             _port = port;
             _ipaddr = ipaddr;
             _cancellationToken = cancellationToken;
@@ -68,7 +72,7 @@ namespace Jasper.Transports.Tcp
         {
             if (Status == ListeningStatus.TooBusy) return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
 
-            return WireProtocol.Receive(stream, callback, Address);
+            return WireProtocol.Receive(_logger, stream, callback, Address);
         }
     }
 }

@@ -60,11 +60,6 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
         void IDisposable.Dispose()
         {
             throw new NotImplementedException();

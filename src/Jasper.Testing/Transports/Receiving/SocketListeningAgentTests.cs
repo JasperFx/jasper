@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
 using NSubstitute;
@@ -18,7 +19,7 @@ namespace Jasper.Testing.Transports.Receiving
         {
             var stream = new MemoryStream();
 
-            var agent = new SocketListener(IPAddress.Any, 5500, CancellationToken.None);
+            var agent = new SocketListener(TransportLogger.Empty(), IPAddress.Any, 5500, CancellationToken.None);
             agent.Status = ListeningStatus.TooBusy;
 
             var callback = Substitute.For<IListeningWorkerQueue>();
@@ -36,7 +37,7 @@ namespace Jasper.Testing.Transports.Receiving
         [Fact]
         public void status_is_accepting_by_default()
         {
-            new SocketListener(IPAddress.Any, 5500, CancellationToken.None)
+            new SocketListener(TransportLogger.Empty(), IPAddress.Any, 5500, CancellationToken.None)
                 .Status.ShouldBe(ListeningStatus.Accepting);
         }
     }

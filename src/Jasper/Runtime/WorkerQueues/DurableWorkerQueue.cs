@@ -92,12 +92,6 @@ namespace Jasper.Runtime.WorkerQueues
             return await ProcessReceivedMessages(now, uri, messages);
         }
 
-        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
-        {
-            _logger.LogException(new MessageFailureException(messages, exception));
-            return Task.CompletedTask;
-        }
-
 
         public void Dispose()
         {
