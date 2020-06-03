@@ -79,11 +79,6 @@ namespace Jasper.Runtime.WorkerQueues
         public Uri Address { get; set; }
 
 
-        public ListeningStatus Status
-        {
-            get => _agent.Status;
-            set => _agent.Status = value;
-        }
 
         async Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
