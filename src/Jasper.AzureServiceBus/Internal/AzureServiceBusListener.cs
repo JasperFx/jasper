@@ -19,8 +19,6 @@ namespace Jasper.AzureServiceBus.Internal
         private readonly ITransportLogger _logger;
         private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusTransport _transport;
-        private Func<string, Task> _completeDelegate;
-        private Func<string, Task> _abandonDelegate;
 
         public AzureServiceBusListener(AzureServiceBusEndpoint endpoint, AzureServiceBusTransport transport,
             ITransportLogger logger, CancellationToken cancellation)
@@ -93,9 +91,6 @@ namespace Jasper.AzureServiceBus.Internal
                     : new QueueClient(connectionString, queueName, receiveMode, retryPolicy);
 
                 queueClient.RegisterSessionHandler(handleMessage, options);
-
-                _completeDelegate = queueClient.CompleteAsync;
-                _abandonDelegate = lockToken => queueClient.AbandonAsync(lockToken);
             }
             else
             {
@@ -106,9 +101,6 @@ namespace Jasper.AzureServiceBus.Internal
                         receiveMode, retryPolicy);
 
                 subscriptionClient.RegisterSessionHandler(handleMessage, options);
-
-                _completeDelegate = subscriptionClient.CompleteAsync;
-                _abandonDelegate = lockToken => subscriptionClient.AbandonAsync(lockToken);
             }
         }
 
