@@ -16,7 +16,7 @@ namespace Jasper.AzureServiceBus.Internal
         {
             var endpoint = new AzureServiceBusEndpoint
             {
-                IsDurable = IsDurable,
+                Mode = Mode,
                 TopicName = topicName
             };
 

@@ -15,7 +15,7 @@ namespace Jasper.Configuration
         /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        T Lightweight();
+        T QueuedInMemory();
 
         /// <summary>
         /// Apply envelope customization rules to any outgoing

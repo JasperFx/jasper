@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 
@@ -81,6 +82,11 @@ namespace Jasper.AzureServiceBus.Internal
 
                 _clientEntities.Add(client);
             }
+        }
+
+        public void StartHandlingInline(IHandlerPipeline pipeline)
+        {
+            throw new NotImplementedException();
         }
 
         private Task handleException(ExceptionReceivedEventArgs arg)

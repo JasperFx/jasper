@@ -8,6 +8,13 @@ using Jasper.Transports.Sending;
 
 namespace Jasper.Configuration
 {
+    public enum EndpointMode
+    {
+        Durable,
+        Queued,
+        Inline
+    }
+
     /// <summary>
     ///     Configuration for a single message listener within a Jasper application
     /// </summary>

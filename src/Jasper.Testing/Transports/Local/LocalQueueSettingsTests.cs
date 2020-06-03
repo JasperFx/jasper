@@ -1,4 +1,5 @@
 using System;
+using Jasper.Configuration;
 using Jasper.Transports.Local;
 using Jasper.Util;
 using Shouldly;
@@ -19,7 +20,7 @@ namespace Jasper.Testing.Transports.Local
         public void create_by_uri()
         {
             var endpoint = new LocalQueueSettings(new Uri("local://foo"));
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.Name.ShouldBe("foo");
         }
 
@@ -27,7 +28,7 @@ namespace Jasper.Testing.Transports.Local
         public void create_by_uri_case_insensitive()
         {
             var endpoint = new LocalQueueSettings(new Uri("local://Foo"));
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.Name.ShouldBe("foo");
         }
 
@@ -35,7 +36,7 @@ namespace Jasper.Testing.Transports.Local
         public void create_by_uri_durable()
         {
             var endpoint = new LocalQueueSettings(new Uri("local://durable/foo"));
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.Name.ShouldBe("foo");
         }
 
@@ -43,7 +44,7 @@ namespace Jasper.Testing.Transports.Local
         public void reply_uri_when_durable()
         {
             var endpoint = new LocalQueueSettings("foo");
-            endpoint.IsDurable = true;
+            endpoint.Mode = EndpointMode.Durable;
 
             endpoint.ReplyUri().ShouldBe("local://durable/foo".ToUri());
         }
@@ -52,7 +53,7 @@ namespace Jasper.Testing.Transports.Local
         public void replay_uri_when_not_durable()
         {
             var endpoint = new LocalQueueSettings("foo");
-            endpoint.IsDurable = false;
+            endpoint.Mode = EndpointMode.Queued;
 
             endpoint.ReplyUri().ShouldBe("local://foo".ToUri());
         }

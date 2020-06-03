@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jasper.Configuration;
 using Jasper.Transports;
 
 namespace Jasper.Runtime.Routing
@@ -13,7 +14,7 @@ namespace Jasper.Runtime.Routing
         ///     Mark whether or not the receiver for this listener should use
         ///     message persistence for durability
         /// </summary>
-        public bool IsDurable { get; set; }
+        public EndpointMode Mode { get; set; } = EndpointMode.Queued;
 
         public bool ShouldSendMessage(Type messageType)
         {

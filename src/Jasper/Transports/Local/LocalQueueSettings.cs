@@ -23,12 +23,12 @@ namespace Jasper.Transports.Local
         public override void Parse(Uri uri)
         {
             Name = LocalTransport.QueueName(uri);
-            IsDurable = uri.IsDurable();
+            Mode = uri.IsDurable() ? EndpointMode.Durable : EndpointMode.Queued;
         }
 
         public override Uri ReplyUri()
         {
-            return IsDurable ? $"local://durable/{Name}".ToUri() : $"local://{Name}".ToUri();
+            return Mode == EndpointMode.Durable ? $"local://durable/{Name}".ToUri() : $"local://{Name}".ToUri();
         }
 
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)

@@ -1,4 +1,5 @@
 using System;
+using Jasper.Configuration;
 using Jasper.ConfluentKafka;
 using Shouldly;
 using Xunit;
@@ -13,7 +14,7 @@ namespace Jasper.Kafka.Tests
             var endpoint = new KafkaEndpoint();
             endpoint.Parse(new Uri("kafka://topic/key1"));
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.TopicName.ShouldBe("key1");
         }
 
@@ -23,10 +24,10 @@ namespace Jasper.Kafka.Tests
             var endpoint = new KafkaEndpoint();
             endpoint.Parse(new Uri("kafka://topic/key1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.TopicName.ShouldBe("key1");
         }
-        
+
         [Fact]
         public void build_uri_for_subscription_and_topic()
         {
@@ -36,7 +37,7 @@ namespace Jasper.Kafka.Tests
             }
                 .Uri.ShouldBe(new Uri("kafka://topic/key1"));
         }
-        
+
         [Fact]
         public void generate_reply_uri_for_non_durable()
         {
@@ -53,7 +54,7 @@ namespace Jasper.Kafka.Tests
             new KafkaEndpoint
             {
                 TopicName = "key1",
-                IsDurable = true
+                Mode = EndpointMode.Durable
             }.ReplyUri().ShouldBe(new Uri("kafka://topic/key1/durable"));
         }
 

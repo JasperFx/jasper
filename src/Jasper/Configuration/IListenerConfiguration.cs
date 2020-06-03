@@ -30,7 +30,7 @@ namespace Jasper.Configuration
         /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        T NotDurable();
+        T QueuedInMemory();
 
 
         /// <summary>

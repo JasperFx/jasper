@@ -17,13 +17,14 @@ namespace Jasper.Configuration
 
         public T Durably()
         {
-            _endpoint.IsDurable = true;
+            _endpoint.Mode = EndpointMode.Durable;
             return TypeExtensions.As<T>(this);
         }
 
-        public T Lightweight()
+
+        public T QueuedInMemory()
         {
-            _endpoint.IsDurable = false;
+            _endpoint.Mode = EndpointMode.Queued;
             return TypeExtensions.As<T>(this);
         }
 

@@ -26,7 +26,7 @@ namespace Jasper.Testing.Configuration
                 x.Endpoints.ListenForMessagesFrom("local://one").Sequential();
                 x.Endpoints.ListenForMessagesFrom("local://two").MaximumThreads(11);
                 x.Endpoints.ListenForMessagesFrom("local://three").Durable();
-                x.Endpoints.ListenForMessagesFrom("local://four").Durable().NotDurable();
+                x.Endpoints.ListenForMessagesFrom("local://four").Durable().QueuedInMemory();
 
             }).Build();
 
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Configuration
 
             var endpoint = findEndpoint("tcp://localhost:1111");
             endpoint.ShouldNotBeNull();
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.IsListener.ShouldBeTrue();
 
         }
@@ -140,8 +140,8 @@ namespace Jasper.Testing.Configuration
 
 
             localQueue("three")
-                .IsDurable
-                .ShouldBeTrue();
+                .Mode
+                .ShouldBe(EndpointMode.Durable);
         }
 
         [Fact]
@@ -150,8 +150,8 @@ namespace Jasper.Testing.Configuration
             theOptions.Endpoints.ListenForMessagesFrom("local://four");
 
             localQueue("four")
-                .IsDurable
-                .ShouldBeFalse();
+                .Mode
+                .ShouldBe(EndpointMode.Queued);
         }
 
         [Fact]

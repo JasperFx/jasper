@@ -9,9 +9,10 @@ namespace Jasper.Pulsar.Internal
     {
         public override Uri BuildUriForTopic(string topic)
         {
+            // TODO -- evaluate whether or not we really want the default to be durable
             var endpoint = new PulsarEndpoint
             {
-                IsDurable = true,
+                Mode = EndpointMode.Durable,
                 Topic = topic
             };
 

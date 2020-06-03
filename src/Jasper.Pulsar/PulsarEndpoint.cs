@@ -20,7 +20,7 @@ namespace Jasper.Pulsar
 
         public PulsarEndpoint()
         {
-            
+
         }
 
         public PulsarEndpoint(string topic)
@@ -35,16 +35,17 @@ namespace Jasper.Pulsar
 
         public override void Parse(Uri uri)
         {
-            IsDurable = uri.ToString().EndsWith(TransportConstants.Durable);
+            // TODO -- evaluate whether the default should be inline or queued
+            Mode = uri.ToString().EndsWith(TransportConstants.Durable) ? EndpointMode.Durable : EndpointMode.Queued;
             var url = uri.ToString();
-            string pulsarTopic = url.Substring(0, url.Length - (IsDurable ? TransportConstants.Durable.Length + 1 : 0));
+            string pulsarTopic = url.Substring(0, url.Length - (Mode == EndpointMode.Durable ? TransportConstants.Durable.Length + 1 : 0));
 
             Topic = new PulsarTopic(pulsarTopic);
         }
 
         private Uri BuildUri(bool forReply = false)
         {
-            if (forReply && IsDurable)
+            if (forReply && Mode == EndpointMode.Durable)
             {
                 return new Uri(Topic + $"/{TransportConstants.Durable}");
             }

@@ -1,5 +1,6 @@
 using System;
 using AutoFixture.Xunit2;
+using Jasper.Configuration;
 using Shouldly;
 using Xunit;
 
@@ -13,7 +14,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1"));
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.Topic.TopicName.ShouldBe("key1");
         }
 
@@ -47,7 +48,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1"));
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.Persistent);
         }
 
@@ -57,7 +58,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.NonPersistent}://tenant/jasper/key1"));
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.NonPersistent);
         }
 
@@ -67,7 +68,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.Persistent);
         }
 
@@ -77,7 +78,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.NonPersistent}://tenant/jasper/key1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.NonPersistent);
         }
 
@@ -87,7 +88,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.Topic.TopicName.ShouldBe("key1");
         }
 
@@ -117,7 +118,7 @@ namespace Jasper.Pulsar.Tests
             new PulsarEndpoint
             {
                 Topic = $"{PulsarPersistence.Persistent}://tenant/jasper/key1",
-                IsDurable = true
+                Mode = EndpointMode.Durable
             }.ReplyUri().ShouldBe(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1/durable"));
         }
 

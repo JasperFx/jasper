@@ -64,7 +64,7 @@ namespace Jasper.AzureServiceBus
 
             }
 
-            if (forReply && IsDurable)
+            if (forReply && Mode == EndpointMode.Durable)
             {
                 list.Add(TransportConstants.Durable);
             }
@@ -116,7 +116,7 @@ namespace Jasper.AzureServiceBus
                 else if (segments.Peek().EqualsIgnoreCase(TransportConstants.Durable))
                 {
                     segments.Dequeue();
-                    IsDurable = true;
+                    Mode = EndpointMode.Durable;
                 }
                 else
                 {

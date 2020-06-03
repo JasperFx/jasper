@@ -20,7 +20,7 @@ namespace Jasper.RabbitMQ.Internal
             var endpoint = new RabbitMqEndpoint
             {
                 ExchangeName = ExchangeName,
-                IsDurable = IsDurable,
+                Mode = Mode,
                 RoutingKey = topicName
             };
 

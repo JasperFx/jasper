@@ -21,7 +21,7 @@ namespace Jasper.Transports.Local
             _queues.FillDefault(TransportConstants.Default);
             _queues.FillDefault(TransportConstants.Replies);
 
-            _queues[TransportConstants.Durable].IsDurable = true;
+            _queues[TransportConstants.Durable].Mode = EndpointMode.Durable;
         }
 
         public IEnumerable<LocalQueueSettings> AllQueues()
@@ -93,11 +93,22 @@ namespace Jasper.Transports.Local
 
         private ISendingAgent buildAgent(LocalQueueSettings queue, IMessagingRoot root)
         {
-            return queue.IsDurable
-                ? (ISendingAgent) new DurableLocalSendingAgent(queue, root.Pipeline, root.Settings, root.Persistence,
-                    root.TransportLogger, root.Serialization, root.MessageLogger)
-                : new LightweightLocalSendingAgent(queue, root.TransportLogger, root.Pipeline, root.Settings,
-                    root.MessageLogger);
+            switch (queue.Mode)
+            {
+                case EndpointMode.Queued:
+                    return new LightweightLocalSendingAgent(queue, root.TransportLogger, root.Pipeline, root.Settings,
+                        root.MessageLogger);
+
+                case EndpointMode.Durable:
+                    return new DurableLocalSendingAgent(queue, root.Pipeline, root.Settings, root.Persistence,
+                        root.TransportLogger, root.Serialization, root.MessageLogger);
+
+                case EndpointMode.Inline:
+                    throw new NotImplementedException();
+
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
         private LocalQueueSettings findByUri(Uri uri)
@@ -105,7 +116,7 @@ namespace Jasper.Transports.Local
             var queueName = QueueName(uri);
             var settings = _queues[queueName];
 
-            if (uri.IsDurable()) settings.IsDurable = true;
+            if (uri.IsDurable()) settings.Mode = EndpointMode.Durable;
 
             return settings;
         }
@@ -153,7 +164,7 @@ namespace Jasper.Transports.Local
 
             if (uri.IsDurable())
             {
-                queue.IsDurable = true;
+                queue.Mode = EndpointMode.Durable;
             }
 
             return addQueue(root, runtime, queue);

@@ -21,18 +21,18 @@ namespace Jasper.Configuration
         /// <returns></returns>
         public TopicRouterConfiguration<TSubscriberConfiguration>  Durably()
         {
-            _router.IsDurable = true;
+            _router.Mode = EndpointMode.Durable;
             return this;
         }
 
         /// <summary>
-        /// By default, messages on this worker queue will not be persisted until
-        /// being successfully handled
+        /// By default, outgoing messages to this topic are queued in memory
+        /// with retry mechanics
         /// </summary>
         /// <returns></returns>
-        public TopicRouterConfiguration<TSubscriberConfiguration>  Lightweight()
+        public TopicRouterConfiguration<TSubscriberConfiguration>  QueuedInMemory()
         {
-            _router.IsDurable = false;
+            _router.Mode = EndpointMode.Queued;
             return this;
         }
 

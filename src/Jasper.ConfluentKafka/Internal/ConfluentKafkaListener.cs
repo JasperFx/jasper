@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Jasper.ConfluentKafka;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Jasper.Transports;
 
 namespace Jasper.Kafka.Internal
@@ -46,6 +47,11 @@ namespace Jasper.Kafka.Internal
             _consumerTask = ConsumeAsync();
 
             _logger.ListeningStatusChange(ListeningStatus.Accepting);
+        }
+
+        public void StartHandlingInline(IHandlerPipeline pipeline)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task ConsumeAsync()

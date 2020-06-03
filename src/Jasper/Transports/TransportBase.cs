@@ -74,7 +74,7 @@ namespace Jasper.Transports
             var endpoint = findEndpointByUri(uri);
             endpoint.IsListener = true;
 
-            if (uri.IsDurable()) endpoint.IsDurable = true;
+            if (uri.IsDurable()) endpoint.Mode = EndpointMode.Durable;
 
             return endpoint;
         }
@@ -92,7 +92,7 @@ namespace Jasper.Transports
 
             // It's coded this way so you don't override
             // durability if it's already set
-            if (shouldBeDurable) endpoint.IsDurable = true;
+            if (shouldBeDurable) endpoint.Mode = EndpointMode.Durable;
 
             return endpoint;
         }

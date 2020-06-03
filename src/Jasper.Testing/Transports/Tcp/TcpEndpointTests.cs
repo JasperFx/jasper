@@ -1,3 +1,4 @@
+using Jasper.Configuration;
 using Jasper.Transports.Tcp;
 using Jasper.Util;
 using Shouldly;
@@ -18,25 +19,25 @@ namespace Jasper.Testing.Transports.Tcp
         }
 
         [Theory]
-        [InlineData("tcp://localhost:4444", "localhost", 4444, false)]
-        [InlineData("tcp://localhost:4445", "localhost", 4445, false)]
-        [InlineData("tcp://server1:4445", "server1", 4445, false)]
-        [InlineData("tcp://server1:4445/durable", "server1", 4445, true)]
-        public void parsing_uri(string uri, string host, int port, bool isDurable)
+        [InlineData("tcp://localhost:4444", "localhost", 4444, EndpointMode.Queued)]
+        [InlineData("tcp://localhost:4445", "localhost", 4445, EndpointMode.Queued)]
+        [InlineData("tcp://server1:4445", "server1", 4445, EndpointMode.Queued)]
+        [InlineData("tcp://server1:4445/durable", "server1", 4445, EndpointMode.Durable)]
+        public void parsing_uri(string uri, string host, int port, EndpointMode mode)
         {
             var endpoint = new TcpEndpoint();
             endpoint.Parse(uri.ToUri());
 
             endpoint.HostName.ShouldBe(host);
             endpoint.Port.ShouldBe(port);
-            endpoint.IsDurable.ShouldBe(isDurable);
+            endpoint.Mode.ShouldBe(mode);
         }
 
         [Fact]
         public void reply_uri_when_durable()
         {
             var endpoint = new TcpEndpoint(4444);
-            endpoint.IsDurable = true;
+            endpoint.Mode = EndpointMode.Durable;
 
             endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444/durable".ToUri());
         }
@@ -45,7 +46,7 @@ namespace Jasper.Testing.Transports.Tcp
         public void reply_uri_when_not_durable()
         {
             var endpoint = new TcpEndpoint(4444);
-            endpoint.IsDurable = false;
+            endpoint.Mode = EndpointMode.Queued;
 
             endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444".ToUri());
         }

@@ -23,7 +23,7 @@ namespace Jasper.ConfluentKafka
 
         public KafkaEndpoint()
         {
-            
+
         }
         public KafkaEndpoint(Uri uri) : base(uri)
         {
@@ -41,7 +41,7 @@ namespace Jasper.ConfluentKafka
                 list.Add(TopicName.ToLowerInvariant());
             }
 
-            if (forReply && IsDurable)
+            if (forReply && Mode == EndpointMode.Durable)
             {
                 list.Add(TransportConstants.Durable);
             }
@@ -76,7 +76,7 @@ namespace Jasper.ConfluentKafka
                 else if (segments.Peek().EqualsIgnoreCase(TransportConstants.Durable))
                 {
                     segments.Dequeue(); // token
-                    IsDurable = true;
+                    Mode = EndpointMode.Durable;
                 }
                 else
                 {

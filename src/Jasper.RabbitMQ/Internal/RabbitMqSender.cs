@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using RabbitMQ.Client;
@@ -20,8 +21,8 @@ namespace Jasper.RabbitMQ.Internal
         {
             _protocol = endpoint.Protocol;
             Destination = endpoint.Uri;
-            
-            _isDurable = endpoint.IsDurable;
+
+            _isDurable = endpoint.Mode == EndpointMode.Durable;
 
             _exchangeName = endpoint.ExchangeName == TransportConstants.Default ? "" : endpoint.ExchangeName;
             _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";

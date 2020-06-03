@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DotPulsar;
 using DotPulsar.Abstractions;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Jasper.Transports;
 
 namespace Jasper.Pulsar.Internal
@@ -43,6 +44,11 @@ namespace Jasper.Pulsar.Internal
             _consumerTask = ConsumeAsync();
 
             _logger.ListeningStatusChange(ListeningStatus.Accepting);
+        }
+
+        public void StartHandlingInline(IHandlerPipeline pipeline)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task ConsumeAsync()

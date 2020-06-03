@@ -38,13 +38,13 @@ namespace Jasper.Configuration
 
         public TSelf Durable()
         {
-            endpoint.IsDurable = true;
+            endpoint.Mode = EndpointMode.Durable;
             return this.As<TSelf>();
         }
 
-        public TSelf NotDurable()
+        public TSelf QueuedInMemory()
         {
-            endpoint.IsDurable = false;
+            endpoint.Mode = EndpointMode.Queued;
             return this.As<TSelf>();
         }
 

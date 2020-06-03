@@ -9,9 +9,11 @@ namespace Jasper.ConfluentKafka.Internal
     {
         public override Uri BuildUriForTopic(string topicName)
         {
+            // TODO -- this probably shouldn't be durable by default, but
+            // that's how it was coded before
             var endpoint = new KafkaEndpoint
             {
-                IsDurable = true,
+                Mode = EndpointMode.Durable,
                 TopicName = topicName
             };
 

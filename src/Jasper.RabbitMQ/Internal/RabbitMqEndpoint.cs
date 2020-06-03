@@ -65,7 +65,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public override Uri ReplyUri()
         {
-            return IsDurable ? $"{Uri}/durable".ToUri() : Uri;
+            return Mode == EndpointMode.Durable ? $"{Uri}/durable".ToUri() : Uri;
         }
 
         public override void Parse(Uri uri)
@@ -104,7 +104,7 @@ namespace Jasper.RabbitMQ.Internal
                 else if (segments.Peek().EqualsIgnoreCase(TransportConstants.Durable))
                 {
                     segments.Dequeue();
-                    IsDurable = true;
+                    Mode = EndpointMode.Durable;
                 }
                 else
                 {

@@ -89,13 +89,20 @@ namespace Jasper.Transports
             // This is for the stub transport in the Storyteller specs
             if (sender is ISendingAgent a) return a;
 
-            if (endpoint.IsDurable)
+            switch (endpoint.Mode)
             {
-                return new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger,
-                    _root.Persistence, endpoint);
+                case EndpointMode.Durable:
+                    return new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger,
+                        _root.Persistence, endpoint);
+
+                case EndpointMode.Queued:
+                    return new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
+
+                case EndpointMode.Inline:
+                    throw new NotImplementedException();
             }
 
-            return new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
+            throw new InvalidOperationException();
         }
 
         public void AddSendingAgent(ISendingAgent sendingAgent)
@@ -168,14 +175,29 @@ namespace Jasper.Transports
 
         public void AddListener(IListener listener, Endpoint settings)
         {
-            var worker = settings.IsDurable
-                ? (IWorkerQueue) new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,
-                    _root.TransportLogger)
-                : new LightweightWorkerQueue(settings, _root.TransportLogger, _root.Pipeline, _root.Settings);
 
-            _listeners.Add(worker);
+            IWorkerQueue worker = null;
+            switch (settings.Mode)
+            {
+                case EndpointMode.Durable:
+                    worker = new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,
+                        _root.TransportLogger);
+                    break;
 
-            worker.StartListening(listener);
+                case EndpointMode.Queued:
+                    worker = new LightweightWorkerQueue(settings, _root.TransportLogger, _root.Pipeline, _root.Settings);
+                    break;
+
+                case EndpointMode.Inline:
+                    listener.StartHandlingInline(_root.Pipeline);
+                    break;
+            }
+
+            if (worker != null)
+            {
+                _listeners.Add(worker);
+                worker.StartListening(listener);
+            }
         }
 
         public Task Stop()

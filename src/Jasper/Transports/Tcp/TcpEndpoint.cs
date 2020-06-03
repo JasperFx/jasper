@@ -34,7 +34,7 @@ namespace Jasper.Transports.Tcp
         public override Uri ReplyUri()
         {
             var uri = ToUri(Port, HostName);
-            if (!IsDurable)
+            if (Mode != EndpointMode.Durable)
             {
                 return uri;
             }
@@ -58,7 +58,7 @@ namespace Jasper.Transports.Tcp
 
             if (uri.IsDurable())
             {
-                IsDurable = true;
+                Mode = EndpointMode.Durable;
             }
         }
 

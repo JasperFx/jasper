@@ -1,4 +1,5 @@
 using System;
+using Jasper.Configuration;
 using Jasper.RabbitMQ.Internal;
 using Jasper.Util;
 using Shouldly;
@@ -21,7 +22,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             var endpoint = new RabbitMqEndpoint();
             endpoint.Parse(new Uri("rabbitmq://exchange/exchange1/routing/key1"));
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.ExchangeName.ShouldBe("exchange1");
             endpoint.RoutingKey.ShouldBe("key1");
         }
@@ -32,7 +33,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             var endpoint = new RabbitMqEndpoint();
             endpoint.Parse(new Uri("rabbitmq://exchange/exchange1/routing/key1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.ExchangeName.ShouldBe("exchange1");
             endpoint.RoutingKey.ShouldBe("key1");
         }
@@ -43,7 +44,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             var endpoint = new RabbitMqEndpoint();
             endpoint.Parse(new Uri("rabbitmq://queue/q1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.QueueName.ShouldBe("q1");
         }
 
@@ -75,7 +76,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             new RabbitMqEndpoint
                 {
                     QueueName = "foo",
-                    IsDurable = true
+                    Mode = EndpointMode.Durable
                 }
                 .ReplyUri().ShouldBe(new Uri("rabbitmq://queue/foo/durable"));
         }
@@ -118,7 +119,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             {
                 ExchangeName = "ex1",
                 RoutingKey = "key1",
-                IsDurable = true
+                Mode = EndpointMode.Durable
             }.ReplyUri().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1/durable"));
 
 

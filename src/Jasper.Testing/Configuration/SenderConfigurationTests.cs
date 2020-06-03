@@ -15,24 +15,24 @@ namespace Jasper.Testing.Configuration
         public void durably()
         {
             var endpoint = new LocalQueueSettings("foo");
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
 
             var expression = new SubscriberConfiguration(endpoint);
             expression.Durably();
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
         }
 
         [Fact]
         public void lightweight()
         {
             var endpoint = new LocalQueueSettings("foo");
-            endpoint.IsDurable = true;
+            endpoint.Mode = EndpointMode.Durable;
 
             var expression = new SubscriberConfiguration(endpoint);
-            expression.Lightweight();
+            expression.QueuedInMemory();
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
         }
 
 

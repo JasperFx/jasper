@@ -21,20 +21,20 @@ namespace Jasper.RabbitMQ.Tests
 
             configuration.Durably();
 
-            router.IsDurable.ShouldBeTrue();
+            router.Mode.ShouldBe(EndpointMode.Durable);
         }
 
         [Fact]
         public void lightweight()
         {
             var router = new RabbitMqTopicRouter("numbers");
-            router.IsDurable = true;
+            router.Mode = EndpointMode.Queued;
 
             var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
 
-            configuration.Lightweight();
+            configuration.QueuedInMemory();
 
-            router.IsDurable.ShouldBeFalse();
+            router.Mode.ShouldBe(EndpointMode.Queued);
         }
 
         [Fact]

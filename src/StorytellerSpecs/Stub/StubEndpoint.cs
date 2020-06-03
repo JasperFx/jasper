@@ -31,9 +31,10 @@ namespace StorytellerSpecs.Stub
 
         public Endpoint Endpoint => this;
         public bool Latched { get; set; }
+        public bool IsDurable => Mode == EndpointMode.Durable;
 
         public override Uri Uri => $"stub://{Name}".ToUri();
-        
+
         public Task Send(Envelope envelope)
         {
             Sent.Add(envelope);

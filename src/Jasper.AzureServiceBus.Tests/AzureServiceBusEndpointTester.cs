@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Jasper.AzureServiceBus.Internal;
+using Jasper.Configuration;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -22,7 +23,7 @@ namespace Jasper.AzureServiceBus.Tests
             var endpoint = new AzureServiceBusEndpoint();
             endpoint.Parse(new Uri("asb://subscription/sub1/topic/key1"));
 
-            endpoint.IsDurable.ShouldBeFalse();
+            endpoint.Mode.ShouldBe(EndpointMode.Queued);
             endpoint.SubscriptionName.ShouldBe("sub1");
             endpoint.TopicName.ShouldBe("key1");
         }
@@ -33,7 +34,7 @@ namespace Jasper.AzureServiceBus.Tests
             var endpoint = new AzureServiceBusEndpoint();
             endpoint.Parse(new Uri("asb://subscription/sub1/topic/key1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.SubscriptionName.ShouldBe("sub1");
             endpoint.TopicName.ShouldBe("key1");
         }
@@ -44,7 +45,7 @@ namespace Jasper.AzureServiceBus.Tests
             var endpoint = new AzureServiceBusEndpoint();
             endpoint.Parse(new Uri("asb://queue/q1/durable"));
 
-            endpoint.IsDurable.ShouldBeTrue();
+            endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.QueueName.ShouldBe("q1");
         }
 
@@ -76,7 +77,7 @@ namespace Jasper.AzureServiceBus.Tests
             new AzureServiceBusEndpoint
                 {
                     QueueName = "foo",
-                    IsDurable = true
+                    Mode = EndpointMode.Durable
                 }
                 .ReplyUri().ShouldBe(new Uri("asb://queue/foo/durable"));
         }
@@ -99,7 +100,7 @@ namespace Jasper.AzureServiceBus.Tests
             {
                 SubscriptionName = "ex1",
                 TopicName = "key1",
-                IsDurable = true
+                Mode = EndpointMode.Durable
             }.ReplyUri().ShouldBe(new Uri("asb://topic/key1/durable"));
 
 
