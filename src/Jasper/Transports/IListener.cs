@@ -8,7 +8,8 @@ namespace Jasper.Transports
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        IAsyncEnumerable<Envelope> Consume();
-        Task<bool> Acknowledge(Envelope envelope);
+        IAsyncEnumerable<(Envelope Envelope, object AckObject)> Consume();
+        Task Ack((Envelope Envelope, object AckObject) messageInfo);
+        Task Nack((Envelope Envelope, object AckObject) messageInfo);
     }
 }

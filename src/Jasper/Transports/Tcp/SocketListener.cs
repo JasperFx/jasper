@@ -26,7 +26,7 @@ namespace Jasper.Transports.Tcp
             Address = $"tcp://{ipaddr}:{port}/".ToUri();
         }
 
-        public async IAsyncEnumerable<Envelope> Consume()
+        public async IAsyncEnumerable<(Envelope Envelope, object AckObject)> Consume()
         {
             _tcpListener = new TcpListener(new IPEndPoint(_ipaddr, _port));
             _tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
@@ -50,17 +50,15 @@ namespace Jasper.Transports.Tcp
 
                 foreach (Envelope resultMessage in result.Messages)
                 {
-                    yield return resultMessage;
+                    yield return (resultMessage, null);
                 }
 
                 await WireProtocol.EndReceive(stream, ReceivedStatus.Successful);
             }
         }
 
-        public Task<bool> Acknowledge(Envelope envelope)
-        {
-            throw new NotImplementedException();
-        }
+        public Task Ack((Envelope Envelope, object AckObject) messageInfo) => Task.CompletedTask;
+        public Task Nack((Envelope Envelope, object AckObject) messageInfo) => Task.CompletedTask;
 
         public Uri Address { get; }
 

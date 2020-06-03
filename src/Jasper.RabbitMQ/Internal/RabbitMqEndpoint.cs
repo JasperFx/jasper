@@ -119,7 +119,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             if (!IsListener) return;
 
-            var listener = new RabbitMqListener(root.TransportLogger, this, Parent);
+            var listener = new RabbitMqListener(root.TransportLogger, this, Parent, root.Cancellation);
             runtime.AddListener(listener, this);
         }
 

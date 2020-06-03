@@ -81,27 +81,22 @@ namespace Jasper.Runtime.WorkerQueues
         {
             Status = ListeningStatus.Accepting;
             var callback = ((IReceiverCallback)this);
-            await foreach (Envelope envelope in _agent.Consume())
+            await foreach ((Envelope Envelope, object AckObject) receivedInfo in _agent.Consume())
             {
-                await callback.Received(Address, new[] {envelope});
-
-                bool sent = await _receiver.SendAsync(envelope);
-
-                while (!sent)
+                Envelope envelope = receivedInfo.Envelope;
+                
+                try
                 {
-                    Status = ListeningStatus.TooBusy;
-                    await Task.Delay(100);
-                    sent = await _receiver.SendAsync(envelope);
+                    await callback.Received(Address, new[] { envelope });
+
+                    await _agent.Ack(receivedInfo);
+                    await callback.Acknowledged(new[] { envelope });
                 }
-                Status = ListeningStatus.Accepting;
-
-                if (await _agent.Acknowledge(envelope))
+                catch (Exception e)
                 {
-                    await callback.Acknowledged(new[] {envelope});
-                }
-                else
-                {
-                    await callback.NotAcknowledged(new[] {envelope});
+                    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
+                    await _agent.Nack(receivedInfo);
+                    await callback.NotAcknowledged(new[] { envelope });
                 }
             }
         }

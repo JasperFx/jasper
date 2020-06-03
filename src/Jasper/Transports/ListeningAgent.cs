@@ -48,15 +48,16 @@ namespace Jasper.Transports
                             return;
                         }
 
-                        await _callback.Received(_uri, result.Messages);
+                        ReceivedStatus receivedStatus = await _callback.Received(_uri, result.Messages);
+
+                        await WireProtocol.EndReceive(stream, receivedStatus);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        await _callback.Failed(ex, result.Messages);
                         await WireProtocol.EndReceive(stream, ReceivedStatus.ProcessFailure);
                     }
                 }
-
-                await WireProtocol.EndReceive(stream, result.Status);
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _uri = $"{protocol}://{ipaddr}:{port}/".ToUri();

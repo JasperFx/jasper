@@ -18,7 +18,6 @@ namespace Jasper.AzureServiceBus.Internal
                 ContentType = envelope.ContentType,
                 ReplyTo = envelope.ReplyUri?.ToString(),
                 ReplyToSessionId = envelope.CausationId.ToString(),
-
             };
 
             if (envelope.ExecutionTime.HasValue)
@@ -49,7 +48,6 @@ namespace Jasper.AzureServiceBus.Internal
                 ReplyUri = message.ReplyTo.IsNotEmpty() ? new Uri(message.ReplyTo) : null,
                 CausationId = message.ReplyToSessionId.IsNotEmpty() ? Guid.Parse(message.ReplyToSessionId) : Guid.Empty
             };
-
 
             envelope.ReadPropertiesFromDictionary(message.UserProperties);
 

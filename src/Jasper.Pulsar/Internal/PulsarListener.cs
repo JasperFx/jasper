@@ -29,7 +29,7 @@ namespace Jasper.Pulsar.Internal
         public Uri Address => _endpoint.Uri;
         public ListeningStatus Status { get; set; }
 
-        public async IAsyncEnumerable<Envelope> Consume()
+        public async IAsyncEnumerable<(Envelope Envelope, object AckObject)> Consume()
         {
             _logger.ListeningStatusChange(ListeningStatus.Accepting);
 
@@ -47,16 +47,19 @@ namespace Jasper.Pulsar.Internal
                     continue;
                 }
 
-                yield return envelope;
+                yield return (envelope, message.MessageId);
             }
         }
 
-        public async Task<bool> Acknowledge(Envelope envelope)
+
+        public Task Ack((Envelope Envelope, object AckObject) messageInfo)
         {
-            PulsarMessage message = _protocol.WriteFromEnvelope(envelope);
-            await _consumer.Acknowledge(message.MessageId, _cancellation);
-            return true;
+            var ackObj = (MessageId)messageInfo.AckObject;
+
+            return _consumer.Acknowledge(ackObj, _cancellation).AsTask();
         }
+
+        public Task Nack((Envelope Envelope, object AckObject) messageInfo) => Task.CompletedTask;
 
         public void Dispose()
         {
