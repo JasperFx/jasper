@@ -5,6 +5,7 @@ using System.Linq;
 using DotPulsar;
 using Jasper.Pulsar.Internal;
 using Jasper.Transports;
+using Newtonsoft.Json;
 
 namespace Jasper.Pulsar
 {
@@ -12,11 +13,13 @@ namespace Jasper.Pulsar
     {
         public const string PulsarMessageKeyHeader = "Pulsar.Message.Key";
         public const string PulsarMessageSequenceIdHeader = "Pulsar.Message.SequenceId";
+        public const string PulsarMessageIdHeader = "Pulsar.Message.MessageId";
 
-        private readonly Dictionary<string, Action<MessageMetadata, object>> _pulsarMsgPropTypes = new Dictionary<string, Action<MessageMetadata, object>>()
+        private readonly Dictionary<string, Action<PulsarMessage, object>> _pulsarMsgPropTypes = new Dictionary<string, Action<PulsarMessage, object>>()
         {
-            { PulsarMessageKeyHeader, (metadata, val) => metadata.Key = val?.ToString() },
-            { PulsarMessageSequenceIdHeader, (metadata, val) => metadata.SequenceId = val != null ? ulong.Parse(val.ToString()) : default },
+            { PulsarMessageKeyHeader, (msg, val) => msg.Metadata.Key = val?.ToString() },
+            { PulsarMessageSequenceIdHeader, (msg, val) => msg.Metadata.SequenceId = val != null ? ulong.Parse(val.ToString()) : default },
+            { PulsarMessageIdHeader, (msg, val) => msg.MessageId = val != null ? JsonConvert.DeserializeObject<MessageId>(val.ToString()) : null },
         };
 
         public PulsarMessage WriteFromEnvelope(Envelope envelope)
@@ -31,32 +34,34 @@ namespace Jasper.Pulsar
                 metadata[header.Key] = header.Value.ToString();
             }
 
-            SetMetaDataFromHeaderValues(metadata, envelopHeaders);
-
-            return new PulsarMessage(envelope.Data, metadata);
+            var pulsarMessage = new PulsarMessage(envelope.Data, metadata);
+            SetMetaDataFromHeaderValues(pulsarMessage, envelopHeaders);
+            return pulsarMessage;
         }
 
-        private void SetMetaDataFromHeaderValues(MessageMetadata metadata, IDictionary<string, object> envelopHeaders)
+        private void SetMetaDataFromHeaderValues(PulsarMessage msg, IDictionary<string, object> envelopHeaders)
         {
-            foreach (var pulsarMsgPropType in _pulsarMsgPropTypes)
+            foreach (KeyValuePair<string, Action<PulsarMessage, object>> pulsarMsgPropType in _pulsarMsgPropTypes)
             {
-                SetMetaDataFromHeaderValue(metadata, envelopHeaders, pulsarMsgPropType.Key, pulsarMsgPropType.Value);
+                SetMetaDataFromHeaderValue(msg, envelopHeaders, pulsarMsgPropType.Key, pulsarMsgPropType.Value);
             }
         }
 
-        private void SetMetaDataFromHeaderValue(MessageMetadata metadata, IDictionary<string, object> envelopHeaders, string propertyName, Action<MessageMetadata, object> propertySetter)
+        private void SetMetaDataFromHeaderValue(PulsarMessage msg, IDictionary<string, object> envelopHeaders, string propertyName, Action<PulsarMessage, object> propertySetter)
         {
-            if (envelopHeaders.TryGetValue(propertyName, out object headerValue)) propertySetter(metadata, headerValue);
+            if (envelopHeaders.TryGetValue(propertyName, out object headerValue)) propertySetter(msg, headerValue);
         }
 
         public Envelope ReadEnvelope(PulsarMessage message)
         {
             var envelope = new Envelope
-            {
+            {  
                 Data = message.Data.ToArray(),
-                Headers = message.Properties.ToDictionary(ks => ks.Key, vs => vs.Value)
+                Headers = message.Properties.ToDictionary(ks => ks.Key, vs => vs.Value),
             };
 
+            envelope.Headers.Add(PulsarMessageIdHeader, JsonConvert.SerializeObject(message.MessageId));
+            
             envelope.ReadPropertiesFromDictionary(message.Properties.ToDictionary(ks => ks.Key, vs => (object)vs.Value));
 
             return envelope;

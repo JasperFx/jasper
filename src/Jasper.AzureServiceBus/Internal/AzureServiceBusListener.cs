@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -18,8 +19,6 @@ namespace Jasper.AzureServiceBus.Internal
         private readonly ITransportLogger _logger;
         private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusTransport _transport;
-        private IReceiverCallback _callback;
-
 
         public AzureServiceBusListener(AzureServiceBusEndpoint endpoint, AzureServiceBusTransport transport,
             ITransportLogger logger, CancellationToken cancellation)
@@ -28,8 +27,6 @@ namespace Jasper.AzureServiceBus.Internal
             _transport = transport;
             _logger = logger;
             _cancellation = cancellation;
-
-
             _protocol = endpoint.Protocol;
             Address = endpoint.Uri;
         }
@@ -43,10 +40,38 @@ namespace Jasper.AzureServiceBus.Internal
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        private readonly BufferBlock<(Envelope Envelope, object AckObject)> _buffer = new BufferBlock<(Envelope Envelope, object AckObject)>(new DataflowBlockOptions
+        {// DO NOT CHANGE THESE SETTINGS THEY ARE IMPORTANT TO LINK RECEIVE DELEGATE WITH CONSUME()
+            BoundedCapacity =  1,
+            MaxMessagesPerTask = 1,
+            EnsureOrdered = true
+        });
+        
+        public async IAsyncEnumerable<(Envelope Envelope, object AckObject)> Consume()
         {
-            _callback = callback;
+            Start();
 
+            while(!_cancellation.IsCancellationRequested)
+            {
+                var received = await _buffer.ReceiveAsync(_cancellation);
+                yield return received;
+            }
+        }
+
+        public Task Ack((Envelope Envelope, object AckObject) messageInfo)
+        {
+            var ackObj = ((Task Ack, Task Nack))messageInfo.AckObject;
+            return ackObj.Ack;
+        }
+
+        public Task Nack((Envelope Envelope, object AckObject) messageInfo)
+        {
+            var ackObj = ((Task Ack, Task Nack))messageInfo.AckObject;
+            return ackObj.Nack;
+        }
+
+        public void Start()
+        {
             var options = new SessionHandlerOptions(handleException);
 
             var connectionString = _transport.ConnectionString;
@@ -60,26 +85,22 @@ namespace Jasper.AzureServiceBus.Internal
 
             if (topicName.IsEmpty())
             {
-                var client = tokenProvider != null
+                QueueClient queueClient = tokenProvider != null
                     ? new QueueClient(connectionString, queueName, tokenProvider, transportType, receiveMode,
                         retryPolicy)
                     : new QueueClient(connectionString, queueName, receiveMode, retryPolicy);
 
-                client.RegisterSessionHandler(handleMessage, options);
-
-                _clientEntities.Add(client);
+                queueClient.RegisterSessionHandler(handleMessage, options);
             }
             else
             {
-                var client = tokenProvider != null
+                SubscriptionClient subscriptionClient = tokenProvider != null
                     ? new SubscriptionClient(connectionString, topicName, subscriptionName, tokenProvider,
                         transportType, receiveMode, retryPolicy)
                     : new SubscriptionClient(connectionString, topicName, subscriptionName,
                         receiveMode, retryPolicy);
 
-                client.RegisterSessionHandler(handleMessage, options);
-
-                _clientEntities.Add(client);
+                subscriptionClient.RegisterSessionHandler(handleMessage, options);
             }
         }
 
@@ -90,9 +111,9 @@ namespace Jasper.AzureServiceBus.Internal
             return Task.CompletedTask;
         }
 
-        private async Task handleMessage(IMessageSession session, Message message, CancellationToken token)
+        private async Task handleMessage(IMessageSession session, Message message, CancellationToken cancellationToken)
         {
-            var lockToken = message.SystemProperties.LockToken;
+            string lockToken = message.SystemProperties.LockToken;
 
             Envelope envelope;
 
@@ -110,16 +131,7 @@ namespace Jasper.AzureServiceBus.Internal
                 return;
             }
 
-            try
-            {
-                await _callback.Received(Address, new[] {envelope});
-                await session.CompleteAsync(lockToken);
-            }
-            catch (Exception e)
-            {
-                _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
-                await session.AbandonAsync(lockToken);
-            }
+            await _buffer.SendAsync((envelope, (session.CompleteAsync(lockToken), session.AbandonAsync(lockToken))), cancellationToken);
         }
     }
 }

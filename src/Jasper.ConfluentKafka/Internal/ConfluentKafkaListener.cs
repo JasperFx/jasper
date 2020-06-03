@@ -1,5 +1,5 @@
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -15,7 +15,6 @@ namespace Jasper.Kafka.Internal
         private readonly IConsumer<byte[], byte[]> _consumer;
         private readonly KafkaEndpoint _endpoint;
         private readonly ITransportLogger _logger;
-        private IReceiverCallback _callback;
         private readonly ITransportProtocol<Message<byte[], byte[]>> _protocol;
         private Task _consumerTask;
 
@@ -34,22 +33,25 @@ namespace Jasper.Kafka.Internal
             _consumerTask?.Dispose();
         }
 
-        public Uri Address => _endpoint.Uri;
-        public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        public Task Ack((Envelope Envelope, object AckObject) messageInfo)
         {
-            _callback = callback;
+            var achObj = messageInfo.AckObject as ConsumeResult<byte[], byte[]>;
 
-            _consumer.Subscribe(new []{ _endpoint.TopicName });
+            _consumer.Commit(achObj);
 
-            _consumerTask = ConsumeAsync();
-
-            _logger.ListeningStatusChange(ListeningStatus.Accepting);
+            return Task.CompletedTask;
         }
 
-        private async Task ConsumeAsync()
+        public Task Nack((Envelope Envelope, object AckObject) messageInfo) => Task.CompletedTask;
+
+        public Uri Address => _endpoint.Uri; 
+        public ListeningStatus Status { get; set; }
+
+        public async IAsyncEnumerable<(Envelope Envelope, object AckObject)> Consume()
         {
+            _consumer.Subscribe(new[] { _endpoint.TopicName });
+
             while (!_cancellation.IsCancellationRequested)
             {
                 ConsumeResult<byte[], byte[]> message;
@@ -84,16 +86,7 @@ namespace Jasper.Kafka.Internal
                     continue;
                 }
 
-                try
-                {
-                    await _callback.Received(Address, new[] {envelope});
-                    
-                    _consumer.Commit(message);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
-                }
+                yield return (envelope, message);
             }
         }
     }

@@ -10,7 +10,7 @@ using Jasper.Transports.Tcp;
 
 namespace Jasper.Runtime.WorkerQueues
 {
-    public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling
+    public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling, IReceiverCallback
     {
         private readonly ITransportLogger _logger;
         private readonly AdvancedSettings _settings;
@@ -68,13 +68,39 @@ namespace Jasper.Runtime.WorkerQueues
             return Task.CompletedTask;
         }
 
-
+        private Task _listeningTask;
         public void StartListening(IListener listener)
         {
             _agent = listener;
-            _agent.Start(this);
-
             Address = _agent.Address;
+
+            _listeningTask = ConsumeFromAgent();
+        }
+
+        async Task ConsumeFromAgent()
+        {
+            Status = ListeningStatus.Accepting;
+
+            var callback = ((IReceiverCallback) this);
+
+            await foreach ((Envelope Envelope, object AckObject) received in _agent.Consume())
+            {
+                try
+                {
+                    var envelope = received.Envelope;
+
+                    await callback.Received(Address, new[] {envelope});
+                    
+                    await _agent.Ack(received);
+                    await callback.Acknowledged(new[] {envelope});
+                }
+                catch (Exception e)
+                {
+                    _logger.LogException(e, received.Envelope.Id, "Error trying to receive a message from " + Address);
+                    await _agent.Nack(received);
+                    await callback.NotAcknowledged(new[] {received.Envelope});
+                }
+            }
         }
 
         public Uri Address { get; set; }

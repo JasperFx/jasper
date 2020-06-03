@@ -23,14 +23,32 @@ namespace Jasper.Transports.Sending
                 if (connection.IsCompleted)
                     using (var stream = client.GetStream())
                     {
-                        var protocolTimeout = WireProtocol.Send(stream, batch, batch.Data, callback);
+                        var protocolTimeout = WireProtocol.Send(stream, batch, batch.Data);
                         //var protocolTimeout = .TimeoutAfter(5000);
-                        await protocolTimeout.ConfigureAwait(false);
+                        WireProtocol.SendStatus result = await protocolTimeout.ConfigureAwait(false);
 
                         if (!protocolTimeout.IsCompleted) await callback.TimedOut(batch);
 
                         if (protocolTimeout.IsFaulted)
                             await callback.ProcessingFailure(batch, protocolTimeout.Exception);
+
+                        switch (result)
+                        {
+                            case WireProtocol.SendStatus.Failure:
+                                await callback.ProcessingFailure(batch);
+                                break;
+                            case WireProtocol.SendStatus.Success:
+                                await callback.Successful(batch);
+                                break;
+                            case WireProtocol.SendStatus.SerializationFailure:
+                                await callback.SerializationFailure(batch);
+                                break;
+                            case WireProtocol.SendStatus.QueueDoesNotExist:
+                                await callback.QueueDoesNotExist(batch);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(WireProtocol.SendStatus));
+                        }
                     }
                 else
                     await callback.TimedOut(batch);

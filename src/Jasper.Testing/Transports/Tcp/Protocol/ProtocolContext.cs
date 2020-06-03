@@ -74,7 +74,33 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
 
                 await client.ConnectAsync(Destination.Host, Destination.Port);
 
-                await WireProtocol.Send(client.GetStream(), theMessageBatch, null, theSender);
+                var callback = (ISenderCallback)theSender;
+                try
+                {
+                    WireProtocol.SendStatus result = await WireProtocol.Send(client.GetStream(), theMessageBatch, null);
+                    switch (result)
+                    {
+                            
+                        case WireProtocol.SendStatus.Failure:
+                            await callback.ProcessingFailure(theMessageBatch);
+                            break;
+                        case WireProtocol.SendStatus.Success:
+                            await callback.Successful(theMessageBatch);
+                            break;
+                        case WireProtocol.SendStatus.SerializationFailure:
+                            await callback.SerializationFailure(theMessageBatch);
+                            break;
+                        case WireProtocol.SendStatus.QueueDoesNotExist:
+                            await callback.QueueDoesNotExist(theMessageBatch);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (Exception e)
+                {
+                    await callback.ProcessingFailure(theMessageBatch, e);
+                }
             }
         }
 

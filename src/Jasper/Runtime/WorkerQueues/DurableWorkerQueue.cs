@@ -20,6 +20,7 @@ namespace Jasper.Runtime.WorkerQueues
         private readonly ActionBlock<Envelope> _receiver;
         private IListener _agent;
         private readonly AsyncRetryPolicy _policy;
+        private Task _listenerTask;
 
         public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
             AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger)
@@ -71,19 +72,38 @@ namespace Jasper.Runtime.WorkerQueues
         public void StartListening(IListener listener)
         {
             _agent = listener;
-            _agent.Start(this);
-
             Address = _agent.Address;
+
+            _listenerTask = ConsumeFromAgent();
+        }
+
+        async Task ConsumeFromAgent()
+        {
+            Status = ListeningStatus.Accepting;
+            var callback = ((IReceiverCallback)this);
+            await foreach ((Envelope Envelope, object AckObject) receivedInfo in _agent.Consume())
+            {
+                Envelope envelope = receivedInfo.Envelope;
+                
+                try
+                {
+                    await callback.Received(Address, new[] { envelope });
+
+                    await _agent.Ack(receivedInfo);
+                    await callback.Acknowledged(new[] { envelope });
+                }
+                catch (Exception e)
+                {
+                    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
+                    await _agent.Nack(receivedInfo);
+                    await callback.NotAcknowledged(new[] { envelope });
+                }
+            }
         }
 
         public Uri Address { get; set; }
-
-
-        public ListeningStatus Status
-        {
-            get => _agent.Status;
-            set => _agent.Status = value;
-        }
+        
+        public ListeningStatus Status { get; set; }
 
         async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
         {
@@ -102,12 +122,11 @@ namespace Jasper.Runtime.WorkerQueues
             return _persistence.DeleteIncomingEnvelopes(messages);
         }
 
-        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        public Task Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
             return Task.CompletedTask;
         }
-
 
         public void Dispose()
         {
@@ -125,8 +144,7 @@ namespace Jasper.Runtime.WorkerQueues
 
                 await _persistence.StoreIncoming(envelopes);
 
-
-                foreach (var message in incoming)
+                foreach (Envelope message in incoming)
                 {
                     await Enqueue(message);
                 }
