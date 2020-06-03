@@ -322,15 +322,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             return Task.FromResult(ReceivedStatus.Successful);
         }
 
-        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
-
-        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
 
         Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {

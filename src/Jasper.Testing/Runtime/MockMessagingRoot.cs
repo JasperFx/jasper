@@ -20,7 +20,6 @@ namespace Jasper.Testing.Runtime
 {
     public class MockMessagingRoot : IMessagingRoot
     {
-        private ListeningStatus _listeningStatus = ListeningStatus.Accepting;
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();

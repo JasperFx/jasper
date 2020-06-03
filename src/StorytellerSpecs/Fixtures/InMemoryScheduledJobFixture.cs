@@ -60,16 +60,6 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
-        {
-            throw new NotImplementedException();
-        }
-
         Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {
             throw new NotImplementedException();

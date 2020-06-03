@@ -112,6 +112,7 @@ namespace Jasper.Transports.Tcp
 
 
             var status = await callback.Received(uri, messages);
+
             switch (status)
             {
                 case ReceivedStatus.ProcessFailure:
@@ -126,12 +127,7 @@ namespace Jasper.Transports.Tcp
                 default:
                     await stream.SendBuffer(ReceivedBuffer);
 
-                    var ack = await stream.ReadExpectedBuffer(AcknowledgedBuffer);
-
-                    if (ack)
-                        await callback.Acknowledged(messages);
-                    else
-                        await callback.NotAcknowledged(messages);
+                    await stream.ReadExpectedBuffer(AcknowledgedBuffer);
                     break;
             }
         }

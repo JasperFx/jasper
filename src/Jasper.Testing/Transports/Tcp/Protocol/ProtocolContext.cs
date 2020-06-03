@@ -110,17 +110,6 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
             return Task.FromResult(StatusToReturn);
         }
 
-        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
-        {
-            WasAcknowledged = true;
-            return Task.CompletedTask;
-        }
-
-        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
-        {
-            WasAcknowledged = false;
-            return Task.CompletedTask;
-        }
 
         Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {

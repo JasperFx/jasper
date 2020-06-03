@@ -93,16 +93,6 @@ namespace Jasper.Runtime.WorkerQueues
             return await ProcessReceivedMessages(now, uri, messages);
         }
 
-        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
-
-        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
-
         Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
