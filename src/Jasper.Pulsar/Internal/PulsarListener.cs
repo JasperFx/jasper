@@ -14,7 +14,7 @@ namespace Jasper.Pulsar.Internal
         private readonly IConsumer _consumer;
         private readonly PulsarEndpoint _endpoint;
         private readonly ITransportLogger _logger;
-        private IReceiverCallback _callback;
+        private IListeningWorkerQueue _callback;
         private readonly ITransportProtocol<PulsarMessage> _protocol;
         private Task _consumerTask;
 
@@ -36,10 +36,10 @@ namespace Jasper.Pulsar.Internal
         public Uri Address => _endpoint.Uri;
         public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        public void Start(IListeningWorkerQueue callback)
         {
             _callback = callback;
-            
+
             _consumerTask = ConsumeAsync();
 
             _logger.ListeningStatusChange(ListeningStatus.Accepting);

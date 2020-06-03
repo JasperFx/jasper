@@ -87,7 +87,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
     }
 
 
-    public class StubReceiverCallback : IReceiverCallback
+    public class StubReceiverCallback : IListeningWorkerQueue
     {
         public ReceivedStatus StatusToReturn;
         public bool ThrowErrorOnReceived;
@@ -98,7 +98,10 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
 
         public Exception FailureException { get; set; }
 
-        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        public Uri Address { get; }
+        public ListeningStatus Status { get; set; }
+
+        Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             if (ThrowErrorOnReceived) throw new DivideByZeroException();
 
@@ -107,22 +110,27 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
             return Task.FromResult(StatusToReturn);
         }
 
-        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
         {
             WasAcknowledged = true;
             return Task.CompletedTask;
         }
 
-        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
         {
             WasAcknowledged = false;
             return Task.CompletedTask;
         }
 
-        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {
             FailureException = exception;
             return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 

@@ -55,22 +55,22 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             throw new NotImplementedException();
         }
 
-        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
         {
             throw new NotImplementedException();
         }
 
-        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
         {
             throw new NotImplementedException();
         }
 
-        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {
             throw new NotImplementedException();
         }
@@ -80,9 +80,7 @@ namespace StorytellerSpecs.Fixtures
             throw new NotImplementedException();
         }
 
-        Uri IListeningWorkerQueue.Address { get; }
 
-        ListeningStatus IListeningWorkerQueue.Status { get; set; }
 
 
         public override void SetUp()

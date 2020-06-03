@@ -21,7 +21,7 @@ namespace Jasper.Testing.Transports.Receiving
             var agent = new SocketListener(IPAddress.Any, 5500, CancellationToken.None);
             agent.Status = ListeningStatus.TooBusy;
 
-            var callback = Substitute.For<IReceiverCallback>();
+            var callback = Substitute.For<IListeningWorkerQueue>();
 
             await agent.HandleStream(callback, stream);
 

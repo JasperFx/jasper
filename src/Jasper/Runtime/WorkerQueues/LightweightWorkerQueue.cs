@@ -86,24 +86,24 @@ namespace Jasper.Runtime.WorkerQueues
             set => _agent.Status = value;
         }
 
-        async Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        async Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;
 
             return await ProcessReceivedMessages(now, uri, messages);
         }
 
-        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
         {
             return Task.CompletedTask;
         }
 
-        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
         {
             return Task.CompletedTask;
         }
 
-        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {
             _logger.LogException(new MessageFailureException(messages, exception));
             return Task.CompletedTask;

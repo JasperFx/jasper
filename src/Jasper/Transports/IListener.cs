@@ -6,6 +6,6 @@ namespace Jasper.Transports
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        void Start(IReceiverCallback callback);
+        void Start(IListeningWorkerQueue callback);
     }
 }

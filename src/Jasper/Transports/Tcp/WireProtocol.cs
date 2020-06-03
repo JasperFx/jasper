@@ -66,7 +66,7 @@ namespace Jasper.Transports.Tcp
         }
 
 
-        public static async Task Receive(Stream stream, IReceiverCallback callback, Uri uri)
+        public static async Task Receive(Stream stream, IListeningWorkerQueue callback, Uri uri)
         {
             Envelope[] messages = null;
 
@@ -97,7 +97,7 @@ namespace Jasper.Transports.Tcp
             }
         }
 
-        private static async Task receive(Stream stream, IReceiverCallback callback, Envelope[] messages, Uri uri)
+        private static async Task receive(Stream stream, IListeningWorkerQueue callback, Envelope[] messages, Uri uri)
         {
             // Just a ping
             if (messages.Any() && messages.First().IsPing())

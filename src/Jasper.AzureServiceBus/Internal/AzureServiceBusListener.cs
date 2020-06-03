@@ -18,7 +18,7 @@ namespace Jasper.AzureServiceBus.Internal
         private readonly ITransportLogger _logger;
         private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusTransport _transport;
-        private IReceiverCallback _callback;
+        private IListeningWorkerQueue _callback;
 
 
         public AzureServiceBusListener(AzureServiceBusEndpoint endpoint, AzureServiceBusTransport transport,
@@ -43,7 +43,7 @@ namespace Jasper.AzureServiceBus.Internal
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        public void Start(IListeningWorkerQueue callback)
         {
             _callback = callback;
 

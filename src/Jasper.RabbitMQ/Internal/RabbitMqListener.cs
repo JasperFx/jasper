@@ -10,7 +10,7 @@ namespace Jasper.RabbitMQ.Internal
     {
         private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol _mapper;
-        private IReceiverCallback _callback;
+        private IListeningWorkerQueue _callback;
         private MessageConsumer _consumer;
         private readonly string _routingKey;
 
@@ -44,7 +44,7 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public void Start(IReceiverCallback callback)
+        public void Start(IListeningWorkerQueue callback)
         {
             if (callback == null) return;
 
@@ -65,13 +65,13 @@ namespace Jasper.RabbitMQ.Internal
         public class MessageConsumer : DefaultBasicConsumer, IDisposable
         {
             private readonly Uri _address;
-            private readonly IReceiverCallback _callback;
+            private readonly IListeningWorkerQueue _callback;
             private readonly IModel _channel;
             private readonly ITransportLogger _logger;
             private readonly IRabbitMqProtocol _mapper;
             private bool _latched;
 
-            public MessageConsumer(IReceiverCallback callback, ITransportLogger logger, IModel channel,
+            public MessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, IModel channel,
                 IRabbitMqProtocol mapper, Uri address) : base(channel)
             {
                 _callback = callback;

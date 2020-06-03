@@ -15,7 +15,7 @@ namespace Jasper.Kafka.Internal
         private readonly IConsumer<byte[], byte[]> _consumer;
         private readonly KafkaEndpoint _endpoint;
         private readonly ITransportLogger _logger;
-        private IReceiverCallback _callback;
+        private IListeningWorkerQueue _callback;
         private readonly ITransportProtocol<Message<byte[], byte[]>> _protocol;
         private Task _consumerTask;
 
@@ -37,7 +37,7 @@ namespace Jasper.Kafka.Internal
         public Uri Address => _endpoint.Uri;
         public ListeningStatus Status { get; set; }
 
-        public void Start(IReceiverCallback callback)
+        public void Start(IListeningWorkerQueue callback)
         {
             _callback = callback;
 
@@ -64,7 +64,7 @@ namespace Jasper.Kafka.Internal
                         throw;
                     }
 
-                    continue; 
+                    continue;
                 }
                 catch (Exception ex)
                 {
@@ -87,7 +87,7 @@ namespace Jasper.Kafka.Internal
                 try
                 {
                     await _callback.Received(Address, new[] {envelope});
-                    
+
                     _consumer.Commit(message);
                 }
                 catch (Exception e)

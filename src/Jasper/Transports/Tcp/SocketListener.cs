@@ -28,7 +28,7 @@ namespace Jasper.Transports.Tcp
             Address = $"tcp://{ipaddr}:{port}/".ToUri();
         }
 
-        public void Start(IReceiverCallback callback)
+        public void Start(IListeningWorkerQueue callback)
         {
             _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
@@ -64,7 +64,7 @@ namespace Jasper.Transports.Tcp
 
         public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
 
-        public Task HandleStream(IReceiverCallback callback, Stream stream)
+        public Task HandleStream(IListeningWorkerQueue callback, Stream stream)
         {
             if (Status == ListeningStatus.TooBusy) return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
 

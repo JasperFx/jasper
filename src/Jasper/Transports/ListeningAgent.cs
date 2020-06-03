@@ -14,14 +14,14 @@ namespace Jasper.Transports
     // by SocketListeningAgent
     public class ListeningAgent : IDisposable
     {
-        private readonly IReceiverCallback _callback;
+        private readonly IListeningWorkerQueue _callback;
         private readonly CancellationToken _cancellationToken;
         private readonly TcpListener _listener;
         private readonly ActionBlock<Socket> _socketHandling;
         private readonly Uri _uri;
         private Task _receivingLoop;
 
-        public ListeningAgent(IReceiverCallback callback, IPAddress ipaddr, int port, string protocol,
+        public ListeningAgent(IListeningWorkerQueue callback, IPAddress ipaddr, int port, string protocol,
             CancellationToken cancellationToken)
         {
             Port = port;

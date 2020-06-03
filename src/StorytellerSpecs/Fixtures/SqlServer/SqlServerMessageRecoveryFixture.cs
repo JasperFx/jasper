@@ -317,22 +317,22 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             // Nothing
         }
 
-        Task<ReceivedStatus> IReceiverCallback.Received(Uri uri, Envelope[] messages)
+        Task<ReceivedStatus> IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
             return Task.FromResult(ReceivedStatus.Successful);
         }
 
-        Task IReceiverCallback.Acknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.Acknowledged(Envelope[] messages)
         {
             return Task.CompletedTask;
         }
 
-        Task IReceiverCallback.NotAcknowledged(Envelope[] messages)
+        Task IListeningWorkerQueue.NotAcknowledged(Envelope[] messages)
         {
             return Task.CompletedTask;
         }
 
-        Task IReceiverCallback.Failed(Exception exception, Envelope[] messages)
+        Task IListeningWorkerQueue.Failed(Exception exception, Envelope[] messages)
         {
             return Task.CompletedTask;
         }
@@ -341,8 +341,5 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         {
         }
 
-        Uri IListeningWorkerQueue.Address { get; }
-
-        ListeningStatus IListeningWorkerQueue.Status { get; set; }
     }
 }
