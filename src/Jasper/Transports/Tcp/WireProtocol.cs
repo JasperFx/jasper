@@ -121,11 +121,6 @@ namespace Jasper.Transports.Tcp
                     await stream.SendBuffer(ProcessingFailureBuffer);
                     break;
 
-
-                case ReceivedStatus.QueueDoesNotExist:
-                    await stream.SendBuffer(QueueDoesNotExistBuffer);
-                    break;
-
                 default:
                     await stream.SendBuffer(ReceivedBuffer);
 

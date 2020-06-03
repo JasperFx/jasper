@@ -3,7 +3,6 @@
     public enum ReceivedStatus
     {
         Successful,
-        QueueDoesNotExist,
         ProcessFailure
     }
 }
