@@ -99,7 +99,7 @@ namespace Jasper.Transports
                     return new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
 
                 case EndpointMode.Inline:
-                    throw new NotImplementedException();
+                    return new InlineSendingAgent(sender, endpoint, _root.MessageLogger, _root.Settings);
             }
 
             throw new InvalidOperationException();

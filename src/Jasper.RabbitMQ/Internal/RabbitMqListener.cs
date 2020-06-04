@@ -1,5 +1,4 @@
 using System;
-using Baseline;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -10,15 +9,19 @@ namespace Jasper.RabbitMQ.Internal
     public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
         private readonly ITransportLogger _logger;
+        private readonly RabbitMqEndpoint _endpoint;
+        private readonly RabbitMqTransport _transport;
         private readonly IRabbitMqProtocol _mapper;
         private IListeningWorkerQueue _callback;
-        private MessageConsumer _consumer;
+        private MessageConsumerBase _consumer;
         private readonly string _routingKey;
 
         public RabbitMqListener(ITransportLogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
             _logger = logger;
+            _endpoint = endpoint;
+            _transport = transport;
             _mapper = endpoint.Protocol;
             Address = endpoint.Uri;
 
@@ -52,7 +55,7 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new MessageConsumer(callback, _logger, Channel, _mapper, Address)
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, Channel, _mapper, Address)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };
@@ -62,80 +65,17 @@ namespace Jasper.RabbitMQ.Internal
 
         public void StartHandlingInline(IHandlerPipeline pipeline)
         {
-            throw new NotImplementedException();
+            EnsureConnected();
+
+            _consumer = new HandlerPipelineMessageConsumer(new RabbitMqSender(_endpoint, _transport), pipeline, _logger, Channel, _mapper, Address)
+            {
+                ConsumerTag = Guid.NewGuid().ToString()
+            };
+
+            Channel.BasicConsume(_consumer, _routingKey);
         }
 
 
         public Uri Address { get; }
-
-        public class MessageConsumer : DefaultBasicConsumer, IDisposable
-        {
-            private readonly Uri _address;
-            private readonly IListeningWorkerQueue _callback;
-            private readonly IModel _channel;
-            private readonly ITransportLogger _logger;
-            private readonly IRabbitMqProtocol _mapper;
-            private bool _latched;
-
-            public MessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, IModel channel,
-                IRabbitMqProtocol mapper, Uri address) : base(channel)
-            {
-                _callback = callback;
-                _logger = logger;
-                _channel = channel;
-                _mapper = mapper;
-                _address = address;
-            }
-
-            public void Dispose()
-            {
-                _latched = true;
-            }
-
-            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered,
-                string exchange, string routingKey,
-                IBasicProperties properties, byte[] body)
-            {
-                if (_callback == null) return;
-
-                if (_latched)
-                {
-                    _channel.BasicReject(deliveryTag, true);
-                    return;
-                }
-
-                Envelope envelope;
-                try
-                {
-                    envelope = _mapper.ReadEnvelope(body, properties);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogException(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
-                    _channel.BasicAck(deliveryTag, false);
-
-                    return;
-                }
-
-                if (envelope.IsPing())
-                {
-                    _channel.BasicAck(deliveryTag, false);
-                    return;
-                }
-
-                _callback.Received(_address, envelope).ContinueWith(t =>
-                {
-                    if (t.IsFaulted)
-                    {
-                        _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");
-                        _channel.BasicNack(deliveryTag, false, true);
-                    }
-                    else
-                    {
-                        _channel.BasicAck(deliveryTag, false);
-                    }
-                });
-            }
-        }
     }
 }
