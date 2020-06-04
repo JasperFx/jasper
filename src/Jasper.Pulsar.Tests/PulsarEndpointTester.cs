@@ -14,7 +14,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1"));
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.Topic.TopicName.ShouldBe("key1");
         }
 
@@ -48,7 +48,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1"));
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.Persistent);
         }
 
@@ -58,7 +58,7 @@ namespace Jasper.Pulsar.Tests
             var endpoint = new PulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.NonPersistent}://tenant/jasper/key1"));
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.NonPersistent);
         }
 

@@ -95,7 +95,7 @@ namespace Jasper.Transports.Local
         {
             switch (queue.Mode)
             {
-                case EndpointMode.Queued:
+                case EndpointMode.BufferedInMemory:
                     return new LightweightLocalSendingAgent(queue, root.TransportLogger, root.Pipeline, root.Settings,
                         root.MessageLogger);
 

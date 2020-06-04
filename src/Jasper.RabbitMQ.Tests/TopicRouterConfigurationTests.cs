@@ -19,22 +19,35 @@ namespace Jasper.RabbitMQ.Tests
 
             var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
 
-            configuration.Durably();
+            configuration.DurablyStoreAndForward();
 
             router.Mode.ShouldBe(EndpointMode.Durable);
         }
 
         [Fact]
-        public void lightweight()
+        public void buffered_in_memory()
         {
             var router = new RabbitMqTopicRouter("numbers");
-            router.Mode = EndpointMode.Queued;
+            router.Mode = EndpointMode.Inline;
 
             var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
 
-            configuration.QueuedInMemory();
+            configuration.BufferedInMemory();
 
-            router.Mode.ShouldBe(EndpointMode.Queued);
+            router.Mode.ShouldBe(EndpointMode.BufferedInMemory);
+        }
+
+        [Fact]
+        public void inline()
+        {
+            var router = new RabbitMqTopicRouter("numbers");
+            router.Mode = EndpointMode.BufferedInMemory;
+
+            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
+
+            configuration.SendInline();
+
+            router.Mode.ShouldBe(EndpointMode.Inline);
         }
 
         [Fact]

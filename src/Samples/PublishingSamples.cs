@@ -213,7 +213,7 @@ namespace Jasper.Testing.Samples
             // important
             Endpoints
                 .LocalQueue("one")
-                .Durable()
+                .DurablyPersistedLocally()
                 .Sequential();
 
 

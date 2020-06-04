@@ -15,7 +15,7 @@ namespace Jasper.Configuration
         /// being successfully handled
         /// </summary>
         /// <returns></returns>
-        T QueuedInMemory();
+        T BufferedInMemory();
 
         /// <summary>
         /// Apply envelope customization rules to any outgoing
@@ -50,6 +50,13 @@ namespace Jasper.Configuration
         /// <param name="configure"></param>
         /// <returns></returns>
         T CircuitBreaking(Action<ICircuitParameters> configure);
+
+        /// <summary>
+        /// Outgoing messages are sent to the transport completely inline
+        /// in a predictable way with no retries
+        /// </summary>
+        /// <returns></returns>
+        T SendInline();
     }
 
     public static class SubscriberConfigurationExtensions

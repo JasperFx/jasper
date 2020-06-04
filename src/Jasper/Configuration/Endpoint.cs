@@ -11,7 +11,7 @@ namespace Jasper.Configuration
     public enum EndpointMode
     {
         Durable,
-        Queued,
+        BufferedInMemory,
         Inline
     }
 

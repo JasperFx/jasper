@@ -23,14 +23,21 @@ namespace Jasper.Configuration
         ///     Force any messages enqueued to this worker queue to be durable
         /// </summary>
         /// <returns></returns>
-        T Durable();
+        T DurablyPersistedLocally();
 
         /// <summary>
-        /// By default, messages on this worker queue will not be persisted until
-        /// being successfully handled
+        /// Incoming messages are immediately moved into an in-memory queue
+        /// for parallel processing
         /// </summary>
         /// <returns></returns>
-        T QueuedInMemory();
+        T BufferedInMemory();
+
+
+        /// <summary>
+        /// Incoming messages are executed in
+        /// </summary>
+        /// <returns></returns>
+        T ProcessInline();
 
 
         /// <summary>

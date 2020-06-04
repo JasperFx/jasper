@@ -15,7 +15,7 @@ namespace Jasper.Testing.Configuration
         public void durably()
         {
             var endpoint = new LocalQueueSettings("foo");
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
 
             var expression = new SubscriberConfiguration(endpoint);
             expression.Durably();
@@ -24,15 +24,27 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
-        public void lightweight()
+        public void buffered_in_memory()
         {
             var endpoint = new LocalQueueSettings("foo");
             endpoint.Mode = EndpointMode.Durable;
 
             var expression = new SubscriberConfiguration(endpoint);
-            expression.QueuedInMemory();
+            expression.BufferedInMemory();
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
+        }
+
+        [Fact]
+        public void inline()
+        {
+            var endpoint = new LocalQueueSettings("foo");
+            endpoint.Mode = EndpointMode.Durable;
+
+            var expression = new SubscriberConfiguration(endpoint);
+            expression.SendInline();
+
+            endpoint.Mode.ShouldBe(EndpointMode.Inline);
         }
 
 

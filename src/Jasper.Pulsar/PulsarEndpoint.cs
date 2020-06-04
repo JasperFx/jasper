@@ -36,7 +36,7 @@ namespace Jasper.Pulsar
         public override void Parse(Uri uri)
         {
             // TODO -- evaluate whether the default should be inline or queued
-            Mode = uri.ToString().EndsWith(TransportConstants.Durable) ? EndpointMode.Durable : EndpointMode.Queued;
+            Mode = uri.ToString().EndsWith(TransportConstants.Durable) ? EndpointMode.Durable : EndpointMode.BufferedInMemory;
             var url = uri.ToString();
             string pulsarTopic = url.Substring(0, url.Length - (Mode == EndpointMode.Durable ? TransportConstants.Durable.Length + 1 : 0));
 

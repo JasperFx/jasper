@@ -95,7 +95,7 @@ namespace Jasper.Transports
                     return new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger,
                         _root.Persistence, endpoint);
 
-                case EndpointMode.Queued:
+                case EndpointMode.BufferedInMemory:
                     return new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
 
                 case EndpointMode.Inline:
@@ -184,7 +184,7 @@ namespace Jasper.Transports
                         _root.TransportLogger);
                     break;
 
-                case EndpointMode.Queued:
+                case EndpointMode.BufferedInMemory:
                     worker = new LightweightWorkerQueue(settings, _root.TransportLogger, _root.Pipeline, _root.Settings);
                     break;
 

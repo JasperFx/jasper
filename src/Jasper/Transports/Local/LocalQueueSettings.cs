@@ -23,7 +23,7 @@ namespace Jasper.Transports.Local
         public override void Parse(Uri uri)
         {
             Name = LocalTransport.QueueName(uri);
-            Mode = uri.IsDurable() ? EndpointMode.Durable : EndpointMode.Queued;
+            Mode = uri.IsDurable() ? EndpointMode.Durable : EndpointMode.BufferedInMemory;
         }
 
         public override Uri ReplyUri()

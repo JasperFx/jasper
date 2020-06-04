@@ -47,7 +47,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             });
 
 
-            senderRegistry.Endpoints.ListenAtPort(senderPort).Durable();
+            senderRegistry.Endpoints.ListenAtPort(senderPort).DurablyPersistedLocally();
 
             configureSender(senderRegistry);
 
@@ -63,7 +63,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 .IncludeType<QuestionHandler>()
                 .IncludeType<ScheduledMessageHandler>();
 
-            receiverRegistry.Endpoints.ListenAtPort(receiverPort).Durable();
+            receiverRegistry.Endpoints.ListenAtPort(receiverPort).DurablyPersistedLocally();
 
             receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
 

@@ -20,7 +20,7 @@ namespace Jasper.Testing.Transports.Local
         public void create_by_uri()
         {
             var endpoint = new LocalQueueSettings(new Uri("local://foo"));
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.Name.ShouldBe("foo");
         }
 
@@ -28,7 +28,7 @@ namespace Jasper.Testing.Transports.Local
         public void create_by_uri_case_insensitive()
         {
             var endpoint = new LocalQueueSettings(new Uri("local://Foo"));
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.Name.ShouldBe("foo");
         }
 
@@ -53,7 +53,7 @@ namespace Jasper.Testing.Transports.Local
         public void replay_uri_when_not_durable()
         {
             var endpoint = new LocalQueueSettings("foo");
-            endpoint.Mode = EndpointMode.Queued;
+            endpoint.Mode = EndpointMode.BufferedInMemory;
 
             endpoint.ReplyUri().ShouldBe("local://foo".ToUri());
         }

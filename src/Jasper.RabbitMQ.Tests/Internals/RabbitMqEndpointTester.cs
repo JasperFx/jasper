@@ -22,7 +22,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             var endpoint = new RabbitMqEndpoint();
             endpoint.Parse(new Uri("rabbitmq://exchange/exchange1/routing/key1"));
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.ExchangeName.ShouldBe("exchange1");
             endpoint.RoutingKey.ShouldBe("key1");
         }

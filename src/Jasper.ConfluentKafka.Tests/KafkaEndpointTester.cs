@@ -14,7 +14,7 @@ namespace Jasper.Kafka.Tests
             var endpoint = new KafkaEndpoint();
             endpoint.Parse(new Uri("kafka://topic/key1"));
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.TopicName.ShouldBe("key1");
         }
 

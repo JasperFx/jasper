@@ -22,9 +22,15 @@ namespace Jasper.Configuration
         }
 
 
-        public T QueuedInMemory()
+        public T BufferedInMemory()
         {
-            _endpoint.Mode = EndpointMode.Queued;
+            _endpoint.Mode = EndpointMode.BufferedInMemory;
+            return TypeExtensions.As<T>(this);
+        }
+
+        public T SendInline()
+        {
+            _endpoint.Mode = EndpointMode.Inline;
             return TypeExtensions.As<T>(this);
         }
 

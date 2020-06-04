@@ -14,7 +14,7 @@ namespace Jasper.Runtime.Routing
         ///     Mark whether or not the receiver for this listener should use
         ///     message persistence for durability
         /// </summary>
-        public EndpointMode Mode { get; set; } = EndpointMode.Queued;
+        public EndpointMode Mode { get; set; } = EndpointMode.BufferedInMemory;
 
         public bool ShouldSendMessage(Type messageType)
         {

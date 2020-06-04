@@ -16,10 +16,12 @@ namespace Jasper.Configuration
         }
 
         /// <summary>
-        ///     Force any messages enqueued to this worker queue to be durable
+        /// Force any messages enqueued to this worker queue to be durable so that outgoing
+        /// messages are persisted to durable storage until successfully sent. This is necessary
+        /// to take advantage of the outbox functionality
         /// </summary>
         /// <returns></returns>
-        public TopicRouterConfiguration<TSubscriberConfiguration>  Durably()
+        public TopicRouterConfiguration<TSubscriberConfiguration>  DurablyStoreAndForward()
         {
             _router.Mode = EndpointMode.Durable;
             return this;
@@ -30,9 +32,20 @@ namespace Jasper.Configuration
         /// with retry mechanics
         /// </summary>
         /// <returns></returns>
-        public TopicRouterConfiguration<TSubscriberConfiguration>  QueuedInMemory()
+        public TopicRouterConfiguration<TSubscriberConfiguration>  BufferedInMemory()
         {
-            _router.Mode = EndpointMode.Queued;
+            _router.Mode = EndpointMode.BufferedInMemory;
+            return this;
+        }
+
+        /// <summary>
+        /// By default, outgoing messages to this topic are sent inline to the outgoing
+        /// sender in a predictable way with no retries
+        /// </summary>
+        /// <returns></returns>
+        public TopicRouterConfiguration<TSubscriberConfiguration>  SendInline()
+        {
+            _router.Mode = EndpointMode.Inline;
             return this;
         }
 

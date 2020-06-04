@@ -36,15 +36,21 @@ namespace Jasper.Configuration
             return this.As<TSelf>();
         }
 
-        public TSelf Durable()
+        public TSelf DurablyPersistedLocally()
         {
             endpoint.Mode = EndpointMode.Durable;
             return this.As<TSelf>();
         }
 
-        public TSelf QueuedInMemory()
+        public TSelf BufferedInMemory()
         {
-            endpoint.Mode = EndpointMode.Queued;
+            endpoint.Mode = EndpointMode.BufferedInMemory;
+            return this.As<TSelf>();
+        }
+
+        public TSelf ProcessInline()
+        {
+            endpoint.Mode = EndpointMode.Inline;
             return this.As<TSelf>();
         }
 

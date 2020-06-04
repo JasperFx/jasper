@@ -25,8 +25,9 @@ namespace Jasper.Testing.Configuration
             {
                 x.Endpoints.ListenForMessagesFrom("local://one").Sequential();
                 x.Endpoints.ListenForMessagesFrom("local://two").MaximumThreads(11);
-                x.Endpoints.ListenForMessagesFrom("local://three").Durable();
-                x.Endpoints.ListenForMessagesFrom("local://four").Durable().QueuedInMemory();
+                x.Endpoints.ListenForMessagesFrom("local://three").DurablyPersistedLocally();
+                x.Endpoints.ListenForMessagesFrom("local://four").DurablyPersistedLocally().BufferedInMemory();
+                x.Endpoints.ListenForMessagesFrom("local://five").ProcessInline();
 
             }).Build();
 
@@ -90,7 +91,7 @@ namespace Jasper.Testing.Configuration
         public void listen_for_port()
         {
             theOptions.Endpoints.ListenAtPort(1111)
-                .Durable();
+                .DurablyPersistedLocally();
 
             var endpoint = findEndpoint("tcp://localhost:1111");
             endpoint.ShouldNotBeNull();
@@ -131,12 +132,26 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
+        public void configure_process_inline()
+        {
+            theOptions
+                .Endpoints
+                .ListenForMessagesFrom("local://three")
+                .ProcessInline();
+
+
+            localQueue("three")
+                .Mode
+                .ShouldBe(EndpointMode.Inline);
+        }
+
+        [Fact]
         public void configure_durable()
         {
             theOptions
                 .Endpoints
                 .ListenForMessagesFrom("local://three")
-                .Durable();
+                .DurablyPersistedLocally();
 
 
             localQueue("three")
@@ -151,7 +166,7 @@ namespace Jasper.Testing.Configuration
 
             localQueue("four")
                 .Mode
-                .ShouldBe(EndpointMode.Queued);
+                .ShouldBe(EndpointMode.BufferedInMemory);
         }
 
         [Fact]

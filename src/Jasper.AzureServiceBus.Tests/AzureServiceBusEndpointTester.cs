@@ -23,7 +23,7 @@ namespace Jasper.AzureServiceBus.Tests
             var endpoint = new AzureServiceBusEndpoint();
             endpoint.Parse(new Uri("asb://subscription/sub1/topic/key1"));
 
-            endpoint.Mode.ShouldBe(EndpointMode.Queued);
+            endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
             endpoint.SubscriptionName.ShouldBe("sub1");
             endpoint.TopicName.ShouldBe("key1");
         }

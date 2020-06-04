@@ -19,9 +19,9 @@ namespace Jasper.Testing.Transports.Tcp
         }
 
         [Theory]
-        [InlineData("tcp://localhost:4444", "localhost", 4444, EndpointMode.Queued)]
-        [InlineData("tcp://localhost:4445", "localhost", 4445, EndpointMode.Queued)]
-        [InlineData("tcp://server1:4445", "server1", 4445, EndpointMode.Queued)]
+        [InlineData("tcp://localhost:4444", "localhost", 4444, EndpointMode.BufferedInMemory)]
+        [InlineData("tcp://localhost:4445", "localhost", 4445, EndpointMode.BufferedInMemory)]
+        [InlineData("tcp://server1:4445", "server1", 4445, EndpointMode.BufferedInMemory)]
         [InlineData("tcp://server1:4445/durable", "server1", 4445, EndpointMode.Durable)]
         public void parsing_uri(string uri, string host, int port, EndpointMode mode)
         {
@@ -46,7 +46,7 @@ namespace Jasper.Testing.Transports.Tcp
         public void reply_uri_when_not_durable()
         {
             var endpoint = new TcpEndpoint(4444);
-            endpoint.Mode = EndpointMode.Queued;
+            endpoint.Mode = EndpointMode.BufferedInMemory;
 
             endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444".ToUri());
         }
