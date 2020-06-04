@@ -15,7 +15,10 @@ namespace Jasper.Pulsar.Internal
         private readonly IConsumer _consumer;
         private readonly PulsarEndpoint _endpoint;
         private readonly ITransportLogger _logger;
+        
         private IListeningWorkerQueue _callback;
+        private IHandlerPipeline _pipeline;
+
         private readonly ITransportProtocol<PulsarMessage> _protocol;
         private Task _consumerTask;
 
@@ -48,7 +51,11 @@ namespace Jasper.Pulsar.Internal
 
         public void StartHandlingInline(IHandlerPipeline pipeline)
         {
-            throw new NotImplementedException();
+            _pipeline = pipeline;
+
+            _consumerTask = ConsumeInlineAsync();
+
+            _logger.ListeningStatusChange(ListeningStatus.Accepting);
         }
 
         private async Task ConsumeAsync()
@@ -76,6 +83,33 @@ namespace Jasper.Pulsar.Internal
                 catch (Exception e)
                 {
                     // TODO -- Got to either discard this or defer it back to the queue
+                    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
+                }
+            }
+        }
+
+        private async Task ConsumeInlineAsync()
+        {
+            await foreach (Message message in _consumer.Messages(_cancellation))
+            {
+                Envelope envelope;
+
+                try
+                {
+                    envelope = _protocol.ReadEnvelope(new PulsarMessage(message.Data, message.Properties));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogException(ex, message: $"Error trying to map an incoming Pulsar {_endpoint.Topic} Topic message to an Envelope. See the Dead Letter Queue");
+                    continue;
+                }
+
+                try
+                {
+                    await _pipeline.Invoke(envelope, new PulsarChannelCallback(message, _consumer));
+                }
+                catch (Exception e)
+                {
                     _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
                 }
             }
