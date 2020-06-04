@@ -75,7 +75,7 @@ namespace Jasper.Transports.Sending
            return Task.CompletedTask;
         }
 
-        public async Task Forward(Envelope envelope)
+        public async Task StoreAndForward(Envelope envelope)
         {
             setDefaults(envelope);
 
