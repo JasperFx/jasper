@@ -62,17 +62,10 @@ namespace Jasper.Pulsar.Internal
         {
             await foreach (Message message in _consumer.Messages(_cancellation))
             {
-                Envelope envelope;
+                Envelope envelope = DeserializeMessage(message);
 
-                try
-                {
-                    envelope = _protocol.ReadEnvelope(new PulsarMessage(message.Data, message.Properties));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogException(ex, message: $"Error trying to map an incoming Pulsar {_endpoint.Topic} Topic message to an Envelope. See the Dead Letter Queue");
+                if (envelope == null)
                     continue;
-                }
 
                 try
                 {
@@ -92,17 +85,10 @@ namespace Jasper.Pulsar.Internal
         {
             await foreach (Message message in _consumer.Messages(_cancellation))
             {
-                Envelope envelope;
+                Envelope envelope = DeserializeMessage(message);
 
-                try
-                {
-                    envelope = _protocol.ReadEnvelope(new PulsarMessage(message.Data, message.Properties));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogException(ex, message: $"Error trying to map an incoming Pulsar {_endpoint.Topic} Topic message to an Envelope. See the Dead Letter Queue");
+                if(envelope == null)
                     continue;
-                }
 
                 try
                 {
@@ -110,8 +96,21 @@ namespace Jasper.Pulsar.Internal
                 }
                 catch (Exception e)
                 {
-                    _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
+                    _logger.LogException(e, envelope.Id, "Error trying to inline process message from " + Address);
                 }
+            }
+        }
+
+        Envelope DeserializeMessage(Message message)
+        {
+            try
+            {
+                return _protocol.ReadEnvelope(new PulsarMessage(message.Data, message.Properties));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex, message: $"Error trying to map an incoming Pulsar {_endpoint.Topic} Topic message to an Envelope. See the Dead Letter Queue");
+                return null;
             }
         }
     }
