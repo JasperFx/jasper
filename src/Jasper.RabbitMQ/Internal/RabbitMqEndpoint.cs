@@ -20,6 +20,9 @@ namespace Jasper.RabbitMQ.Internal
         public string RoutingKey { get; set; }
 
         public string QueueName { get; set; }
+
+        public int ListenerCount { get; set; } = 0;
+
         internal RabbitMqTransport Parent { get; set; }
 
         public IRabbitMqProtocol Protocol { get; set; } = new DefaultRabbitMqProtocol();
@@ -119,7 +122,16 @@ namespace Jasper.RabbitMQ.Internal
         {
             if (!IsListener) return;
 
-            var listener = new RabbitMqListener(root.TransportLogger, this, Parent);
+            IListener listener;
+            if (ListenerCount > 1)
+            {
+                listener = new ParallelRabbitMqListener(root.TransportLogger, this, Parent);
+            }
+            else
+            {
+                listener = new RabbitMqListener(root.TransportLogger, this, Parent);
+            }
+
             runtime.AddListener(listener, this);
         }
 

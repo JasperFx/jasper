@@ -30,7 +30,8 @@ namespace PerformanceTests
                     x.AutoProvision = true;
                 });
 
-                opts.Endpoints.ListenToRabbitQueue(replyName);
+                opts.Endpoints.ListenToRabbitQueue(replyName)
+                    .ProcessInline().ListenerCount(3);
 
                 opts.Endpoints.PublishAllMessages().ToRabbit(outboundName);
             });
@@ -71,7 +72,10 @@ namespace PerformanceTests
                         x.ConnectionFactory.HostName = "localhost";
                     });
 
-                    opts.Endpoints.ListenToRabbitQueue(outboundName).UseForReplies();
+                    opts.Endpoints.ListenToRabbitQueue(outboundName)
+                        .ProcessInline()
+                        .ListenerCount(3)
+                        .UseForReplies();
                 });
 
                 await waitForMessagesToBeProcessed(1000);
