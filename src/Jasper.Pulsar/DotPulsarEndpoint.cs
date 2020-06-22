@@ -2,14 +2,14 @@ using System;
 using DotPulsar;
 using DotPulsar.Abstractions;
 using Jasper.Configuration;
-using Jasper.Pulsar.Internal;
+using Jasper.DotPulsar.Internal;
 using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 
-namespace Jasper.Pulsar
+namespace Jasper.DotPulsar
 {
-    public class PulsarEndpoint : Endpoint
+    public class DotPulsarEndpoint : Endpoint
     {
         public PulsarTopic Topic { get; set; }
 
@@ -18,17 +18,17 @@ namespace Jasper.Pulsar
         public ProducerOptions ProducerOptions { get; set; }
         public IPulsarClient PulsarClient { get; set; }
 
-        public PulsarEndpoint()
+        public DotPulsarEndpoint()
         {
 
         }
 
-        public PulsarEndpoint(string topic)
+        public DotPulsarEndpoint(string topic)
         {
             Topic = topic;
         }
 
-        public PulsarEndpoint(Uri uri) : base(uri)
+        public DotPulsarEndpoint(Uri uri) : base(uri)
         {
             Topic = uri;
         }
@@ -57,7 +57,7 @@ namespace Jasper.Pulsar
         {
             if (!IsListener) return;
 
-            var listener = new PulsarListener(this, root.TransportLogger, root.Cancellation);
+            var listener = new DotPulsarListener(this, root.TransportLogger, root.Cancellation);
             runtime.AddListener(listener, this);
         }
 

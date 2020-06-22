@@ -65,9 +65,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Http.Testing", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFPlusSqlServerConsole", "src\EFPlusSqlServerConsole\EFPlusSqlServerConsole.csproj", "{5AD9CD6C-05B9-4A83-8CFA-EDCFF09E5B3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Pulsar", "src\Jasper.Pulsar\Jasper.Pulsar.csproj", "{BB253930-8225-4737-9BB0-6F89A4073225}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.DotPulsar", "src\Jasper.Pulsar\Jasper.DotPulsar.csproj", "{BB253930-8225-4737-9BB0-6F89A4073225}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.Pulsar.Tests", "src\Jasper.Pulsar.Tests\Jasper.Pulsar.Tests.csproj", "{0A6C2CD0-23AF-45AB-A737-9D1D64693717}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jasper.DotPulsar.Tests", "src\Jasper.Pulsar.Tests\Jasper.DotPulsar.Tests.csproj", "{0A6C2CD0-23AF-45AB-A737-9D1D64693717}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transports", "Transports", "{C275B6A4-5CE8-4E1D-84C1-ADD4F959A6E4}"
 EndProject

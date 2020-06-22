@@ -3,14 +3,14 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime.Routing;
 
-namespace Jasper.Pulsar.Internal
+namespace Jasper.DotPulsar.Internal
 {
-    public class PulsarTopicRouter : TopicRouter<PulsarSubscriberConfiguration>
+    public class DotPulsarTopicRouter : TopicRouter<DotPulsarSubscriberConfiguration>
     {
         public override Uri BuildUriForTopic(string topic)
         {
             // TODO -- evaluate whether or not we really want the default to be durable
-            var endpoint = new PulsarEndpoint
+            var endpoint = new DotPulsarEndpoint
             {
                 Mode = EndpointMode.Durable,
                 Topic = topic
@@ -19,13 +19,13 @@ namespace Jasper.Pulsar.Internal
             return endpoint.Uri;
         }
 
-        public override PulsarSubscriberConfiguration FindConfigurationForTopic(string topicName,
+        public override DotPulsarSubscriberConfiguration FindConfigurationForTopic(string topicName,
             IEndpoints endpoints)
         {
             Uri uri = BuildUriForTopic(topicName);
             Endpoint endpoint = endpoints.As<TransportCollection>().GetOrCreateEndpoint(uri);
 
-            return new PulsarSubscriberConfiguration((PulsarEndpoint) endpoint);
+            return new DotPulsarSubscriberConfiguration((DotPulsarEndpoint) endpoint);
         }
     }
 }

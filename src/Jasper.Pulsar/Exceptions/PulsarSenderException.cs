@@ -1,6 +1,6 @@
 using System;
 
-namespace Jasper.Pulsar.Exceptions
+namespace Jasper.DotPulsar.Exceptions
 {
     public class PulsarSenderException : ApplicationException
     {

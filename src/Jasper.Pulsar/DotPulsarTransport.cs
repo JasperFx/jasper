@@ -2,35 +2,35 @@ using System;
 using System.Collections.Generic;
 using DotPulsar;
 using DotPulsar.Abstractions;
-using Jasper.Pulsar.Internal;
+using Jasper.DotPulsar.Internal;
 using Jasper.Transports;
 
-namespace Jasper.Pulsar
+namespace Jasper.DotPulsar
 {
     public static class Protocols
     {
         public static readonly string[] Pulsar = { "persistent", "non-persistent" };
     }
 
-    public class PulsarTransport : TransportBase<PulsarEndpoint>
+    public class DotPulsarTransport : TransportBase<DotPulsarEndpoint>
     {
-        private readonly Dictionary<Uri, PulsarEndpoint> _endpoints;
+        private readonly Dictionary<Uri, DotPulsarEndpoint> _endpoints;
 
-        public PulsarTopicRouter Topics { get; } = new PulsarTopicRouter();
-        public PulsarTransport() : base(Pulsar.Protocols.Pulsar)
+        public DotPulsarTopicRouter Topics { get; } = new DotPulsarTopicRouter();
+        public DotPulsarTransport() : base(DotPulsar.Protocols.Pulsar)
         {
-            _endpoints = new Dictionary<Uri, PulsarEndpoint>();
+            _endpoints = new Dictionary<Uri, DotPulsarEndpoint>();
         }
 
         public IPulsarClient PulsarClient { get; set; }
 
-        protected override IEnumerable<PulsarEndpoint> endpoints() => _endpoints.Values;
+        protected override IEnumerable<DotPulsarEndpoint> endpoints() => _endpoints.Values;
 
-        protected override PulsarEndpoint findEndpointByUri(Uri uri)
+        protected override DotPulsarEndpoint findEndpointByUri(Uri uri)
         {
             if (!_endpoints.ContainsKey(uri))
             {
-                _endpoints.Add(uri, new PulsarEndpoint(uri)
+                _endpoints.Add(uri, new DotPulsarEndpoint(uri)
                 {
                     PulsarClient = PulsarClient
                 });
@@ -39,23 +39,23 @@ namespace Jasper.Pulsar
             return _endpoints[uri];
         }
 
-        public PulsarEndpoint EndpointFor(ProducerOptions producerConifg) =>
+        public DotPulsarEndpoint EndpointFor(ProducerOptions producerConifg) =>
             AddOrUpdateEndpoint(endpoint =>
             {
                 endpoint.Topic = producerConifg.Topic;
                 endpoint.ProducerOptions = producerConifg;
             });
 
-        public PulsarEndpoint EndpointFor(ConsumerOptions consumerConifg) =>
+        public DotPulsarEndpoint EndpointFor(ConsumerOptions consumerConifg) =>
             AddOrUpdateEndpoint(endpoint =>
             {
                 endpoint.Topic = consumerConifg.Topic;
                 endpoint.ConsumerOptions = consumerConifg;
             });
 
-        PulsarEndpoint AddOrUpdateEndpoint(Action<PulsarEndpoint> configure)
+        DotPulsarEndpoint AddOrUpdateEndpoint(Action<DotPulsarEndpoint> configure)
         {
-            var endpoint = new PulsarEndpoint
+            var endpoint = new DotPulsarEndpoint
             {
                 PulsarClient = PulsarClient
             };

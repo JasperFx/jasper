@@ -11,7 +11,7 @@ using TestingSupport.Compliance;
 using TestMessages;
 using Xunit;
 
-namespace Jasper.Pulsar.Tests
+namespace Jasper.DotPulsar.Tests
 {
     public class PulsarSendingComplianceTestsShell
     {
