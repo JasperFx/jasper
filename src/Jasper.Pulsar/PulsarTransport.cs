@@ -65,6 +65,7 @@ namespace Jasper.Pulsar
             if (_endpoints.ContainsKey(endpoint.Uri))
             {
                 endpoint = _endpoints[endpoint.Uri];
+                configure(endpoint);
             }
             else
             {
