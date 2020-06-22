@@ -3,12 +3,11 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using DotPulsar;
-using Jasper.Pulsar.Internal;
 using Jasper.Transports;
 
-namespace Jasper.Pulsar
+namespace Jasper.DotPulsar.Internal
 {
-    internal class PulsarTransportProtocol : ITransportProtocol<PulsarMessage>
+    internal class DotPulsarTransportProtocol : ITransportProtocol<DotPulsarMessage>
     {
         public const string PulsarMessageKeyHeader = "Pulsar.Message.Key";
         public const string PulsarMessageSequenceIdHeader = "Pulsar.Message.SequenceId";
@@ -19,7 +18,7 @@ namespace Jasper.Pulsar
             { PulsarMessageSequenceIdHeader, (metadata, val) => metadata.SequenceId = val != null ? ulong.Parse(val.ToString()) : default },
         };
 
-        public PulsarMessage WriteFromEnvelope(Envelope envelope)
+        public DotPulsarMessage WriteFromEnvelope(Envelope envelope)
         {
             IDictionary<string, object> envelopHeaders = new Dictionary<string, object>();
             envelope.WriteToDictionary(envelopHeaders);
@@ -38,7 +37,7 @@ namespace Jasper.Pulsar
 
             SetMetaDataFromHeaderValues(metadata, envelopHeaders);
 
-            return new PulsarMessage(envelope.Data, metadata);
+            return new DotPulsarMessage(envelope.Data, metadata);
         }
 
         private void SetMetaDataFromHeaderValues(MessageMetadata metadata, IDictionary<string, object> envelopHeaders)
@@ -54,7 +53,7 @@ namespace Jasper.Pulsar
             if (envelopHeaders.TryGetValue(propertyName, out object headerValue)) propertySetter(metadata, headerValue);
         }
 
-        public Envelope ReadEnvelope(PulsarMessage message)
+        public Envelope ReadEnvelope(DotPulsarMessage message)
         {
             var envelope = new Envelope
             {

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Jasper.Pulsar
+namespace Jasper.DotPulsar
 {
     public static class PulsarPersistence
     {

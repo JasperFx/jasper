@@ -4,14 +4,14 @@ using Jasper.Configuration;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Pulsar.Tests
+namespace Jasper.DotPulsar.Tests
 {
     public class PulsarEndpointTester
     {
         [Fact]
         public void parse_non_durable_uri()
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1"));
 
             endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
@@ -21,7 +21,7 @@ namespace Jasper.Pulsar.Tests
         [Theory, AutoData]
         public void persistent_pulsar_topic_parts_match(string tenant, string @namespace, string topic)
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://{tenant}/{@namespace}/{topic}"));
 
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.Persistent);
@@ -33,7 +33,7 @@ namespace Jasper.Pulsar.Tests
         [Theory, AutoData]
         public void non_persistent_pulsar_topic_parts_match(string tenant, string @namespace, string topic)
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.NonPersistent}://{tenant}/{@namespace}/{topic}"));
 
             endpoint.Topic.Persistence.ShouldBe(PulsarPersistence.NonPersistent);
@@ -45,7 +45,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parse_non_durable_persistent_uri()
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1"));
 
             endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
@@ -55,7 +55,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parse_non_durable_non_persistent_uri()
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.NonPersistent}://tenant/jasper/key1"));
 
             endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
@@ -65,7 +65,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parse_durable_persistent_uri()
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1/durable"));
 
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
@@ -75,7 +75,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parse_durable_non_persistent_uri()
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.NonPersistent}://tenant/jasper/key1/durable"));
 
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
@@ -85,7 +85,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parse_durable_uri()
         {
-            var endpoint = new PulsarEndpoint();
+            var endpoint = new DotPulsarEndpoint();
             endpoint.Parse(new Uri($"{PulsarPersistence.Persistent}://tenant/jasper/key1/durable"));
 
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
@@ -95,7 +95,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void build_uri_for_subscription_and_topic()
         {
-            new PulsarEndpoint
+            new DotPulsarEndpoint
                 {
                     Topic = $"{PulsarPersistence.Persistent}://tenant/jasper/key1"
             }
@@ -105,7 +105,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void generate_reply_uri_for_non_durable()
         {
-            new PulsarEndpoint
+            new DotPulsarEndpoint
                 {
                     Topic = $"{PulsarPersistence.Persistent}://tenant/jasper/key1"
                 }
@@ -115,7 +115,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void generate_reply_uri_for_durable()
         {
-            new PulsarEndpoint
+            new DotPulsarEndpoint
             {
                 Topic = $"{PulsarPersistence.Persistent}://tenant/jasper/key1",
                 Mode = EndpointMode.Durable

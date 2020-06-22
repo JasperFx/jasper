@@ -7,24 +7,24 @@ using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
 
-namespace Jasper.Pulsar.Internal
+namespace Jasper.DotPulsar.Internal
 {
-    public class PulsarListener : IListener
+    public class DotPulsarListener : IListener
     {
         private readonly CancellationToken _cancellation;
         private readonly IConsumer _consumer;
-        private readonly PulsarEndpoint _endpoint;
+        private readonly DotPulsarEndpoint _endpoint;
         private readonly ITransportLogger _logger;
         private IListeningWorkerQueue _callback;
-        private readonly ITransportProtocol<PulsarMessage> _protocol;
+        private readonly ITransportProtocol<DotPulsarMessage> _protocol;
         private Task _consumerTask;
 
-        public PulsarListener(PulsarEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
+        public DotPulsarListener(DotPulsarEndpoint endpoint, ITransportLogger logger, CancellationToken cancellation)
         {
             _endpoint = endpoint;
             _logger = logger;
             _cancellation = cancellation;
-            _protocol = new PulsarTransportProtocol();
+            _protocol = new DotPulsarTransportProtocol();
             _consumer = endpoint.PulsarClient.CreateConsumer(endpoint.ConsumerOptions);
         }
 
@@ -59,7 +59,7 @@ namespace Jasper.Pulsar.Internal
 
                 try
                 {
-                    envelope = _protocol.ReadEnvelope(new PulsarMessage(message.Data, message.Properties));
+                    envelope = _protocol.ReadEnvelope(new DotPulsarMessage(message.Data, message.Properties));
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +75,7 @@ namespace Jasper.Pulsar.Internal
                 }
                 catch (Exception e)
                 {
-                    // TODO -- Got to either discard this or defer it back to the queue
+                    // DotPulsar currently doesn't support Nack so will likely just keep retrying message for now.
                     _logger.LogException(e, envelope.Id, "Error trying to receive a message from " + Address);
                 }
             }
