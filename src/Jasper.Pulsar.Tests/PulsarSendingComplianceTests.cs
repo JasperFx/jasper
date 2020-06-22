@@ -15,6 +15,7 @@ namespace Jasper.DotPulsar.Tests
 {
     public class PulsarSendingComplianceTestsShell
     {
+        // SAMPLE: PulsarSendReceiveExample
         private static string Server = "pulsar://localhost:6650";
 
         public class Sender : JasperOptions
@@ -37,6 +38,7 @@ namespace Jasper.DotPulsar.Tests
                 Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic);
             }
         }
+        // ENDSAMPLE
 
         public class PulsarSendingComplianceTests : SendingCompliance
         {
@@ -54,22 +56,7 @@ namespace Jasper.DotPulsar.Tests
 
                 Thread.Sleep(2000);
             }
-
-            [Fact]
-
-            public async Task publish_failures_reported_to_caller()
-            {
-                _ = await theSender.TrackActivity(10.Seconds())
-                    .DoNotAssertOnExceptionsDetected()
-                    .DoNotAssertTimeout()
-                    .ExecuteAndWait(c =>
-                    {
-                        var serializationException = Should.Throw<JsonSerializationException>(c.Publish(new PoisonEnvelop()));
-                        serializationException.InnerException.ShouldBeOfType<PoisionMessageException>();
-                        return Task.CompletedTask;
-                    });
-            }
-
+            
             [Fact]
 
             public async Task publish_succeeds()
