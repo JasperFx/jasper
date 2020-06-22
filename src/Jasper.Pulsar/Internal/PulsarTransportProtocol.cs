@@ -31,6 +31,11 @@ namespace Jasper.Pulsar
                 metadata[header.Key] = header.Value.ToString();
             }
 
+            if (envelope.ExecutionTime.HasValue)
+            {
+                metadata.DeliverAtTimeAsDateTimeOffset = envelope.ExecutionTime.Value;
+            }
+
             SetMetaDataFromHeaderValues(metadata, envelopHeaders);
 
             return new PulsarMessage(envelope.Data, metadata);

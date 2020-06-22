@@ -13,7 +13,7 @@ namespace Jasper.Pulsar.Internal
         private readonly IProducer _publisher;
         private readonly PulsarEndpoint _endpoint;
         private readonly CancellationToken _cancellationToken;
-        public bool SupportsNativeScheduledSend { get; } = false;
+        public bool SupportsNativeScheduledSend { get; } = true;
         public Uri Destination => _endpoint.Uri;
         public PulsarSender(PulsarEndpoint endpoint, CancellationToken cancellationToken)
         {
@@ -45,12 +45,7 @@ namespace Jasper.Pulsar.Internal
 
         public async Task Send(Envelope envelope)
         {
-            if (envelope.IsDelayed(DateTime.UtcNow))
-            {
-                throw new Exception("Delayed Message Delivery");
-            }
-
-            var message = _protocol.WriteFromEnvelope(envelope);
+            PulsarMessage message = _protocol.WriteFromEnvelope(envelope);
             
             _ = await _publisher.Send(message.Metadata, message.Data, _cancellationToken);
         }
