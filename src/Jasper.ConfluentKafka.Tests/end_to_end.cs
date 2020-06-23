@@ -24,15 +24,17 @@ namespace Jasper.ConfluentKafka.Tests
     public class end_to_end
     {
         private static string KafkaServer = "b-1.jj-test.y7lv7k.c5.kafka.us-east-1.amazonaws.com:9094,b-2.jj-test.y7lv7k.c5.kafka.us-east-1.amazonaws.com:9094";
-        private static ProducerConfig ProducerConfig = new ProducerConfig
-        {
-            BootstrapServers = KafkaServer,
-            SecurityProtocol = SecurityProtocol.Ssl
-        };
         private static ProducerConfig FailureProducerConfig = new ProducerConfig
         {
             BootstrapServers = "badaddress",
             MessageTimeoutMs = 1000
+        };
+
+        // SAMPLE: KafkaBasicExample
+        private static ProducerConfig ProducerConfig = new ProducerConfig
+        {
+            BootstrapServers = KafkaServer,
+            SecurityProtocol = SecurityProtocol.Ssl
         };
 
         private static ConsumerConfig ConsumerConfig = new ConsumerConfig
@@ -54,6 +56,17 @@ namespace Jasper.ConfluentKafka.Tests
             }
         }
 
+        public class Receiver : JasperOptions
+        {
+            public Receiver(string topic)
+            {
+                Endpoints.ConfigureKafka();
+                Endpoints.PublishAllMessages().ToKafkaTopic(Sender.ReplyTopic, ProducerConfig);
+                Endpoints.ListenToKafkaTopic(topic, ConsumerConfig);
+            }
+        }
+        // ENDSAMPLE
+
         public class FailureSender : JasperOptions
         {
             public const string Topic = "jasper-compliance";
@@ -64,15 +77,7 @@ namespace Jasper.ConfluentKafka.Tests
             }
         }
 
-        public class Receiver : JasperOptions
-        {
-            public Receiver(string topic)
-            {
-                Endpoints.ConfigureKafka();
-                Endpoints.PublishAllMessages().ToKafkaTopic(Sender.ReplyTopic, ProducerConfig);
-                Endpoints.ListenToKafkaTopic(topic, ConsumerConfig);
-            }
-        }
+        
 
 
         public class KafkaSendingComplianceTests : SendingCompliance
