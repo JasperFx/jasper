@@ -120,7 +120,7 @@ namespace TestingSupport.Compliance
         }
 
         [Fact]
-        public async Task can_apply_requeue_mechanics()
+        public virtual async Task can_apply_requeue_mechanics()
         {
 
             var session = await theSender.TrackActivity(_defaultTimeout)
@@ -309,7 +309,7 @@ namespace TestingSupport.Compliance
 
 
         [Fact]
-        public async Task will_move_to_dead_letter_queue_without_any_exception_match()
+        public virtual async Task will_move_to_dead_letter_queue_without_any_exception_match()
         {
             throwOnAttempt<InvalidOperationException>(1);
             throwOnAttempt<InvalidOperationException>(2);
@@ -319,7 +319,7 @@ namespace TestingSupport.Compliance
         }
 
         [Fact]
-        public async Task will_move_to_dead_letter_queue_with_exception_match()
+        public virtual async Task will_move_to_dead_letter_queue_with_exception_match()
         {
             throwOnAttempt<DivideByZeroException>(1);
             throwOnAttempt<DivideByZeroException>(2);
@@ -330,7 +330,7 @@ namespace TestingSupport.Compliance
 
 
         [Fact]
-        public async Task will_requeue_and_increment_attempts()
+        public virtual async Task will_requeue_and_increment_attempts()
         {
             throwOnAttempt<DataMisalignedException>(1);
             throwOnAttempt<DataMisalignedException>(2);
