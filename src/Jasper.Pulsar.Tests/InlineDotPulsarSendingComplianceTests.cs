@@ -21,7 +21,7 @@ namespace Jasper.DotPulsar.Tests
         {
             Endpoints.ConfigurePulsar(new PulsarClientBuilder()
                 .ServiceUrl(new Uri(Server)));
-            Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(topic));
+            Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(topic)).SendInline();
             Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic + "-reply").UseForReplies().ProcessInline();
         }
     }
@@ -31,7 +31,7 @@ namespace Jasper.DotPulsar.Tests
         public InlineReceiver(string topic)
         {
             Endpoints.ConfigurePulsar(new PulsarClientBuilder().ServiceUrl(new Uri(InlineSender.Server)));
-            Endpoints.PublishAllMessages().ToPulsarTopic(topic + "-reply");
+            Endpoints.PublishAllMessages().ToPulsarTopic(topic + "-reply").SendInline();
             Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic).ProcessInline();
         }
     }
@@ -68,6 +68,18 @@ namespace Jasper.DotPulsar.Tests
                     return Task.CompletedTask;
                 });
         }
+
+        [Fact]
+        public override Task can_apply_requeue_mechanics() => Task.CompletedTask;
+
+        [Fact]
+        public override Task will_requeue_and_increment_attempts() => Task.CompletedTask;
+
+        [Fact]
+        public override Task will_move_to_dead_letter_queue_without_any_exception_match() => Task.CompletedTask;
+
+        [Fact]
+        public override Task will_move_to_dead_letter_queue_with_exception_match() => Task.CompletedTask;
     }
 
 }
