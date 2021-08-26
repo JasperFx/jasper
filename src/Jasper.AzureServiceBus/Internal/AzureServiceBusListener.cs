@@ -48,7 +48,10 @@ namespace Jasper.AzureServiceBus.Internal
         {
             _callback = callback;
 
-            var options = new SessionHandlerOptions(handleException);
+            var options = new SessionHandlerOptions(handleException)
+            {
+                AutoComplete = false
+            };
 
             var connectionString = _transport.ConnectionString;
             var tokenProvider = _transport.TokenProvider;
