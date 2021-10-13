@@ -1,4 +1,5 @@
-﻿using IntegrationTests;
+﻿using System.Threading.Tasks;
+using IntegrationTests;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
 using Xunit;
@@ -6,12 +7,23 @@ using Xunit;
 namespace Jasper.Persistence.Testing.SqlServer
 {
     [Collection("sqlserver")]
-    public abstract class SqlServerContext
+    public abstract class SqlServerContext : IAsyncLifetime
     {
-        protected SqlServerContext()
+        public async Task InitializeAsync()
         {
             var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
-            loader.RecreateAll().GetAwaiter().GetResult();
+            await loader.RecreateAll();
+            await initialize();
+        }
+
+        protected virtual Task initialize()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

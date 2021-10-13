@@ -33,13 +33,13 @@ namespace TestingSupport.Compliance
         }
 
 
-        protected void SenderIs<T>() where T : JasperOptions, new()
+        protected Task SenderIs<T>() where T : JasperOptions, new()
         {
             Sender = JasperHost.For<T>(configureSender);
-            Sender.RebuildMessageStorage().GetAwaiter().GetResult();
+            return Sender.RebuildMessageStorage();
         }
 
-        protected void TheOnlyAppIs<T>() where T : JasperOptions, new()
+        protected Task TheOnlyAppIs<T>() where T : JasperOptions, new()
         {
             var options = new T();
             configureReceiver(options);
@@ -47,15 +47,14 @@ namespace TestingSupport.Compliance
 
             Sender = JasperHost.For(options);
 
-            Sender.RebuildMessageStorage().GetAwaiter().GetResult();
+            return Sender.RebuildMessageStorage();
         }
 
-        protected void SenderIs(JasperOptions options)
+        protected Task SenderIs(JasperOptions options)
         {
             configureSender(options);
             Sender = JasperHost.For(options);
-            Sender.RebuildMessageStorage().GetAwaiter().GetResult();
-
+            return Sender.RebuildMessageStorage();
         }
 
         private void configureSender<T>(T options) where T : JasperOptions, new()
@@ -68,17 +67,17 @@ namespace TestingSupport.Compliance
             options.Endpoints.PublishAllMessages().To(OutboundAddress);
         }
 
-        public void ReceiverIs<T>() where T : JasperOptions, new()
+        public Task ReceiverIs<T>() where T : JasperOptions, new()
         {
             Receiver = JasperHost.For<T>(configureReceiver);
-            Receiver.RebuildMessageStorage().GetAwaiter().GetResult();
+            return Receiver.RebuildMessageStorage();
         }
 
-        public void ReceiverIs(JasperOptions options)
+        public Task ReceiverIs(JasperOptions options)
         {
             configureReceiver(options);
             Receiver = JasperHost.For(options);
-            Receiver.RebuildMessageStorage().GetAwaiter().GetResult();
+            return Receiver.RebuildMessageStorage();
         }
 
         private static void configureReceiver<T>(T options) where T : JasperOptions, new()
@@ -120,7 +119,7 @@ namespace TestingSupport.Compliance
         public virtual void BeforeEach(){}
     }
 
-    public abstract class SendingCompliance<T> : IClassFixture<T> where T : SendingComplianceFixture
+    public abstract class SendingCompliance<T> : IClassFixture<T>, IAsyncLifetime where T : SendingComplianceFixture
     {
         protected IHost theSender;
         protected IHost theReceiver;
@@ -138,8 +137,18 @@ namespace TestingSupport.Compliance
             theReceiver = fixture.Receiver;
             theOutboundAddress = fixture.OutboundAddress;
 
-            fixture.Sender.ClearAllPersistedMessages().GetAwaiter().GetResult();
-            fixture.BeforeEach();
+
+        }
+
+        public async Task InitializeAsync()
+        {
+            await Fixture.Sender.ClearAllPersistedMessages();
+            Fixture.BeforeEach();
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public T Fixture { get; }

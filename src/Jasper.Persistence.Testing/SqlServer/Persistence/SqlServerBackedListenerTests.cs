@@ -8,9 +8,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 {
     public class SqlServerBackedListenerTests : SqlServerBackedListenerContext
     {
-        public SqlServerBackedListenerTests()
+        protected override Task initialize()
         {
-            ThePersistence.Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
+            return ThePersistence.Admin.ClearAllPersistedEnvelopes();
         }
 
         [Fact]

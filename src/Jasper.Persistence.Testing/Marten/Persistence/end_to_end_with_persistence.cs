@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence
 {
-    public class end_to_end_with_persistence : PostgresqlContext, IDisposable
+    public class end_to_end_with_persistence : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         private readonly ITestOutputHelper _output;
 
@@ -23,10 +23,18 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             _output = output;
             theSender = JasperHost.For<ItemSender>();
             theReceiver = JasperHost.For<ItemReceiver>();
+        }
 
-            theSender.RebuildMessageStorage().GetAwaiter().GetResult();
-            theReceiver.RebuildMessageStorage().GetAwaiter().GetResult();
+        public async Task InitializeAsync()
+        {
+            await theSender.RebuildMessageStorage();
+            await theReceiver.RebuildMessageStorage();
+        }
 
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
 
         public void Dispose()

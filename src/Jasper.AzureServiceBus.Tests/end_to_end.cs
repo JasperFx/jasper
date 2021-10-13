@@ -56,17 +56,27 @@ namespace Jasper.AzureServiceBus.Tests
             }
         }
 
-        public class AzureServiceBusSendingFixture : SendingComplianceFixture
+        public class AzureServiceBusSendingFixture : SendingComplianceFixture, IAsyncLifetime
         {
             public AzureServiceBusSendingFixture() : base($"asb://queue/messages".ToUri())
             {
+
+            }
+
+            public async Task InitializeAsync()
+            {
                 var sender = new Sender();
 
-                SenderIs(sender);
+                await SenderIs(sender);
 
                 var receiver = new Receiver(sender.QueueName);
 
-                ReceiverIs(receiver);
+                await ReceiverIs(receiver);
+            }
+
+            public Task DisposeAsync()
+            {
+                return Task.CompletedTask;
             }
         }
 

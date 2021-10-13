@@ -9,18 +9,29 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence
 {
-    public class MartenEnvelopePersistorTests : PostgresqlContext, IDisposable
+    public class MartenEnvelopePersistorTests : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         public MartenEnvelopePersistorTests()
         {
-            var store = theHost.Get<IDocumentStore>();
-            store.Advanced.Clean.CompletelyRemoveAll();
-            theHost.RebuildMessageStorage().GetAwaiter().GetResult();
+
         }
 
         public void Dispose()
         {
             theHost?.Dispose();
+        }
+
+        public async Task InitializeAsync()
+        {
+            var store = theHost.Get<IDocumentStore>();
+            await store.Advanced.Clean.CompletelyRemoveAllAsync();
+            await theHost.RebuildMessageStorage();
+        }
+
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
 
         public IHost theHost = JasperHost.For<ItemReceiver>();

@@ -1,6 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Jasper.Util;
 using TestingSupport.Compliance;
+using Xunit;
 
 namespace Jasper.RabbitMQ.Tests
 {
@@ -44,24 +46,37 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
-    public class InlineRabbitMqSendingFixture : SendingComplianceFixture
+    public class InlineRabbitMqSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
+
         public InlineRabbitMqSendingFixture() : base($"rabbitmq://queue/compliance".ToUri())
+        {
+
+        }
+
+        public async Task InitializeAsync()
         {
             var sender = new InlineSender();
             OutboundAddress = $"rabbitmq://routing/{sender.QueueName}".ToUri();
 
-            SenderIs(sender);
+            await SenderIs(sender);
 
             var receiver = new InlineReceiver(sender.QueueName);
 
-            ReceiverIs(receiver);
+            await ReceiverIs(receiver);
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public override void BeforeEach()
         {
             Sender.TryPurgeAllRabbitMqQueues();
         }
+
+
     }
 
 

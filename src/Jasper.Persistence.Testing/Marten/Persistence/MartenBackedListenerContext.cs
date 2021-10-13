@@ -12,7 +12,6 @@ using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Jasper.Transports.Local;
-using Jasper.Transports.Tcp;
 using Jasper.Util;
 using Marten;
 using NSubstitute;
@@ -63,7 +62,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         }
     }
 
-    public class MartenBackedListenerContext : PostgresqlContext, IDisposable
+    public class MartenBackedListenerContext : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin =
             new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
@@ -72,7 +71,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        private readonly IHandlerPipeline thePipeline;
+        private IHandlerPipeline thePipeline;
         protected AdvancedSettings theSettings;
         protected DurableWorkerQueue theWorkerQueue;
 
@@ -83,12 +82,14 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             {
                 _.Connection(Servers.PostgresConnectionString);
             });
+        }
 
-
+        public async Task InitializeAsync()
+        {
             theSettings = new AdvancedSettings(null);
 
 
-            EnvelopeStorageAdmin.RebuildSchemaObjects().GetAwaiter().GetResult();
+            await EnvelopeStorageAdmin.RebuildSchemaObjects();
 
             var persistence =
                 new PostgresqlEnvelopePersistence(
@@ -100,6 +101,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             var agent = Substitute.For<IListener>();
             theWorkerQueue.StartListening(agent);
+        }
+
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
 
         public void Dispose()

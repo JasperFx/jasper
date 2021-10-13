@@ -47,7 +47,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             });
         }
 
-        public async Task InitializeAsync()
+        protected override async Task initialize()
         {
             var tables = new ISchemaObject[]
             {
@@ -64,12 +64,6 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             await migration.ApplyAll(conn, new DdlRules(), AutoCreate.All, sql => _output.WriteLine(sql));
 
             await _host.RebuildMessageStorage();
-        }
-
-        public Task DisposeAsync()
-        {
-            Dispose();
-            return Task.CompletedTask;
         }
 
         public void Dispose()

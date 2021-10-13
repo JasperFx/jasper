@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
@@ -37,13 +38,23 @@ namespace Jasper.Testing.Transports.Tcp
         }
     }
 
-    public class DurableTcpTransportFixture : SendingComplianceFixture
+    public class DurableTcpTransportFixture : SendingComplianceFixture, IAsyncLifetime
     {
         public DurableTcpTransportFixture() : base($"tcp://localhost:2290/incoming".ToUri())
         {
-            SenderIs<Sender>();
 
-            ReceiverIs<Receiver>();
+        }
+
+        public async Task InitializeAsync()
+        {
+            await SenderIs<Sender>();
+            await ReceiverIs<Receiver>();
+        }
+
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
     }
 

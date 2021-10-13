@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Postgresql;
 using Jasper.Util;
@@ -18,11 +19,21 @@ namespace Jasper.Persistence.Testing.Postgresql
         }
     }
 
-    public class LocalPostgresqlBackedFixture : SendingComplianceFixture
+    public class LocalPostgresqlBackedFixture : SendingComplianceFixture, IAsyncLifetime
     {
         public LocalPostgresqlBackedFixture() : base("local://one/durable".ToUri())
         {
-            TheOnlyAppIs<PostgresBackedLocal>();
+
+        }
+
+        public Task InitializeAsync()
+        {
+            return TheOnlyAppIs<PostgresBackedLocal>();
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 
