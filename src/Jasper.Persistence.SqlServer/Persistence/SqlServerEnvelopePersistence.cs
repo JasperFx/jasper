@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Configuration;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
+using Microsoft.Data.SqlClient;
+using Weasel.Core;
+using Weasel.SqlServer;
+using CommandExtensions = Weasel.Core.CommandExtensions;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
@@ -20,24 +20,23 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
 
         public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings)
-            : base(databaseSettings,settings, new SqlServerEnvelopeStorageAdmin(databaseSettings), new SqlServerDurabilityAgentStorage(databaseSettings, settings))
+            : base(databaseSettings, settings, new SqlServerEnvelopeStorageAdmin(databaseSettings),
+                new SqlServerDurabilityAgentStorage(databaseSettings, settings))
         {
             _databaseSettings = databaseSettings;
         }
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
-            return _databaseSettings.CallFunction("uspDeleteIncomingEnvelopes")
-                .WithIdList(_databaseSettings, envelopes)
-                .ExecuteOnce(_cancellation);
+            return CommandExtensions.ExecuteOnce(_databaseSettings.CallFunction("uspDeleteIncomingEnvelopes")
+                .WithIdList(_databaseSettings, envelopes), _cancellation);
         }
 
 
         public override Task DeleteOutgoing(Envelope[] envelopes)
         {
-            return _databaseSettings.CallFunction("uspDeleteOutgoingEnvelopes")
-                .WithIdList(_databaseSettings, envelopes)
-                .ExecuteOnce(_cancellation);
+            return CommandExtensions.ExecuteOnce(_databaseSettings.CallFunction("uspDeleteOutgoingEnvelopes")
+                .WithIdList(_databaseSettings, envelopes), _cancellation);
         }
 
 
@@ -47,8 +46,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             table.Columns.Add(new DataColumn("ID", typeof(Guid)));
             foreach (var error in errors) table.Rows.Add(error.Id);
 
-            var cmd = new SqlCommand();
-            var builder = new CommandBuilder(cmd);
+            var builder = new CommandBuilder();
 
             var list = builder.AddNamedParameter("IDLIST", table).As<SqlParameter>();
             list.SqlDbType = SqlDbType.Structured;
@@ -71,13 +69,10 @@ namespace Jasper.Persistence.SqlServer.Persistence
                     $"insert into {_databaseSettings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
-            builder.Apply();
-
-            using (var conn = new SqlConnection(_databaseSettings.ConnectionString))
+            await using (var conn = new SqlConnection(_databaseSettings.ConnectionString))
             {
                 await conn.OpenAsync(_cancellation);
-                cmd.Connection = conn;
-                await cmd.ExecuteNonQueryAsync(_cancellation);
+                await builder.ExecuteNonQueryAsync(conn);
             }
         }
 
@@ -88,24 +83,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 .WithIdList(_databaseSettings, reassigned, "reassigned")
                 .With("ownerId", nodeId);
 
-            return cmd.ExecuteOnce(_cancellation);
+            return CommandExtensions.ExecuteOnce(cmd, _cancellation);
         }
-
-
-
 
 
         public override void Describe(TextWriter writer)
         {
             writer.WriteLine($"Sql Server Envelope Storage in Schema '{_databaseSettings.SchemaName}'");
         }
-
-
-
-
-
-
-
-
     }
 }

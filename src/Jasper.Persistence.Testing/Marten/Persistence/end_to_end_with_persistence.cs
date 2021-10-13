@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,8 +24,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theSender = JasperHost.For<ItemSender>();
             theReceiver = JasperHost.For<ItemReceiver>();
 
-            theSender.RebuildMessageStorage();
-            theReceiver.RebuildMessageStorage();
+            theSender.RebuildMessageStorage().GetAwaiter().GetResult();
+            theReceiver.RebuildMessageStorage().GetAwaiter().GetResult();
 
         }
 
@@ -66,7 +67,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             counts.Scheduled.ShouldBe(1);
 
-            persistor.Admin.ClearAllPersistedEnvelopes();
+            await persistor.Admin.ClearAllPersistedEnvelopes();
 
             (await persistor.Admin.GetPersistedCounts()).Scheduled.ShouldBe(0);
         }
@@ -102,7 +103,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         }
 
 
-        [Fact]
+        [Fact] // TODO -- this needs a Retry of some sort
         public async Task send_end_to_end()
         {
             var item = new ItemCreated
@@ -119,15 +120,19 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 .SendMessageAndWait(item);
 
 
-            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
+            await using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
             {
                 var item2 = session.Load<ItemCreated>(item.Id);
-                if (item2 == null)
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                while (item2 == null && stopwatch.ElapsedMilliseconds < 15000)
                 {
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     item2 = session.Load<ItemCreated>(item.Id);
                 }
 
+                stopwatch.Stop();
 
                 item2.Name.ShouldBe("Hat");
 

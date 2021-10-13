@@ -1,5 +1,4 @@
 using Oakton;
-using Oakton.AspNetCore;
 
 namespace Jasper.RabbitMQ.CommandLine
 {

@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Fixtures.Marten.App;
+using Weasel.Core;
 
 namespace StorytellerSpecs.Fixtures.Marten
 {
@@ -47,7 +48,6 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             _receiverStore = DocumentStore.For(_ =>
             {
-                _.PLV8Enabled = false;
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "receiver";
 
@@ -56,12 +56,12 @@ namespace StorytellerSpecs.Fixtures.Marten
             });
 
             _receiverStore.Advanced.Clean.CompletelyRemoveAll();
-            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabase();
+            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync()
+                .GetAwaiter().GetResult();
 
 
             _sendingStore = DocumentStore.For(_ =>
             {
-                _.PLV8Enabled = false;
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
             });
@@ -72,7 +72,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
-            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
+            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync().GetAwaiter().GetResult();
 
             _receivers = new LightweightCache<string, IHost>(key =>
             {

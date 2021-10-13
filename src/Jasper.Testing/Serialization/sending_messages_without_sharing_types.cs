@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Jasper.Attributes;
 using Jasper.Serialization;
 using Jasper.Tracking;
@@ -34,7 +35,7 @@ namespace Jasper.Testing.Serialization
         private IHost greenApp;
         private IHost blueApp;
 
-        [Fact]
+        [Fact] // This test isn't always the most consistent test
         public async Task send_green_as_text_and_receive_as_blue()
         {
             greenApp = JasperHost.For<GreenApp>();
@@ -49,6 +50,7 @@ namespace Jasper.Testing.Serialization
             var session = await greenApp
                 .TrackActivity()
                 .AlsoTrack(blueApp)
+                .Timeout(30.Seconds())
                 .ExecuteAndWait(c => c.SendEnvelope(envelope));
 
 

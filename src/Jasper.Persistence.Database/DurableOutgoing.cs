@@ -6,6 +6,7 @@ using Jasper.Configuration;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
 using Jasper.Util;
+using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {

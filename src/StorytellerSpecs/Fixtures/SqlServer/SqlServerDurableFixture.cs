@@ -11,8 +11,10 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
+using Weasel.Core;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {

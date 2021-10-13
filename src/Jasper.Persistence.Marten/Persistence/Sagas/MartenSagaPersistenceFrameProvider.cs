@@ -10,6 +10,7 @@ using LamarCodeGeneration.Model;
 using Marten;
 using Marten.Schema;
 using Marten.Util;
+using Oakton.Parsing;
 
 namespace Jasper.Persistence.Marten.Persistence.Sagas
 {

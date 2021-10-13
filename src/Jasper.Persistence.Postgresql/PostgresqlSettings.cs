@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Jasper.Persistence.Database;
 using Npgsql;
 using NpgsqlTypes;
+using Weasel.Core;
 
 namespace Jasper.Persistence.Postgresql
 {

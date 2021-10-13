@@ -51,15 +51,22 @@ namespace Jasper.Testing.Transports.Tcp
         }
     }
 
-
-    [Collection("compliance")]
-    public class LightweightTcpTransportCompliance : SendingCompliance
+    public class LightweightTcpFixture : SendingComplianceFixture
     {
-        public LightweightTcpTransportCompliance() : base($"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming".ToUri())
+        public LightweightTcpFixture() : base($"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming".ToUri())
         {
             SenderIs(new Sender(PortFinder.GetAvailablePort()));
 
-            ReceiverIs(new Receiver(theOutboundAddress.Port));
+            ReceiverIs(new Receiver(OutboundAddress.Port));
+        }
+    }
+
+
+    [Collection("compliance")]
+    public class LightweightTcpTransportCompliance : SendingCompliance<LightweightTcpFixture>
+    {
+        public LightweightTcpTransportCompliance(LightweightTcpFixture fixture) : base(fixture)
+        {
         }
     }
 }

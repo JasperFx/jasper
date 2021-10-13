@@ -13,8 +13,6 @@ namespace Jasper.Persistence.Postgresql.Util
 {
     public static class CommandExtensions
     {
-
-
         public static DbCommand With(this DbCommand command, string name, Envelope[] envelopes)
         {
             var parameter = command.CreateParameter().As<NpgsqlParameter>();
@@ -35,25 +33,6 @@ namespace Jasper.Persistence.Postgresql.Util
             command.Parameters.Add(parameter);
 
             return command;
-        }
-
-        public static NpgsqlCommand With(this NpgsqlCommand command, string name, object value, NpgsqlDbType dbType)
-        {
-            var parameter = command.CreateParameter();
-            parameter.ParameterName = name;
-            parameter.Value = value ?? DBNull.Value;
-            parameter.NpgsqlDbType = dbType;
-            command.Parameters.Add(parameter);
-
-            return command;
-        }
-
-        public static NpgsqlCommand CreateCommand(this NpgsqlConnection conn, string command)
-        {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = command;
-
-            return cmd;
         }
     }
 }

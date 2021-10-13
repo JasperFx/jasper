@@ -11,7 +11,7 @@ namespace Jasper.Persistence.Testing.SqlServer
         protected SqlServerContext()
         {
             var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
-            loader.RecreateAll();
+            loader.RecreateAll().GetAwaiter().GetResult();
         }
     }
 }

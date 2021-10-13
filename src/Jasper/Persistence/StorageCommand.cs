@@ -4,7 +4,6 @@ using Baseline;
 using Jasper.Persistence.Durability;
 using Microsoft.Extensions.DependencyInjection;
 using Oakton;
-using Oakton.AspNetCore;
 
 namespace Jasper.Persistence
 {

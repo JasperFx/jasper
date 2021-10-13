@@ -63,8 +63,9 @@ namespace Jasper.Persistence.Durability
             return Task.FromResult(new Envelope[0]);
         }
 
-        public void ReleaseAllOwnership()
+        public Task ReleaseAllOwnership()
         {
+            return Task.CompletedTask;
         }
 
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
@@ -118,14 +119,16 @@ namespace Jasper.Persistence.Durability
             writer.WriteLine("No persistent envelope storage");
         }
 
-        public void ClearAllPersistedEnvelopes()
+        public Task ClearAllPersistedEnvelopes()
         {
             Console.WriteLine("There is no durable envelope storage");
+            return Task.CompletedTask;
         }
 
-        public void RebuildSchemaObjects()
+        public Task RebuildSchemaObjects()
         {
             Console.WriteLine("There is no durable envelope storage");
+            return Task.CompletedTask;
         }
 
         public string CreateSql()

@@ -18,12 +18,19 @@ namespace Jasper.Persistence.Testing.Postgresql
         }
     }
 
-    [Collection("marten")]
-    public class LocalPostgresqlBackedTransportCompliance : SendingCompliance
+    public class LocalPostgresqlBackedFixture : SendingComplianceFixture
     {
-        public LocalPostgresqlBackedTransportCompliance() : base("local://one/durable".ToUri())
+        public LocalPostgresqlBackedFixture() : base("local://one/durable".ToUri())
         {
             TheOnlyAppIs<PostgresBackedLocal>();
+        }
+    }
+
+    [Collection("marten")]
+    public class LocalPostgresqlBackedTransportCompliance : SendingCompliance<LocalPostgresqlBackedFixture>
+    {
+        public LocalPostgresqlBackedTransportCompliance(LocalPostgresqlBackedFixture fixture) : base(fixture)
+        {
         }
     }
 }

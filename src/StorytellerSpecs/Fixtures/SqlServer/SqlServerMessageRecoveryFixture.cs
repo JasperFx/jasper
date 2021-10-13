@@ -17,6 +17,7 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
@@ -94,7 +95,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 .Start();
 
 
-            _host.Services.GetService<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
+            _host.Services.GetService<IEnvelopePersistence>()
+                .Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
 
             _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 

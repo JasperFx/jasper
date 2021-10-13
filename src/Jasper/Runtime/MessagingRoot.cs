@@ -174,11 +174,11 @@ namespace Jasper.Runtime
             switch (Settings.StorageProvisioning)
             {
                 case StorageProvisioning.Rebuild:
-                    Persistence.Admin.RebuildSchemaObjects();
+                    await Persistence.Admin.RebuildSchemaObjects();
                     break;
 
                 case StorageProvisioning.Clear:
-                    Persistence.Admin.ClearAllPersistedEnvelopes();
+                    await Persistence.Admin.ClearAllPersistedEnvelopes();
                     break;
             }
 

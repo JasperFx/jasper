@@ -23,6 +23,8 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 {
                     ConnectionString = Servers.SqlServerConnectionString
                 }, new AdvancedSettings(null));
+
+            ThePersistence.Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
         }
 
 

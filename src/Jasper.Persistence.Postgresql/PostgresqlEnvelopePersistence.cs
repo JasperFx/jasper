@@ -1,9 +1,12 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Jasper.Configuration;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;
+using Npgsql;
+using Weasel.Postgresql;
+using Weasel.Core;
+
 
 namespace Jasper.Persistence.Postgresql
 {
@@ -26,7 +29,8 @@ namespace Jasper.Persistence.Postgresql
             var cmd = DatabaseSettings.CreateCommand(_deleteIncomingEnvelopesSql)
                 .With("ids", errors);
 
-            var builder = new CommandBuilder(cmd);
+            var builder = new CommandBuilder((NpgsqlCommand) cmd);
+
 
 
             foreach (var error in errors)
@@ -44,7 +48,7 @@ namespace Jasper.Persistence.Postgresql
                     $"insert into {DatabaseSettings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
-            return builder.ApplyAndExecuteOnce(_cancellation);
+            return builder.Compile().ExecuteOnce(_cancellation);
         }
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)

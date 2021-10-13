@@ -11,12 +11,14 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.TestSupport.Storyteller.Logging;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Fixtures.SqlServer.App;
+using Weasel.Core;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Command line extensions to work with JSON schemas for Jasper message types</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.JsonCommands</AssemblyName>
     <PackageId>Jasper.JsonCommands</PackageId>

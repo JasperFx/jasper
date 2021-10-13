@@ -165,6 +165,7 @@ namespace Jasper
 
         private void establishApplicationAssembly(string assemblyName)
         {
+            // TODO -- just use Assembly.GetEntryAssembly()
             if (assemblyName.IsNotEmpty())
             {
                 ApplicationAssembly = Assembly.Load(assemblyName);

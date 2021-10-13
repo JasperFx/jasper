@@ -82,14 +82,13 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theStore = DocumentStore.For(_ =>
             {
                 _.Connection(Servers.PostgresConnectionString);
-                _.PLV8Enabled = false;
             });
 
 
             theSettings = new AdvancedSettings(null);
 
 
-            EnvelopeStorageAdmin.RebuildSchemaObjects();
+            EnvelopeStorageAdmin.RebuildSchemaObjects().GetAwaiter().GetResult();
 
             var persistence =
                 new PostgresqlEnvelopePersistence(

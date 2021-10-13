@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Persistence.Durability;
+using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {

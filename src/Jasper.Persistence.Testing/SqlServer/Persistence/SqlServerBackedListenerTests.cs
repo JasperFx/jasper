@@ -8,6 +8,11 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 {
     public class SqlServerBackedListenerTests : SqlServerBackedListenerContext
     {
+        public SqlServerBackedListenerTests()
+        {
+            ThePersistence.Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
+        }
+
         [Fact]
         public async Task handling_a_single_not_scheduled_envelope()
         {

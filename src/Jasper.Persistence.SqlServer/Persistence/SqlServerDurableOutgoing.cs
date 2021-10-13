@@ -9,6 +9,7 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer.Util;
 using Jasper.Transports;
 using Jasper.Util;
+using Weasel.Core;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {

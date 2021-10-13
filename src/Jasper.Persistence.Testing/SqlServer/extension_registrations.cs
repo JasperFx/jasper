@@ -4,6 +4,7 @@ using IntegrationTests;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Lamar;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;

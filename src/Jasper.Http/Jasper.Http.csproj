@@ -3,7 +3,7 @@
     <PropertyGroup>
       <Description>Jasper's Execution Engine as an HTTP handler for ASP.Net Core</Description>
       <Authors>Jeremy D. Miller</Authors>
-      <TargetFrameworks>netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+      <TargetFrameworks>net5.0</TargetFrameworks>
       <DebugType>portable</DebugType>
       <AssemblyName>Jasper.Http</AssemblyName>
       <PackageId>Jasper.Http</PackageId>

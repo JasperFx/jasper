@@ -15,7 +15,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             var store = theHost.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
-            theHost.RebuildMessageStorage();
+            theHost.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
         public void Dispose()

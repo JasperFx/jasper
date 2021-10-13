@@ -46,7 +46,6 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             thePipeline = Substitute.For<IHandlerPipeline>();
             theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
-
         }
 
         protected Envelope notScheduledEnvelope()

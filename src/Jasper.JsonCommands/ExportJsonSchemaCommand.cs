@@ -7,12 +7,10 @@ using Jasper;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
-using Jasper.Runtime.Routing;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using NJsonSchema;
 using Oakton;
-using Oakton.AspNetCore;
 
 [assembly: JasperModule]
 

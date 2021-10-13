@@ -20,7 +20,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 _.Extensions.UseMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
-                    x.PLV8Enabled = false;
                 });
 
             });
@@ -34,7 +33,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             var persistence = theHost.Get<IEnvelopePersistence>();
 
-            persistence.Admin.RebuildSchemaObjects();
+            persistence.Admin.RebuildSchemaObjects().GetAwaiter().GetResult();
+
 
             persistence.ScheduleJob(theEnvelope).Wait(3.Seconds());
 

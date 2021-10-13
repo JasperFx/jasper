@@ -7,6 +7,7 @@ using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql.Util;
 using Jasper.Transports;
 using NpgsqlTypes;
+using Weasel.Core;
 
 namespace Jasper.Persistence.Postgresql
 {

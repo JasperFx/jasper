@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using ImTools;
+using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime;
@@ -23,7 +23,7 @@ namespace Jasper.Transports
 
         private readonly object _channelLock = new object();
 
-        private ImTools.ImHashMap<Uri, ISendingAgent> _senders = ImTools.ImHashMap<Uri, ISendingAgent>.Empty;
+        private ImHashMap<Uri, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty;
 
 
         private readonly IMessagingRoot _root;
@@ -115,7 +115,7 @@ namespace Jasper.Transports
             _subscribers.Fill(subscriber);
         }
 
-        private ImTools.ImHashMap<string, ISendingAgent> _localSenders = ImTools.ImHashMap<string, ISendingAgent>.Empty;
+        private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
         public ISendingAgent AgentForLocalQueue(string queueName)
         {

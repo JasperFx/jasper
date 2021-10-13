@@ -12,17 +12,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
+using Weasel.Core;
+using Weasel.SqlServer;
+using Weasel.SqlServer.Tables;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Jasper.Persistence.Testing.EFCore.Sagas
 {
-    public abstract class SagaTestHarness<TSagaHandler, TSagaState> : SqlServerContext, IDisposable
+    public abstract class SagaTestHarness<TSagaHandler, TSagaState> : SqlServerContext, IAsyncLifetime
         where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
     {
+        private readonly ITestOutputHelper _output;
         private readonly IHost _host;
 
         protected SagaTestHarness(ITestOutputHelper output)
         {
+            _output = output;
             _host = JasperHost.For(_ =>
             {
                 _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
@@ -39,18 +45,31 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
                 configure(_);
             });
+        }
 
+        public async Task InitializeAsync()
+        {
+            var tables = new ISchemaObject[]
+            {
+                new WorkflowStateTable<Guid>("GuidWorkflowState"),
+                new WorkflowStateTable<int>("IntWorkflowState"),
+                new WorkflowStateTable<long>("LongWorkflowState"),
+                new WorkflowStateTable<string>("StringWorkflowState"),
+            };
 
-            rebuildSagaStateDatabase();
+            await using var conn = new SqlConnection(Servers.SqlServerConnectionString);
+            await conn.OpenAsync();
 
-            _host.RebuildMessageStorage();
+            var migration = await SchemaMigration.Determine(conn, tables);
+            await migration.ApplyAll(conn, new DdlRules(), AutoCreate.All, sql => _output.WriteLine(sql));
 
-//            var builder = _host.Get<DynamicCodeBuilder>();
-//            builder.TryBuildAndCompileAll((a, s) => {});
-//
-//            var code = builder.GenerateAllCode();
-//
-//            File.WriteAllText("SagaCode.cs", code);
+            await _host.RebuildMessageStorage();
+        }
+
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -58,67 +77,17 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             _host?.Dispose();
         }
 
-        private void rebuildSagaStateDatabase()
+        internal class WorkflowStateTable<T> : Table
         {
-            using var conn = new SqlConnection(Servers.SqlServerConnectionString);
-            conn.Open();
-
-            dropTable(conn, "GuidWorkflowState");
-            dropTable(conn, "IntWorkflowState");
-            dropTable(conn, "LongWorkflowState");
-            dropTable(conn, "StringWorkflowState");
-
-            conn.RunSql(@"
-CREATE TABLE [GuidWorkflowState] (
-    [Id] uniqueidentifier NOT NULL,
-    [one] bit NOT NULL,
-    [two] bit NOT NULL,
-    [three] bit NOT NULL,
-    [four] bit NOT NULL,
-    [Name] nvarchar(max) NULL,
-    CONSTRAINT [PK_GuidWorkflowState] PRIMARY KEY ([Id])
-);
-");
-            conn.RunSql(@"
-CREATE TABLE [IntWorkflowState] (
-    [Id] int NOT NULL,
-    [one] bit NOT NULL,
-    [two] bit NOT NULL,
-    [three] bit NOT NULL,
-    [four] bit NOT NULL,
-    [Name] nvarchar(max) NULL,
-    CONSTRAINT [PK_IntWorkflowState] PRIMARY KEY ([Id])
-);");
-
-
-            conn.RunSql(@"
-CREATE TABLE [LongWorkflowState] (
-    [Id] bigint NOT NULL,
-    [one] bit NOT NULL,
-    [two] bit NOT NULL,
-    [three] bit NOT NULL,
-    [four] bit NOT NULL,
-    [Name] nvarchar(max) NULL,
-    CONSTRAINT [PK_LongWorkflowState] PRIMARY KEY ([Id])
-);");
-
-
-            conn.RunSql(@"
-CREATE TABLE [StringWorkflowState] (
-    [Id] nvarchar(450) NOT NULL,
-    [one] bit NOT NULL,
-    [two] bit NOT NULL,
-    [three] bit NOT NULL,
-    [four] bit NOT NULL,
-    [Name] nvarchar(max) NULL,
-    CONSTRAINT [PK_StringWorkflowState] PRIMARY KEY ([Id])
-);
-");
-        }
-
-        private void dropTable(SqlConnection conn, string tableName)
-        {
-            conn.RunSql($"IF OBJECT_ID('{tableName}', 'U') IS NOT NULL drop table {tableName};");
+            public WorkflowStateTable(string tableName) : base(tableName)
+            {
+                AddColumn<T>("Id").AsPrimaryKey();
+                AddColumn<bool>("one");
+                AddColumn<bool>("two");
+                AddColumn<bool>("three");
+                AddColumn<bool>("four");
+                AddColumn<string>("Name");
+            }
         }
 
         protected string codeFor<T>()

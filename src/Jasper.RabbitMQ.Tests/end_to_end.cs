@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Oakton;
 using Shouldly;
 using TestingSupport;
+using Weasel.Postgresql;
 using Xunit;
 using ConsoleWriter = Oakton.ConsoleWriter;
 
@@ -304,7 +305,7 @@ namespace Jasper.RabbitMQ.Tests
                 });
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -330,7 +331,7 @@ namespace Jasper.RabbitMQ.Tests
                 });
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
 

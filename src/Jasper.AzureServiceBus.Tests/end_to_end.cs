@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestingSupport.Compliance;
+using Weasel.Postgresql;
 using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests
@@ -55,10 +56,9 @@ namespace Jasper.AzureServiceBus.Tests
             }
         }
 
-
-        public class AzureServiceBusSendingComplianceTests : SendingCompliance
+        public class AzureServiceBusSendingFixture : SendingComplianceFixture
         {
-            public AzureServiceBusSendingComplianceTests() : base($"asb://queue/messages".ToUri())
+            public AzureServiceBusSendingFixture() : base($"asb://queue/messages".ToUri())
             {
                 var sender = new Sender();
 
@@ -67,6 +67,14 @@ namespace Jasper.AzureServiceBus.Tests
                 var receiver = new Receiver(sender.QueueName);
 
                 ReceiverIs(receiver);
+            }
+        }
+
+
+        public class AzureServiceBusSendingComplianceTests : SendingCompliance<AzureServiceBusSendingFixture>
+        {
+            public AzureServiceBusSendingComplianceTests(AzureServiceBusSendingFixture fixture) : base(fixture)
+            {
             }
         }
 
@@ -116,7 +124,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -136,7 +144,7 @@ namespace Jasper.AzureServiceBus.Tests
                 });
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             try
@@ -192,7 +200,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -212,7 +220,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Handlers.IncludeType<ColorHandler>();
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             try
@@ -254,7 +262,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -275,7 +283,7 @@ namespace Jasper.AzureServiceBus.Tests
 
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             try

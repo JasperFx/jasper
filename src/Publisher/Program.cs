@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Jasper;
 using Microsoft.Extensions.Hosting;
-using Oakton.AspNetCore;
+using Oakton;
 
 namespace Publisher
 {

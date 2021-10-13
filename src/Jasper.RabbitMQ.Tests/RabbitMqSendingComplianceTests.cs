@@ -1,3 +1,4 @@
+using System;
 using Jasper.Util;
 using TestingSupport.Compliance;
 
@@ -43,23 +44,31 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
-
-    public class RabbitMqSendingComplianceTests : SendingCompliance
+    public class RabbitMqSendingFixture : SendingComplianceFixture
     {
-        public RabbitMqSendingComplianceTests() : base($"rabbitmq://queue/compliance".ToUri())
+        public RabbitMqSendingFixture() : base($"rabbitmq://queue/compliance".ToUri())
         {
             var sender = new Sender();
-            theOutboundAddress = $"rabbitmq://queue/{sender.QueueName}".ToUri();
+            OutboundAddress = $"rabbitmq://queue/{sender.QueueName}".ToUri();
 
             SenderIs(sender);
-
-
-
-            theSender.TryPurgeAllRabbitMqQueues();
 
             var receiver = new Receiver(sender.QueueName);
 
             ReceiverIs(receiver);
+        }
+
+        public override void BeforeEach()
+        {
+            Sender.TryPurgeAllRabbitMqQueues();
+        }
+    }
+
+
+    public class RabbitMqSendingComplianceTests : SendingCompliance<RabbitMqSendingFixture>
+    {
+        public RabbitMqSendingComplianceTests(RabbitMqSendingFixture fixture) : base(fixture)
+        {
         }
     }
 }

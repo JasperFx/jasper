@@ -11,144 +11,193 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
+using Microsoft.Data.SqlClient;
+using Weasel.Core;
+using Weasel.SqlServer;
+using Weasel.SqlServer.Procedures;
+using Weasel.SqlServer.Tables;
+using CommandExtensions = Weasel.Core.CommandExtensions;
 
 namespace Jasper.Persistence.SqlServer.Schema
 {
+    internal class OutgoingEnvelopeTable : Table
+    {
+        public static readonly string TableName = "jasper_outgoing_envelopes";
+
+        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        {
+            AddColumn<Guid>("id").AsPrimaryKey();
+            AddColumn<int>("owner_id").NotNull();
+            AddColumn("destination", "varchar(250)").NotNull();
+            AddColumn<DateTimeOffset>("deliver_by");
+            AddColumn("body", "varbinary(max)").NotNull();
+        }
+    }
+
+    internal class IncomingEnvelopeTable : Table
+    {
+        public static readonly string TableName = "jasper_incoming_envelopes";
+
+        public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        {
+            AddColumn<Guid>("id").AsPrimaryKey();
+            AddColumn("status", "varchar(25)").NotNull();
+            AddColumn<int>("owner_id").NotNull();
+            AddColumn<DateTimeOffset>("execution_time").DefaultValueByExpression("NULL");
+            AddColumn<int>("attempts");
+            AddColumn("body", "varbinary(max)").NotNull();
+        }
+    }
+
+    internal class DeadLettersTable : Table
+    {
+        public static readonly string TableName = "jasper_dead_letters";
+
+        public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        {
+            AddColumn<Guid>("id").AsPrimaryKey();
+            AddColumn("source", "varchar(250)");
+            AddColumn("message_type", "varchar(max)");
+            AddColumn("explanation", "varchar(max)");
+            AddColumn("exception_text", "varchar(max)");
+            AddColumn("exception_type", "varchar(max)");
+            AddColumn("exception_message", "varchar(max)");
+            AddColumn("body", "varbinary(max)").NotNull();
+        }
+    }
+
+    internal class EnvelopeIdTable : TableType {
+        public EnvelopeIdTable(string schemaName) : base(new DbObjectName(schemaName, "EnvelopeIdList"))
+        {
+            AddColumn("ID", "UNIQUEIDENTIFIER");
+        }
+    }
+
+    internal class JasperStoredProcedure : StoredProcedure
+    {
+        internal static string ReadText(DatabaseSettings databaseSettings, string fileName)
+        {
+            return Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream(typeof(SqlServerEnvelopeStorageAdmin), fileName)
+                .ReadAllText().Replace("%SCHEMA%", databaseSettings.SchemaName);
+        }
+
+        public JasperStoredProcedure(string fileName, DatabaseSettings settings) : base(new DbObjectName(settings.SchemaName, Path.GetFileNameWithoutExtension(fileName)), ReadText(settings, fileName))
+        {
+        }
+    }
+
     public class SqlServerEnvelopeStorageAdmin : DataAccessor,IEnvelopeStorageAdmin
     {
         private readonly Database.DatabaseSettings _settings;
-
-        private readonly string[] _creationOrder =
-        {
-            "Creation.sql",
-            "uspDeleteIncomingEnvelopes.sql",
-            "uspDeleteOutgoingEnvelopes.sql",
-            "uspDiscardAndReassignOutgoing.sql",
-            "uspMarkIncomingOwnership.sql",
-            "uspMarkOutgoingOwnership.sql"
-        };
+        private readonly ISchemaObject[] _schemaObjects;
 
         public SqlServerEnvelopeStorageAdmin(Database.DatabaseSettings settings)
         {
             _settings = settings;
-        }
 
-        public static string ToCreationScript(string schema)
-        {
-            return toScript("Creation.sql", schema);
-        }
-
-        public static string ToDropScript(string schema)
-        {
-            return toScript("Drop.sql", schema);
-        }
-
-        private static string toScript(string fileName, string schema)
-        {
-            var text = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(SqlServerEnvelopeStorageAdmin), fileName)
-                .ReadAllText();
-
-            return text.Replace("%SCHEMA%", schema);
-        }
-
-        public void DropAll()
-        {
-            execute("Drop.sql");
-        }
-
-        private void execute(params string[] filenames)
-        {
-            using (var conn = _settings.CreateConnection())
+            _schemaObjects = new ISchemaObject[]
             {
-                conn.Open();
+                new OutgoingEnvelopeTable(settings.SchemaName),
+                new IncomingEnvelopeTable(settings.SchemaName),
+                new DeadLettersTable(settings.SchemaName),
+                new EnvelopeIdTable(settings.SchemaName),
+                new JasperStoredProcedure("uspDeleteIncomingEnvelopes.sql", settings),
+                new JasperStoredProcedure("uspDeleteOutgoingEnvelopes.sql", settings),
+                new JasperStoredProcedure("uspDiscardAndReassignOutgoing.sql", settings),
+                new JasperStoredProcedure("uspMarkIncomingOwnership.sql", settings),
+                new JasperStoredProcedure("uspMarkOutgoingOwnership.sql", settings),
+            };
+        }
 
-                foreach (var filename in filenames)
-                {
-                    execute(filename, conn);
-                }
+        public async Task DropAll()
+        {
+            await using var conn = new SqlConnection(_settings.ConnectionString);
+            await conn.OpenAsync();
 
-
+            foreach (var schemaObject in _schemaObjects)
+            {
+                await schemaObject.Drop(conn);
             }
         }
 
-        private void execute(string filename, DbConnection conn)
+        public async Task CreateAll()
         {
-            var sql = toScript(filename, _settings.SchemaName);
+            await using var conn = new SqlConnection(_settings.ConnectionString);
+            await conn.OpenAsync();
 
+            var patch = await SchemaMigration.Determine(conn, _schemaObjects);
+
+            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+        }
+
+
+
+        public async Task RecreateAll()
+        {
+            await using var conn = new SqlConnection(_settings.ConnectionString);
+            await conn.OpenAsync();
+
+            SchemaMigration patch = null;
             try
             {
-                conn.RunSql(sql);
+                patch = await SchemaMigration.Determine(conn, _schemaObjects);
+            }
+            catch (Exception)
+            {
+                await Task.Delay(250);
+                patch = await SchemaMigration.Determine(conn, _schemaObjects);
+            }
+
+            if (patch.Difference != SchemaPatchDifference.None)
+            {
+                await patch.ApplyAll(conn, new DdlRules(), AutoCreate.All);
+            }
+        }
+
+        async Task IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
+        {
+            await using var conn = new SqlConnection(_settings.ConnectionString);
+            await conn.OpenAsync();
+            var tx = (SqlTransaction) await conn.BeginTransactionAsync();
+            await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_outgoing_envelopes", tx).ExecuteNonQueryAsync();
+            await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_incoming_envelopes", tx).ExecuteNonQueryAsync();
+            await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_dead_letters", tx).ExecuteNonQueryAsync();
+
+            await tx.CommitAsync();
+        }
+
+        async Task IEnvelopeStorageAdmin.RebuildSchemaObjects()
+        {
+            await using var conn = new SqlConnection(_settings.ConnectionString);
+            await conn.OpenAsync();
+
+            var patch = await SchemaMigration.Determine(conn, _schemaObjects);
+
+            if (patch.Difference != SchemaPatchDifference.None)
+            {
+                await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+            }
+
+            await truncateEnvelopeData(conn);
+        }
+
+        private async Task truncateEnvelopeData(SqlConnection conn)
+        {
+            try
+            {
+                var tx = (SqlTransaction) await conn.BeginTransactionAsync();
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_outgoing_envelopes", tx).ExecuteNonQueryAsync();
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_incoming_envelopes", tx).ExecuteNonQueryAsync();
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_dead_letters", tx).ExecuteNonQueryAsync();
+
+                await tx.CommitAsync();
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException("Failure trying to execute:\n\n" + sql, e);
+                throw new InvalidOperationException(
+                    "Failure trying to execute the truncate table statements for the envelope storage", e);
             }
-        }
-
-        private void execute(SqlConnection conn, string filename)
-        {
-            var sql = toScript(filename, _settings.SchemaName);
-
-            try
-            {
-                conn.CreateCommand(sql).ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException("Failure trying to execute:\n\n" + sql, e);
-            }
-        }
-
-        public void CreateAll()
-        {
-            using (var conn = _settings.CreateConnection())
-            {
-                conn.Open();
-
-                buildSchemaIfNotExists(conn);
-
-                foreach (var file in _creationOrder)
-                {
-                    execute(file, conn);
-                }
-            }
-        }
-
-        public void RecreateAll()
-        {
-            using (var conn = _settings.CreateConnection())
-            {
-                conn.Open();
-
-                execute("Drop.sql", conn);
-
-                buildSchemaIfNotExists(conn);
-
-                foreach (var file in _creationOrder)
-                {
-                    execute(file, conn);
-                }
-            }
-        }
-
-        private void buildSchemaIfNotExists(DbConnection conn)
-        {
-            var count = conn.CreateCommand("select count(*) from sys.schemas where name = @name")
-                .With("name", _settings.SchemaName).ExecuteScalar().As<int>();
-
-            if (count == 0) conn.CreateCommand($"CREATE SCHEMA [{_settings.SchemaName}] AUTHORIZATION [dbo]").ExecuteNonQuery();
-        }
-
-        void IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
-        {
-            var sql = $"truncate table {_settings.SchemaName}.jasper_outgoing_envelopes;truncate table {_settings.SchemaName}.jasper_incoming_envelopes;truncate table {_settings.SchemaName}.jasper_dead_letters;";
-            _settings.ExecuteSql(sql);
-        }
-
-        void IEnvelopeStorageAdmin.RebuildSchemaObjects()
-        {
-            DropAll();
-            RecreateAll();
         }
 
         string IEnvelopeStorageAdmin.CreateSql()
@@ -170,48 +219,46 @@ GO
 
 ");
 
-            foreach (var file in _creationOrder)
+            var rules = new DdlRules();
+            foreach (var table in _schemaObjects)
             {
-                var sql = toScript(file, _settings.SchemaName);
-                writer.WriteLine(sql);
-                writer.WriteLine("GO");
-                writer.WriteLine();
+                table.WriteCreateStatement(rules, writer);
             }
 
 
-
             return writer.ToString();
-
         }
 
         public async Task<PersistedCounts> GetPersistedCounts()
         {
             var counts = new PersistedCounts();
 
-            using (var conn = _settings.CreateConnection())
+            await using var conn = _settings.CreateConnection();
+            await conn.OpenAsync();
+
+
+            await using var reader = await conn
+                .CreateCommand(
+                    $"select status, count(*) from {_settings.SchemaName}.{IncomingTable} group by status")
+                .ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
             {
-                await conn.OpenAsync();
+                var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
+                var count = await reader.GetFieldValueAsync<int>(1);
 
-
-                using (var reader = await conn
-                    .CreateCommand(
-                        $"select status, count(*) from {_settings.SchemaName}.{IncomingTable} group by status")
-                    .ExecuteReaderAsync())
+                switch (status)
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
-                        var count = await reader.GetFieldValueAsync<int>(1);
-
-                        if (status == EnvelopeStatus.Incoming)
-                            counts.Incoming = count;
-                        else if (status == EnvelopeStatus.Scheduled) counts.Scheduled = count;
-                    }
+                    case EnvelopeStatus.Incoming:
+                        counts.Incoming = count;
+                        break;
+                    case EnvelopeStatus.Scheduled:
+                        counts.Scheduled = count;
+                        break;
                 }
-
-                counts.Outgoing = (int) await conn
-                    .CreateCommand($"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
             }
+
+            counts.Outgoing = (int) await CommandExtensions.CreateCommand(conn, $"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
 
 
             return counts;
@@ -269,7 +316,7 @@ GO
             }
         }
 
-        public void ReleaseAllOwnership()
+        public Task ReleaseAllOwnership()
         {
             using (var conn = _settings.CreateConnection())
             {
@@ -277,6 +324,8 @@ GO
 
                 conn.CreateCommand($"update {_settings.SchemaName}.{IncomingTable} set owner_id = 0;update {_settings.SchemaName}.{OutgoingTable} set owner_id = 0");
             }
+
+            return Task.CompletedTask;
         }
     }
 }

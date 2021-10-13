@@ -1,4 +1,5 @@
-﻿using Baseline;
+﻿using System.Threading.Tasks;
+using Baseline;
 using IntegrationTests;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
@@ -58,11 +59,11 @@ namespace Jasper.Persistence.Testing.SqlServer
         }
 
         [Fact]
-        public void smoke_test_clear_all()
+        public async Task smoke_test_clear_all()
         {
             var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
 
-            loader.As<IEnvelopeStorageAdmin>().ClearAllPersistedEnvelopes();
+            await loader.As<IEnvelopeStorageAdmin>().ClearAllPersistedEnvelopes();
 
 
         }
@@ -70,19 +71,12 @@ namespace Jasper.Persistence.Testing.SqlServer
         [Fact]
         public void retrieve_creation_script()
         {
-            var sql = SqlServerEnvelopeStorageAdmin.ToCreationScript("foo");
+            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "foo"});
+            var sql = loader.As<IEnvelopeStorageAdmin>().CreateSql();
 
             sql.ShouldContain("create table foo.jasper_outgoing_envelopes");
             sql.ShouldContain("create table foo.jasper_incoming_envelopes");
         }
 
-        [Fact]
-        public void retrieve_drop_script()
-        {
-            var sql = SqlServerEnvelopeStorageAdmin.ToDropScript("foo");
-
-            sql.ShouldContain("drop table foo.jasper_outgoing_envelopes");
-            sql.ShouldContain("drop table foo.jasper_incoming_envelopes");
-        }
     }
 }

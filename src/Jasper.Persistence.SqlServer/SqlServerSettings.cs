@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Persistence.Database;
+using Microsoft.Data.SqlClient;
+using Weasel.Core;
 
 namespace Jasper.Persistence.SqlServer
 {

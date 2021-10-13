@@ -1,8 +1,6 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
@@ -20,48 +18,43 @@ using Xunit.Sdk;
 
 namespace TestingSupport.Compliance
 {
-    public abstract class SendingCompliance : IDisposable
+    public abstract class SendingComplianceFixture : IDisposable
     {
-        protected IHost theSender;
-        protected IHost theReceiver;
-        protected Uri theOutboundAddress;
-        private readonly ITestOutputHelper _testOutputHelper = new TestOutputHelper();
-        private readonly TimeSpan _defaultTimeout = 5.Seconds();
+        public IHost Sender { get; private set; }
+        public IHost Receiver { get; private set; }
+        public Uri OutboundAddress { get; protected set; }
 
-        protected readonly ErrorCausingMessage theMessage = new ErrorCausingMessage();
-        private ITrackedSession _session;
+        public readonly TimeSpan DefaultTimeout = 5.Seconds();
 
-        protected SendingCompliance(Uri destination)
+        protected SendingComplianceFixture(Uri destination, int defaultTimeInSeconds = 5)
         {
-            theOutboundAddress = destination;
+            OutboundAddress = destination;
+            DefaultTimeout = defaultTimeInSeconds.Seconds();
         }
 
-        protected SendingCompliance(Uri destination, TimeSpan defaultTimeout)
+
+        protected void SenderIs<T>() where T : JasperOptions, new()
         {
-            theOutboundAddress = destination;
-            _defaultTimeout = defaultTimeout;
+            Sender = JasperHost.For<T>(configureSender);
+            Sender.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
-        public void SenderIs<T>() where T : JasperOptions, new()
-        {
-            theSender = JasperHost.For<T>(configureSender);
-        }
-
-        public void TheOnlyAppIs<T>() where T : JasperOptions, new()
+        protected void TheOnlyAppIs<T>() where T : JasperOptions, new()
         {
             var options = new T();
             configureReceiver(options);
             configureSender(options);
 
-            theSender = JasperHost.For(options);
+            Sender = JasperHost.For(options);
 
-            theSender.RebuildMessageStorage();
+            Sender.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
-        public void SenderIs(JasperOptions options)
+        protected void SenderIs(JasperOptions options)
         {
             configureSender(options);
-            theSender = JasperHost.For(options);
+            Sender = JasperHost.For(options);
+            Sender.RebuildMessageStorage().GetAwaiter().GetResult();
 
         }
 
@@ -72,18 +65,20 @@ namespace TestingSupport.Compliance
                 .IncludeType<PongHandler>();
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
-            options.Endpoints.PublishAllMessages().To(theOutboundAddress);
+            options.Endpoints.PublishAllMessages().To(OutboundAddress);
         }
 
         public void ReceiverIs<T>() where T : JasperOptions, new()
         {
-            theReceiver = JasperHost.For<T>(configureReceiver);
+            Receiver = JasperHost.For<T>(configureReceiver);
+            Receiver.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
         public void ReceiverIs(JasperOptions options)
         {
             configureReceiver(options);
-            theReceiver = JasperHost.For(options);
+            Receiver = JasperHost.For(options);
+            Receiver.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
         private static void configureReceiver<T>(T options) where T : JasperOptions, new()
@@ -115,21 +110,50 @@ namespace TestingSupport.Compliance
 
         public void Dispose()
         {
-            theSender?.Dispose();
-            theReceiver?.Dispose();
+            Sender?.Dispose();
+            if (!object.ReferenceEquals(Sender, Receiver))
+            {
+                Receiver?.Dispose();
+            }
         }
+
+        public virtual void BeforeEach(){}
+    }
+
+    public abstract class SendingCompliance<T> : IClassFixture<T> where T : SendingComplianceFixture
+    {
+        protected IHost theSender;
+        protected IHost theReceiver;
+        protected Uri theOutboundAddress;
+        private readonly ITestOutputHelper _testOutputHelper = new TestOutputHelper();
+
+
+        protected readonly ErrorCausingMessage theMessage = new ErrorCausingMessage();
+        private ITrackedSession _session;
+
+        protected SendingCompliance(T fixture)
+        {
+            Fixture = fixture;
+            theSender = fixture.Sender;
+            theReceiver = fixture.Receiver;
+            theOutboundAddress = fixture.OutboundAddress;
+
+            fixture.Sender.ClearAllPersistedMessages().GetAwaiter().GetResult();
+            fixture.BeforeEach();
+        }
+
+        public T Fixture { get; }
 
         [Fact]
         public virtual async Task can_apply_requeue_mechanics()
         {
-
-            var session = await theSender.TrackActivity(_defaultTimeout)
+            var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message2()));
 
 
-            
+
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
 
@@ -138,7 +162,7 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task can_send_from_one_node_to_another_by_destination()
         {
-            var session = await theSender.TrackActivity(_defaultTimeout)
+            var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
@@ -153,7 +177,7 @@ namespace TestingSupport.Compliance
         {
             var message1 = new Message1();
 
-            var session = await theSender.TrackActivity(_defaultTimeout)
+            var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(message1);
@@ -166,7 +190,7 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task tags_the_envelope_with_the_source()
         {
-            var session = await theSender.TrackActivity(_defaultTimeout)
+            var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
@@ -185,7 +209,7 @@ namespace TestingSupport.Compliance
 
             var id2 = Guid.Empty;
             var session2 = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
 
                 .ExecuteAndWait(async context =>
@@ -210,7 +234,7 @@ namespace TestingSupport.Compliance
         public async Task schedule_send()
         {
             var session = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver ?? theSender)
@@ -229,7 +253,7 @@ namespace TestingSupport.Compliance
         protected async Task<EnvelopeRecord> afterProcessingIsComplete()
         {
             _session = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWait(theMessage);
@@ -242,7 +266,7 @@ namespace TestingSupport.Compliance
         protected async Task shouldSucceedOnAttempt(int attempt)
         {
             var session = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .DoNotAssertOnExceptionsDetected()
@@ -260,13 +284,13 @@ namespace TestingSupport.Compliance
 
             var writer = new StringWriter();
 
-            writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
+            await writer.WriteLineAsync($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
             foreach (var envelopeRecord in session.AllRecordsInOrder())
             {
                 writer.WriteLine(envelopeRecord);
                 if (envelopeRecord.Exception != null)
                 {
-                    writer.WriteLine(envelopeRecord.Exception.Message);
+                    await writer.WriteLineAsync(envelopeRecord.Exception.Message);
                 }
             }
 
@@ -276,7 +300,7 @@ namespace TestingSupport.Compliance
         protected async Task shouldMoveToErrorQueueOnAttempt(int attempt)
         {
             var session = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(30.Seconds())
@@ -353,7 +377,7 @@ namespace TestingSupport.Compliance
             var ping = new PingMessage();
 
             var session = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
                 .SendMessageAndWait(ping);
@@ -368,7 +392,7 @@ namespace TestingSupport.Compliance
             var ping = new ImplicitPing();
 
             var session = await theSender
-                .TrackActivity(_defaultTimeout)
+                .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
                 .ExecuteAndWait(x => x.SendAndExpectResponseFor<ImplicitPong>(ping));

@@ -3,6 +3,7 @@ using IntegrationTests;
 using Jasper.Persistence.Marten;
 using Marten;
 using Shouldly;
+using Weasel.Postgresql;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten

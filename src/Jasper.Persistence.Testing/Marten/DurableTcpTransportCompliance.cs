@@ -1,3 +1,4 @@
+using System;
 using IntegrationTests;
 using Jasper.Persistence.Marten;
 using Jasper.Util;
@@ -36,14 +37,21 @@ namespace Jasper.Testing.Transports.Tcp
         }
     }
 
-    [Collection("marten")]
-    public class DurableTcpTransportCompliance : SendingCompliance
+    public class DurableTcpTransportFixture : SendingComplianceFixture
     {
-        public DurableTcpTransportCompliance() : base($"tcp://localhost:2290/incoming".ToUri())
+        public DurableTcpTransportFixture() : base($"tcp://localhost:2290/incoming".ToUri())
         {
             SenderIs<Sender>();
 
             ReceiverIs<Receiver>();
+        }
+    }
+
+    [Collection("marten")]
+    public class DurableTcpTransportCompliance : SendingCompliance<DurableTcpTransportFixture>
+    {
+        public DurableTcpTransportCompliance(DurableTcpTransportFixture fixture) : base(fixture)
+        {
         }
     }
 }

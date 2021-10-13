@@ -7,6 +7,7 @@ using Jasper.Persistence.Sagas;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Util;
 using Lamar.Scanning.Conventions;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.SqlServer

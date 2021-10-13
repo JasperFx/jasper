@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Storyteller Support for Jasper Applications</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.TestSupport.Storyteller</AssemblyName>
     <PackageId>Jasper.TestSupport.Storyteller</PackageId>

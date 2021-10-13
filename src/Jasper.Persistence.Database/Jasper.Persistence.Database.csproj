@@ -3,7 +3,7 @@
     <PropertyGroup>
       <Description>Core ADO.Net related functionality for using database backed persistence with Jasper</Description>
       <Authors>Jeremy D. Miller</Authors>
-      <TargetFramework>netstandard2.1</TargetFramework>
+      <TargetFramework>net5.0</TargetFramework>
       <DebugType>portable</DebugType>
       <AssemblyName>Jasper.Persistence.Database</AssemblyName>
       <PackageId>Jasper.Persistence.Database</PackageId>
@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <PackageReference Include="System.Data.Common" Version="4.3.0" />
+      <PackageReference Include="Weasel.Core" Version="0.9.9" />
     </ItemGroup>
 
   <ItemGroup>

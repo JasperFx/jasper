@@ -7,8 +7,8 @@ namespace Jasper.Persistence.Durability
 {
     public interface IEnvelopeStorageAdmin
     {
-        void ClearAllPersistedEnvelopes();
-        void RebuildSchemaObjects();
+        Task ClearAllPersistedEnvelopes();
+        Task RebuildSchemaObjects();
         string CreateSql();
         Task<PersistedCounts> GetPersistedCounts();
 
@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Durability
         Task<Envelope[]> AllOutgoingEnvelopes();
 
 
-        void ReleaseAllOwnership();
+        Task ReleaseAllOwnership();
     }
 
 

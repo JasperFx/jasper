@@ -3,6 +3,8 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using Weasel.Core;
+using DbCommandBuilder = System.Data.Common.DbCommandBuilder;
 
 namespace Jasper.Persistence.Database
 {
@@ -68,10 +70,9 @@ namespace Jasper.Persistence.Database
             }
         }
 
-        public CommandBuilder ToCommandBuilder()
+        public Weasel.Core.DbCommandBuilder ToCommandBuilder()
         {
-            var cmd = CreateConnection().CreateCommand("");
-            return new CommandBuilder(cmd);
+            return CreateConnection().ToCommandBuilder();
         }
 
 

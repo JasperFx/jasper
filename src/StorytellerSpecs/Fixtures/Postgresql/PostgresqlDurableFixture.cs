@@ -11,6 +11,7 @@ using Jasper.Persistence.Postgresql;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StorytellerSpecs.Fixtures.Durability;
+using Weasel.Core;
 
 namespace StorytellerSpecs.Fixtures.Postgresql
 {

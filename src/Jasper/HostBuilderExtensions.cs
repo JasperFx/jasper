@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime;
 using Lamar;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Oakton.AspNetCore;
+using Oakton;
 
 namespace Jasper
 {

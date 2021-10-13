@@ -33,7 +33,7 @@ namespace StorytellerSpecs.Fixtures
                     _host = c.State.Retrieve<IHost>();
                     try
                     {
-                        _host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
+                        _host.Get<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
                     }
                     catch (Exception)
                     {

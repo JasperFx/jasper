@@ -41,7 +41,7 @@ namespace Jasper.Persistence.Testing.EFCore
         public end_to_end_efcore_persistence(EFCorePersistenceContext context)
         {
             Host = context.theHost;
-            Host.RebuildMessageStorage();
+
         }
 
         public IHost Host { get; }
@@ -49,6 +49,8 @@ namespace Jasper.Persistence.Testing.EFCore
         [Fact]
         public async Task persist_an_outgoing_envelope()
         {
+            await Host.RebuildMessageStorage();
+
             var envelope = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
@@ -84,6 +86,8 @@ namespace Jasper.Persistence.Testing.EFCore
         [Fact]
         public async Task persist_an_incoming_envelope()
         {
+            await Host.RebuildMessageStorage();
+
             var envelope = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},

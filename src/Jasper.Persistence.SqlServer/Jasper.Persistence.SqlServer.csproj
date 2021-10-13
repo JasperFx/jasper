@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Sql Server-backed Persistence for JasperFx Applications</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.Persistence.SqlServer</AssemblyName>
     <PackageId>Jasper.Persistence.SqlServer</PackageId>
@@ -16,9 +16,6 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="[4.5.1, 5.0.0)" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
     <EmbeddedResource Include="Schema/*.sql" />
@@ -29,4 +26,10 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.1" />
+    <PackageReference Include="Weasel.SqlServer" Version="1.0.2" />
+  </ItemGroup>
+
 </Project>
