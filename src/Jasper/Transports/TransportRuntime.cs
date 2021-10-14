@@ -241,6 +241,11 @@ namespace Jasper.Transports
             {
                 listener.SafeDispose();
             }
+
+            foreach (var transport in _transports.OfType<IDisposable>())
+            {
+                transport.Dispose();
+            }
         }
 
     }

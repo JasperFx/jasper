@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ.Internal
             _transport = transport;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             teardownConnection();
         }
@@ -42,6 +42,7 @@ namespace Jasper.RabbitMQ.Internal
 
         protected void teardownConnection()
         {
+            Channel?.Close();
             Channel?.Abort();
             Channel?.Dispose();
             _connection?.Close();

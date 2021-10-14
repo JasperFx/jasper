@@ -10,11 +10,13 @@ using Jasper.Util;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqEndpoint : Endpoint
+    public class RabbitMqEndpoint : Endpoint, IDisposable
     {
         public const string Queue = "queue";
         public const string Exchange = "exchange";
         public const string Routing = "routing";
+
+        private IListener _listener;
 
         public string ExchangeName { get; set; } = string.Empty;
         public string RoutingKey { get; set; }
@@ -122,22 +124,26 @@ namespace Jasper.RabbitMQ.Internal
         {
             if (!IsListener) return;
 
-            IListener listener;
             if (ListenerCount > 1)
             {
-                listener = new ParallelRabbitMqListener(root.TransportLogger, this, Parent);
+                _listener = new ParallelRabbitMqListener(root.TransportLogger, this, Parent);
             }
             else
             {
-                listener = new RabbitMqListener(root.TransportLogger, this, Parent);
+                _listener = new RabbitMqListener(root.TransportLogger, this, Parent);
             }
 
-            runtime.AddListener(listener, this);
+            runtime.AddListener(_listener, this);
         }
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
             return new RabbitMqSender(this, this.Parent);
+        }
+
+        public void Dispose()
+        {
+            _listener?.Dispose();
         }
     }
 

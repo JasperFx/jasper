@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Baseline;
 using Jasper.Runtime;
 using Jasper.Transports;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -152,28 +149,26 @@ namespace Jasper.RabbitMQ.Internal
 
         public void PurgeAllQueues()
         {
-            using (var connection = BuildConnection())
+            using var connection = BuildConnection();
+            using (var channel = connection.CreateModel())
             {
-                using (var channel = connection.CreateModel())
+                foreach (var queue in Queues)
                 {
-                    foreach (var queue in Queues)
-                    {
-                        queue.Purge(channel);
-                    }
-
-                    var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
-                        .Where(x => Queues.All(q => q.Name != x)).ToArray();
-
-                    foreach (var other in others)
-                    {
-                        channel.QueuePurge(other);
-                    }
-
-                    channel.Close();
+                    queue.Purge(channel);
                 }
 
-                connection.Close();
+                var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
+                    .Where(x => Queues.All(q => q.Name != x)).ToArray();
+
+                foreach (var other in others)
+                {
+                    channel.QueuePurge(other);
+                }
+
+                channel.Close();
             }
+
+            connection.Close();
         }
 
         public RabbitMqEndpoint EndpointForQueue(string queueName)

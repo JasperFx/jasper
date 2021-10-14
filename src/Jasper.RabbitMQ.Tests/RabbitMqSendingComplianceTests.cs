@@ -9,12 +9,10 @@ namespace Jasper.RabbitMQ.Tests
 
     public class Sender : JasperOptions
     {
-        public static int Count = 0;
-
         public Sender()
         {
-            QueueName = $"compliance{++Count}";
-            var listener = $"listener{Count}";
+            QueueName = RabbitTesting.NextQueueName();
+            var listener = $"listener{RabbitTesting.Number}";
 
             Endpoints.ConfigureRabbitMq(x =>
             {
@@ -46,9 +44,10 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
+
     public class RabbitMqSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
-        public RabbitMqSendingFixture() : base($"rabbitmq://queue/compliance".ToUri())
+        public RabbitMqSendingFixture() : base($"rabbitmq://queue/{RabbitTesting.NextQueueName()}".ToUri())
         {
 
         }
@@ -63,10 +62,14 @@ namespace Jasper.RabbitMQ.Tests
             var receiver = new Receiver(sender.QueueName);
 
             await ReceiverIs(receiver);
+
+            Sender.TryPurgeAllRabbitMqQueues();
+            Receiver.TryPurgeAllRabbitMqQueues();
         }
 
         public Task DisposeAsync()
         {
+
             return Task.CompletedTask;
         }
 
@@ -76,11 +79,9 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
-
+    [Collection("acceptance")]
     public class RabbitMqSendingComplianceTests : SendingCompliance<RabbitMqSendingFixture>
     {
-        public RabbitMqSendingComplianceTests(RabbitMqSendingFixture fixture) : base(fixture)
-        {
-        }
+
     }
 }

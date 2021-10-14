@@ -40,8 +40,6 @@ namespace Jasper.Persistence.Testing.Postgresql
     [Collection("marten")]
     public class LocalPostgresqlBackedTransportCompliance : SendingCompliance<LocalPostgresqlBackedFixture>
     {
-        public LocalPostgresqlBackedTransportCompliance(LocalPostgresqlBackedFixture fixture) : base(fixture)
-        {
-        }
+
     }
 }

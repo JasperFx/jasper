@@ -114,7 +114,7 @@ namespace Jasper.Runtime.WorkerQueues
 
         public void Dispose()
         {
-            // nothing
+            _receiver.Complete();
         }
 
         // Separated for testing here.

@@ -28,6 +28,12 @@ namespace Jasper.RabbitMQ.Internal
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 
+        public override void Dispose()
+        {
+            _callback.Dispose();
+            base.Dispose();
+        }
+
         public ListeningStatus Status
         {
             get => _consumer != null ? ListeningStatus.Accepting : ListeningStatus.TooBusy;

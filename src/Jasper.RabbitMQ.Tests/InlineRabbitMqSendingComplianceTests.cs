@@ -46,10 +46,11 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
+
     public class InlineRabbitMqSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
 
-        public InlineRabbitMqSendingFixture() : base($"rabbitmq://queue/compliance".ToUri())
+        public InlineRabbitMqSendingFixture() : base($"rabbitmq://queue/{RabbitTesting.NextQueueName()}".ToUri())
         {
 
         }
@@ -64,10 +65,15 @@ namespace Jasper.RabbitMQ.Tests
             var receiver = new InlineReceiver(sender.QueueName);
 
             await ReceiverIs(receiver);
+
+            Sender.TryPurgeAllRabbitMqQueues();
+            Receiver.TryPurgeAllRabbitMqQueues();
         }
 
         public Task DisposeAsync()
         {
+            Sender.TearDownAllRabbitMqObjects();
+            Receiver.TearDownAllRabbitMqObjects();
             return Task.CompletedTask;
         }
 
@@ -80,11 +86,10 @@ namespace Jasper.RabbitMQ.Tests
     }
 
 
+    [Collection("acceptance")]
     public class InlineRabbitMqSendingComplianceTests : SendingCompliance<InlineRabbitMqSendingFixture>
     {
-        public InlineRabbitMqSendingComplianceTests(InlineRabbitMqSendingFixture fixture) : base(fixture)
-        {
-        }
+
     }
 
 }

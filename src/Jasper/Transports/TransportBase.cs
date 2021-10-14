@@ -82,6 +82,10 @@ namespace Jasper.Transports
 
         public void Dispose()
         {
+            foreach (var endpoint in endpoints().OfType<IDisposable>())
+            {
+                endpoint.Dispose();
+            }
         }
 
         public Endpoint GetOrCreateEndpoint(Uri uri)

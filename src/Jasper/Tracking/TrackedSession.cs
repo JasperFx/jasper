@@ -31,7 +31,7 @@ namespace Jasper.Tracking
 
         public TrackedSession(IHost host)
         {
-            _primaryHost = host;
+            _primaryHost = host ?? throw new ArgumentNullException(nameof(host));
             _source = new TaskCompletionSource<TrackingStatus>();
             _primaryLogger = host?.GetTrackingLogger();
         }

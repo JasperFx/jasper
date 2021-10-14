@@ -105,7 +105,8 @@ namespace Jasper.Runtime.WorkerQueues
 
         public void Dispose()
         {
-            // nothing
+            // Might need to drain the block
+            _receiver.Complete();
         }
 
         // Separated for testing here.

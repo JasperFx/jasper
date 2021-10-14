@@ -119,36 +119,45 @@ namespace TestingSupport.Compliance
         public virtual void BeforeEach(){}
     }
 
-    public abstract class SendingCompliance<T> : IClassFixture<T>, IAsyncLifetime where T : SendingComplianceFixture
+    public abstract class SendingCompliance<T> : IAsyncLifetime where T : SendingComplianceFixture, new()
     {
         protected IHost theSender;
         protected IHost theReceiver;
         protected Uri theOutboundAddress;
-        private readonly ITestOutputHelper _testOutputHelper = new TestOutputHelper();
 
 
         protected readonly ErrorCausingMessage theMessage = new ErrorCausingMessage();
         private ITrackedSession _session;
 
-        protected SendingCompliance(T fixture)
+        protected SendingCompliance()
         {
-            Fixture = fixture;
-            theSender = fixture.Sender;
-            theReceiver = fixture.Receiver;
-            theOutboundAddress = fixture.OutboundAddress;
-
+            Fixture = new T();
 
         }
 
         public async Task InitializeAsync()
         {
+            if (Fixture is IAsyncLifetime lifetime)
+            {
+                await lifetime.InitializeAsync();
+            }
+
+            theSender = Fixture.Sender;
+            theReceiver = Fixture.Receiver;
+            theOutboundAddress = Fixture.OutboundAddress;
+
             await Fixture.Sender.ClearAllPersistedMessages();
             Fixture.BeforeEach();
         }
 
-        public Task DisposeAsync()
+        public async Task DisposeAsync()
         {
-            return Task.CompletedTask;
+            if (Fixture is IAsyncLifetime lifetime)
+            {
+                await lifetime.InitializeAsync();
+            }
+
+            Fixture.Dispose();
         }
 
         public T Fixture { get; }

@@ -83,14 +83,8 @@ namespace Jasper.AzureServiceBus.Tests
 
         public class AzureServiceBusSendingComplianceTests : SendingCompliance<AzureServiceBusSendingFixture>
         {
-            public AzureServiceBusSendingComplianceTests(AzureServiceBusSendingFixture fixture) : base(fixture)
-            {
-            }
+
         }
-
-
-
-
 
         // SAMPLE: can_stop_and_start_ASB
         [Fact]

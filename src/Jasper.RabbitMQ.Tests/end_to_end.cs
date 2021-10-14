@@ -21,30 +21,23 @@ using ConsoleWriter = Oakton.ConsoleWriter;
 
 namespace Jasper.RabbitMQ.Tests
 {
+    public static class RabbitTesting
+    {
+        public static int Number = 0;
+
+        public static string NextQueueName() => $"messages{++Number}";
+        public static string NextExchangeName() => $"exchange{++Number}";
+    }
+
     [Collection("marten")]
     public class end_to_end : RabbitMQContext
     {
-
-        [Fact]
-        public async Task send_message_to_and_receive_through_rabbitmq()
-        {
-            using (var host = JasperHost.For<RabbitMqUsingApp>())
-            {
-                await host
-                    .TrackActivity()
-                    .IncludeExternalTransports()
-                    .SendMessageAndWait(new ColorChosen {Name = "Red"});
-
-                var colors = host.Get<ColorHistory>();
-
-                colors.Name.ShouldBe("Red");
-            }
-        }
 
 
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
+            var queueName = RabbitTesting.NextQueueName();
             var publisher = JasperHost.For(_ =>
             {
                 _.Extensions.UseMessageTrackingTestingSupport();
@@ -52,13 +45,13 @@ namespace Jasper.RabbitMQ.Tests
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages2");
+                    x.DeclareQueue(queueName);
                     x.AutoProvision = true;
                 });
 
                 _.Endpoints
                     .PublishAllMessages()
-                    .ToRabbit("messages2")
+                    .ToRabbit(queueName)
                     .Durably();
 
                 _.Extensions.UseMarten(x =>
@@ -72,6 +65,8 @@ namespace Jasper.RabbitMQ.Tests
 
             });
 
+            publisher.TryPurgeAllRabbitMqQueues();
+
             var receiver = JasperHost.For(_ =>
             {
                 _.Extensions.UseMessageTrackingTestingSupport();
@@ -79,11 +74,11 @@ namespace Jasper.RabbitMQ.Tests
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages2");
+                    x.DeclareQueue(queueName);
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints.ListenToRabbitQueue("messages2");
+                _.Endpoints.ListenToRabbitQueue(queueName);
                 _.Services.AddSingleton<ColorHistory>();
 
                 _.Extensions.UseMarten(x =>
@@ -96,6 +91,7 @@ namespace Jasper.RabbitMQ.Tests
                 _.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             });
 
+            receiver.TryPurgeAllRabbitMqQueues();
 
             try
             {
@@ -119,25 +115,30 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task reply_uri_mechanics()
         {
-            var publisher = JasperHost.For(_ =>
+            var queueName1 = RabbitTesting.NextQueueName();
+            var queueName2 = RabbitTesting.NextQueueName();
+
+
+            using var publisher = JasperHost.For(_ =>
             {
                 _.ServiceName = "Publisher";
                 _.Extensions.UseMessageTrackingTestingSupport();
 
+
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages20");
-                    x.DeclareQueue("messages21");
+                    x.DeclareQueue(queueName1);
+                    x.DeclareQueue(queueName2);
                     x.AutoProvision = true;
                 });
 
                 _.Endpoints
                     .PublishAllMessages()
-                    .ToRabbit("messages20")
+                    .ToRabbit(queueName1)
                     .Durably();
 
-                _.Endpoints.ListenToRabbitQueue("messages21").UseForReplies();
+                _.Endpoints.ListenToRabbitQueue(queueName2).UseForReplies();
 
                 _.Extensions.UseMarten(x =>
                 {
@@ -150,7 +151,8 @@ namespace Jasper.RabbitMQ.Tests
 
             });
 
-            var receiver = JasperHost.For(_ =>
+
+            using var receiver = JasperHost.For(_ =>
             {
                 _.ServiceName = "Receiver";
 
@@ -159,11 +161,11 @@ namespace Jasper.RabbitMQ.Tests
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages20");
+                    x.DeclareQueue(queueName1);
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints.ListenToRabbitQueue("messages20");
+                _.Endpoints.ListenToRabbitQueue(queueName1);
                 _.Services.AddSingleton<ColorHistory>();
 
                 _.Extensions.UseMarten(x =>
@@ -176,25 +178,18 @@ namespace Jasper.RabbitMQ.Tests
                 _.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             });
 
-
-            try
-            {
-
-                var session = await publisher
-                    .TrackActivity()
-                    .AlsoTrack(receiver)
-                    .SendMessageAndWait(new PingMessage{Number = 1});
+            publisher.TryPurgeAllRabbitMqQueues();
 
 
-                // TODO -- let's make an assertion here?
-                var records = session.FindEnvelopesWithMessageType<PongMessage>(EventType.Received);
-                records.Any(x => x.ServiceName == "Publisher").ShouldBeTrue();
-            }
-            finally
-            {
-                publisher.Dispose();
-                receiver.Dispose();
-            }
+            var session = await publisher
+                .TrackActivity()
+                .AlsoTrack(receiver)
+                .SendMessageAndWait(new PingMessage{Number = 1});
+
+
+            // TODO -- let's make an assertion here?
+            var records = session.FindEnvelopesWithMessageType<PongMessage>(EventType.Received);
+            records.Any(x => x.ServiceName == "Publisher").ShouldBeTrue();
         }
 
 
@@ -203,8 +198,8 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task send_message_to_and_receive_through_rabbitmq_with_routing_key()
         {
-            var queueName = "messages5";
-            var exchangeName = "exchange1";
+            var queueName = RabbitTesting.NextQueueName();
+            var exchangeName = RabbitTesting.NextExchangeName();
 
             var publisher = JasperHost.For(_ =>
             {
@@ -236,7 +231,7 @@ namespace Jasper.RabbitMQ.Tests
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages5");
+                    x.DeclareQueue(RabbitTesting.NextQueueName());
                     x.DeclareExchange(exchangeName);
                     x.DeclareBinding(new Binding
                     {
@@ -273,7 +268,7 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public async Task schedule_send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
-            var uri = "rabbitmq://default/messages11/durable";
+            var queueName = RabbitTesting.NextQueueName();
 
             var publisher = JasperHost.For(_ =>
             {
@@ -286,14 +281,14 @@ namespace Jasper.RabbitMQ.Tests
                 _.Endpoints.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue("messages11");
+                    x.DeclareQueue(queueName);
 
 
                     x.AutoProvision = true;
                 });
 
 
-                _.Endpoints.PublishAllMessages().ToRabbit("messages11").Durably();
+                _.Endpoints.PublishAllMessages().ToRabbit(queueName).Durably();
 
 
 
@@ -320,7 +315,7 @@ namespace Jasper.RabbitMQ.Tests
 
 
 
-                _.Endpoints.ListenToRabbitQueue("messages11");
+                _.Endpoints.ListenToRabbitQueue(queueName);
                 _.Services.AddSingleton<ColorHistory>();
 
                 _.Extensions.UseMarten(x =>
@@ -358,9 +353,9 @@ namespace Jasper.RabbitMQ.Tests
         public async Task use_fan_out_exchange()
         {
             var exchangeName = "fanout";
-            var queueName1 = "messages12";
-            var queueName2 = "messages13";
-            var queueName3 = "messages14";
+            var queueName1 = RabbitTesting.NextQueueName();
+            var queueName2 = RabbitTesting.NextQueueName();
+            var queueName3 = RabbitTesting.NextQueueName();
 
 
             var publisher = JasperHost.For(_ =>
@@ -476,7 +471,7 @@ namespace Jasper.RabbitMQ.Tests
         public async Task send_message_to_and_receive_through_rabbitmq_with_named_topic()
         {
 
-            var queueName = "messages4";
+            var queueName = RabbitTesting.NextQueueName();
 
             var publisher = JasperHost.For(_ =>
             {
@@ -484,7 +479,8 @@ namespace Jasper.RabbitMQ.Tests
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareExchange("topics", ex => { ex.ExchangeType = ExchangeType.Topic; });
-                    x.DeclareQueue("messages4");
+
+                    x.DeclareQueue(queueName);
                     x.DeclareBinding(new Binding
                     {
                         BindingKey = "special",
@@ -503,6 +499,8 @@ namespace Jasper.RabbitMQ.Tests
 
             });
 
+            publisher.TryPurgeAllRabbitMqQueues();
+
             var receiver = JasperHost.For(_ =>
             {
                 _.Endpoints.ConfigureRabbitMq(x =>
@@ -518,12 +516,15 @@ namespace Jasper.RabbitMQ.Tests
 
             });
 
-
+            receiver.TryPurgeAllRabbitMqQueues();
 
             try
             {
                 var message = new SpecialTopic();
-                var session = await publisher.TrackActivity().AlsoTrack(receiver).SendMessageAndWait(message);
+                var session = await publisher
+                    .TrackActivity()
+                    .AlsoTrack(receiver)
+                    .SendMessageAndWait(message);
 
 
                 var received = session.FindSingleTrackedMessageOfType<SpecialTopic>(EventType.MessageSucceeded);

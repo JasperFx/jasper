@@ -76,8 +76,6 @@ namespace Jasper.Testing.Transports.Tcp
     [Collection("compliance")]
     public class LightweightTcpTransportCompliance : SendingCompliance<LightweightTcpFixture>
     {
-        public LightweightTcpTransportCompliance(LightweightTcpFixture fixture) : base(fixture)
-        {
-        }
+
     }
 }

@@ -61,8 +61,6 @@ namespace Jasper.Testing.Transports.Tcp
     [Collection("marten")]
     public class DurableTcpTransportCompliance : SendingCompliance<DurableTcpTransportFixture>
     {
-        public DurableTcpTransportCompliance(DurableTcpTransportFixture fixture) : base(fixture)
-        {
-        }
+
     }
 }
