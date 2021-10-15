@@ -116,7 +116,7 @@ namespace Jasper.Runtime.Routing
                 Destination = agent.Destination,
                 ContentType = "application/json",
                 Sender = agent,
-                writer = _root.Serialization.JsonWriterFor(typeof(T))
+                Writer = _root.Serialization.JsonWriterFor(typeof(T))
             };
         }
 
@@ -131,7 +131,7 @@ namespace Jasper.Runtime.Routing
                 Destination = agent.Destination,
                 ContentType = "application/json",
                 Sender = agent,
-                writer = _root.Serialization.JsonWriterFor(typeof(T))
+                Writer = _root.Serialization.JsonWriterFor(typeof(T))
             };
         }
 

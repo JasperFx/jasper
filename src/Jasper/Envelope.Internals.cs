@@ -50,7 +50,7 @@ namespace Jasper
         }
 
 
-        internal IMessageSerializer writer { get; set; }
+        internal IMessageSerializer Writer { get; set; }
 
 
 
@@ -82,7 +82,7 @@ namespace Jasper
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Envelope CreateForResponse(object message)
+        internal Envelope CreateForResponse(object message)
         {
             var child = ForSend(message);
             child.CausationId = Id;
@@ -111,7 +111,7 @@ namespace Jasper
         {
             var envelope = (Envelope)MemberwiseClone();
             envelope.Headers = new Dictionary<string, string>(Headers);
-            envelope.writer = writer;
+            envelope.Writer = writer;
 
             return envelope;
         }
@@ -119,7 +119,7 @@ namespace Jasper
         internal Envelope(object message, IMessageSerializer writer)
         {
             Message = message;
-            this.writer = writer;
+            this.Writer = writer;
         }
 
         private bool _enqueued;
