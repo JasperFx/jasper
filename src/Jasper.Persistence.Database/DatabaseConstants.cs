@@ -1,0 +1,26 @@
+﻿namespace Jasper.Persistence.Database
+{
+    public static class DatabaseConstants
+    {
+        public const string Id = "id";
+        public const string OwnerId = "owner_id";
+        public const string Destination = "destination";
+        public const string DeliverBy = "deliver_by";
+        public const string Body = "body";
+        public const string Status = "status";
+
+        public const string ExecutionTime = "execution_time";
+        public const string Attempts = "attempts";
+        public const string Source = "source";
+        public const string MessageType = "message_type";
+
+        public const string Explanation = "explanation";
+        public const string ExceptionText = "exception_text";
+        public const string ExceptionType = "exception_type";
+        public const string ExceptionMessage = "exception_message";
+
+        public const string OutgoingTable = "jasper_outgoing_envelopes";
+        public const string IncomingTable = "jasper_incoming_envelopes";
+        public const string DeadLetterTable = "jasper_dead_letters";
+    }
+}

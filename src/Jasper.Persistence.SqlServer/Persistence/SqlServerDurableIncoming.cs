@@ -9,7 +9,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerDurableIncoming : DataAccessor, IDurableIncoming
+    public class SqlServerDurableIncoming : IDurableIncoming
     {
         private readonly IDatabaseSession _session;
         private readonly DatabaseSettings _databaseSettings;
@@ -21,7 +21,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _session = session;
             _databaseSettings = databaseSettings;
             _findAtLargeEnvelopesSql =
-                $"select top {settings.RecoveryBatchSize} body, attempts from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
+                $"select top {settings.RecoveryBatchSize} body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
 
             _cancellation = settings.Cancellation;
         }

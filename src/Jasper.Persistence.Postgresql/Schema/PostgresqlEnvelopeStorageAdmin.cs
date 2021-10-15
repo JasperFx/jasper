@@ -19,51 +19,47 @@ namespace Jasper.Persistence.Postgresql.Schema
 {
     internal class OutgoingEnvelopeTable : Table
     {
-        public static readonly string TableName = "jasper_outgoing_envelopes";
 
-        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.OutgoingTable))
         {
-            AddColumn<Guid>("id").AsPrimaryKey();
-            AddColumn<int>("owner_id").NotNull();
-            AddColumn<string>("destination").NotNull();
-            AddColumn<DateTimeOffset>("deliver_by");
-            AddColumn("body", "bytea").NotNull();
+            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
+            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
+            AddColumn<string>(DatabaseConstants.Destination).NotNull();
+            AddColumn<DateTimeOffset>(DatabaseConstants.DeliverBy);
+            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
         }
     }
 
     internal class IncomingEnvelopeTable : Table
     {
-        public static readonly string TableName = "jasper_incoming_envelopes";
 
-        public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.IncomingTable))
         {
-            AddColumn<Guid>("id").AsPrimaryKey();
-            AddColumn<string>("status").NotNull();
-            AddColumn<int>("owner_id").NotNull();
-            AddColumn<DateTimeOffset>("execution_time").DefaultValueByExpression("NULL");
-            AddColumn<int>("attempts");
-            AddColumn("body", "bytea").NotNull();
+            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
+            AddColumn<string>(DatabaseConstants.Status).NotNull();
+            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
+            AddColumn<DateTimeOffset>(DatabaseConstants.ExecutionTime).DefaultValueByExpression("NULL");
+            AddColumn<int>(DatabaseConstants.Attempts);
+            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
         }
     }
 
     internal class DeadLettersTable : Table
     {
-        public static readonly string TableName = "jasper_dead_letters";
-
-        public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.DeadLetterTable))
         {
-            AddColumn<Guid>("id").AsPrimaryKey();
-            AddColumn<string>("source");
-            AddColumn<string>("message_type");
-            AddColumn<string>("explanation");
-            AddColumn<string>("exception_text");
-            AddColumn<string>("exception_type");
-            AddColumn<string>("exception_message");
-            AddColumn("body", "bytea").NotNull();
+            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
+            AddColumn<string>(DatabaseConstants.Source);
+            AddColumn<string>(DatabaseConstants.MessageType);
+            AddColumn<string>(DatabaseConstants.Explanation);
+            AddColumn<string>(DatabaseConstants.ExceptionText);
+            AddColumn<string>(DatabaseConstants.ExceptionType);
+            AddColumn<string>(DatabaseConstants.ExceptionMessage);
+            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
         }
     }
 
-    public class PostgresqlEnvelopeStorageAdmin : DataAccessor, IEnvelopeStorageAdmin
+    public class PostgresqlEnvelopeStorageAdmin : IEnvelopeStorageAdmin
     {
         private readonly string _connectionString;
         private readonly Table[] _tables;
@@ -132,7 +128,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             try
             {
                 await conn.CreateCommand(
-                        $"truncate table {SchemaName}.{OutgoingTable};truncate table {SchemaName}.{IncomingTable};truncate table {SchemaName}.{DeadLetterTable};")
+                        $"truncate table {SchemaName}.{DatabaseConstants.OutgoingTable};truncate table {SchemaName}.{DatabaseConstants.IncomingTable};truncate table {SchemaName}.{DatabaseConstants.DeadLetterTable};")
                     .ExecuteNonQueryAsync();
             }
             catch (Exception e)
@@ -192,7 +188,7 @@ namespace Jasper.Persistence.Postgresql.Schema
 
                 using (var reader = await conn
                     .CreateCommand(
-                        $"select status, count(*) from {SchemaName}.{IncomingTable} group by status")
+                        $"select status, count(*) from {SchemaName}.{DatabaseConstants.IncomingTable} group by status")
                     .ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -207,7 +203,7 @@ namespace Jasper.Persistence.Postgresql.Schema
                 }
 
                 var longCount = await conn
-                    .CreateCommand($"select count(*) from {SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
+                    .CreateCommand($"select count(*) from {SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteScalarAsync();
 
                 counts.Outgoing =  Convert.ToInt32(longCount);
             }
@@ -223,7 +219,7 @@ namespace Jasper.Persistence.Postgresql.Schema
                 await conn.OpenAsync();
 
                 var cmd = conn.CreateCommand(
-                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {SchemaName}.{DeadLetterTable} where id = @id");
+                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {SchemaName}.{DatabaseConstants.DeadLetterTable} where id = @id");
                 cmd.With("id", id);
 
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -254,7 +250,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {SchemaName}.{IncomingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, status, owner_id from {SchemaName}.{DatabaseConstants.IncomingTable}").ExecuteToEnvelopes();
             }
         }
 
@@ -264,7 +260,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, '{EnvelopeStatus.Outgoing}', owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, '{EnvelopeStatus.Outgoing}', owner_id from {SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteToEnvelopes();
             }
         }
 
@@ -273,7 +269,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            await conn.CreateCommand($"update {SchemaName}.{IncomingTable} set owner_id = 0;update {SchemaName}.{OutgoingTable} set owner_id = 0")
+            await conn.CreateCommand($"update {SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0;update {SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = 0")
                 .ExecuteNonQueryAsync();
         }
     }

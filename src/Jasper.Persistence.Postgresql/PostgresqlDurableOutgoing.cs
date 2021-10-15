@@ -26,9 +26,9 @@ namespace Jasper.Persistence.Postgresql
             _session = session;
 
             _deleteOutgoingSql =
-                $"delete from {settings.SchemaName}.{OutgoingTable} where id = ANY(@ids)";
+                $"delete from {settings.SchemaName}.{DatabaseConstants.OutgoingTable} where id = ANY(@ids)";
 
-            _reassignSql = $"update {settings.SchemaName}.{OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
+            _reassignSql = $"update {settings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
 
             _cancellation = options.Cancellation;
         }
@@ -36,7 +36,7 @@ namespace Jasper.Persistence.Postgresql
 
         protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings)
         {
-            return $"select body from {databaseSettings.SchemaName}.{OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
+            return $"select body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
         }
 
         public override Task Reassign(int ownerId, Envelope[] outgoing)

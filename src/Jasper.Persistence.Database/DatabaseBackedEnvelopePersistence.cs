@@ -11,7 +11,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseBackedEnvelopePersistence : DataAccessor, IEnvelopePersistence
+    public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence
     {
         protected readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;
@@ -29,15 +29,15 @@ namespace Jasper.Persistence.Database
             _cancellation = settings.Cancellation;
 
             _incrementIncomingAttempts =
-                $"update {DatabaseSettings.SchemaName}.{IncomingTable} set attempts = @attempts where id = @id";
+                $"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set attempts = @attempts where id = @id";
             _storeIncoming = $@"
-insert into {DatabaseSettings.SchemaName}.{IncomingTable}
+insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
   (id, status, owner_id, execution_time, attempts, body)
 values
   (@id, @status, @owner, @time, @attempts, @body);
 ";
             _insertOutgoingSql =
-                $"insert into {DatabaseSettings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
+                $"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
         }
 
         public AdvancedSettings Settings { get; }
@@ -50,7 +50,7 @@ values
         public Task DeleteOutgoing(Envelope envelope)
         {
             return DatabaseSettings
-                .CreateCommand($"delete from {DatabaseSettings.SchemaName}.{OutgoingTable} where id = @id")
+                .CreateCommand($"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where id = @id")
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
         }
@@ -58,7 +58,7 @@ values
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
             return DatabaseSettings
-                .CreateCommand($"delete from {DatabaseSettings.SchemaName}.{IncomingTable} where id = @id")
+                .CreateCommand($"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where id = @id")
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
         }
@@ -75,7 +75,7 @@ values
                 var attempts = builder.AddParameter(envelope.Attempts);
 
                 builder.Append(
-                    $"update {DatabaseSettings.SchemaName}.{IncomingTable} set execution_time = @{time.ParameterName}, status = \'{EnvelopeStatus.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
+                    $"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set execution_time = @{time.ParameterName}, status = \'{EnvelopeStatus.Scheduled}\', attempts = @{attempts.ParameterName}, owner_id = {TransportConstants.AnyNode} where id = @{id.ParameterName};");
             }
 
             return builder.Compile().ExecuteOnce(_cancellation);
@@ -188,7 +188,7 @@ values
 
 
                 builder.Append(
-                    $"insert into {settings.SchemaName}.{IncomingTable} (id, status, owner_id, execution_time, attempts, body) values (@{id.ParameterName}, @{status.ParameterName}, @{owner.ParameterName}, @{time.ParameterName}, @{attempts.ParameterName}, @{body.ParameterName});");
+                    $"insert into {settings.SchemaName}.{DatabaseConstants.IncomingTable} (id, status, owner_id, execution_time, attempts, body) values (@{id.ParameterName}, @{status.ParameterName}, @{owner.ParameterName}, @{time.ParameterName}, @{attempts.ParameterName}, @{body.ParameterName});");
             }
 
 
@@ -210,7 +210,7 @@ values
                 var body = builder.AddParameter(envelope.Serialize());
 
                 builder.Append(
-                    $"insert into {settings.SchemaName}.{OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@{id.ParameterName}, @owner, @{destination.ParameterName}, @{deliverBy.ParameterName}, @{body.ParameterName});");
+                    $"insert into {settings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@{id.ParameterName}, @owner, @{destination.ParameterName}, @{deliverBy.ParameterName}, @{body.ParameterName});");
             }
 
             return builder.Compile();
@@ -220,7 +220,7 @@ values
         {
             DatabaseSettings
                 .ExecuteSql(
-                    $"delete from {DatabaseSettings.SchemaName}.{IncomingTable};delete from {DatabaseSettings.SchemaName}.{OutgoingTable};delete from {DatabaseSettings.SchemaName}.{DeadLetterTable}");
+                    $"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable};delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable};delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable}");
         }
 
         public Envelope[] AllIncomingEnvelopes()
@@ -231,7 +231,7 @@ values
 
                 return conn
                     .CreateCommand(
-                        $"select body, status, owner_id, execution_time, attempts from {DatabaseSettings.SchemaName}.{IncomingTable}")
+                        $"select body, status, owner_id, execution_time, attempts from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}")
                     .LoadEnvelopes();
             }
         }
@@ -244,7 +244,7 @@ values
 
                 return conn
                     .CreateCommand(
-                        $"select body, '{EnvelopeStatus.Outgoing}', owner_id, NULL from {DatabaseSettings.SchemaName}.{OutgoingTable}")
+                        $"select body, '{EnvelopeStatus.Outgoing}', owner_id, NULL from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}")
                     .LoadEnvelopes();
             }
         }

@@ -215,7 +215,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from receiver.{DataAccessor.IncomingTable}")
+                        $"select count(*) from receiver.{DatabaseConstants.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -228,7 +228,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from sender.{DataAccessor.OutgoingTable}")
+                        $"select count(*) from sender.{DatabaseConstants.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

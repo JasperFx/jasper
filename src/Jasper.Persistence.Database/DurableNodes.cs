@@ -6,7 +6,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public class DurableNodes : DataAccessor,IDurableNodes
+    public class DurableNodes : IDurableNodes
     {
         private readonly IDatabaseSession _session;
         private readonly CancellationToken _cancellation;
@@ -19,17 +19,17 @@ namespace Jasper.Persistence.Database
             _session = session;
             _cancellation = cancellation;
             _fetchOwnersSql = $@"
-select distinct owner_id from {settings.SchemaName}.{IncomingTable} where owner_id != 0 and owner_id != @owner
+select distinct owner_id from {settings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id != 0 and owner_id != @owner
 union
-select distinct owner_id from {settings.SchemaName}.{OutgoingTable} where owner_id != 0 and owner_id != @owner";
+select distinct owner_id from {settings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id != 0 and owner_id != @owner";
 
             _reassignDormantNodeSql = $@"
-update {settings.SchemaName}.{IncomingTable}
+update {settings.SchemaName}.{DatabaseConstants.IncomingTable}
   set owner_id = 0
 where
   owner_id = @owner;
 
-update {settings.SchemaName}.{OutgoingTable}
+update {settings.SchemaName}.{DatabaseConstants.OutgoingTable}
   set owner_id = 0
 where
   owner_id = @owner;

@@ -11,7 +11,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlDurableIncoming : DataAccessor,IDurableIncoming
+    public class PostgresqlDurableIncoming : IDurableIncoming
     {
         private readonly DurableStorageSession _session;
         private readonly string _findAtLargeEnvelopesSql;
@@ -22,10 +22,10 @@ namespace Jasper.Persistence.Postgresql
         {
             _session = session;
             _findAtLargeEnvelopesSql =
-                $"select body, attempts from {databaseSettings.SchemaName}.{IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
+                $"select body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
 
             _reassignSql =
-                $"UPDATE {databaseSettings.SchemaName}.{IncomingTable} SET owner_id = @owner, status = '{EnvelopeStatus.Incoming}' WHERE id = ANY(@ids)";
+                $"UPDATE {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} SET owner_id = @owner, status = '{EnvelopeStatus.Incoming}' WHERE id = ANY(@ids)";
 
             _cancellation = settings.Cancellation;
         }

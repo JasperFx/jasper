@@ -33,6 +33,7 @@ namespace Jasper.Persistence.Testing.Postgresql
 
         public Task DisposeAsync()
         {
+            Dispose();
             return Task.CompletedTask;
         }
     }

@@ -38,6 +38,7 @@ namespace Jasper.Tracking
 
         public void WatchOther(IHost host)
         {
+            if (object.ReferenceEquals(host, _primaryHost)) return;
             _otherHosts.Add(host.GetTrackingLogger());
 
         }

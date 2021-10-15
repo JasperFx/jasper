@@ -66,7 +66,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 var body = builder.AddParameter(error.RawData);
 
                 builder.Append(
-                    $"insert into {_databaseSettings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
+                    $"insert into {_databaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
             await using (var conn = new SqlConnection(_databaseSettings.ConnectionString))

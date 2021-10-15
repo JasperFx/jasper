@@ -7,7 +7,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DurabilityAgentStorage : DataAccessor, IDurabilityAgentStorage
+    public abstract class DurabilityAgentStorage : IDurabilityAgentStorage
     {
         private readonly DurableStorageSession _session;
         private readonly string _findReadyToExecuteJobs;
@@ -29,7 +29,7 @@ namespace Jasper.Persistence.Database
             Outgoing = buildDurableOutgoing(transaction, databaseSettings, settings);
 
             _findReadyToExecuteJobs =
-                $"select body, attempts from {databaseSettings.SchemaName}.{IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time";
+                $"select body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time";
 
             _cancellation = settings.Cancellation;
         }

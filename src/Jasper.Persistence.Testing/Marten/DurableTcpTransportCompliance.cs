@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Marten;
@@ -6,13 +8,14 @@ using Jasper.Util;
 using TestingSupport.Compliance;
 using Xunit;
 
-namespace Jasper.Testing.Transports.Tcp
+namespace Jasper.Persistence.Testing.Marten
 {
     public class Sender : JasperOptions
     {
         public Sender()
         {
-            Endpoints.ListenForMessagesFrom($"tcp://localhost:2291/incoming/durable".ToUri());
+            ReceivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
+            Endpoints.ListenForMessagesFrom(ReceivingUri);
 
             Extensions.UseMarten(x =>
             {
@@ -21,13 +24,16 @@ namespace Jasper.Testing.Transports.Tcp
             });
 
         }
+
+        public Uri ReceivingUri { get; set; }
     }
 
     public class Receiver : JasperOptions
     {
         public Receiver()
         {
-            Endpoints.ListenForMessagesFrom($"tcp://localhost:2290/incoming/durable".ToUri());
+            ReceivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
+            Endpoints.ListenForMessagesFrom(ReceivingUri);
 
             Extensions.UseMarten(x =>
             {
@@ -36,19 +42,40 @@ namespace Jasper.Testing.Transports.Tcp
             });
 
         }
+
+        public Uri ReceivingUri { get; set; }
     }
 
+    public class PortFinder
+    {
+
+        private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
+
+        public static int GetAvailablePort()
+        {
+            using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket.Bind(DefaultLoopbackEndpoint);
+            var port = ((IPEndPoint)socket.LocalEndPoint).Port;
+            return port;
+        }
+    }
+
+    [Collection("marten")]
     public class DurableTcpTransportFixture : SendingComplianceFixture, IAsyncLifetime
     {
-        public DurableTcpTransportFixture() : base($"tcp://localhost:2290/incoming".ToUri())
+        public DurableTcpTransportFixture() : base($"tcp://localhost:{ PortFinder.GetAvailablePort()}/incoming".ToUri())
         {
 
         }
 
         public async Task InitializeAsync()
         {
-            await SenderIs<Sender>();
-            await ReceiverIs<Receiver>();
+            var receiver = new Receiver();
+            OutboundAddress = receiver.ReceivingUri;
+            var sender = new Sender();
+            await SenderIs(sender);
+
+            await ReceiverIs(receiver);
         }
 
         public Task DisposeAsync()

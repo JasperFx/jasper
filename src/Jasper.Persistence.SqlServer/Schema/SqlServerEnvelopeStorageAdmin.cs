@@ -22,54 +22,50 @@ namespace Jasper.Persistence.SqlServer.Schema
 {
     internal class OutgoingEnvelopeTable : Table
     {
-        public static readonly string TableName = "jasper_outgoing_envelopes";
 
-        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.OutgoingTable))
         {
-            AddColumn<Guid>("id").AsPrimaryKey();
-            AddColumn<int>("owner_id").NotNull();
-            AddColumn("destination", "varchar(250)").NotNull();
-            AddColumn<DateTimeOffset>("deliver_by");
-            AddColumn("body", "varbinary(max)").NotNull();
+            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
+            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
+            AddColumn(DatabaseConstants.Destination, "varchar(250)").NotNull();
+            AddColumn<DateTimeOffset>(DatabaseConstants.DeliverBy);
+            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
         }
     }
 
     internal class IncomingEnvelopeTable : Table
     {
-        public static readonly string TableName = "jasper_incoming_envelopes";
 
-        public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.IncomingTable))
         {
-            AddColumn<Guid>("id").AsPrimaryKey();
+            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
             AddColumn("status", "varchar(25)").NotNull();
-            AddColumn<int>("owner_id").NotNull();
-            AddColumn<DateTimeOffset>("execution_time").DefaultValueByExpression("NULL");
-            AddColumn<int>("attempts");
-            AddColumn("body", "varbinary(max)").NotNull();
+            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
+            AddColumn<DateTimeOffset>(DatabaseConstants.ExecutionTime).DefaultValueByExpression("NULL");
+            AddColumn<int>(DatabaseConstants.Attempts);
+            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
         }
     }
 
     internal class DeadLettersTable : Table
     {
-        public static readonly string TableName = "jasper_dead_letters";
-
-        public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, TableName))
+        public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.DeadLetterTable))
         {
-            AddColumn<Guid>("id").AsPrimaryKey();
-            AddColumn("source", "varchar(250)");
-            AddColumn("message_type", "varchar(max)");
-            AddColumn("explanation", "varchar(max)");
-            AddColumn("exception_text", "varchar(max)");
-            AddColumn("exception_type", "varchar(max)");
-            AddColumn("exception_message", "varchar(max)");
-            AddColumn("body", "varbinary(max)").NotNull();
+            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
+            AddColumn(DatabaseConstants.Source, "varchar(250)");
+            AddColumn(DatabaseConstants.MessageType, "varchar(max)");
+            AddColumn(DatabaseConstants.Explanation, "varchar(max)");
+            AddColumn(DatabaseConstants.ExceptionText, "varchar(max)");
+            AddColumn(DatabaseConstants.ExceptionType, "varchar(max)");
+            AddColumn(DatabaseConstants.ExceptionMessage, "varchar(max)");
+            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
         }
     }
 
     internal class EnvelopeIdTable : TableType {
         public EnvelopeIdTable(string schemaName) : base(new DbObjectName(schemaName, "EnvelopeIdList"))
         {
-            AddColumn("ID", "UNIQUEIDENTIFIER");
+            AddColumn(DatabaseConstants.Id, "UNIQUEIDENTIFIER");
         }
     }
 
@@ -87,7 +83,7 @@ namespace Jasper.Persistence.SqlServer.Schema
         }
     }
 
-    public class SqlServerEnvelopeStorageAdmin : DataAccessor,IEnvelopeStorageAdmin
+    public class SqlServerEnvelopeStorageAdmin : IEnvelopeStorageAdmin
     {
         private readonly Database.DatabaseSettings _settings;
         private readonly ISchemaObject[] _schemaObjects;
@@ -160,9 +156,9 @@ namespace Jasper.Persistence.SqlServer.Schema
             await using var conn = new SqlConnection(_settings.ConnectionString);
             await conn.OpenAsync();
             var tx = (SqlTransaction) await conn.BeginTransactionAsync();
-            await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_outgoing_envelopes", tx).ExecuteNonQueryAsync();
-            await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_incoming_envelopes", tx).ExecuteNonQueryAsync();
-            await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_dead_letters", tx).ExecuteNonQueryAsync();
+            await conn.CreateCommand($"delete from {_settings.SchemaName}.{DatabaseConstants.OutgoingTable}", tx).ExecuteNonQueryAsync();
+            await conn.CreateCommand($"delete from {_settings.SchemaName}.{DatabaseConstants.IncomingTable}", tx).ExecuteNonQueryAsync();
+            await conn.CreateCommand($"delete from {_settings.SchemaName}.{DatabaseConstants.DeadLetterTable}", tx).ExecuteNonQueryAsync();
 
             await tx.CommitAsync();
         }
@@ -187,9 +183,9 @@ namespace Jasper.Persistence.SqlServer.Schema
             try
             {
                 var tx = (SqlTransaction) await conn.BeginTransactionAsync();
-                await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_outgoing_envelopes", tx).ExecuteNonQueryAsync();
-                await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_incoming_envelopes", tx).ExecuteNonQueryAsync();
-                await conn.CreateCommand($"delete from {_settings.SchemaName}.jasper_dead_letters", tx).ExecuteNonQueryAsync();
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.{DatabaseConstants.OutgoingTable}", tx).ExecuteNonQueryAsync();
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.{DatabaseConstants.IncomingTable}", tx).ExecuteNonQueryAsync();
+                await conn.CreateCommand($"delete from {_settings.SchemaName}.{DatabaseConstants.DeadLetterTable}", tx).ExecuteNonQueryAsync();
 
                 await tx.CommitAsync();
             }
@@ -239,7 +235,7 @@ GO
 
             await using var reader = await conn
                 .CreateCommand(
-                    $"select status, count(*) from {_settings.SchemaName}.{IncomingTable} group by status")
+                    $"select status, count(*) from {_settings.SchemaName}.{DatabaseConstants.IncomingTable} group by status")
                 .ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -258,7 +254,7 @@ GO
                 }
             }
 
-            counts.Outgoing = (int) await CommandExtensions.CreateCommand(conn, $"select count(*) from {_settings.SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
+            counts.Outgoing = (int) await CommandExtensions.CreateCommand(conn, $"select count(*) from {_settings.SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteScalarAsync();
 
 
             return counts;
@@ -271,8 +267,8 @@ GO
                 await conn.OpenAsync();
 
                 var cmd = conn.CreateCommand(
-                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DeadLetterTable} where id = @id");
-                cmd.AddNamedParameter("id", id);
+                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DatabaseConstants.DeadLetterTable} where id = @id");
+                cmd.AddNamedParameter(DatabaseConstants.Id, id);
 
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
@@ -302,7 +298,7 @@ GO
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{IncomingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{DatabaseConstants.IncomingTable}").ExecuteToEnvelopes();
             }
         }
 
@@ -312,7 +308,7 @@ GO
             {
                 await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, owner_id from {_settings.SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
+                return await conn.CreateCommand($"select body, owner_id from {_settings.SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteToEnvelopes();
             }
         }
 
@@ -322,7 +318,7 @@ GO
             {
                 conn.Open();
 
-                conn.CreateCommand($"update {_settings.SchemaName}.{IncomingTable} set owner_id = 0;update {_settings.SchemaName}.{OutgoingTable} set owner_id = 0");
+                conn.CreateCommand($"update {_settings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0;update {_settings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = 0");
             }
 
             return Task.CompletedTask;

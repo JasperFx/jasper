@@ -19,8 +19,8 @@ namespace Jasper.Persistence.Postgresql
             settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings),
             new PostgresqlDurabilityAgentStorage(databaseSettings, settings))
         {
-            _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{IncomingTable} WHERE id = ANY(@ids);";
-            _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{OutgoingTable} WHERE id = ANY(@ids);";
+            _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
+            _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
         }
 
 
@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Postgresql
                 var body = builder.AddParameter(error.RawData);
 
                 builder.Append(
-                    $"insert into {DatabaseSettings.SchemaName}.{DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
+                    $"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
             return builder.Compile().ExecuteOnce(_cancellation);
@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Postgresql
         public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
             return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
-                                          $";update {DatabaseSettings.SchemaName}.{OutgoingTable} set owner_id = @node where id = ANY(@rids)")
+                                          $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)")
                 .With("ids", discards)
                 .With("node", nodeId)
                 .With("rids", reassigned)

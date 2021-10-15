@@ -8,7 +8,7 @@ using DbCommandBuilder = System.Data.Common.DbCommandBuilder;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseSettings : DataAccessor
+    public abstract class DatabaseSettings
     {
         private string _schemaName;
 
@@ -26,9 +26,9 @@ namespace Jasper.Persistence.Database
             {
                 _schemaName = value;
 
-                IncomingFullName = $"{value}.{IncomingTable}";
-                OutgoingFullName = $"{value}.{OutgoingTable}";
-                DeadLetterFullName = $"{value}.{DeadLetterTable}";
+                IncomingFullName = $"{value}.{DatabaseConstants.IncomingTable}";
+                OutgoingFullName = $"{value}.{DatabaseConstants.OutgoingTable}";
+                DeadLetterFullName = $"{value}.{DatabaseConstants.DeadLetterTable}";
             }
         }
 

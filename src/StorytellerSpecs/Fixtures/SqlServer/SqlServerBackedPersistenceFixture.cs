@@ -179,7 +179,7 @@ create table receiver.trace_doc
                 conn.Open();
 
                 return (int) conn.CreateCommand(
-                        $"select count(*) from receiver.{DataAccessor.IncomingTable}")
+                        $"select count(*) from receiver.{DatabaseConstants.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -192,7 +192,7 @@ create table receiver.trace_doc
                 conn.Open();
 
                 return (int) conn.CreateCommand(
-                        $"select count(*) from sender.{DataAccessor.OutgoingTable}")
+                        $"select count(*) from sender.{DatabaseConstants.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

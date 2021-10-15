@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
+using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Schema;
@@ -74,8 +75,8 @@ namespace Jasper.Persistence.Testing.SqlServer
             var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "foo"});
             var sql = loader.As<IEnvelopeStorageAdmin>().CreateSql();
 
-            sql.ShouldContain("create table foo.jasper_outgoing_envelopes");
-            sql.ShouldContain("create table foo.jasper_incoming_envelopes");
+            sql.ShouldContain($"create table foo.{DatabaseConstants.OutgoingTable}");
+            sql.ShouldContain($"create table foo.{DatabaseConstants.IncomingTable}");
         }
 
     }

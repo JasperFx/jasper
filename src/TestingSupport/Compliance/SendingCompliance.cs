@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
@@ -13,8 +14,7 @@ using Shouldly;
 using TestingSupport.ErrorHandling;
 using TestMessages;
 using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
+
 
 namespace TestingSupport.Compliance
 {
@@ -147,17 +147,19 @@ namespace TestingSupport.Compliance
             theOutboundAddress = Fixture.OutboundAddress;
 
             await Fixture.Sender.ClearAllPersistedMessages();
+
+            if (Fixture.Receiver != null && !object.ReferenceEquals(Fixture.Sender, Fixture.Receiver))
+            {
+                await Fixture.Receiver.ClearAllPersistedMessages();
+            }
+
             Fixture.BeforeEach();
         }
 
-        public async Task DisposeAsync()
+        public Task DisposeAsync()
         {
-            if (Fixture is IAsyncLifetime lifetime)
-            {
-                await lifetime.InitializeAsync();
-            }
-
-            Fixture.Dispose();
+            Fixture.SafeDispose();
+            return Task.CompletedTask;
         }
 
         public T Fixture { get; }

@@ -10,7 +10,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DurableOutgoing : DataAccessor, IDurableOutgoing
+    public abstract class DurableOutgoing : IDurableOutgoing
     {
         private readonly IDatabaseSession _session;
         private readonly string _findUniqueDestinations;
@@ -24,10 +24,10 @@ namespace Jasper.Persistence.Database
         {
             _session = session;
             _findUniqueDestinations =
-                $"select distinct destination from {databaseSettings.SchemaName}.{OutgoingTable}";
+                $"select distinct destination from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}";
 
             _deleteOutgoingSql =
-                $"delete from {databaseSettings.SchemaName}.{OutgoingTable} where owner_id = :owner and destination = @destination";
+                $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = :owner and destination = @destination";
 
             _cancellation = settings.Cancellation;
 

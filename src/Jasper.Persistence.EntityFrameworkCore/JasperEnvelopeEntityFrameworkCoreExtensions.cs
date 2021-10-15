@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Persistence.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jasper.Persistence.EntityFrameworkCore
@@ -41,7 +42,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
         {
             builder.Entity<IncomingEnvelope>(map =>
             {
-                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? "jasper_incoming_envelopes" : $"{schemaName}.jasper_incoming_envelopes");
+                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.IncomingTable : $"{schemaName}.{DatabaseConstants.IncomingTable}");
                 map.HasKey(x => x.Id);
                 map.Property(x => x.OwnerId).HasColumnName("owner_id");
                 map.Property(x => x.Status).HasColumnName("status").HasConversion<string>();
@@ -52,7 +53,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
             builder.Entity<OutgoingEnvelope>(map =>
             {
-                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? "jasper_outgoing_envelopes" : $"{schemaName}.jasper_outgoing_envelopes");
+                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.OutgoingTable : $"{schemaName}.{DatabaseConstants.OutgoingTable}");
                 map.HasKey(x => x.Id);
                 map.Property(x => x.OwnerId).HasColumnName("owner_id");
                 map.Property(x => x.Destination).HasColumnName("destination");
@@ -62,7 +63,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
             builder.Entity<DeadLetterEnvelope>(map =>
             {
-                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? "jasper_dead_letters" : $"{schemaName}.jasper_dead_letters");
+                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.DeadLetterTable : $"{schemaName}.{DatabaseConstants.DeadLetterTable}");
                 map.HasKey(x => x.Id);
                 map.Property(x => x.Source).HasColumnName("source");
                 map.Property(x => x.MessageType).HasColumnName("message_type");
