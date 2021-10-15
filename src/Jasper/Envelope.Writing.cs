@@ -126,7 +126,6 @@ namespace Jasper
 
             dictionary.WriteProp(AttemptsKey, Attempts);
             dictionary.WriteProp(DeliverByHeader, DeliverBy);
-            dictionary.WriteProp(SentAttemptsHeaderKey, SentAttempts);
             dictionary.WriteProp(ReceivedAtKey, ReceivedAt);
 
             foreach (var pair in Headers) dictionary.Add(pair.Key, pair.Value);
@@ -164,7 +163,6 @@ namespace Jasper
 
             writer.WriteProp(ref count, AttemptsKey, Attempts);
             writer.WriteProp(ref count, DeliverByHeader, DeliverBy);
-            writer.WriteProp(ref count, SentAttemptsHeaderKey, SentAttempts);
             writer.WriteProp(ref count, ReceivedAtKey, ReceivedAt);
 
             foreach (var pair in Headers)

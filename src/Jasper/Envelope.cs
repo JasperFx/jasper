@@ -9,7 +9,6 @@ namespace Jasper
     [MessageIdentity("envelope")]
     public partial class Envelope
     {
-        private const string SentAttemptsHeaderKey = "sent-attempts";
         public const string CorrelationIdKey = "correlation-id";
         public const string SagaIdKey = "saga-id";
         private const string IdKey = "id";

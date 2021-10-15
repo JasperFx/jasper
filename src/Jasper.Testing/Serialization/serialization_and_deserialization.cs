@@ -22,17 +22,12 @@ namespace Jasper.Testing.Serialization
                 SagaId = Guid.NewGuid().ToString()
             };
 
-
-            sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
-            sentAttempts.SetValue(outgoing, 2);
-
             outgoing.Headers.Add("name", "Jeremy");
             outgoing.Headers.Add("state", "Texas");
         }
 
         private readonly Envelope outgoing;
         private Envelope _incoming;
-        private readonly PropertyInfo sentAttempts;
 
         private Envelope incoming
         {
@@ -183,12 +178,6 @@ namespace Jasper.Testing.Serialization
             incoming.SentAt.ShouldBe(outgoing.SentAt);
         }
 
-
-        [Fact]
-        public void sent_attempts()
-        {
-            sentAttempts.GetValue(incoming).As<int>().ShouldBe(2);
-        }
 
         [Fact]
         public void source()

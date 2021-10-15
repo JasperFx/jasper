@@ -49,7 +49,6 @@ namespace Jasper
             }
         }
 
-        internal int SentAttempts { get; set; }
 
         internal IMessageSerializer writer { get; set; }
 

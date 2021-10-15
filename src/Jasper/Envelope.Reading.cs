@@ -93,11 +93,6 @@ namespace Jasper
                         DeliverBy = DateTime.Parse(value);
                         break;
 
-
-                    case SentAttemptsHeaderKey:
-                        SentAttempts = Int32.Parse(value);
-                        break;
-
                     case ReceivedAtKey:
                         ReceivedAt = new Uri(value);
                         break;
