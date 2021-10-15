@@ -22,5 +22,16 @@
         public const string OutgoingTable = "jasper_outgoing_envelopes";
         public const string IncomingTable = "jasper_incoming_envelopes";
         public const string DeadLetterTable = "jasper_dead_letters";
+
+        public const string CorrelationId = "correlation_id"; // add to all
+        public const string CausationId = "causation_id"; // add to all
+        public const string SagaId = "saga_id"; // add to all
+        public const string ParentId = "parent_id"; // add to all
+        public const string ContentType = "content_type"; // add to all
+        public const string ReplyRequested = "reply_requested"; // add to all
+        public const string ReplyUri = "reply_uri"; // add to all
+        public const string AckRequested = "ack_requested"; // add to all
+
+
     }
 }
