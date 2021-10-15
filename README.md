@@ -19,63 +19,11 @@ In all cases, Jasper can be used by itself or as an addon to an ASP.Net Core app
 
 ## Working with the Code
 
-The *official* build script for Jasper uses Rake, but you're perfectly able to just fire up Visual Studio.Net, Rider, or VS Code and start working. In its current form, all the integration tests, including the Storyteller specifications, require [Docker](https://www.docker.com/) to be running on your developement machine.
+The main solution file is `Jasper.sln`, and you should be good to go to simply open the code up in Rider, Visual Studio.Net, or VS Code and just go. In its current form, all the integration tests, including the Storyteller specifications, require [Docker](https://www.docker.com/) to be running on your development machine. For the docker dependencies (Postgresql, Rabbit MQ, Sql Server, etc.), run:
 
-To run the rake script, you'll need to have Ruby installed and [Docker]() running on your application. Assuming you have that, go to the command line and type:
-
-1. `bundle install` (only the first time)
-1. `rake` or if you have version conflicts with other projects on your machine (boo), use `bundle exec rake`
-
-This script will build the client side Javascript assets, restore .Net dependencies, execute the xUnit tests, and run the [Storyteller](http://storyteller.github.io) specifications.
-
-## Unit Test Organization
-
-The unit tests for the main Jasper library are actually broken up into three separate projects:
-
-1. `CoreTests` for any common functionality, mostly related to bootstrapping and IoC registrations
-1. `HttpTests` for any functionality related to the HTTP API support
-1. `MessagingTests` for any functionality specific to the asynchronous messaging or using Jasper as an in-memory service bus
-
-## Working with the Integration Tests
-
-If you use the Rake script, you can execute the tests for all the persistence extensions and Rabbit MQ directly by using:
-
+```bash
+docker compose up -d
 ```
-rake integrationtests
-```
-
-If you don't want to use Rake, from a command line you need to run this at least once before executing any of the testing libraries that depend on Postgresql, Sql Server, or Rabbit MQ:
-
-```
-docker-compose up -d
-```
-
-
-## Working with the Storyteller Specifications
-
-See the section on *Integration Tests* above for directions on using Docker.
-
-If you're okay using the rake script, just use the `rake open_st` task to start and launch the Storyteller specification editor. `rake storyteller` will run the specifications from a command line if you only need to see results. The command `rake storyteller` will likewise run the specification suite from the command line.
-
-If you don't want to use rake, go to the `src/StorytellerSpecs` folder at the command line and type `dotnet storyteller`.
-
-
-## Documentation
-
-The documentation is built and published with [dotnet stdocs](http://storyteller.github.io/documentation/docs/). The actual content is
-in this repository in the "/documentation" folder, but the finished HTML docs will be published to gh-pages in the
-[jasperfx.github.io](https://github.com/JasperFx/jasperfx.github.io) repository.
-
-To run the documentation website for the Jasper docs, use the `rake docs` task, or if you're not a Ruby fan, from the
-root directory of the repository, do `dotnet restore && dotnet stdocs run`.
-
-To publish the documentation, there is a separate `rake publish` task that exports the compiled HTML code and pushes that to the Github
-repository for Jasper. Note that you will have to have push rights to the jasperfx.github.io repository.
-
-
-## Running Benchmarks
-
-There is some rudimentary benchmarks exposed through [BenchmarkDotNet](http://benchmarkdotnet.org/) in the `src/benchmarks` project. To run the benchmarks, go to the command line at the `src/benchmarks` folder and just run `dotnet run -c Release` to execute all of the benchmarks.
 
 
 ## What's with the name?
