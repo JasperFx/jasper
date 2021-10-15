@@ -22,9 +22,4 @@
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>CommonAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
 </Project>

@@ -37,9 +37,4 @@
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="Oakton" Version="3.2.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>CommonAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
 </Project>

@@ -30,12 +30,6 @@
     </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>CommonAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="obj\Debug\netstandard2.1" />
   </ItemGroup>
 
