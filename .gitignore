@@ -228,3 +228,5 @@ template-target
 
 
 src/Jasper.AzureServiceBus.Tests/appsettings.json
+
+src/ConsoleApp/Internal
