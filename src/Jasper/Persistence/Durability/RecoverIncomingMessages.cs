@@ -23,7 +23,7 @@ namespace Jasper.Persistence.Durability
             _logger = logger;
         }
 
-        public async Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             // TODO -- enforce back pressure here on the retries listener!
 

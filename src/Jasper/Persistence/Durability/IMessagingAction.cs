@@ -5,6 +5,6 @@ namespace Jasper.Persistence.Durability
     public interface IMessagingAction
     {
         string Description { get; }
-        Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent);
+        Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent);
     }
 }

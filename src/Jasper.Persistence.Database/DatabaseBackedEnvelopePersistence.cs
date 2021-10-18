@@ -11,7 +11,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence, IDisposable
+    public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence
     {
         protected readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;

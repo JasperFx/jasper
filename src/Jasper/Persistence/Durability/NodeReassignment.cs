@@ -16,7 +16,7 @@ namespace Jasper.Persistence.Durability
 
         public string Description { get; } = "Dormant node reassignment";
 
-        public async Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             await storage.Session.Begin();
 

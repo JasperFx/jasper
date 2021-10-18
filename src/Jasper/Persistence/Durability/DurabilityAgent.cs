@@ -32,9 +32,8 @@ namespace Jasper.Persistence.Durability
         private readonly IMessagingAction ScheduledJobs;
         private readonly IMessagingAction NodeReassignment;
 
-        private readonly IEnvelopePersistence _persistence;
+        private readonly IEnvelopePersistence _storage;
         private readonly AdvancedSettings _settings;
-        private readonly IDurabilityAgentStorage _storage;
         private readonly ILogger<DurabilityAgent> _trace;
         private readonly IWorkerQueue _workers;
 
@@ -49,11 +48,11 @@ namespace Jasper.Persistence.Durability
         public DurabilityAgent(ITransportLogger logger,
             ILogger<DurabilityAgent> trace,
             IWorkerQueue workers,
-            IEnvelopePersistence persistence,
+            IEnvelopePersistence storage,
             ITransportRuntime runtime,
             AdvancedSettings settings)
         {
-            if (persistence is NulloEnvelopePersistence)
+            if (storage is NulloEnvelopePersistence)
             {
                 _disabled = true;
                 return;
@@ -62,11 +61,9 @@ namespace Jasper.Persistence.Durability
             Logger = logger;
             _trace = trace;
             _workers = workers;
-            _persistence = persistence;
+            _storage = storage;
             _settings = settings;
 
-
-            _storage = _persistence;
 
             _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
             {
@@ -76,7 +73,7 @@ namespace Jasper.Persistence.Durability
 
             NodeId = _settings.UniqueNodeId;
 
-            IncomingMessages = new RecoverIncomingMessages(persistence, workers, settings, logger);
+            IncomingMessages = new RecoverIncomingMessages(storage, workers, settings, logger);
             OutgoingMessages = new RecoverOutgoingMessages(runtime, settings, logger);
             NodeReassignment = new NodeReassignment(settings);
             ScheduledJobs = new RunScheduledJobs(settings, logger);
@@ -120,7 +117,7 @@ namespace Jasper.Persistence.Durability
 
             public Task Completion => _completion.Task;
 
-            public async Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+            public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
             {
                 try
                 {
@@ -234,8 +231,6 @@ namespace Jasper.Persistence.Durability
 
             // Release all envelopes tagged to this node in message persistence to any node
             await _storage.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
-
-            _storage.Dispose();
         }
 
         public void Dispose()

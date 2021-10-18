@@ -17,13 +17,13 @@ namespace Jasper.Persistence.Durability
             _logger = logger;
         }
 
-        public Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+        public Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             var utcNow = DateTimeOffset.UtcNow;
             return ExecuteAtTime(storage, agent, utcNow);
         }
 
-        public async Task<Envelope[]> ExecuteAtTime(IDurabilityAgentStorage storage, IDurabilityAgent agent, DateTimeOffset utcNow)
+        public async Task<Envelope[]> ExecuteAtTime(IEnvelopePersistence storage, IDurabilityAgent agent, DateTimeOffset utcNow)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.ScheduledJobLockId);
             if (!hasLock) return null;

@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Durability
         }
 
         public string Description { get; } = "Recover persisted outgoing messages";
-        public async Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.OutgoingMessageLockId);
             if (!hasLock) return;
@@ -50,7 +50,7 @@ namespace Jasper.Persistence.Durability
 
 
 
-        private async Task<int> recoverFrom(Uri destination, IDurabilityAgentStorage storage)
+        private async Task<int> recoverFrom(Uri destination, IEnvelopePersistence storage)
         {
             try
             {

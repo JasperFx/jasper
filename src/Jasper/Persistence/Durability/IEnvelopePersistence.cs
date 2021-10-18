@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Jasper.Persistence.Durability
 {
-    public interface IEnvelopePersistence : IDurabilityAgentStorage
+    public interface IEnvelopePersistence : IDisposable
     {
         IEnvelopeStorageAdmin Admin { get; }
 
@@ -49,5 +49,16 @@ namespace Jasper.Persistence.Durability
 
         void Describe(TextWriter writer);
         Task ScheduleJob(Envelope envelope);
+
+        IDurableStorageSession Session { get; }
+
+        IDurableIncoming Incoming { get; }
+
+        IDurableOutgoing Outgoing { get; }
+
+        Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow);
+
+        Task ReassignDormantNodeToAnyNode(int nodeId);
+        Task<int[]> FindUniqueOwners(int currentNodeId);
     }
 }
