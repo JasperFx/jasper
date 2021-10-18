@@ -28,17 +28,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {
-            return CommandExtensions.ExecuteOnce(_databaseSettings.CallFunction("uspDeleteIncomingEnvelopes")
-                .WithIdList(_databaseSettings, envelopes), _cancellation);
+            return _databaseSettings.CallFunction("uspDeleteIncomingEnvelopes")
+                .WithIdList(_databaseSettings, envelopes).ExecuteOnce(_cancellation);
         }
-
-
-        public override Task DeleteOutgoing(Envelope[] envelopes)
-        {
-            return CommandExtensions.ExecuteOnce(_databaseSettings.CallFunction("uspDeleteOutgoingEnvelopes")
-                .WithIdList(_databaseSettings, envelopes), _cancellation);
-        }
-
 
         public override async Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
@@ -76,15 +68,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             }
         }
 
-        public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
-        {
-            var cmd = _databaseSettings.CallFunction("uspDiscardAndReassignOutgoing")
-                .WithIdList(_databaseSettings, discards, "discards")
-                .WithIdList(_databaseSettings, reassigned, "reassigned")
-                .With("ownerId", nodeId);
 
-            return CommandExtensions.ExecuteOnce(cmd, _cancellation);
-        }
 
 
         public override void Describe(TextWriter writer)

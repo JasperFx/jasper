@@ -225,7 +225,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             foreach (var envelope in _envelopes)
                 if (envelope.Status == EnvelopeStatus.Outgoing)
-                    await persistor.StoreOutgoing(envelope, envelope.OwnerId);
+                    await persistor.Outgoing.StoreOutgoing(envelope, envelope.OwnerId);
                 else
                     await persistor.StoreIncoming(envelope);
 

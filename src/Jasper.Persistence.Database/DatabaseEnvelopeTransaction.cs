@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Database
         {
             if (!envelopes.Any()) return Task.CompletedTask;
 
-            return _persistence.StoreOutgoing(_tx, envelopes);
+            return _persistence.Outgoing.StoreOutgoing(_tx, envelopes);
         }
 
         public Task ScheduleJob(Envelope envelope)

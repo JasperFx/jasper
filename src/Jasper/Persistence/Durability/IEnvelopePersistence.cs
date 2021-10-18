@@ -32,20 +32,11 @@ namespace Jasper.Persistence.Durability
         // Used by DurableCallback
         Task DeleteIncomingEnvelope(Envelope envelope);
 
-        // Used by DurableRetryAgent, could go to IDurabilityAgent
-        Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
 
-        // Used by DurableSendingAgent, could go to durability agent
-        Task StoreOutgoing(Envelope envelope, int ownerId);
 
-        // Used by DurableSendingAgent
-        Task StoreOutgoing(Envelope[] envelopes, int ownerId);
 
-        // Used by DurableSendingAgent
-        Task DeleteOutgoing(Envelope[] envelopes);
 
-        // Used by DurableSendingAgent
-        Task DeleteOutgoing(Envelope envelope);
+
 
         void Describe(TextWriter writer);
         Task ScheduleJob(Envelope envelope);

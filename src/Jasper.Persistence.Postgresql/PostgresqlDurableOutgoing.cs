@@ -18,6 +18,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly DurableStorageSession _session;
         private readonly string _deleteOutgoingSql;
         private readonly string _reassignSql;
+        private readonly string _deleteOutgoingEnvelopesSql;
         private readonly CancellationToken _cancellation;
 
         public PostgresqlDurableOutgoing(DurableStorageSession session, DatabaseSettings settings, AdvancedSettings options)
@@ -29,8 +30,25 @@ namespace Jasper.Persistence.Postgresql
                 $"delete from {settings.SchemaName}.{DatabaseConstants.OutgoingTable} where id = ANY(@ids)";
 
             _reassignSql = $"update {settings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
-
+            _deleteOutgoingEnvelopesSql = $"delete from {settings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
             _cancellation = options.Cancellation;
+        }
+
+        public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        {
+            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
+                                                  $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)")
+                .With("ids", discards)
+                .With("node", nodeId)
+                .With("rids", reassigned)
+                .ExecuteOnce(_cancellation);
+        }
+
+        public override Task DeleteOutgoing(Envelope[] envelopes)
+        {
+            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql)
+                .With("ids", envelopes)
+                .ExecuteOnce(_cancellation);
         }
 
 

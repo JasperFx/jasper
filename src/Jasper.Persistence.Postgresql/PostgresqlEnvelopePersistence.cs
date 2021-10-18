@@ -14,13 +14,11 @@ namespace Jasper.Persistence.Postgresql
     public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
         private readonly string _deleteIncomingEnvelopesSql;
-        private readonly string _deleteOutgoingEnvelopesSql;
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
             settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
         {
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
-            _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
         }
 
 
@@ -30,8 +28,6 @@ namespace Jasper.Persistence.Postgresql
                 .With("ids", errors);
 
             var builder = new CommandBuilder((NpgsqlCommand) cmd);
-
-
 
             foreach (var error in errors)
             {
@@ -58,22 +54,7 @@ namespace Jasper.Persistence.Postgresql
                 .ExecuteOnce(_cancellation);
         }
 
-        public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
-        {
-            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
-                                          $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)")
-                .With("ids", discards)
-                .With("node", nodeId)
-                .With("rids", reassigned)
-                .ExecuteOnce(_cancellation);
-        }
 
-        public override Task DeleteOutgoing(Envelope[] envelopes)
-        {
-            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql)
-                .With("ids", envelopes)
-                .ExecuteOnce(_cancellation);
-        }
 
         public override void Describe(TextWriter writer)
         {

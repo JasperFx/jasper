@@ -15,7 +15,7 @@ namespace Jasper.Persistence.Database
     {
         protected readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;
-        private readonly string _insertOutgoingSql;
+
         private readonly string _storeIncoming;
         private readonly DurableStorageSession _session;
         private readonly string _findReadyToExecuteJobs;
@@ -39,8 +39,6 @@ insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
 values
   (@id, @status, @owner, @time, @attempts, @body);
 ";
-            _insertOutgoingSql =
-                $"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
 
             var transaction = new DurableStorageSession(databaseSettings, settings.Cancellation);
 
@@ -88,13 +86,7 @@ where
         public IDurableOutgoing Outgoing { get; }
 
 
-        public Task DeleteOutgoing(Envelope envelope)
-        {
-            return DatabaseSettings
-                .CreateCommand($"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where id = @id")
-                .With("id", envelope.Id)
-                .ExecuteOnce(_cancellation);
-        }
+
 
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
@@ -162,22 +154,6 @@ where
             }
         }
 
-        public Task StoreOutgoing(Envelope envelope, int ownerId)
-        {
-            return DatabaseSettings.CreateCommand(_insertOutgoingSql)
-                .With("id", envelope.Id)
-                .With("owner", ownerId)
-                .With("destination", envelope.Destination.ToString())
-                .With("deliverBy", envelope.DeliverBy)
-                .With("body", envelope.Serialize())
-                .ExecuteOnce(_cancellation);
-        }
-
-        public Task StoreOutgoing(Envelope[] envelopes, int ownerId)
-        {
-            var cmd = BuildOutgoingStorageCommand(envelopes, ownerId, DatabaseSettings);
-            return cmd.ExecuteOnce(CancellationToken.None);
-        }
 
         public Task ScheduleJob(Envelope envelope)
         {
@@ -190,8 +166,7 @@ where
 
         public abstract Task MoveToDeadLetterStorage(ErrorReport[] errors);
         public abstract Task DeleteIncomingEnvelopes(Envelope[] envelopes);
-        public abstract Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
-        public abstract Task DeleteOutgoing(Envelope[] envelopes);
+
         public abstract void Describe(TextWriter writer);
 
         public Task StoreIncoming(DbTransaction tx, Envelope[] envelopes)
@@ -204,14 +179,7 @@ where
             return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
-        public Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes)
-        {
-            var cmd = BuildOutgoingStorageCommand(envelopes, Settings.UniqueNodeId, DatabaseSettings);
-            cmd.Connection = tx.Connection;
-            cmd.Transaction = tx;
 
-            return cmd.ExecuteNonQueryAsync(_cancellation);
-        }
 
         internal static DbCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes,
             DatabaseSettings settings)
@@ -236,26 +204,7 @@ where
             return builder.Compile();
         }
 
-        public static DbCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,
-            DatabaseSettings settings)
-        {
-            var builder = settings.ToCommandBuilder();
 
-            builder.AddNamedParameter("owner", ownerId).DbType = DbType.Int32;
-
-            foreach (var envelope in envelopes)
-            {
-                var id = builder.AddParameter(envelope.Id);
-                var destination = builder.AddParameter(envelope.Destination.ToString());
-                var deliverBy = builder.AddParameter(envelope.DeliverBy);
-                var body = builder.AddParameter(envelope.Serialize());
-
-                builder.Append(
-                    $"insert into {settings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@{id.ParameterName}, @owner, @{destination.ParameterName}, @{deliverBy.ParameterName}, @{body.ParameterName});");
-            }
-
-            return builder.Compile();
-        }
 
         public void ClearAllStoredMessages()
         {

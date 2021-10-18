@@ -69,7 +69,7 @@ namespace Benchmarks
 
         public Task StoreOutgoing()
         {
-            return thePersistor.StoreOutgoing(theEnvelopes, 5);
+            return thePersistor.Outgoing.StoreOutgoing(theEnvelopes, 5);
         }
 
     }
