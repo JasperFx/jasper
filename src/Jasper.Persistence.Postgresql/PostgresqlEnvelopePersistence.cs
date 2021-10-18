@@ -4,6 +4,7 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;
+using Jasper.Transports;
 using Npgsql;
 using Weasel.Postgresql;
 using Weasel.Core;
@@ -14,11 +15,19 @@ namespace Jasper.Persistence.Postgresql
     public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
         private readonly string _deleteIncomingEnvelopesSql;
+        private readonly string _deleteOutgoingSql;
+        private readonly string _reassignSql;
+        private readonly string _deleteOutgoingEnvelopesSql;
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
             settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
         {
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
+            _deleteOutgoingSql =
+                $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where id = ANY(@ids)";
+
+            _reassignSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
+            _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
         }
 
 
@@ -61,18 +70,50 @@ namespace Jasper.Persistence.Postgresql
             writer.WriteLine($"Persistent Envelope storage using Postgresql in schema '{DatabaseSettings.SchemaName}'");
         }
 
-        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession,
-            DatabaseSettings databaseSettings,
-            AdvancedSettings settings)
-        {
-            return  new PostgresqlDurableOutgoing(durableStorageSession, databaseSettings, settings);
-        }
-
         protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
             DatabaseSettings databaseSettings,
             AdvancedSettings settings)
         {
             return new PostgresqlDurableIncoming(durableStorageSession, databaseSettings, settings);
+        }
+
+        public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        {
+            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
+                                                  $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)")
+                .With("ids", discards)
+                .With("node", nodeId)
+                .With("rids", reassigned)
+                .ExecuteOnce(_cancellation);
+        }
+
+        public override Task DeleteOutgoing(Envelope[] envelopes)
+        {
+            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql)
+                .With("ids", envelopes)
+                .ExecuteOnce(_cancellation);
+        }
+
+
+        protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings)
+        {
+            return $"select body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
+        }
+
+        public override Task Reassign(int ownerId, Envelope[] outgoing)
+        {
+            return _session.CreateCommand(_reassignSql)
+                .With("owner", ownerId)
+                .With("ids", outgoing)
+                .ExecuteNonQueryAsync(_cancellation);
+        }
+
+
+        public override Task Delete(Envelope[] outgoing)
+        {
+            return _session.CreateCommand(_deleteOutgoingSql)
+                .With("ids", outgoing)
+                .ExecuteNonQueryAsync(_cancellation);
         }
     }
 }

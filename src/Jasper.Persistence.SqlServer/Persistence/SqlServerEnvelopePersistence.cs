@@ -8,6 +8,7 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
+using Jasper.Transports;
 using Microsoft.Data.SqlClient;
 using Weasel.Core;
 using Weasel.SqlServer;
@@ -76,18 +77,51 @@ namespace Jasper.Persistence.SqlServer.Persistence
             writer.WriteLine($"Sql Server Envelope Storage in Schema '{_databaseSettings.SchemaName}'");
         }
 
-        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession,
-            DatabaseSettings databaseSettings,
-            AdvancedSettings settings)
-        {
-            return new SqlServerDurableOutgoing(durableStorageSession, databaseSettings, settings);
-        }
-
         protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
             DatabaseSettings databaseSettings,
             AdvancedSettings settings)
         {
             return new SqlServerDurableIncoming(durableStorageSession, databaseSettings, settings);
+        }
+
+        protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
+        {
+            return
+                $"select top {settings.RecoveryBatchSize} body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
+        }
+
+        public override Task Reassign(int ownerId, Envelope[] outgoing)
+        {
+            var cmd = _session.CallFunction("uspMarkOutgoingOwnership")
+                .WithIdList(DatabaseSettings, outgoing)
+                .With("owner", ownerId);
+
+            return cmd.ExecuteNonQueryAsync(_cancellation);
+        }
+
+        public override Task Delete(Envelope[] outgoing)
+        {
+            return _session
+                .CallFunction("uspDeleteOutgoingEnvelopes")
+                .WithIdList(DatabaseSettings, outgoing)
+                .ExecuteNonQueryAsync(_cancellation);
+        }
+
+        public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        {
+            var cmd = DatabaseSettings.CallFunction("uspDiscardAndReassignOutgoing")
+                .WithIdList(DatabaseSettings, discards, "discards")
+                .WithIdList(DatabaseSettings, reassigned, "reassigned")
+                .With("ownerId", nodeId);
+
+            return cmd.ExecuteOnce(_cancellation);
+        }
+
+        public override Task DeleteOutgoing(Envelope[] envelopes)
+        {
+            return DatabaseSettings.CallFunction("uspDeleteOutgoingEnvelopes")
+                .WithIdList(DatabaseSettings, envelopes).ExecuteOnce(_cancellation);
         }
     }
 }

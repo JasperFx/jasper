@@ -32,12 +32,6 @@ namespace Jasper.Persistence.Durability
         // Used by DurableCallback
         Task DeleteIncomingEnvelope(Envelope envelope);
 
-
-
-
-
-
-
         void Describe(TextWriter writer);
         Task ScheduleJob(Envelope envelope);
 
