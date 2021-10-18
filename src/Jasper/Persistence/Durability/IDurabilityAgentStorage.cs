@@ -9,12 +9,14 @@ namespace Jasper.Persistence.Durability
     public interface IDurabilityAgentStorage : IDisposable
     {
         IDurableStorageSession Session { get; }
-        IDurableNodes Nodes { get; }
 
         IDurableIncoming Incoming { get; }
 
         IDurableOutgoing Outgoing { get; }
 
         Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow);
+
+        Task ReassignDormantNodeToAnyNode(int nodeId);
+        Task<int[]> FindUniqueOwners(int currentNodeId);
     }
 }

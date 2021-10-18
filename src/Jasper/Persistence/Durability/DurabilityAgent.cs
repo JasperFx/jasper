@@ -233,7 +233,7 @@ namespace Jasper.Persistence.Durability
             await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
 
             // Release all envelopes tagged to this node in message persistence to any node
-            await _storage.Nodes.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
+            await _storage.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
 
             _storage.Dispose();
         }
