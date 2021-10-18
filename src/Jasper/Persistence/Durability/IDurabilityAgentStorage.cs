@@ -6,6 +6,7 @@ namespace Jasper.Persistence.Durability
     /// <summary>
     /// Supports the IDurabilityAgent
     /// </summary>
+    [Obsolete("Try to merge into IEnvelopePersistence")]
     public interface IDurabilityAgentStorage : IDisposable
     {
         IDurableStorageSession Session { get; }

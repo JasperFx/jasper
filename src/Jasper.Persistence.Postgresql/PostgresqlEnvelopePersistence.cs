@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;
 using Npgsql;
@@ -16,8 +17,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _deleteOutgoingEnvelopesSql;
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
-            settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings),
-            new PostgresqlDurabilityAgentStorage(databaseSettings, settings))
+            settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
         {
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
             _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
@@ -78,6 +78,20 @@ namespace Jasper.Persistence.Postgresql
         public override void Describe(TextWriter writer)
         {
             writer.WriteLine($"Persistent Envelope storage using Postgresql in schema '{DatabaseSettings.SchemaName}'");
+        }
+
+        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
+        {
+            return  new PostgresqlDurableOutgoing(durableStorageSession, databaseSettings, settings);
+        }
+
+        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
+        {
+            return new PostgresqlDurableIncoming(durableStorageSession, databaseSettings, settings);
         }
     }
 }

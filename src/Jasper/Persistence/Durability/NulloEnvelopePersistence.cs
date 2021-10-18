@@ -10,7 +10,6 @@ namespace Jasper.Persistence.Durability
     public class NulloEnvelopePersistence : IEnvelopePersistence, IEnvelopeStorageAdmin
     {
         public IEnvelopeStorageAdmin Admin => this;
-        public IDurabilityAgentStorage AgentStorage { get; } = null;
         public IScheduledJobProcessor ScheduledJobs { get; set; }
 
         public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
@@ -145,5 +144,27 @@ namespace Jasper.Persistence.Durability
         }
 
 
+        public void Dispose()
+        {
+            // Nothing
+        }
+
+        public IDurableStorageSession Session { get; } = null;
+        public IDurableIncoming Incoming { get; } = null;
+        public IDurableOutgoing Outgoing { get; } = null;
+        public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task ReassignDormantNodeToAnyNode(int nodeId)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<int[]> FindUniqueOwners(int currentNodeId)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

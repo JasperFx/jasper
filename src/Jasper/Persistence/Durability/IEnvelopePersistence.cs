@@ -4,12 +4,9 @@ using System.Threading.Tasks;
 
 namespace Jasper.Persistence.Durability
 {
-    public interface IEnvelopePersistence
+    public interface IEnvelopePersistence : IDurabilityAgentStorage
     {
         IEnvelopeStorageAdmin Admin { get; }
-
-
-        IDurabilityAgentStorage AgentStorage { get; }
 
         // Used by IRetries and DurableCallback
         Task ScheduleExecution(Envelope[] envelopes);

@@ -8,6 +8,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
+    [Obsolete("Try to merge into DAtabaseBackedEnveloperPersistence for now")]
     public abstract class DurabilityAgentStorage : IDurabilityAgentStorage
     {
         private readonly DurableStorageSession _session;

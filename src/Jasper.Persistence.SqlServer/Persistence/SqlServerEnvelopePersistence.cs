@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Persistence.Database;
+using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
 using Microsoft.Data.SqlClient;
@@ -20,8 +21,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
 
         public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings)
-            : base(databaseSettings, settings, new SqlServerEnvelopeStorageAdmin(databaseSettings),
-                new SqlServerDurabilityAgentStorage(databaseSettings, settings))
+            : base(databaseSettings, settings, new SqlServerEnvelopeStorageAdmin(databaseSettings))
         {
             _databaseSettings = databaseSettings;
         }
@@ -90,6 +90,20 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public override void Describe(TextWriter writer)
         {
             writer.WriteLine($"Sql Server Envelope Storage in Schema '{_databaseSettings.SchemaName}'");
+        }
+
+        protected override IDurableOutgoing buildDurableOutgoing(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
+        {
+            return new SqlServerDurableOutgoing(durableStorageSession, databaseSettings, settings);
+        }
+
+        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
+            DatabaseSettings databaseSettings,
+            AdvancedSettings settings)
+        {
+            return new SqlServerDurableIncoming(durableStorageSession, databaseSettings, settings);
         }
     }
 }

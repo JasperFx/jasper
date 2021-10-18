@@ -11,7 +11,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence
+    public abstract class DatabaseBackedEnvelopePersistence : DurabilityAgentStorage, IEnvelopePersistence
     {
         protected readonly CancellationToken _cancellation;
         private readonly string _incrementIncomingAttempts;
@@ -19,11 +19,10 @@ namespace Jasper.Persistence.Database
         private readonly string _storeIncoming;
 
         protected DatabaseBackedEnvelopePersistence(DatabaseSettings databaseSettings, AdvancedSettings settings,
-            IEnvelopeStorageAdmin admin, IDurabilityAgentStorage agentStorage)
+            IEnvelopeStorageAdmin admin) : base(databaseSettings, settings)
         {
             DatabaseSettings = databaseSettings;
             Admin = admin;
-            AgentStorage = agentStorage;
 
             Settings = settings;
             _cancellation = settings.Cancellation;
@@ -45,7 +44,6 @@ values
         public DatabaseSettings DatabaseSettings { get; }
 
         public IEnvelopeStorageAdmin Admin { get; }
-        public IDurabilityAgentStorage AgentStorage { get; }
 
         public Task DeleteOutgoing(Envelope envelope)
         {

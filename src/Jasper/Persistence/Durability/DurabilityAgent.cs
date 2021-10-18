@@ -66,7 +66,7 @@ namespace Jasper.Persistence.Durability
             _settings = settings;
 
 
-            _storage = _persistence.AgentStorage;
+            _storage = _persistence;
 
             _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
             {
