@@ -69,7 +69,7 @@ namespace Jasper.Persistence.Durability
                     _logger.DiscardedExpired(expiredMessages);
 
 
-                    await storage.Outgoing.Delete(expiredMessages.ToArray());
+                    await storage.Outgoing.DeleteOutgoing(expiredMessages.ToArray());
                     filtered = outgoing.Where(x => !expiredMessages.Contains(x)).ToArray();
 
                     // Might easily try to do this in the time between starting
@@ -81,7 +81,7 @@ namespace Jasper.Persistence.Durability
                         return 0;
                     }
 
-                    await storage.Outgoing.Reassign(_settings.UniqueNodeId, filtered);
+                    await storage.Outgoing.ReassignOutgoing(_settings.UniqueNodeId, filtered);
 
 
                     await storage.Session.Commit();

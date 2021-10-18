@@ -15,7 +15,6 @@ namespace Jasper.Persistence.Postgresql
     public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
         private readonly string _deleteIncomingEnvelopesSql;
-        private readonly string _deleteOutgoingSql;
         private readonly string _reassignSql;
         private readonly string _deleteOutgoingEnvelopesSql;
 
@@ -23,9 +22,6 @@ namespace Jasper.Persistence.Postgresql
             settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
         {
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
-            _deleteOutgoingSql =
-                $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where id = ANY(@ids)";
-
             _reassignSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
             _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
         }
@@ -100,7 +96,7 @@ namespace Jasper.Persistence.Postgresql
             return $"select body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
         }
 
-        public override Task Reassign(int ownerId, Envelope[] outgoing)
+        public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
         {
             return _session.CreateCommand(_reassignSql)
                 .With("owner", ownerId)
@@ -108,12 +104,5 @@ namespace Jasper.Persistence.Postgresql
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
-
-        public override Task Delete(Envelope[] outgoing)
-        {
-            return _session.CreateCommand(_deleteOutgoingSql)
-                .With("ids", outgoing)
-                .ExecuteNonQueryAsync(_cancellation);
-        }
     }
 }

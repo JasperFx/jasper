@@ -4,7 +4,7 @@ namespace Jasper.Persistence.Durability
 {
     public interface IDurableIncoming
     {
-        Task<Envelope[]> LoadPageOfLocallyOwned();
-        Task Reassign(int ownerId, Envelope[] incoming);
+        Task<Envelope[]> LoadPageOfLocallyOwnedIncoming();
+        Task ReassignIncoming(int ownerId, Envelope[] incoming);
     }
 }

@@ -62,15 +62,10 @@ namespace Jasper.Persistence.SqlServer.Persistence
                     $"insert into {_databaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
             }
 
-            await using (var conn = new SqlConnection(_databaseSettings.ConnectionString))
-            {
-                await conn.OpenAsync(_cancellation);
-                await builder.ExecuteNonQueryAsync(conn);
-            }
+            await using var conn = new SqlConnection(_databaseSettings.ConnectionString);
+            await conn.OpenAsync(_cancellation);
+            await builder.ExecuteNonQueryAsync(conn);
         }
-
-
-
 
         public override void Describe(TextWriter writer)
         {
@@ -91,21 +86,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 $"select top {settings.RecoveryBatchSize} body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
         }
 
-        public override Task Reassign(int ownerId, Envelope[] outgoing)
+        public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
         {
             var cmd = _session.CallFunction("uspMarkOutgoingOwnership")
                 .WithIdList(DatabaseSettings, outgoing)
                 .With("owner", ownerId);
 
             return cmd.ExecuteNonQueryAsync(_cancellation);
-        }
-
-        public override Task Delete(Envelope[] outgoing)
-        {
-            return _session
-                .CallFunction("uspDeleteOutgoingEnvelopes")
-                .WithIdList(DatabaseSettings, outgoing)
-                .ExecuteNonQueryAsync(_cancellation);
         }
 
         public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)

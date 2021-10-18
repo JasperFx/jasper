@@ -301,7 +301,7 @@ where
                 .ExecuteToEnvelopes(_cancellation);
         }
 
-        public abstract Task Reassign(int ownerId, Envelope[] outgoing);
+        public abstract Task ReassignOutgoing(int ownerId, Envelope[] outgoing);
 
         public Task DeleteByDestination(Uri destination)
         {
@@ -311,7 +311,6 @@ where
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
-        public abstract Task Delete(Envelope[] outgoing);
 
         public Task DeleteOutgoing(Envelope envelope)
         {

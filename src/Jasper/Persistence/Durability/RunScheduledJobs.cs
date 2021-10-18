@@ -44,7 +44,7 @@ namespace Jasper.Persistence.Durability
                         return readyToExecute;
                     }
 
-                    await storage.Incoming.Reassign(_settings.UniqueNodeId, readyToExecute);
+                    await storage.Incoming.ReassignIncoming(_settings.UniqueNodeId, readyToExecute);
 
                     await storage.Session.Commit();
                 }

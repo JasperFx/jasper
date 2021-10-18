@@ -26,13 +26,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _cancellation = settings.Cancellation;
         }
 
-        public Task<Envelope[]> LoadPageOfLocallyOwned()
+        public Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
         {
             return _session.CreateCommand(_findAtLargeEnvelopesSql)
                 .ExecuteToEnvelopesWithAttempts(_cancellation);
         }
 
-        public Task Reassign(int ownerId, Envelope[] incoming)
+        public Task ReassignIncoming(int ownerId, Envelope[] incoming)
         {
             return _session.CallFunction("uspMarkIncomingOwnership")
                 .WithIdList(_databaseSettings, incoming)
