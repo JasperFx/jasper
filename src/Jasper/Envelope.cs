@@ -131,7 +131,7 @@ namespace Jasper
         /// <summary>
         ///     Mimetype of the serialized data
         /// </summary>
-        public string ContentType { get; internal set; }
+        public string ContentType { get; set; }
 
         /// <summary>
         ///     Correlating identifier for the logical workflow or system action

@@ -50,7 +50,8 @@ namespace Jasper
         }
 
 
-        internal IMessageSerializer Writer { get; set; }
+        [Obsolete("Want to eliminate this if at all possible")]
+        public IMessageSerializer Writer { get; set; }
 
 
 

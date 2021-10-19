@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using BenchmarkDotNet.Running;
 using Newtonsoft.Json;
 using TestMessages;
 
@@ -10,9 +11,7 @@ namespace Benchmarks
     {
         static void Main(string[] args)
         {
-            var targets = Target.GenerateRandomData(1000).ToArray();
-            var json = JsonConvert.SerializeObject(targets);
-            File.WriteAllText("targets.json", json);
+            var summary = BenchmarkRunner.Run<PersistenceRunner>();
         }
     }
 

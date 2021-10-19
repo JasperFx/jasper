@@ -10,6 +10,7 @@ using Jasper;
 using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.SqlServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -20,7 +21,7 @@ namespace Benchmarks
     public class PersistenceRunner : IDisposable
     {
         private readonly Target[] _targets;
-        private IHost thePostgresqlSystem;
+        private IHost theSystem;
         private Envelope[] theEnvelopes;
         private IEnvelopePersistence thePersistor;
 
@@ -34,42 +35,93 @@ namespace Benchmarks
 
         public void Dispose()
         {
-            thePostgresqlSystem.SafeDispose();
+            theSystem.SafeDispose();
         }
 
-        [GlobalSetup]
-        public async Task BuildDatabase()
+        [Params("SqlServer", "Postgresql")]
+        public string DatabaseEngine;
+
+        [IterationSetup]
+        public void BuildDatabase()
         {
-            thePostgresqlSystem = await Host.CreateDefaultBuilder()
+            theSystem = Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
-                })
-                .StartAsync();
+                    if (DatabaseEngine == "SqlServer")
+                    {
+                        opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                    }
+                    else
+                    {
+                        opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
+                    }
 
-            await thePostgresqlSystem.RebuildMessageStorage();
+                })
+                .Build();
+
+            theSystem.RebuildMessageStorage().GetAwaiter().GetResult();
 
             theEnvelopes = _targets.Select(x =>
             {
+                var stream = new MemoryStream();
+                var writer = new JsonTextWriter(new StreamWriter(stream));
+                new JsonSerializer().Serialize(writer, x);
                 var env = new Envelope(x);
+                env.Destination = new Uri("fake://localhost:5000");
+                stream.Position = 0;
+                env.Data = stream.ReadAllBytes();
 
-                // TODO -- use an option that pre-serializes
 
                 return env;
             }).ToArray();
 
-            thePersistor = thePostgresqlSystem.Services.GetRequiredService<IEnvelopePersistence>();
+            thePersistor = theSystem.Services.GetRequiredService<IEnvelopePersistence>();
         }
 
-        // TODO -- setup the setups
-        public Task StoreIncoming()
+        [IterationCleanup]
+        public void Teardown()
         {
-            return thePersistor.StoreIncoming(theEnvelopes);
+            theSystem.Dispose();
         }
 
-        public Task StoreOutgoing()
+        [Benchmark]
+        public async Task StoreIncoming()
         {
-            return thePersistor.Outgoing.StoreOutgoing(theEnvelopes, 5);
+            for (int i = 0; i < 10; i++)
+            {
+                await thePersistor.StoreIncoming(theEnvelopes.Skip(i * 100).Take(100).ToArray());
+            }
+        }
+
+        [Benchmark]
+        public async Task StoreOutgoing()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                await thePersistor.Outgoing.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
+            }
+        }
+
+        [IterationSetup(Target = nameof(LoadIncoming))]
+        public Task LoadIncomingSetup()
+        {
+            return StoreIncoming();
+        }
+
+        public Task LoadIncoming()
+        {
+            return thePersistor.Admin.AllIncomingEnvelopes();
+        }
+
+        [IterationSetup(Target = nameof(LoadOutgoing))]
+        public Task LoadOutgoingSetup()
+        {
+            return StoreOutgoing();
+        }
+
+        public Task LoadOutgoing()
+        {
+            return thePersistor.Admin.AllOutgoingEnvelopes();
         }
 
     }
