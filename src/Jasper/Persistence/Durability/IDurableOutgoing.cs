@@ -11,14 +11,6 @@ namespace Jasper.Persistence.Durability
         Task DeleteByDestination(Uri destination);
         Task<Uri[]> FindAllDestinations();
 
-
-
-
-
-
-
-
-
         // Used by DurableRetryAgent, could go to IDurabilityAgent
         Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
 

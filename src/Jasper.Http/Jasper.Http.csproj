@@ -22,10 +22,4 @@
       <ProjectReference Include="..\Jasper\Jasper.csproj" />
       <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>CommonAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
 </Project>
