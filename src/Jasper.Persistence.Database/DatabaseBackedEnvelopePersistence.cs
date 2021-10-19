@@ -12,7 +12,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence, IDurableOutgoing
+    public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence
     {
         protected readonly CancellationToken _cancellation;
 
@@ -44,10 +44,6 @@ namespace Jasper.Persistence.Database
 
         public IDurableStorageSession Session { get; }
         public IDurableIncoming Incoming { get; }
-        public IDurableOutgoing Outgoing => this;
-
-
-
 
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
@@ -255,7 +251,7 @@ select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.O
 
         protected abstract string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings);
 
-        public Task<Envelope[]> Load(Uri destination)
+        public Task<Envelope[]> LoadOutgoing(Uri destination)
         {
             return Session.Transaction.CreateCommand(determineOutgoingEnvelopeSql(DatabaseSettings, Settings))
                 .With("destination", destination.ToString())

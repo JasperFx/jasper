@@ -45,11 +45,11 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await ThePersistence.Outgoing.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var toDelete = list[5];
 
-            await ThePersistence.Outgoing.DeleteOutgoing(toDelete);
+            await ThePersistence.DeleteOutgoing(toDelete);
 
             var stored = ThePersistence.AllOutgoingEnvelopes();
             stored.Length.ShouldBe(9);
@@ -97,11 +97,11 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await ThePersistence.Outgoing.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var toDelete = new[] {list[2], list[3], list[7]};
 
-            await ThePersistence.Outgoing.DeleteOutgoing(toDelete);
+            await ThePersistence.DeleteOutgoing(toDelete);
 
             var stored = ThePersistence.AllOutgoingEnvelopes();
             stored.Length.ShouldBe(7);
@@ -124,12 +124,12 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await ThePersistence.Outgoing.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var toDiscard = new[] {list[2], list[3], list[7]};
             var toReassign = new[] {list[1], list[4], list[6]};
 
-            await ThePersistence.Outgoing.DiscardAndReassignOutgoing(toDiscard, toReassign, 444);
+            await ThePersistence.DiscardAndReassignOutgoing(toDiscard, toReassign, 444);
 
             var stored = ThePersistence.AllOutgoingEnvelopes();
             stored.Length.ShouldBe(7);
@@ -183,7 +183,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await ThePersistence.Outgoing.StoreOutgoing(list.ToArray(), 0);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 0);
 
             var counts = await ThePersistence.Admin.GetPersistedCounts();
 
@@ -335,7 +335,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var envelope = ObjectMother.Envelope();
             envelope.Status = EnvelopeStatus.Outgoing;
 
-            await ThePersistence.Outgoing.StoreOutgoing(envelope, 5890);
+            await ThePersistence.StoreOutgoing(envelope, 5890);
 
             var stored = ThePersistence.AllOutgoingEnvelopes().Single();
 
@@ -378,7 +378,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 list.Add(envelope);
             }
 
-            await ThePersistence.Outgoing.StoreOutgoing(list.ToArray(), 111);
+            await ThePersistence.StoreOutgoing(list.ToArray(), 111);
 
             var stored = ThePersistence.AllOutgoingEnvelopes();
 

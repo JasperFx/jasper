@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Durability
             if (all.Count > Endpoint.MaximumEnvelopeRetryStorage)
                 reassigned = all.Skip(Endpoint.MaximumEnvelopeRetryStorage).ToArray();
 
-            await _persistence.Outgoing.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
+            await _persistence.DiscardAndReassignOutgoing(expired, reassigned, TransportConstants.AnyNode);
             _logger.DiscardedExpired(expired);
 
             Queued = all.Take(Endpoint.MaximumEnvelopeRetryStorage).ToList();
@@ -82,19 +82,19 @@ namespace Jasper.Persistence.Durability
         }
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
-            return _policy.ExecuteAsync(c => _persistence.Outgoing.DeleteOutgoing(outgoing.Messages.ToArray()), _settings.Cancellation);
+            return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing.Messages.ToArray()), _settings.Cancellation);
         }
 
         public override Task Successful(Envelope outgoing)
         {
-            return _policy.ExecuteAsync(c => _persistence.Outgoing.DeleteOutgoing(outgoing), _settings.Cancellation);
+            return _policy.ExecuteAsync(c => _persistence.DeleteOutgoing(outgoing), _settings.Cancellation);
         }
 
         public override bool IsDurable { get; } = true;
 
         protected override async Task storeAndForward(Envelope envelope)
         {
-            await _persistence.Outgoing.StoreOutgoing(envelope, _settings.UniqueNodeId);
+            await _persistence.StoreOutgoing(envelope, _settings.UniqueNodeId);
 
             await _senderDelegate(envelope);
         }

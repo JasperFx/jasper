@@ -78,7 +78,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.Outgoing.StoreOutgoing(list.ToArray(), 0);
+            await thePersistor.StoreOutgoing(list.ToArray(), 0);
 
             var counts = await thePersistor.Admin.GetPersistedCounts();
 

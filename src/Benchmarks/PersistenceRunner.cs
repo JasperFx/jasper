@@ -90,7 +90,7 @@ namespace Benchmarks
         {
             for (int i = 0; i < 10; i++)
             {
-                await theDriver.Persistence.Outgoing.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
+                await theDriver.Persistence.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
             }
         }
 

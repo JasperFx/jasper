@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,6 +31,11 @@ namespace Jasper.Persistence.Durability
         public Task DeleteOutgoing(Envelope envelope)
         {
             return Task.CompletedTask;
+        }
+
+        public Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes)
+        {
+            throw new NotSupportedException();
         }
 
         public Task MoveToDeadLetterStorage(ErrorReport[] errors)
@@ -92,6 +98,11 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
+        public Task<Uri[]> FindAllDestinations()
+        {
+            throw new NotSupportedException();
+        }
+
         public Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
             return Task.CompletedTask;
@@ -151,7 +162,6 @@ namespace Jasper.Persistence.Durability
 
         public IDurableStorageSession Session { get; } = null;
         public IDurableIncoming Incoming { get; } = null;
-        public IDurableOutgoing Outgoing { get; } = null;
         public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
         {
             throw new NotSupportedException();
@@ -163,6 +173,21 @@ namespace Jasper.Persistence.Durability
         }
 
         public Task<int[]> FindUniqueOwners(int currentNodeId)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<Envelope[]> LoadOutgoing(Uri destination)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task DeleteByDestination(Uri destination)
         {
             throw new NotSupportedException();
         }

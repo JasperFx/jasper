@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Durability
 
             try
             {
-                var destinations = await storage.Outgoing.FindAllDestinations();
+                var destinations = await storage.FindAllDestinations();
 
                 var count = 0;
                 foreach (var destination in destinations)
@@ -63,13 +63,13 @@ namespace Jasper.Persistence.Durability
 
                 try
                 {
-                    outgoing = await storage.Outgoing.Load(destination: destination);
+                    outgoing = await storage.LoadOutgoing(destination: destination);
 
                     var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
                     _logger.DiscardedExpired(expiredMessages);
 
 
-                    await storage.Outgoing.DeleteOutgoing(expiredMessages.ToArray());
+                    await storage.DeleteOutgoing(expiredMessages.ToArray());
                     filtered = outgoing.Where(x => !expiredMessages.Contains(x)).ToArray();
 
                     // Might easily try to do this in the time between starting
@@ -81,7 +81,7 @@ namespace Jasper.Persistence.Durability
                         return 0;
                     }
 
-                    await storage.Outgoing.ReassignOutgoing(_settings.UniqueNodeId, filtered);
+                    await storage.ReassignOutgoing(_settings.UniqueNodeId, filtered);
 
 
                     await storage.Session.Commit();
@@ -112,7 +112,7 @@ namespace Jasper.Persistence.Durability
 
                 await storage.Session.Begin();
 
-                await storage.Outgoing.DeleteByDestination(destination);
+                await storage.DeleteByDestination(destination);
                 await storage.Session.Commit();
 
                 return 0;
