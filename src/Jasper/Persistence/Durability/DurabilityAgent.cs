@@ -225,12 +225,19 @@ namespace Jasper.Persistence.Durability
 
             _worker.Complete();
 
-            await _worker.Completion;
+            try
+            {
+                await _worker.Completion;
 
-            await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
+                await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
 
-            // Release all envelopes tagged to this node in message persistence to any node
-            await _storage.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
+                // Release all envelopes tagged to this node in message persistence to any node
+                await _storage.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
+            }
+            catch (Exception e)
+            {
+                Logger.LogException(e);
+            }
         }
 
         public void Dispose()
