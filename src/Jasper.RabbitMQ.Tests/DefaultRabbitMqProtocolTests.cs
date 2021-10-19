@@ -206,7 +206,7 @@ namespace Jasper.RabbitMQ.Tests
         public void parent_id()
         {
             theEnvelope.CausationId = Guid.NewGuid();
-            theProperties.Headers[Envelope.ParentIdKey].ShouldBe(theEnvelope.CausationId.ToString());
+            theProperties.Headers[Envelope.CausationIdKey].ShouldBe(theEnvelope.CausationId.ToString());
         }
 
         [Fact]

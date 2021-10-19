@@ -1,9 +1,9 @@
 ﻿using System;
 using Jasper.Persistence.Database;
 using Weasel.Core;
-using Weasel.Postgresql.Tables;
+using Weasel.SqlServer.Tables;
 
-namespace Jasper.Persistence.Postgresql.Schema
+namespace Jasper.Persistence.SqlServer.Schema
 {
     internal class IncomingEnvelopeTable : Table
     {
@@ -11,23 +11,22 @@ namespace Jasper.Persistence.Postgresql.Schema
         public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.IncomingTable))
         {
             AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
-            AddColumn<string>(DatabaseConstants.Status).NotNull();
+            AddColumn("status", "varchar(25)").NotNull();
             AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
             AddColumn<DateTimeOffset>(DatabaseConstants.ExecutionTime).DefaultValueByExpression("NULL");
             AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
-            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
+            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
 
             AddColumn<Guid>(DatabaseConstants.CausationId);
             AddColumn<Guid>(DatabaseConstants.CorrelationId);
             AddColumn<string>(DatabaseConstants.SagaId);
-            AddColumn<string>(DatabaseConstants.MessageType).NotNull();
+            AddColumn<string>(DatabaseConstants.ParentId);
+            AddColumn(DatabaseConstants.MessageType, "varchar(250)").NotNull();
             AddColumn<string>(DatabaseConstants.ContentType);
-            AddColumn<string>(DatabaseConstants.ReplyRequested);
+            AddColumn(DatabaseConstants.ReplyRequested, "varchar(250)");
             AddColumn<bool>(DatabaseConstants.AckRequested);
             AddColumn<string>(DatabaseConstants.ReplyUri);
             AddColumn<string>(DatabaseConstants.ReceivedAt);
-
-
         }
     }
 }

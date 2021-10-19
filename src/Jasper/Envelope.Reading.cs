@@ -57,7 +57,7 @@ namespace Jasper
                         SagaId = value;
                         break;
 
-                    case ParentIdKey:
+                    case CausationIdKey:
                         if (Guid.TryParse(value, out var parentId)) CausationId = parentId;
                         break;
 

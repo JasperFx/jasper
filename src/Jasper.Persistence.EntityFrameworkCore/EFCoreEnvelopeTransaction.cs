@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {
@@ -47,12 +49,19 @@ namespace Jasper.Persistence.EntityFrameworkCore
             return Task.CompletedTask;
         }
 
-        public Task ScheduleJob(Envelope envelope)
+        public async Task ScheduleJob(Envelope envelope)
         {
-            var incoming = new IncomingEnvelope(envelope);
-            _db.Add(incoming);
+            if (_db.Database.CurrentTransaction == null)
+            {
+                await _db.Database.BeginTransactionAsync();
+            }
 
-            return Task.CompletedTask;
+            var conn = _db.Database.GetDbConnection();
+            var tx = _db.Database.CurrentTransaction.GetDbTransaction();
+            var builder = _settings.ToCommandBuilder();
+            DatabaseBackedEnvelopePersistence.BuildIncomingStorageCommand(_settings, builder, envelope);
+            await builder.ExecuteNonQueryAsync(conn, tx: tx);
+
         }
 
         public Task CopyTo(IEnvelopeTransaction other)

@@ -208,7 +208,7 @@ namespace Jasper.AzureServiceBus.Tests
         public void parent_id()
         {
             theEnvelope.CausationId = Guid.NewGuid();
-            theMessage.UserProperties[Envelope.ParentIdKey].ShouldBe(theEnvelope.CausationId.ToString());
+            theMessage.UserProperties[Envelope.CausationIdKey].ShouldBe(theEnvelope.CausationId.ToString());
         }
 
         [Fact]

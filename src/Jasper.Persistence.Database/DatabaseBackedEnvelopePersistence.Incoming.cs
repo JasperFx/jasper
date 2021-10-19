@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Util;
 using Weasel.Core;
+using DbCommandBuilder = Weasel.Core.DbCommandBuilder;
 
 namespace Jasper.Persistence.Database
 {
@@ -17,20 +22,48 @@ namespace Jasper.Persistence.Database
 
         public static async Task<Envelope> ReadIncoming(DbDataReader reader, CancellationToken cancellation = default)
         {
-            // body, id, status, owner_id, execution_time, attempts
+            var envelope = new Envelope
+            {
+                Data = await reader.GetFieldValueAsync<byte[]>(0, cancellation),
+                Id = await reader.GetFieldValueAsync<Guid>(1, cancellation),
+                Status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(2, cancellation)),
+                OwnerId = await reader.GetFieldValueAsync<int>(3, cancellation)
+            };
 
-            var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
-            var envelope = Envelope.Deserialize(bytes);
-
-            envelope.Id = await reader.GetFieldValueAsync<Guid>(1, cancellation);
-            envelope.Status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(2, cancellation));
-            envelope.OwnerId = await reader.GetFieldValueAsync<int>(3, cancellation);
             if (!(await reader.IsDBNullAsync(4, cancellation)))
             {
                 envelope.ExecutionTime = await reader.GetFieldValueAsync<DateTimeOffset>(4, cancellation);
             }
 
             envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
+
+            envelope.CausationId = await reader.GetFieldValueAsync<Guid>(6, cancellation);
+            envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(7, cancellation);
+
+            if (!await reader.IsDBNullAsync(8, cancellation))
+            {
+                envelope.SagaId = await reader.GetFieldValueAsync<string>(8, cancellation);
+            }
+
+            envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);
+            envelope.ContentType = await reader.GetFieldValueAsync<string>(10, cancellation);
+
+            if (!await reader.IsDBNullAsync(11, cancellation))
+            {
+                envelope.ReplyRequested = await reader.GetFieldValueAsync<string>(11, cancellation);
+            }
+
+            envelope.AckRequested = await reader.GetFieldValueAsync<bool>(12, cancellation);
+
+            if (!await reader.IsDBNullAsync(13, cancellation))
+            {
+                envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(13, cancellation)).ToUri();
+            }
+
+            if (!await reader.IsDBNullAsync(14, cancellation))
+            {
+                envelope.ReceivedAt = (await reader.GetFieldValueAsync<string>(14, cancellation)).ToUri();
+            }
 
             return envelope;
         }
@@ -60,20 +93,37 @@ namespace Jasper.Persistence.Database
 
             foreach (var envelope in envelopes)
             {
-                var id = builder.AddParameter(envelope.Id);
-                var status = builder.AddParameter(envelope.Status.ToString());
-                var owner = builder.AddParameter(envelope.OwnerId);
-                var attempts = builder.AddParameter(envelope.Attempts);
-                var time = builder.AddParameter(envelope.ExecutionTime);
-                var body = builder.AddParameter(envelope.Serialize());
-
-
-                builder.Append(
-                    $"insert into {settings.SchemaName}.{DatabaseConstants.IncomingTable} (id, status, owner_id, execution_time, attempts, body) values (@{id.ParameterName}, @{status.ParameterName}, @{owner.ParameterName}, @{time.ParameterName}, @{attempts.ParameterName}, @{body.ParameterName});");
+                BuildIncomingStorageCommand(settings, builder, envelope);
             }
 
-
             return builder.Compile();
+        }
+
+        public static void BuildIncomingStorageCommand(DatabaseSettings settings, DbCommandBuilder builder, Envelope envelope)
+        {
+            var list = new List<DbParameter>();
+
+            list.Add(builder.AddParameter(envelope.Data));
+            list.Add(builder.AddParameter(envelope.Id));
+            list.Add(builder.AddParameter(envelope.Status.ToString()));
+            list.Add(builder.AddParameter(envelope.OwnerId));
+            list.Add(builder.AddParameter(envelope.ExecutionTime));
+            list.Add(builder.AddParameter(envelope.Attempts));
+
+            list.Add(builder.AddParameter(envelope.CausationId));
+            list.Add(builder.AddParameter(envelope.CorrelationId));
+            list.Add(builder.AddParameter(envelope.SagaId));
+            list.Add(builder.AddParameter(envelope.MessageType));
+            list.Add(builder.AddParameter(envelope.ContentType));
+            list.Add(builder.AddParameter(envelope.ReplyRequested));
+            list.Add(builder.AddParameter(envelope.AckRequested));
+            list.Add(builder.AddParameter(envelope.ReplyUri?.ToString()));
+            list.Add(builder.AddParameter(envelope.ReceivedAt?.ToString()));
+
+            var parameterList = list.Select(x => $"@{x.ParameterName}").Join(", ");
+
+            builder.Append(
+                $@"insert into {settings.SchemaName}.{DatabaseConstants.IncomingTable} ({DatabaseConstants.IncomingFields}) values ({parameterList});");
         }
 
         public Task MoveToDeadLetterStorage(Envelope envelope, Exception ex)
@@ -91,19 +141,12 @@ namespace Jasper.Persistence.Database
 
         public Task StoreIncoming(Envelope envelope)
         {
-            return DatabaseSettings.CreateCommand($@"
-insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
-  (id, status, owner_id, execution_time, attempts, body)
-values
-  (@id, @status, @owner, @time, @attempts, @body);
-")
-                .With("id", envelope.Id)
-                .With("status", envelope.Status.ToString())
-                .With("owner", envelope.OwnerId)
-                .With("attempts", envelope.Attempts)
-                .With("time", envelope.ExecutionTime)
-                .With("body", envelope.Serialize())
-                .ExecuteOnce(_cancellation);
+            var builder = DatabaseSettings.ToCommandBuilder();
+            BuildIncomingStorageCommand(DatabaseSettings, builder, envelope);
+
+            var cmd = builder.Compile();
+            return cmd.ExecuteOnce(_cancellation);
+
         }
 
         public async Task StoreIncoming(Envelope[] envelopes)

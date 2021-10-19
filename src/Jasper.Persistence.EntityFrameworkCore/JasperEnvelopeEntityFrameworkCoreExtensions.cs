@@ -1,7 +1,9 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Persistence.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {
@@ -20,7 +22,17 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
     public static class JasperEnvelopeEntityFrameworkCoreExtensions
     {
+        public static async Task SaveChangesAndFlushMessages(this DbContext context, IMessageContext messages, CancellationToken cancellation = default)
+        {
+            await context.SaveChangesAsync(cancellation);
+            var tx = context.Database.CurrentTransaction?.GetDbTransaction();
+            if (tx != null)
+            {
+                await tx.CommitAsync(cancellation);
+            }
 
+            await messages.SendAllQueuedOutgoingMessages();
+        }
 
         /// <summary>
         /// Enlists the current IMessagingContext in the EF Core DbContext's transaction
@@ -40,17 +52,6 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
         public static void MapEnvelopeStorage(this ModelBuilder builder, string schemaName = "dbo")
         {
-            builder.Entity<IncomingEnvelope>(map =>
-            {
-                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.IncomingTable : $"{schemaName}.{DatabaseConstants.IncomingTable}");
-                map.HasKey(x => x.Id);
-                map.Property(x => x.OwnerId).HasColumnName("owner_id");
-                map.Property(x => x.Status).HasColumnName("status").HasConversion<string>();
-                map.Property(x => x.ExecutionTime).HasColumnName("execution_time");
-                map.Property(x => x.Attempts).HasColumnName("attempts");
-                map.Property(x => x.Body).HasColumnName("body");
-            });
-
             builder.Entity<OutgoingEnvelope>(map =>
             {
                 map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.OutgoingTable : $"{schemaName}.{DatabaseConstants.OutgoingTable}");

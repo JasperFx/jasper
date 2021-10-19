@@ -52,7 +52,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[] {1, 2, 3, 4}
+                Data = new byte[] {1, 2, 3, 4},
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             theEnvelopes.Add(env);
@@ -65,7 +67,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ExecutionTime = DateTime.UtcNow.Add(1.Hours())
+                ExecutionTime = DateTime.UtcNow.Add(1.Hours()),
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             theEnvelopes.Add(env);
@@ -78,7 +82,10 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ExecutionTime = DateTime.UtcNow.Add(-1.Hours())
+                ExecutionTime = DateTime.UtcNow.Add(-1.Hours()),
+                ContentType = "application/json",
+                MessageType = "foo"
+
             };
 
             theEnvelopes.Add(env);

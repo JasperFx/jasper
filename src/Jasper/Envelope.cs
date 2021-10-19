@@ -12,7 +12,7 @@ namespace Jasper
         public const string CorrelationIdKey = "correlation-id";
         public const string SagaIdKey = "saga-id";
         private const string IdKey = "id";
-        public const string ParentIdKey = "parent-id";
+        public const string CausationIdKey = "parent-id";
         private const string ContentTypeKey = "content-type";
         public const string SourceKey = "source";
         public const string ReplyRequestedKey = "reply-requested";

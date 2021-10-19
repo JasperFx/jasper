@@ -105,7 +105,7 @@ namespace Jasper
             dictionary.WriteProp(ReplyUriKey, ReplyUri);
             dictionary.WriteProp(ContentTypeKey, ContentType);
             dictionary.WriteProp(CorrelationIdKey, CorrelationId);
-            dictionary.WriteProp(ParentIdKey, CausationId);
+            dictionary.WriteProp(CausationIdKey, CausationId);
             dictionary.WriteProp(DestinationKey, Destination);
             dictionary.WriteProp(SagaIdKey, SagaId);
 
@@ -140,7 +140,7 @@ namespace Jasper
             writer.WriteProp(ref count, ReplyUriKey, ReplyUri);
             writer.WriteProp(ref count, ContentTypeKey, ContentType);
             writer.WriteProp(ref count, CorrelationIdKey, CorrelationId);
-            writer.WriteProp(ref count, ParentIdKey, CausationId);
+            writer.WriteProp(ref count, CausationIdKey, CausationId);
             writer.WriteProp(ref count, DestinationKey, Destination);
             writer.WriteProp(ref count, SagaIdKey, SagaId);
 

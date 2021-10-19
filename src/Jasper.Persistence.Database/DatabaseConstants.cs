@@ -33,8 +33,9 @@
         public const string ReplyRequested = "reply_requested"; // add to all
         public const string ReplyUri = "reply_uri"; // add to all
         public const string AckRequested = "ack_requested"; // add to all
+        public const string ReceivedAt = "received_at"; // add to all
 
-        public static readonly string IncomingFields = $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}";
+        public static readonly string IncomingFields = $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
         public static readonly string OutgoingFields = $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}";
     }
 }

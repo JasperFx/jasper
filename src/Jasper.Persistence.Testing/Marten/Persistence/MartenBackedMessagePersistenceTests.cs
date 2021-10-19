@@ -31,6 +31,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
             theEnvelope.Status = EnvelopeStatus.Scheduled;
+            theEnvelope.MessageType = "message1";
+            theEnvelope.ContentType = "application/json";
         }
 
         public async Task InitializeAsync()

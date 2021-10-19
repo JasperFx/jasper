@@ -95,7 +95,9 @@ namespace Jasper.Persistence.Testing.EFCore
                 ExecutionTime = DateTime.Today.AddDays(1),
                 DeliverBy = new DateTimeOffset(DateTime.Today),
                 Status = EnvelopeStatus.Scheduled,
-                Attempts = 2
+                Attempts = 2,
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
@@ -104,7 +106,7 @@ namespace Jasper.Persistence.Testing.EFCore
             var transaction = new EFCoreEnvelopeTransaction(context, messaging);
 
             await transaction.ScheduleJob(envelope);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAndFlushMessages(messaging);
 
             var persisted = await Host.Services.GetRequiredService<IEnvelopePersistence>()
                 .Admin.AllIncomingEnvelopes();
