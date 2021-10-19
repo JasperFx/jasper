@@ -15,18 +15,6 @@ namespace Jasper.Persistence.Database
     public abstract class DatabaseBackedEnvelopePersistence : IEnvelopePersistence, IDurableOutgoing
     {
         protected readonly CancellationToken _cancellation;
-        private readonly string _incrementIncomingAttempts;
-
-        private readonly string _storeIncoming;
-        protected readonly DurableStorageSession _session;
-        private readonly string _findReadyToExecuteJobs;
-        private readonly string _fetchOwnersSql;
-        private readonly string _reassignDormantNodeSql;
-        private readonly string _findUniqueDestinations;
-        private readonly string _deleteOutgoingSql;
-
-        private readonly string _findOutgoingEnvelopesSql;
-        private readonly string _insertOutgoingSql;
 
         protected DatabaseBackedEnvelopePersistence(DatabaseSettings databaseSettings, AdvancedSettings settings,
             IEnvelopeStorageAdmin admin)
@@ -37,59 +25,14 @@ namespace Jasper.Persistence.Database
             Settings = settings;
             _cancellation = settings.Cancellation;
 
-            _incrementIncomingAttempts =
-                $"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set attempts = @attempts where id = @id";
-            _storeIncoming = $@"
-insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
-  (id, status, owner_id, execution_time, attempts, body)
-values
-  (@id, @status, @owner, @time, @attempts, @body);
-";
-
             var transaction = new DurableStorageSession(databaseSettings, settings.Cancellation);
 
-            _session = transaction;
             Session = transaction;
 
             // ReSharper disable once VirtualMemberCallInConstructor
             Incoming = buildDurableIncoming(transaction, databaseSettings, settings);
 
-            _findReadyToExecuteJobs =
-                $"select body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time";
-
             _cancellation = settings.Cancellation;
-
-            _fetchOwnersSql = $@"
-select distinct owner_id from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id != 0 and owner_id != @owner
-union
-select distinct owner_id from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id != 0 and owner_id != @owner";
-
-            _reassignDormantNodeSql = $@"
-update {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
-  set owner_id = 0
-where
-  owner_id = @owner;
-
-update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}
-  set owner_id = 0
-where
-  owner_id = @owner;
-";
-
-            _findUniqueDestinations =
-                $"select distinct destination from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}";
-
-            _deleteOutgoingSql =
-                $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = :owner and destination = @destination";
-
-            _cancellation = settings.Cancellation;
-
-            _findOutgoingEnvelopesSql =
-                determineOutgoingEnvelopeSql(databaseSettings, settings);
-
-            _insertOutgoingSql =
-                $"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)";
-
 
         }
 
@@ -140,7 +83,7 @@ where
 
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {
-            return DatabaseSettings.CreateCommand(_incrementIncomingAttempts)
+            return DatabaseSettings.CreateCommand($"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set attempts = @attempts where id = @id")
                 .With("attempts", envelope.Attempts)
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
@@ -148,7 +91,12 @@ where
 
         public Task StoreIncoming(Envelope envelope)
         {
-            return DatabaseSettings.CreateCommand(_storeIncoming)
+            return DatabaseSettings.CreateCommand($@"
+insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
+  (id, status, owner_id, execution_time, attempts, body)
+values
+  (@id, @status, @owner, @time, @attempts, @body);
+")
                 .With("id", envelope.Id)
                 .With("status", envelope.Status.ToString())
                 .With("owner", envelope.OwnerId)
@@ -259,15 +207,25 @@ where
 
         public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
         {
-            return _session
-                .CreateCommand(_findReadyToExecuteJobs)
+            return Session.Transaction
+                .CreateCommand($"select body, attempts from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")
                 .With("time", utcNow)
-                .ExecuteToEnvelopesWithAttempts(_cancellation, _session.Transaction);
+                .ExecuteToEnvelopesWithAttempts(_cancellation, Session.Transaction);
         }
 
         public Task ReassignDormantNodeToAnyNode(int nodeId)
         {
-            return _session.CreateCommand(_reassignDormantNodeSql)
+            return Session.Transaction.CreateCommand($@"
+update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
+  set owner_id = 0
+where
+  owner_id = @owner;
+
+update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}
+  set owner_id = 0
+where
+  owner_id = @owner;
+")
                 .With("owner", nodeId)
                 .ExecuteNonQueryAsync(_cancellation);
         }
@@ -275,7 +233,10 @@ where
         public async Task<int[]> FindUniqueOwners(int currentNodeId)
         {
             var list = new List<int>();
-            using (var reader = await _session.CreateCommand(_fetchOwnersSql)
+            using (var reader = await Session.Transaction.CreateCommand($@"
+select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id != 0 and owner_id != @owner
+union
+select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id != 0 and owner_id != @owner")
                 .With("owner", currentNodeId)
                 .ExecuteReaderAsync(_cancellation))
             {
@@ -296,7 +257,7 @@ where
 
         public Task<Envelope[]> Load(Uri destination)
         {
-            return _session.CreateCommand(_findOutgoingEnvelopesSql)
+            return Session.Transaction.CreateCommand(determineOutgoingEnvelopeSql(DatabaseSettings, Settings))
                 .With("destination", destination.ToString())
                 .ExecuteToEnvelopes(_cancellation);
         }
@@ -305,7 +266,7 @@ where
 
         public Task DeleteByDestination(Uri destination)
         {
-            return _session.CreateCommand(_deleteOutgoingSql)
+            return Session.Transaction.CreateCommand($"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = :owner and destination = @destination")
                 .With("destination", destination.ToString())
                 .With("owner", TransportConstants.AnyNode)
                 .ExecuteNonQueryAsync(_cancellation);
@@ -324,7 +285,7 @@ where
         {
             var list = new List<Uri>();
 
-            var cmd = _session.CreateCommand(_findUniqueDestinations);
+            var cmd = Session.Transaction.CreateCommand($"select distinct destination from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}");
             using (var reader = await cmd.ExecuteReaderAsync(_cancellation))
             {
                 while (await reader.ReadAsync(_cancellation))
@@ -342,7 +303,7 @@ where
 
         public Task StoreOutgoing(Envelope envelope, int ownerId)
         {
-            return DatabaseSettings.CreateCommand(_insertOutgoingSql)
+            return DatabaseSettings.CreateCommand($"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)")
                 .With("id", envelope.Id)
                 .With("owner", ownerId)
                 .With("destination", envelope.Destination.ToString())

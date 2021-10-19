@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Threading.Tasks;
 using Jasper.Logging;
 
@@ -18,5 +19,7 @@ namespace Jasper.Persistence.Durability
 
         bool IsConnected();
         Task ConnectAndLockCurrentNode(ITransportLogger logger, int nodeId);
+        DbTransaction Transaction { get; }
+        DbCommand CallFunction(string functionName);
     }
 }

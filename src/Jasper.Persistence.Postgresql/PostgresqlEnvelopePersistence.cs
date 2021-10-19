@@ -98,7 +98,7 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
         {
-            return _session.CreateCommand(_reassignSql)
+            return Session.Transaction.CreateCommand(_reassignSql)
                 .With("owner", ownerId)
                 .With("ids", outgoing)
                 .ExecuteNonQueryAsync(_cancellation);

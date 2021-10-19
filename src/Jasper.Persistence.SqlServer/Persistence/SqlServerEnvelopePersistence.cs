@@ -88,7 +88,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
         public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
         {
-            var cmd = _session.CallFunction("uspMarkOutgoingOwnership")
+            var cmd = Session.CallFunction("uspMarkOutgoingOwnership")
                 .WithIdList(DatabaseSettings, outgoing)
                 .With("owner", ownerId);
 
