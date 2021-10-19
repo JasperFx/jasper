@@ -41,7 +41,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                incoming = await storage.Incoming.LoadPageOfLocallyOwnedIncoming();
+                incoming = await storage.LoadPageOfLocallyOwnedIncoming();
 
                 if (!incoming.Any())
                 {
@@ -49,7 +49,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                await storage.Incoming.ReassignIncoming(_settings.UniqueNodeId, incoming);
+                await storage.ReassignIncoming(_settings.UniqueNodeId, incoming);
 
                 await storage.Session.Commit();
             }

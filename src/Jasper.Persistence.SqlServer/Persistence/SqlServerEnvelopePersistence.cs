@@ -19,12 +19,16 @@ namespace Jasper.Persistence.SqlServer.Persistence
     public class SqlServerEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
         private readonly SqlServerSettings _databaseSettings;
+        private readonly string _findAtLargeEnvelopesSql;
 
 
         public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings)
             : base(databaseSettings, settings, new SqlServerEnvelopeStorageAdmin(databaseSettings))
         {
             _databaseSettings = databaseSettings;
+            _findAtLargeEnvelopesSql =
+                $"select top {settings.RecoveryBatchSize} body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
+
         }
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
@@ -72,13 +76,6 @@ namespace Jasper.Persistence.SqlServer.Persistence
             writer.WriteLine($"Sql Server Envelope Storage in Schema '{_databaseSettings.SchemaName}'");
         }
 
-        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
-            DatabaseSettings databaseSettings,
-            AdvancedSettings settings)
-        {
-            return new SqlServerDurableIncoming(durableStorageSession, databaseSettings, settings);
-        }
-
         protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings,
             AdvancedSettings settings)
         {
@@ -109,6 +106,20 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             return DatabaseSettings.CallFunction("uspDeleteOutgoingEnvelopes")
                 .WithIdList(DatabaseSettings, envelopes).ExecuteOnce(_cancellation);
+        }
+
+        public override Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
+        {
+            return Session.CreateCommand(_findAtLargeEnvelopesSql)
+                .ExecuteToEnvelopesWithAttempts(_cancellation);
+        }
+
+        public override Task ReassignIncoming(int ownerId, Envelope[] incoming)
+        {
+            return Session.CallFunction("uspMarkIncomingOwnership")
+                .WithIdList(_databaseSettings, incoming)
+                .With("owner", ownerId)
+                .ExecuteNonQueryAsync(_cancellation);
         }
     }
 }

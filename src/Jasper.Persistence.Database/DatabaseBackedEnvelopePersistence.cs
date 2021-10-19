@@ -29,9 +29,6 @@ namespace Jasper.Persistence.Database
 
             Session = transaction;
 
-            // ReSharper disable once VirtualMemberCallInConstructor
-            Incoming = buildDurableIncoming(transaction, databaseSettings, settings);
-
             _cancellation = settings.Cancellation;
 
         }
@@ -43,7 +40,6 @@ namespace Jasper.Persistence.Database
         public IEnvelopeStorageAdmin Admin { get; }
 
         public IDurableStorageSession Session { get; }
-        public IDurableIncoming Incoming { get; }
 
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
@@ -246,9 +242,6 @@ select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.O
             return list.ToArray();
         }
 
-        protected abstract IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
-            DatabaseSettings databaseSettings, AdvancedSettings settings);
-
         protected abstract string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings);
 
         public Task<Envelope[]> LoadOutgoing(Uri destination)
@@ -323,7 +316,10 @@ select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.O
             return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
-            public static DbCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,
+        public abstract Task<Envelope[]> LoadPageOfLocallyOwnedIncoming();
+        public abstract Task ReassignIncoming(int ownerId, Envelope[] incoming);
+
+        public static DbCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,
                 DatabaseSettings settings)
             {
                 var builder = settings.ToCommandBuilder();

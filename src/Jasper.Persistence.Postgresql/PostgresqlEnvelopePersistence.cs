@@ -17,6 +17,8 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _deleteIncomingEnvelopesSql;
         private readonly string _reassignSql;
         private readonly string _deleteOutgoingEnvelopesSql;
+        private readonly string _findAtLargeEnvelopesSql;
+
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
             settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
@@ -24,6 +26,10 @@ namespace Jasper.Persistence.Postgresql
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
             _reassignSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
             _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
+
+            _findAtLargeEnvelopesSql =
+                $"select body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
+
         }
 
 
@@ -66,13 +72,6 @@ namespace Jasper.Persistence.Postgresql
             writer.WriteLine($"Persistent Envelope storage using Postgresql in schema '{DatabaseSettings.SchemaName}'");
         }
 
-        protected override IDurableIncoming buildDurableIncoming(DurableStorageSession durableStorageSession,
-            DatabaseSettings databaseSettings,
-            AdvancedSettings settings)
-        {
-            return new PostgresqlDurableIncoming(durableStorageSession, databaseSettings, settings);
-        }
-
         public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
             return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
@@ -102,6 +101,22 @@ namespace Jasper.Persistence.Postgresql
                 .With("owner", ownerId)
                 .With("ids", outgoing)
                 .ExecuteNonQueryAsync(_cancellation);
+        }
+
+        public override Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
+        {
+            return Session
+                .CreateCommand(_findAtLargeEnvelopesSql)
+                .ExecuteToEnvelopesWithAttempts(_cancellation);
+        }
+
+        public override Task ReassignIncoming(int ownerId, Envelope[] incoming)
+        {
+            return Session.CreateCommand(_reassignSql)
+                .With("owner", ownerId)
+                .With("ids", incoming)
+                .ExecuteNonQueryAsync(_cancellation);
+
         }
 
     }

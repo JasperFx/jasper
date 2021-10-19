@@ -38,8 +38,6 @@ namespace Jasper.Persistence.Durability
 
         IDurableStorageSession Session { get; }
 
-        IDurableIncoming Incoming { get; }
-
         Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow);
 
         Task ReassignDormantNodeToAnyNode(int nodeId);
@@ -70,5 +68,8 @@ namespace Jasper.Persistence.Durability
 
 
         Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes);
+
+        Task<Envelope[]> LoadPageOfLocallyOwnedIncoming();
+        Task ReassignIncoming(int ownerId, Envelope[] incoming);
     }
 }

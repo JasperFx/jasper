@@ -161,7 +161,6 @@ namespace Jasper.Persistence.Durability
         }
 
         public IDurableStorageSession Session { get; } = null;
-        public IDurableIncoming Incoming { get; } = null;
         public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
         {
             throw new NotSupportedException();
@@ -188,6 +187,16 @@ namespace Jasper.Persistence.Durability
         }
 
         public Task DeleteByDestination(Uri destination)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task ReassignIncoming(int ownerId, Envelope[] incoming)
         {
             throw new NotSupportedException();
         }

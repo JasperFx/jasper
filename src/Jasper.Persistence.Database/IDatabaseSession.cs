@@ -6,7 +6,7 @@ namespace Jasper.Persistence.Database
     {
         public DbTransaction Transaction { get; }
         DbConnection Connection { get; }
-        DbCommand CreateCommand(string sql);
         public DbCommand CallFunction(string functionName);
+        DbCommand CreateCommand(string sql);
     }
 }
