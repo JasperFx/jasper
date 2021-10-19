@@ -234,7 +234,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        protected abstract Envelope[] loadAllOutgoingEnvelopes(IHost sender);
+        protected abstract IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender);
 
 
         [FormatAs("Can send a scheduled message with durable storage")]

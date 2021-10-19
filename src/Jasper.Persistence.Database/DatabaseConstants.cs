@@ -2,6 +2,8 @@
 {
     public static class DatabaseConstants
     {
+
+
         public const string Id = "id";
         public const string OwnerId = "owner_id";
         public const string Destination = "destination";
@@ -32,6 +34,7 @@
         public const string ReplyUri = "reply_uri"; // add to all
         public const string AckRequested = "ack_requested"; // add to all
 
-
+        public static readonly string IncomingFields = $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}";
+        public static readonly string OutgoingFields = $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}";
     }
 }

@@ -13,27 +13,38 @@ namespace Jasper.Persistence.Database
 {
     public partial class DatabaseBackedEnvelopePersistence
     {
+        public static async Task<Envelope> ReadOutgoing(DbDataReader reader, CancellationToken cancellation = default)
+        {
+            var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
+            var envelope = Envelope.Deserialize(bytes);
+
+            envelope.Id = await reader.GetFieldValueAsync<Guid>(1, cancellation);
+            envelope.OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation);
+
+            // TODO -- eliminate the Uri parsing?
+            envelope.Destination = (await reader.GetFieldValueAsync<string>(3, cancellation)).ToUri();
+
+            if (!(await reader.IsDBNullAsync(4, cancellation)))
+            {
+                envelope.DeliverBy = await reader.GetFieldValueAsync<DateTimeOffset>(4, cancellation);
+            }
+
+            // TODO -- there should be attempts tracking here!
+            //envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
+
+            return envelope;
+        }
+
         public abstract Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
         public abstract Task DeleteOutgoing(Envelope[] envelopes);
 
-        public Envelope[] AllOutgoingEnvelopes()
-        {
-            using var conn = DatabaseSettings.CreateConnection();
-            conn.Open();
-
-            return conn
-                .CreateCommand(
-                    $"select body, '{EnvelopeStatus.Outgoing}', owner_id, NULL from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}")
-                .LoadEnvelopes();
-        }
-
         protected abstract string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings);
 
-        public Task<Envelope[]> LoadOutgoing(Uri destination)
+        public Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination)
         {
             return Session.Transaction.CreateCommand(determineOutgoingEnvelopeSql(DatabaseSettings, Settings))
                 .With("destination", destination.ToString())
-                .ExecuteToEnvelopes(_cancellation);
+                .FetchList(r => ReadOutgoing(r, _cancellation), cancellation: _cancellation);
         }
 
         public abstract Task ReassignOutgoing(int ownerId, Envelope[] outgoing);

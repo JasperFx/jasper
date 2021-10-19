@@ -10,7 +10,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
     {
         protected override Task initialize()
         {
-            return ThePersistence.Admin.ClearAllPersistedEnvelopes();
+            return thePersistence.Admin.ClearAllPersistedEnvelopes();
         }
 
         [Fact]

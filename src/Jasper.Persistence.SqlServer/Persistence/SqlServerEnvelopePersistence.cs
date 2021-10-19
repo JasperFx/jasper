@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -27,7 +28,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         {
             _databaseSettings = databaseSettings;
             _findAtLargeEnvelopesSql =
-                $"select top {settings.RecoveryBatchSize} body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
+                $"select top {settings.RecoveryBatchSize} {DatabaseConstants.IncomingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
 
         }
 
@@ -80,7 +81,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             AdvancedSettings settings)
         {
             return
-                $"select top {settings.RecoveryBatchSize} body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
+                $"select top {settings.RecoveryBatchSize} {DatabaseConstants.OutgoingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination";
         }
 
         public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
@@ -108,13 +109,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 .WithIdList(DatabaseSettings, envelopes).ExecuteOnce(_cancellation);
         }
 
-        public override Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
+        public override Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
         {
             return Session.CreateCommand(_findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopesWithAttempts(_cancellation);
+                .FetchList(r => ReadIncoming(r));
         }
 
-        public override Task ReassignIncoming(int ownerId, Envelope[] incoming)
+        public override Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming)
         {
             return Session.CallFunction("uspMarkIncomingOwnership")
                 .WithIdList(_databaseSettings, incoming)

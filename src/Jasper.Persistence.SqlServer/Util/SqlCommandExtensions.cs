@@ -11,7 +11,7 @@ namespace Jasper.Persistence.SqlServer.Util
 {
     public static class SqlCommandExtensions
     {
-        public static DbCommand WithIdList(this DbCommand cmd, DatabaseSettings settings, Envelope[] envelopes,
+        public static DbCommand WithIdList(this DbCommand cmd, DatabaseSettings settings, IReadOnlyList<Envelope> envelopes,
             string parameterName = "IDLIST")
         {
             var table = new DataTable();

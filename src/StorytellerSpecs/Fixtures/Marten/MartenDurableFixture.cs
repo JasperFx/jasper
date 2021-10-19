@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper;
@@ -69,7 +70,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             }
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(IHost sender)
+        protected override IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender)
         {
             var admin = sender.Get<IEnvelopePersistence>().Admin;
             return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();

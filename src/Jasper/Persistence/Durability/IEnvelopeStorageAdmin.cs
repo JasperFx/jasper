@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Logging;
 
@@ -12,8 +13,8 @@ namespace Jasper.Persistence.Durability
         Task<PersistedCounts> GetPersistedCounts();
 
         Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
-        Task<Envelope[]> AllIncomingEnvelopes();
-        Task<Envelope[]> AllOutgoingEnvelopes();
+        Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes();
+        Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes();
 
 
         Task ReleaseAllOwnership();

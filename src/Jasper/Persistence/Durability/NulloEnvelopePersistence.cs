@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -58,14 +59,14 @@ namespace Jasper.Persistence.Durability
             return Task.FromResult<ErrorReport>(null);
         }
 
-        public Task<Envelope[]> AllIncomingEnvelopes()
+        public Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()
         {
-            return Task.FromResult(new Envelope[0]);
+            return Task.FromResult((IReadOnlyList<Envelope>)new List<Envelope>());
         }
 
-        public Task<Envelope[]> AllOutgoingEnvelopes()
+        public Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes()
         {
-            return Task.FromResult(new Envelope[0]);
+            return Task.FromResult((IReadOnlyList<Envelope>)new List<Envelope>());
         }
 
         public Task ReleaseAllOwnership()
@@ -161,7 +162,7 @@ namespace Jasper.Persistence.Durability
         }
 
         public IDurableStorageSession Session { get; } = null;
-        public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
+        public Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow)
         {
             throw new NotSupportedException();
         }
@@ -176,7 +177,7 @@ namespace Jasper.Persistence.Durability
             throw new NotSupportedException();
         }
 
-        public Task<Envelope[]> LoadOutgoing(Uri destination)
+        public Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination)
         {
             throw new NotSupportedException();
         }
@@ -191,12 +192,12 @@ namespace Jasper.Persistence.Durability
             throw new NotSupportedException();
         }
 
-        public Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
+        public Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
         {
             throw new NotSupportedException();
         }
 
-        public Task ReassignIncoming(int ownerId, Envelope[] incoming)
+        public Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming)
         {
             throw new NotSupportedException();
         }

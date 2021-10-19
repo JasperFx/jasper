@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
@@ -55,7 +56,7 @@ namespace Jasper.Persistence.Durability
             try
             {
                 Envelope[] filtered = null;
-                Envelope[] outgoing = null;
+                IReadOnlyList<Envelope> outgoing = null;
 
                 if (_runtime.GetOrBuildSendingAgent(destination).Latched) return 0;
 

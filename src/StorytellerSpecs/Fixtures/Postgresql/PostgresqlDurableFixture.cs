@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
@@ -98,7 +99,7 @@ create table if not exists receiver.item_created
             // ENDSAMPLE
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(IHost sender)
+        protected override IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender)
         {
             var admin = sender.Get<IEnvelopePersistence>().Admin;
             return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();

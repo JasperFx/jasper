@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Reflection;
@@ -17,48 +18,6 @@ using CommandExtensions = Jasper.Persistence.Postgresql.Util.CommandExtensions;
 
 namespace Jasper.Persistence.Postgresql.Schema
 {
-    internal class OutgoingEnvelopeTable : Table
-    {
-
-        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.OutgoingTable))
-        {
-            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
-            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
-            AddColumn<string>(DatabaseConstants.Destination).NotNull();
-            AddColumn<DateTimeOffset>(DatabaseConstants.DeliverBy);
-            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
-        }
-    }
-
-    internal class IncomingEnvelopeTable : Table
-    {
-
-        public IncomingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.IncomingTable))
-        {
-            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
-            AddColumn<string>(DatabaseConstants.Status).NotNull();
-            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
-            AddColumn<DateTimeOffset>(DatabaseConstants.ExecutionTime).DefaultValueByExpression("NULL");
-            AddColumn<int>(DatabaseConstants.Attempts);
-            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
-        }
-    }
-
-    internal class DeadLettersTable : Table
-    {
-        public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.DeadLetterTable))
-        {
-            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
-            AddColumn<string>(DatabaseConstants.Source);
-            AddColumn<string>(DatabaseConstants.MessageType);
-            AddColumn<string>(DatabaseConstants.Explanation);
-            AddColumn<string>(DatabaseConstants.ExceptionText);
-            AddColumn<string>(DatabaseConstants.ExceptionType);
-            AddColumn<string>(DatabaseConstants.ExceptionMessage);
-            AddColumn(DatabaseConstants.Body, "bytea").NotNull();
-        }
-    }
-
     public class PostgresqlEnvelopeStorageAdmin : IEnvelopeStorageAdmin
     {
         private readonly string _connectionString;
@@ -244,24 +203,26 @@ namespace Jasper.Persistence.Postgresql.Schema
             }
         }
 
-        public async Task<Envelope[]> AllIncomingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()
         {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {SchemaName}.{DatabaseConstants.IncomingTable}").ExecuteToEnvelopes();
-            }
+            return await conn
+                .CreateCommand(
+                    $"select {DatabaseConstants.IncomingFields} from {SchemaName}.{DatabaseConstants.IncomingTable}")
+                .FetchList(r => DatabaseBackedEnvelopePersistence.ReadIncoming(r));
         }
 
-        public async Task<Envelope[]> AllOutgoingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes()
         {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, '{EnvelopeStatus.Outgoing}', owner_id from {SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteToEnvelopes();
-            }
+            return await conn
+                .CreateCommand(
+                    $"select {DatabaseConstants.OutgoingFields} from {SchemaName}.{DatabaseConstants.OutgoingTable}")
+                .FetchList(r => DatabaseBackedEnvelopePersistence.ReadOutgoing(r));
         }
 
         public async Task ReleaseAllOwnership()

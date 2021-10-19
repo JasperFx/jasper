@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
@@ -30,7 +31,7 @@ namespace Jasper.Persistence.Durability
             await storage.Session.Begin();
 
 
-            Envelope[] incoming = null;
+            IReadOnlyList<Envelope> incoming = null;
             try
             {
                 var gotLock = await storage.Session.TryGetGlobalLock(TransportConstants.IncomingMessageLockId);
@@ -72,7 +73,7 @@ namespace Jasper.Persistence.Durability
             }
 
             // TODO -- this should be smart enough later to check for back pressure before rescheduling
-            if (incoming.Length == _settings.RecoveryBatchSize)
+            if (incoming.Count == _settings.RecoveryBatchSize)
                 agent.RescheduleIncomingRecovery();
         }
 

@@ -185,8 +185,9 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
             var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
-            return persistor.AllIncomingEnvelopes()
-                .Concat(persistor.AllOutgoingEnvelopes())
+
+            return persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+                .Concat(persistor.Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
                 .Where(x => x.OwnerId == ownerId)
                 .ToList();
         }

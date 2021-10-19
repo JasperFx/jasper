@@ -152,7 +152,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             return env;
         }
 
-        protected async Task<Envelope[]> afterReceivingTheEnvelopes()
+        protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
             await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 

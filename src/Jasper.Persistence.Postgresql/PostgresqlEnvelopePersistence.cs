@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
@@ -28,7 +30,7 @@ namespace Jasper.Persistence.Postgresql
             _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
 
             _findAtLargeEnvelopesSql =
-                $"select body, attempts from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
+                $"select {DatabaseConstants.IncomingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
 
         }
 
@@ -92,7 +94,7 @@ namespace Jasper.Persistence.Postgresql
 
         protected override string determineOutgoingEnvelopeSql(DatabaseSettings databaseSettings, AdvancedSettings settings)
         {
-            return $"select body from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
+            return $"select {DatabaseConstants.OutgoingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
         }
 
         public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
@@ -103,18 +105,18 @@ namespace Jasper.Persistence.Postgresql
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
-        public override Task<Envelope[]> LoadPageOfLocallyOwnedIncoming()
+        public override Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
         {
             return Session
                 .CreateCommand(_findAtLargeEnvelopesSql)
-                .ExecuteToEnvelopesWithAttempts(_cancellation);
+                .FetchList(r => ReadIncoming(r));
         }
 
-        public override Task ReassignIncoming(int ownerId, Envelope[] incoming)
+        public override Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming)
         {
             return Session.CreateCommand(_reassignSql)
                 .With("owner", ownerId)
-                .With("ids", incoming)
+                .With("ids", incoming.Select(x => x.Id).ToArray())
                 .ExecuteNonQueryAsync(_cancellation);
 
         }

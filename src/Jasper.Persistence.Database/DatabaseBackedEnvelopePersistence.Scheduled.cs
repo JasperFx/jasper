@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Transports;
 using Weasel.Core;
@@ -34,12 +35,12 @@ namespace Jasper.Persistence.Database
         }
 
 
-        public Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow)
+        public Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow)
         {
             return Session.Transaction
-                .CreateCommand($"select body, attempts from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")
+                .CreateCommand($"select {DatabaseConstants.IncomingFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")
                 .With("time", utcNow)
-                .ExecuteToEnvelopesWithAttempts(_cancellation, Session.Transaction);
+                .FetchList(r => ReadIncoming(r, _cancellation), cancellation: _cancellation);
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,10 +107,10 @@ create table receiver.item_created
             // ENDSAMPLE
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(IHost sender)
+        protected override IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender)
         {
             return sender.Get<IEnvelopePersistence>().As<SqlServerEnvelopePersistence>()
-                .AllOutgoingEnvelopes().ToArray();
+                .Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
         }
     }
 

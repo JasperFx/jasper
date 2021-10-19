@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace Jasper.Persistence.Durability
 
         IDurableStorageSession Session { get; }
 
-        Task<Envelope[]> LoadScheduledToExecute(DateTimeOffset utcNow);
+        Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow);
 
         Task ReassignDormantNodeToAnyNode(int nodeId);
         Task<int[]> FindUniqueOwners(int currentNodeId);
@@ -46,7 +47,7 @@ namespace Jasper.Persistence.Durability
 
 
 
-        Task<Envelope[]> LoadOutgoing(Uri destination);
+        Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination);
         Task ReassignOutgoing(int ownerId, Envelope[] outgoing);
         Task DeleteByDestination(Uri destination);
         Task<Uri[]> FindAllDestinations();
@@ -69,7 +70,7 @@ namespace Jasper.Persistence.Durability
 
         Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes);
 
-        Task<Envelope[]> LoadPageOfLocallyOwnedIncoming();
-        Task ReassignIncoming(int ownerId, Envelope[] incoming);
+        Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
+        Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
     }
 }

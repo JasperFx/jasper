@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -292,34 +293,34 @@ GO
             }
         }
 
-        public async Task<Envelope[]> AllIncomingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()
         {
-            using (var conn = _settings.CreateConnection())
-            {
-                await conn.OpenAsync();
+            await using var conn = _settings.CreateConnection();
+            await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {_settings.SchemaName}.{DatabaseConstants.IncomingTable}").ExecuteToEnvelopes();
-            }
+            return await conn
+                .CreateCommand(
+                    $"select {DatabaseConstants.IncomingFields} from {_settings.SchemaName}.{DatabaseConstants.IncomingTable}")
+                .FetchList(r => DatabaseBackedEnvelopePersistence.ReadIncoming(r));
         }
 
-        public async Task<Envelope[]> AllOutgoingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes()
         {
-            using (var conn = _settings.CreateConnection())
-            {
-                await conn.OpenAsync();
+            await using var conn = _settings.CreateConnection();
+            await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, owner_id from {_settings.SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteToEnvelopes();
-            }
+            return await conn
+                .CreateCommand(
+                    $"select {DatabaseConstants.OutgoingFields} from {_settings.SchemaName}.{DatabaseConstants.OutgoingTable}")
+                .FetchList(r => DatabaseBackedEnvelopePersistence.ReadOutgoing(r));
         }
 
         public Task ReleaseAllOwnership()
         {
-            using (var conn = _settings.CreateConnection())
-            {
-                conn.Open();
+            using var conn = _settings.CreateConnection();
+            conn.Open();
 
-                conn.CreateCommand($"update {_settings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0;update {_settings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = 0");
-            }
+            conn.CreateCommand($"update {_settings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0;update {_settings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = 0");
 
             return Task.CompletedTask;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
 using System.Threading.Tasks;
 using Weasel.Core;
 
@@ -11,9 +12,28 @@ namespace Jasper.Persistence.Database
         public abstract Task MoveToDeadLetterStorage(ErrorReport[] errors);
         public abstract Task DeleteIncomingEnvelopes(Envelope[] envelopes);
 
-        public abstract Task<Envelope[]> LoadPageOfLocallyOwnedIncoming();
-        public abstract Task ReassignIncoming(int ownerId, Envelope[] incoming);
+        public abstract Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
+        public abstract Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
 
+        public static async Task<Envelope> ReadIncoming(DbDataReader reader, CancellationToken cancellation = default)
+        {
+            // body, id, status, owner_id, execution_time, attempts
+
+            var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
+            var envelope = Envelope.Deserialize(bytes);
+
+            envelope.Id = await reader.GetFieldValueAsync<Guid>(1, cancellation);
+            envelope.Status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(2, cancellation));
+            envelope.OwnerId = await reader.GetFieldValueAsync<int>(3, cancellation);
+            if (!(await reader.IsDBNullAsync(4, cancellation)))
+            {
+                envelope.ExecutionTime = await reader.GetFieldValueAsync<DateTimeOffset>(4, cancellation);
+            }
+
+            envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
+
+            return envelope;
+        }
 
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
@@ -54,17 +74,6 @@ namespace Jasper.Persistence.Database
 
 
             return builder.Compile();
-        }
-
-        public Envelope[] AllIncomingEnvelopes()
-        {
-            using var conn = DatabaseSettings.CreateConnection();
-            conn.Open();
-
-            return conn
-                .CreateCommand(
-                    $"select body, status, owner_id, execution_time, attempts from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}")
-                .LoadEnvelopes();
         }
 
         public Task MoveToDeadLetterStorage(Envelope envelope, Exception ex)
