@@ -75,11 +75,5 @@ select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.O
             Session?.Dispose();
         }
 
-        public void ClearAllStoredMessages()
-        {
-            DatabaseSettings
-                .ExecuteSql(
-                    $"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable};delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable};delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable}");
-        }
     }
 }

@@ -103,6 +103,7 @@ namespace Jasper.Persistence.Database
         {
             var list = new List<DbParameter>();
 
+            // TODO -- this seems like a good thing to generalize and move to Weasel
             list.Add(builder.AddParameter(envelope.Data));
             list.Add(builder.AddParameter(envelope.Id));
             list.Add(builder.AddParameter(envelope.Status.ToString()));
@@ -220,32 +221,14 @@ namespace Jasper.Persistence.Database
             envelope.Data = await reader.GetFieldValueAsync<byte[]>(3, _cancellation);
             envelope.CausationId = await reader.GetFieldValueAsync<Guid>(4, _cancellation);
             envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(5, _cancellation);
-            if (!await reader.IsDBNullAsync(6, _cancellation))
-            {
-                envelope.SagaId = await reader.GetFieldValueAsync<string>(6, _cancellation);
-            }
+            envelope.SagaId = await reader.MaybeRead<string>(6, cancellation: _cancellation);
             envelope.MessageType = await reader.GetFieldValueAsync<string>(7, _cancellation);
             envelope.ContentType = await reader.GetFieldValueAsync<string>(8, _cancellation);
-            if (!await reader.IsDBNullAsync(9, _cancellation))
-            {
-                envelope.ReplyRequested = await reader.GetFieldValueAsync<string>(9, _cancellation);
-            }
-
+            envelope.ReplyRequested = await reader.MaybeRead<string>(9, _cancellation);
             envelope.AckRequested = await reader.GetFieldValueAsync<bool>(10, _cancellation);
-            if (!await reader.IsDBNullAsync(11, _cancellation))
-            {
-                envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(11, _cancellation)).ToUri();
-            }
-
-            if (!await reader.IsDBNullAsync(12, _cancellation))
-            {
-                envelope.ReceivedAt = (await reader.GetFieldValueAsync<string>(12, _cancellation)).ToUri();
-            }
-
-            if (!await reader.IsDBNullAsync(13, _cancellation))
-            {
-                envelope.Source = await reader.GetFieldValueAsync<string>(13, _cancellation);
-            }
+            envelope.ReplyUri = await reader.ReadUri(11, _cancellation);
+            envelope.ReceivedAt = await reader.ReadUri(12, _cancellation);
+            envelope.Source = await reader.MaybeRead<string>(13, _cancellation);
 
             var report = new ErrorReport(envelope)
             {

@@ -17,13 +17,15 @@ namespace Jasper.Persistence.Database
     {
         public static async Task<Envelope> ReadOutgoing(DbDataReader reader, CancellationToken cancellation = default)
         {
-            var envelope = new Envelope();
-            envelope.Data = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
-            envelope.Id = await reader.GetFieldValueAsync<Guid>(1, cancellation);
-            envelope.OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation);
+            var envelope = new Envelope
+            {
+                Data = await reader.GetFieldValueAsync<byte[]>(0, cancellation),
+                Id = await reader.GetFieldValueAsync<Guid>(1, cancellation),
+                OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation),
+                Destination = (await reader.GetFieldValueAsync<string>(3, cancellation)).ToUri()
+            };
 
             // TODO -- eliminate the Uri parsing?
-            envelope.Destination = (await reader.GetFieldValueAsync<string>(3, cancellation)).ToUri();
 
             if (!(await reader.IsDBNullAsync(4, cancellation)))
             {
@@ -33,24 +35,12 @@ namespace Jasper.Persistence.Database
             envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
             envelope.CausationId = await reader.GetFieldValueAsync<Guid>(6, cancellation);
             envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(7, cancellation);
-            if (!await reader.IsDBNullAsync(8, cancellation))
-            {
-                envelope.SagaId = await reader.GetFieldValueAsync<string>(8, cancellation);
-            }
-
+            envelope.SagaId = await reader.MaybeRead<string>(8, cancellation);
             envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);
             envelope.ContentType = await reader.GetFieldValueAsync<string>(10, cancellation);
-            if (!await reader.IsDBNullAsync(11, cancellation))
-            {
-                envelope.ReplyRequested = await reader.GetFieldValueAsync<string>(11, cancellation);
-            }
-
+            envelope.ReplyRequested = await reader.MaybeRead<string>(11, cancellation);
             envelope.AckRequested = await reader.GetFieldValueAsync<bool>(12, cancellation);
-
-            if (!await reader.IsDBNullAsync(13, cancellation))
-            {
-                envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(13, cancellation)).ToUri();
-            }
+            envelope.ReplyUri = await reader.ReadUri(13, cancellation);
 
             return envelope;
         }
