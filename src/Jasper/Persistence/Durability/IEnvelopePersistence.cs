@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -66,9 +65,6 @@ namespace Jasper.Persistence.Durability
 
         // Used by DurableSendingAgent
         Task DeleteOutgoing(Envelope envelope);
-
-
-        Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes);
 
         Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
         Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
