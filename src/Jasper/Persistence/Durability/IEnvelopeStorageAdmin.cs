@@ -12,7 +12,6 @@ namespace Jasper.Persistence.Durability
         string CreateSql();
         Task<PersistedCounts> GetPersistedCounts();
 
-        Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
         Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes();
         Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes();
 

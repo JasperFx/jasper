@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;
 using Jasper.Transports;
 using Npgsql;
+using NpgsqlTypes;
 using Weasel.Postgresql;
 using Weasel.Core;
 
@@ -37,28 +41,17 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
-            var cmd = DatabaseSettings.CreateCommand(_deleteIncomingEnvelopesSql)
-                .With("ids", errors);
+            var builder = DatabaseSettings.ToCommandBuilder();
+            builder.Append(_deleteIncomingEnvelopesSql);
+            var param = (NpgsqlParameter)builder.AddNamedParameter("ids", DBNull.Value);
+            param.Value = errors.Select(x => x.Id).ToArray();
+            param.NpgsqlDbType = NpgsqlDbType.Uuid | NpgsqlDbType.Array;
 
-            var builder = new CommandBuilder((NpgsqlCommand) cmd);
-
-            foreach (var error in errors)
-            {
-                var id = builder.AddParameter(error.Id);
-                var source = builder.AddParameter(error.Source);
-                var messageType = builder.AddParameter(error.MessageType);
-                var explanation = builder.AddParameter(error.Explanation);
-                var exText = builder.AddParameter(error.ExceptionText);
-                var exType = builder.AddParameter(error.ExceptionType);
-                var exMessage = builder.AddParameter(error.ExceptionMessage);
-                var body = builder.AddParameter(error.RawData);
-
-                builder.Append(
-                    $"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
-            }
+            ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
 
             return builder.Compile().ExecuteOnce(_cancellation);
         }
+
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
         {

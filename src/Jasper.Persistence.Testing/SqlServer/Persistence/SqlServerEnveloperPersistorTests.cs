@@ -236,7 +236,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             await thePersistence.MoveToDeadLetterStorage(new[] {report2, report3, report4});
 
 
-            var stored = await thePersistence.Admin.LoadDeadLetterEnvelope(report2.Id);
+            var stored = await thePersistence.LoadDeadLetterEnvelope(report2.Id);
 
             stored.ShouldNotBeNull();
 
@@ -245,9 +245,8 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             stored.ExceptionText.ShouldBe(report2.ExceptionText);
             stored.ExceptionType.ShouldBe(report2.ExceptionType);
             stored.Explanation.ShouldBe(report2.Explanation);
-            stored.MessageType.ShouldBe(report2.MessageType);
-            stored.RawData.ShouldBe(report2.RawData);
-            stored.Source.ShouldBe(report2.Source);
+            stored.Envelope.MessageType.ShouldBe(report2.Envelope.MessageType);
+            stored.Envelope.Source.ShouldBe(report2.Envelope.Source);
         }
 
         [Fact]

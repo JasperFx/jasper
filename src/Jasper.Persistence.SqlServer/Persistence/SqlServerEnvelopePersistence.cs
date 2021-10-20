@@ -38,13 +38,13 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 .WithIdList(_databaseSettings, envelopes).ExecuteOnce(_cancellation);
         }
 
-        public override async Task MoveToDeadLetterStorage(ErrorReport[] errors)
+        public override Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn("ID", typeof(Guid)));
             foreach (var error in errors) table.Rows.Add(error.Id);
 
-            var builder = new CommandBuilder();
+            var builder = DatabaseSettings.ToCommandBuilder();
 
             var list = builder.AddNamedParameter("IDLIST", table).As<SqlParameter>();
             list.SqlDbType = SqlDbType.Structured;
@@ -52,24 +52,9 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             builder.Append($"EXEC {_databaseSettings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;");
 
-            foreach (var error in errors)
-            {
-                var id = builder.AddParameter(error.Id);
-                var source = builder.AddParameter(error.Source);
-                var messageType = builder.AddParameter(error.MessageType);
-                var explanation = builder.AddParameter(error.Explanation);
-                var exText = builder.AddParameter(error.ExceptionText);
-                var exType = builder.AddParameter(error.ExceptionType);
-                var exMessage = builder.AddParameter(error.ExceptionMessage);
-                var body = builder.AddParameter(error.RawData);
+            ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
 
-                builder.Append(
-                    $"insert into {_databaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} (id, source, message_type, explanation, exception_text, exception_type, exception_message, body) values (@{id.ParameterName}, @{source.ParameterName}, @{messageType.ParameterName}, @{explanation.ParameterName}, @{exText.ParameterName}, @{exType.ParameterName}, @{exMessage.ParameterName}, @{body.ParameterName});");
-            }
-
-            await using var conn = new SqlConnection(_databaseSettings.ConnectionString);
-            await conn.OpenAsync(_cancellation);
-            await builder.ExecuteNonQueryAsync(conn);
+            return builder.Compile().ExecuteOnce(_cancellation);
         }
 
         public override void Describe(TextWriter writer)

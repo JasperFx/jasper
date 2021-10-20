@@ -21,42 +21,31 @@ using CommandExtensions = Weasel.Core.CommandExtensions;
 
 namespace Jasper.Persistence.SqlServer.Schema
 {
-    internal class OutgoingEnvelopeTable : Table
-    {
-
-        public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.OutgoingTable))
-        {
-            AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
-            AddColumn<int>(DatabaseConstants.OwnerId).NotNull();
-            AddColumn(DatabaseConstants.Destination, "varchar(250)").NotNull();
-            AddColumn<DateTimeOffset>(DatabaseConstants.DeliverBy);
-            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
-
-            AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
-            AddColumn<Guid>(DatabaseConstants.CausationId);
-            AddColumn<Guid>(DatabaseConstants.CorrelationId);
-            AddColumn<string>(DatabaseConstants.SagaId);
-            AddColumn<string>(DatabaseConstants.ParentId);
-            AddColumn(DatabaseConstants.MessageType, "varchar(250)").NotNull();
-            AddColumn<string>(DatabaseConstants.ContentType);
-            AddColumn(DatabaseConstants.ReplyRequested, "varchar(250)");
-            AddColumn<bool>(DatabaseConstants.AckRequested);
-            AddColumn<string>(DatabaseConstants.ReplyUri);
-        }
-    }
-
     internal class DeadLettersTable : Table
     {
         public DeadLettersTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.DeadLetterTable))
         {
             AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
+
+            AddColumn<DateTimeOffset>(DatabaseConstants.ExecutionTime).DefaultValueByExpression("NULL");
+            AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
+            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
+
+            AddColumn<Guid>(DatabaseConstants.CausationId);
+            AddColumn<Guid>(DatabaseConstants.CorrelationId);
+            AddColumn<string>(DatabaseConstants.SagaId);
+            AddColumn<string>(DatabaseConstants.MessageType).NotNull();
+            AddColumn<string>(DatabaseConstants.ContentType);
+            AddColumn<string>(DatabaseConstants.ReplyRequested);
+            AddColumn<bool>(DatabaseConstants.AckRequested);
+            AddColumn<string>(DatabaseConstants.ReplyUri);
+            AddColumn<string>(DatabaseConstants.ReceivedAt);
+
             AddColumn(DatabaseConstants.Source, "varchar(250)");
-            AddColumn(DatabaseConstants.MessageType, "varchar(max)");
             AddColumn(DatabaseConstants.Explanation, "varchar(max)");
             AddColumn(DatabaseConstants.ExceptionText, "varchar(max)");
             AddColumn(DatabaseConstants.ExceptionType, "varchar(max)");
             AddColumn(DatabaseConstants.ExceptionMessage, "varchar(max)");
-            AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
         }
     }
 
@@ -256,38 +245,6 @@ GO
 
 
             return counts;
-        }
-
-        public async Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
-        {
-            using (var conn = _settings.CreateConnection())
-            {
-                await conn.OpenAsync();
-
-                var cmd = conn.CreateCommand(
-                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {_settings.SchemaName}.{DatabaseConstants.DeadLetterTable} where id = @id");
-                cmd.AddNamedParameter(DatabaseConstants.Id, id);
-
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    if (!await reader.ReadAsync()) return null;
-
-
-                    var report = new ErrorReport
-                    {
-                        RawData = await reader.GetFieldValueAsync<byte[]>(0),
-                        Explanation = await reader.GetFieldValueAsync<string>(1),
-                        ExceptionText = await reader.GetFieldValueAsync<string>(2),
-                        ExceptionType = await reader.GetFieldValueAsync<string>(3),
-                        ExceptionMessage = await reader.GetFieldValueAsync<string>(4),
-                        Source = await reader.GetFieldValueAsync<string>(5),
-                        MessageType = await reader.GetFieldValueAsync<string>(6),
-                        Id = await reader.GetFieldValueAsync<Guid>(7)
-                    };
-
-                    return report;
-                }
-            }
         }
 
         public async Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()

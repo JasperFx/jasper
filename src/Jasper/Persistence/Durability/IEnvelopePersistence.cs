@@ -72,5 +72,6 @@ namespace Jasper.Persistence.Durability
 
         Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
         Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
+        Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
     }
 }

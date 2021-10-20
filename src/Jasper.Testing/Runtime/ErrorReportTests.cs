@@ -25,14 +25,6 @@ namespace Jasper.Testing.Runtime
         private readonly ErrorReport theErrorReport;
 
         [Fact]
-        public void can_reconstitute_the_envelope()
-        {
-            var rebuilt = theErrorReport.RebuildEnvelope();
-            rebuilt.Id.ShouldBe(theEnvelope.Id);
-            rebuilt.Data.ShouldBe(theEnvelope.Data);
-        }
-
-        [Fact]
         public void captures_exception_data()
         {
             theErrorReport.ExceptionText.ShouldBe(theException.ToString());
@@ -46,16 +38,6 @@ namespace Jasper.Testing.Runtime
             theErrorReport.Id.ShouldBe(theEnvelope.Id);
         }
 
-        [Fact]
-        public void copy_the_message_type()
-        {
-            theErrorReport.MessageType.ShouldBe(theEnvelope.MessageType);
-        }
 
-        [Fact]
-        public void copy_the_source()
-        {
-            theErrorReport.Source.ShouldBe(theEnvelope.Source);
-        }
     }
 }

@@ -161,7 +161,101 @@ namespace Jasper.Persistence.Database
             await cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
+        public static void ConfigureDeadLetterCommands(ErrorReport[] errors, DbCommandBuilder builder,
+            DatabaseSettings databaseSettings)
+        {
+            foreach (var error in errors)
+            {
+                var list = new List<DbParameter>();
 
+                list.Add(builder.AddParameter(error.Id));
+                list.Add(builder.AddParameter(error.Envelope.ExecutionTime));
+                list.Add(builder.AddParameter(error.Envelope.Attempts));
+                list.Add(builder.AddParameter(error.Envelope.Data));
+                list.Add(builder.AddParameter(error.Envelope.CausationId));
+                list.Add(builder.AddParameter(error.Envelope.CorrelationId));
+                list.Add(builder.AddParameter(error.Envelope.SagaId));
+                list.Add(builder.AddParameter(error.Envelope.MessageType));
+                list.Add(builder.AddParameter(error.Envelope.ContentType));
+                list.Add(builder.AddParameter(error.Envelope.ReplyRequested));
+                list.Add(builder.AddParameter(error.Envelope.AckRequested));
+                list.Add(builder.AddParameter(error.Envelope.ReplyUri?.ToString()));
+                list.Add(builder.AddParameter(error.Envelope.ReceivedAt?.ToString()));
+                list.Add(builder.AddParameter(error.Envelope.Source));
+                list.Add(builder.AddParameter(error.Explanation));
+                list.Add(builder.AddParameter(error.ExceptionText));
+                list.Add(builder.AddParameter(error.ExceptionType));
+                list.Add(builder.AddParameter(error.ExceptionMessage));
 
+                var parameterList = list.Select(x => $"@{x.ParameterName}").Join(", ");
+
+                builder.Append(
+                    $"insert into {databaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} ({DatabaseConstants.DeadLetterFields}) values ({parameterList});");
+            }
+        }
+
+        public async Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
+        {
+            await using var conn = DatabaseSettings.CreateConnection();
+            await conn.OpenAsync(_cancellation);
+
+            var cmd = conn.CreateCommand(
+                $"select {DatabaseConstants.DeadLetterFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.DeadLetterTable} where id = @id");
+            cmd.With("id", id);
+
+            await using var reader = await cmd.ExecuteReaderAsync(_cancellation);
+            if (!await reader.ReadAsync(_cancellation)) return null;
+
+            var envelope = new Envelope
+            {
+                Id = await reader.GetFieldValueAsync<Guid>(0, _cancellation)
+            };
+
+            if (!await reader.IsDBNullAsync(1, _cancellation))
+            {
+                envelope.ExecutionTime = await reader.GetFieldValueAsync<DateTimeOffset>(1, _cancellation);
+            }
+
+            envelope.Attempts = await reader.GetFieldValueAsync<int>(2, _cancellation);
+            envelope.Data = await reader.GetFieldValueAsync<byte[]>(3, _cancellation);
+            envelope.CausationId = await reader.GetFieldValueAsync<Guid>(4, _cancellation);
+            envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(5, _cancellation);
+            if (!await reader.IsDBNullAsync(6, _cancellation))
+            {
+                envelope.SagaId = await reader.GetFieldValueAsync<string>(6, _cancellation);
+            }
+            envelope.MessageType = await reader.GetFieldValueAsync<string>(7, _cancellation);
+            envelope.ContentType = await reader.GetFieldValueAsync<string>(8, _cancellation);
+            if (!await reader.IsDBNullAsync(9, _cancellation))
+            {
+                envelope.ReplyRequested = await reader.GetFieldValueAsync<string>(9, _cancellation);
+            }
+
+            envelope.AckRequested = await reader.GetFieldValueAsync<bool>(10, _cancellation);
+            if (!await reader.IsDBNullAsync(11, _cancellation))
+            {
+                envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(11, _cancellation)).ToUri();
+            }
+
+            if (!await reader.IsDBNullAsync(12, _cancellation))
+            {
+                envelope.ReceivedAt = (await reader.GetFieldValueAsync<string>(12, _cancellation)).ToUri();
+            }
+
+            if (!await reader.IsDBNullAsync(13, _cancellation))
+            {
+                envelope.Source = await reader.GetFieldValueAsync<string>(13, _cancellation);
+            }
+
+            var report = new ErrorReport(envelope)
+            {
+                Explanation = await reader.GetFieldValueAsync<string>(14, _cancellation),
+                ExceptionText = await reader.GetFieldValueAsync<string>(15, _cancellation),
+                ExceptionType = await reader.GetFieldValueAsync<string>(16, _cancellation),
+                ExceptionMessage = await reader.GetFieldValueAsync<string>(17, _cancellation),
+            };
+
+            return report;
+        }
     }
 }
