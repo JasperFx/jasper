@@ -31,6 +31,17 @@ namespace Jasper.Persistence.SqlServer.Schema
             AddColumn(DatabaseConstants.Destination, "varchar(250)").NotNull();
             AddColumn<DateTimeOffset>(DatabaseConstants.DeliverBy);
             AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
+
+            AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
+            AddColumn<Guid>(DatabaseConstants.CausationId);
+            AddColumn<Guid>(DatabaseConstants.CorrelationId);
+            AddColumn<string>(DatabaseConstants.SagaId);
+            AddColumn<string>(DatabaseConstants.ParentId);
+            AddColumn(DatabaseConstants.MessageType, "varchar(250)").NotNull();
+            AddColumn<string>(DatabaseConstants.ContentType);
+            AddColumn(DatabaseConstants.ReplyRequested, "varchar(250)");
+            AddColumn<bool>(DatabaseConstants.AckRequested);
+            AddColumn<string>(DatabaseConstants.ReplyUri);
         }
     }
 

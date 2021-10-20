@@ -36,6 +36,6 @@
         public const string ReceivedAt = "received_at"; // add to all
 
         public static readonly string IncomingFields = $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
-        public static readonly string OutgoingFields = $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}";
+        public static readonly string OutgoingFields = $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
     }
 }

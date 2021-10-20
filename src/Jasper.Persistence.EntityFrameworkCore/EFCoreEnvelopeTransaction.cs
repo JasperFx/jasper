@@ -33,20 +33,41 @@ namespace Jasper.Persistence.EntityFrameworkCore
             _messaging = messaging;
         }
 
-        public Task Persist(Envelope envelope)
+        public async Task Persist(Envelope envelope)
         {
-            var outgoing = new OutgoingEnvelope(envelope);
-            _db.Add(outgoing);
+            if (_db.Database.CurrentTransaction == null)
+            {
+                await _db.Database.BeginTransactionAsync();
+            }
 
-            return Task.CompletedTask;
+            var conn = _db.Database.GetDbConnection();
+            var tx = _db.Database.CurrentTransaction.GetDbTransaction();
+            var cmd = DatabaseBackedEnvelopePersistence.BuildOutgoingStorageCommand(envelope, envelope.OwnerId, _settings);
+            cmd.Transaction = tx;
+            cmd.Connection = conn;
+
+            await cmd.ExecuteNonQueryAsync();
         }
 
-        public Task Persist(Envelope[] envelopes)
+        public async Task Persist(Envelope[] envelopes)
         {
-            var outgoing = envelopes.Select(x => new OutgoingEnvelope(x));
-            _db.AddRange(outgoing);
+            if (!envelopes.Any())
+            {
+                return;
+            }
 
-            return Task.CompletedTask;
+            if (_db.Database.CurrentTransaction == null)
+            {
+                await _db.Database.BeginTransactionAsync();
+            }
+
+            var conn = _db.Database.GetDbConnection();
+            var tx = _db.Database.CurrentTransaction.GetDbTransaction();
+            var cmd = DatabaseBackedEnvelopePersistence.BuildIncomingStorageCommand(envelopes, _settings);
+            cmd.Transaction = tx;
+            cmd.Connection = conn;
+
+            await cmd.ExecuteNonQueryAsync();
         }
 
         public async Task ScheduleJob(Envelope envelope)

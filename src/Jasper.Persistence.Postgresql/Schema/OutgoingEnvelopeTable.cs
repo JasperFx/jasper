@@ -7,7 +7,6 @@ namespace Jasper.Persistence.Postgresql.Schema
 {
     internal class OutgoingEnvelopeTable : Table
     {
-
         public OutgoingEnvelopeTable(string schemaName) : base(new DbObjectName(schemaName, DatabaseConstants.OutgoingTable))
         {
             AddColumn<Guid>(DatabaseConstants.Id).AsPrimaryKey();
@@ -15,6 +14,17 @@ namespace Jasper.Persistence.Postgresql.Schema
             AddColumn<string>(DatabaseConstants.Destination).NotNull();
             AddColumn<DateTimeOffset>(DatabaseConstants.DeliverBy);
             AddColumn(DatabaseConstants.Body, "bytea").NotNull();
+
+            AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
+
+            AddColumn<Guid>(DatabaseConstants.CausationId);
+            AddColumn<Guid>(DatabaseConstants.CorrelationId);
+            AddColumn<string>(DatabaseConstants.SagaId);
+            AddColumn<string>(DatabaseConstants.MessageType).NotNull();
+            AddColumn<string>(DatabaseConstants.ContentType);
+            AddColumn<string>(DatabaseConstants.ReplyRequested);
+            AddColumn<bool>(DatabaseConstants.AckRequested);
+            AddColumn<string>(DatabaseConstants.ReplyUri);
         }
     }
 }

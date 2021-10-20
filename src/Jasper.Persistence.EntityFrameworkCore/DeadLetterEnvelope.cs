@@ -2,6 +2,7 @@ using System;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {
+    [Obsolete]
     public class DeadLetterEnvelope
     {
         public Guid Id { get; set; }

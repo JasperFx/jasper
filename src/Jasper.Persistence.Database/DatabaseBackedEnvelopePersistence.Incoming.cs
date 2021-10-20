@@ -86,7 +86,7 @@ namespace Jasper.Persistence.Database
             return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
-        internal static DbCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes,
+        public static DbCommand BuildIncomingStorageCommand(IEnumerable<Envelope> envelopes,
             DatabaseSettings settings)
         {
             var builder = settings.ToCommandBuilder();

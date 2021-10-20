@@ -5,9 +5,11 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Transports;
 using Jasper.Util;
 using Weasel.Core;
+using DbCommandBuilder = Weasel.Core.DbCommandBuilder;
 
 namespace Jasper.Persistence.Database
 {
@@ -15,9 +17,8 @@ namespace Jasper.Persistence.Database
     {
         public static async Task<Envelope> ReadOutgoing(DbDataReader reader, CancellationToken cancellation = default)
         {
-            var bytes = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
-            var envelope = Envelope.Deserialize(bytes);
-
+            var envelope = new Envelope();
+            envelope.Data = await reader.GetFieldValueAsync<byte[]>(0, cancellation);
             envelope.Id = await reader.GetFieldValueAsync<Guid>(1, cancellation);
             envelope.OwnerId = await reader.GetFieldValueAsync<int>(2, cancellation);
 
@@ -29,8 +30,27 @@ namespace Jasper.Persistence.Database
                 envelope.DeliverBy = await reader.GetFieldValueAsync<DateTimeOffset>(4, cancellation);
             }
 
-            // TODO -- there should be attempts tracking here!
-            //envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
+            envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
+            envelope.CausationId = await reader.GetFieldValueAsync<Guid>(6, cancellation);
+            envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(7, cancellation);
+            if (!await reader.IsDBNullAsync(8, cancellation))
+            {
+                envelope.SagaId = await reader.GetFieldValueAsync<string>(8, cancellation);
+            }
+
+            envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);
+            envelope.ContentType = await reader.GetFieldValueAsync<string>(10, cancellation);
+            if (!await reader.IsDBNullAsync(11, cancellation))
+            {
+                envelope.ReplyRequested = await reader.GetFieldValueAsync<string>(11, cancellation);
+            }
+
+            envelope.AckRequested = await reader.GetFieldValueAsync<bool>(12, cancellation);
+
+            if (!await reader.IsDBNullAsync(13, cancellation))
+            {
+                envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(13, cancellation)).ToUri();
+            }
 
             return envelope;
         }
@@ -74,12 +94,7 @@ namespace Jasper.Persistence.Database
 
         public Task StoreOutgoing(Envelope envelope, int ownerId)
         {
-            return DatabaseSettings.CreateCommand($"insert into {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@id, @owner, @destination, @deliverBy, @body)")
-                .With("id", envelope.Id)
-                .With("owner", ownerId)
-                .With("destination", envelope.Destination.ToString())
-                .With("deliverBy", envelope.DeliverBy)
-                .With("body", envelope.Serialize())
+            return BuildOutgoingStorageCommand(envelope, ownerId, DatabaseSettings)
                 .ExecuteOnce(_cancellation);
         }
 
@@ -99,26 +114,56 @@ namespace Jasper.Persistence.Database
             return cmd.ExecuteNonQueryAsync(_cancellation);
         }
 
+        public static DbCommand BuildOutgoingStorageCommand(Envelope envelope, int ownerId,
+            DatabaseSettings settings)
+        {
+            var builder = settings.ToCommandBuilder();
+
+            var owner = builder.AddNamedParameter("owner", ownerId);
+            ConfigureOutgoingCommand(settings, builder, envelope, owner);
+            return builder.Compile();
+        }
+
         public static DbCommand BuildOutgoingStorageCommand(Envelope[] envelopes, int ownerId,
             DatabaseSettings settings)
         {
             var builder = settings.ToCommandBuilder();
 
-            builder.AddNamedParameter("owner", ownerId).DbType = DbType.Int32;
+            var owner = builder.AddNamedParameter("owner", ownerId);
 
             foreach (var envelope in envelopes)
             {
-                var id = builder.AddParameter(envelope.Id);
-                var destination = builder.AddParameter(envelope.Destination.ToString());
-                var deliverBy = builder.AddParameter(envelope.DeliverBy);
-                var body = builder.AddParameter(envelope.Serialize());
-
-                builder.Append(
-                    $"insert into {settings.SchemaName}.{DatabaseConstants.OutgoingTable} (id, owner_id, destination, deliver_by, body) values (@{id.ParameterName}, @owner, @{destination.ParameterName}, @{deliverBy.ParameterName}, @{body.ParameterName});");
+                ConfigureOutgoingCommand(settings, builder, envelope, owner);
             }
 
             return builder.Compile();
         }
 
+        private static void ConfigureOutgoingCommand(DatabaseSettings settings, DbCommandBuilder builder, Envelope envelope,
+            DbParameter owner)
+        {
+            var list = new List<DbParameter>();
+
+            list.Add(builder.AddParameter(envelope.Data));
+            list.Add(builder.AddParameter(envelope.Id));
+            list.Add(owner);
+            list.Add(builder.AddParameter(envelope.Destination.ToString()));
+            list.Add(builder.AddParameter(envelope.DeliverBy));
+
+            list.Add(builder.AddParameter(envelope.Attempts));
+            list.Add(builder.AddParameter(envelope.CausationId));
+            list.Add(builder.AddParameter(envelope.CorrelationId));
+            list.Add(builder.AddParameter(envelope.SagaId));
+            list.Add(builder.AddParameter(envelope.MessageType));
+            list.Add(builder.AddParameter(envelope.ContentType));
+            list.Add(builder.AddParameter(envelope.ReplyRequested));
+            list.Add(builder.AddParameter(envelope.AckRequested));
+            list.Add(builder.AddParameter(envelope.ReplyUri?.ToString()));
+
+            var parameterList = list.Select(x => $"@{x.ParameterName}").Join(", ");
+
+            builder.Append(
+                $"insert into {settings.SchemaName}.{DatabaseConstants.OutgoingTable} ({DatabaseConstants.OutgoingFields}) values ({parameterList});");
+        }
     }
 }

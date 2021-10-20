@@ -52,16 +52,6 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
         public static void MapEnvelopeStorage(this ModelBuilder builder, string schemaName = "dbo")
         {
-            builder.Entity<OutgoingEnvelope>(map =>
-            {
-                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.OutgoingTable : $"{schemaName}.{DatabaseConstants.OutgoingTable}");
-                map.HasKey(x => x.Id);
-                map.Property(x => x.OwnerId).HasColumnName("owner_id");
-                map.Property(x => x.Destination).HasColumnName("destination");
-                map.Property(x => x.DeliverBy).HasColumnName("deliver_by");
-                map.Property(x => x.Body).HasColumnName("body");
-            });
-
             builder.Entity<DeadLetterEnvelope>(map =>
             {
                 map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.DeadLetterTable : $"{schemaName}.{DatabaseConstants.DeadLetterTable}");

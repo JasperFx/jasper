@@ -57,6 +57,8 @@ namespace Jasper.Persistence.Testing.EFCore
                 OwnerId = 5,
                 Destination = TransportConstants.RetryUri,
                 DeliverBy = new DateTimeOffset(DateTime.Today),
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
@@ -65,7 +67,7 @@ namespace Jasper.Persistence.Testing.EFCore
             var transaction = new EFCoreEnvelopeTransaction(context, messaging);
 
             await transaction.Persist(envelope);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAndFlushMessages(messaging);
 
             var persisted = await Host.Services.GetRequiredService<IEnvelopePersistence>()
                 .Admin.AllOutgoingEnvelopes();
