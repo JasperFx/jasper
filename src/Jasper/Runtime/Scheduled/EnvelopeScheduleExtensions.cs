@@ -1,3 +1,4 @@
+using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 
@@ -17,7 +18,7 @@ namespace Jasper.Runtime.Scheduled
                 Status = EnvelopeStatus.Scheduled,
                 OwnerId = TransportConstants.AnyNode,
                 Sender = sender,
-                Data = envelope.Serialize()
+                Data = EnvelopeSerializer.Serialize(envelope)
             };
         }
     }

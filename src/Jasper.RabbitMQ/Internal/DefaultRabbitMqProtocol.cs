@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Baseline;
+using Jasper.Serialization;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -24,7 +25,10 @@ namespace Jasper.RabbitMQ.Internal
                 envelope.Id = id;
             }
 
-            if (props.Headers != null) envelope.ReadPropertiesFromDictionary(props.Headers);
+            if (props.Headers != null)
+            {
+                EnvelopeSerializer.ReadPropertiesFromDictionary(props.Headers, envelope);
+            }
 
             return envelope;
         }
@@ -37,9 +41,9 @@ namespace Jasper.RabbitMQ.Internal
             properties.Type = envelope.MessageType;
             if (envelope.ReplyUri != null) properties.ReplyTo = envelope.ReplyUri.ToString();
 
-            if (properties.Headers == null) properties.Headers = new Dictionary<string, object>();
+            properties.Headers ??= new Dictionary<string, object>();
 
-            envelope.WriteToDictionary(properties.Headers);
+            EnvelopeSerializer.WriteToDictionary(properties.Headers, envelope);
         }
     }
     // ENDSAMPLE

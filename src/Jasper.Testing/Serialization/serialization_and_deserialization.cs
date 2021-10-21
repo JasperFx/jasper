@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Baseline;
+using Jasper.Serialization;
 using Jasper.Util;
 using Shouldly;
 using TestingSupport;
@@ -35,8 +36,8 @@ namespace Jasper.Testing.Serialization
             {
                 if (_incoming == null)
                 {
-                    var messageBytes = outgoing.Serialize();
-                    _incoming = Envelope.Deserialize(messageBytes);
+                    var messageBytes = EnvelopeSerializer.Serialize(outgoing);
+                    _incoming = EnvelopeSerializer.Deserialize(messageBytes);
                 }
 
                 return _incoming;

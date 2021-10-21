@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Persistence.Database;
+using Jasper.Serialization;
 using Marten.Internal;
 using Marten.Internal.Operations;
 using Marten.Schema;
@@ -29,7 +31,8 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 
         public void ConfigureCommand(CommandBuilder builder, IMartenSession session)
         {
-            var bytes = Envelope.Serialize();
+            // TODO -- this is ALL WRONG NOW
+            var bytes = EnvelopeSerializer.Serialize(Envelope);
 
             var id = builder.AddParameter(Envelope.Id, NpgsqlDbType.Uuid);
             var owner = builder.AddParameter(_ownerId, NpgsqlDbType.Integer);

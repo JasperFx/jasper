@@ -14,12 +14,12 @@ namespace Jasper.Runtime.Scheduled
 
         public object ReadFromData(byte[] data)
         {
-            return Envelope.Deserialize(data);
+            return EnvelopeSerializer.Deserialize(data);
         }
 
         public byte[] Write(object model)
         {
-            return model.As<Envelope>().Serialize();
+            return EnvelopeSerializer.Serialize(model.As<Envelope>());
         }
 
     }

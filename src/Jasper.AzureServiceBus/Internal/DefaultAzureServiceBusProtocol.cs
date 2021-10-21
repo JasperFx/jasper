@@ -1,5 +1,6 @@
 using System;
 using Baseline;
+using Jasper.Serialization;
 using Jasper.Transports;
 using Microsoft.Azure.ServiceBus;
 
@@ -31,7 +32,7 @@ namespace Jasper.AzureServiceBus.Internal
                 message.TimeToLive = envelope.DeliverBy.Value.Subtract(DateTimeOffset.UtcNow);
             }
 
-            envelope.WriteToDictionary(message.UserProperties);
+            EnvelopeSerializer.WriteToDictionary(message.UserProperties, envelope);
 
 
 
@@ -51,7 +52,7 @@ namespace Jasper.AzureServiceBus.Internal
             };
 
 
-            envelope.ReadPropertiesFromDictionary(message.UserProperties);
+            EnvelopeSerializer.ReadPropertiesFromDictionary(message.UserProperties, envelope);
 
             return envelope;
         }

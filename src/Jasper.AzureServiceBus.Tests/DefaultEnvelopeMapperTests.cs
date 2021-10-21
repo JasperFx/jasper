@@ -1,5 +1,6 @@
 using System;
 using Jasper.AzureServiceBus.Internal;
+using Jasper.Serialization;
 using Jasper.Util;
 using Microsoft.Azure.ServiceBus;
 using Shouldly;
@@ -168,14 +169,14 @@ namespace Jasper.AzureServiceBus.Tests
         public void ack_requested_false()
         {
             theEnvelope.AckRequested = false;
-            theMessage.UserProperties.ContainsKey(Envelope.AckRequestedKey).ShouldBeFalse();
+            theMessage.UserProperties.ContainsKey(EnvelopeSerializer.AckRequestedKey).ShouldBeFalse();
         }
 
         [Fact]
         public void ack_requested_true()
         {
             theEnvelope.AckRequested = true;
-            theMessage.UserProperties[Envelope.AckRequestedKey].ShouldBe("true");
+            theMessage.UserProperties[EnvelopeSerializer.AckRequestedKey].ShouldBe("true");
         }
 
         [Fact]
@@ -201,42 +202,42 @@ namespace Jasper.AzureServiceBus.Tests
         public void message_type()
         {
             theEnvelope.MessageType = "something";
-            theMessage.UserProperties[Envelope.MessageTypeKey].ShouldBe(theEnvelope.MessageType);
+            theMessage.UserProperties[EnvelopeSerializer.MessageTypeKey].ShouldBe(theEnvelope.MessageType);
         }
 
         [Fact]
         public void parent_id()
         {
             theEnvelope.CausationId = Guid.NewGuid();
-            theMessage.UserProperties[Envelope.CausationIdKey].ShouldBe(theEnvelope.CausationId.ToString());
+            theMessage.UserProperties[EnvelopeSerializer.CausationIdKey].ShouldBe(theEnvelope.CausationId.ToString());
         }
 
         [Fact]
         public void reply_requested_true()
         {
             theEnvelope.ReplyRequested = "somereplymessage";
-            theMessage.UserProperties[Envelope.ReplyRequestedKey].ShouldBe(theEnvelope.ReplyRequested);
+            theMessage.UserProperties[EnvelopeSerializer.ReplyRequestedKey].ShouldBe(theEnvelope.ReplyRequested);
         }
 
         [Fact]
         public void reply_uri()
         {
             theEnvelope.ReplyUri = "tcp://localhost:5005".ToUri();
-            theMessage.UserProperties[Envelope.ReplyUriKey].ShouldBe(theEnvelope.ReplyUri.ToString());
+            theMessage.UserProperties[EnvelopeSerializer.ReplyUriKey].ShouldBe(theEnvelope.ReplyUri.ToString());
         }
 
         [Fact]
         public void saga_id_key()
         {
             theEnvelope.SagaId = "somesaga";
-            theMessage.UserProperties[Envelope.SagaIdKey].ShouldBe(theEnvelope.SagaId);
+            theMessage.UserProperties[EnvelopeSerializer.SagaIdKey].ShouldBe(theEnvelope.SagaId);
         }
 
         [Fact]
         public void source_key()
         {
             theEnvelope.Source = "SomeApp";
-            theMessage.UserProperties[Envelope.SourceKey].ShouldBe(theEnvelope.Source);
+            theMessage.UserProperties[EnvelopeSerializer.SourceKey].ShouldBe(theEnvelope.Source);
         }
 
         [Fact]
@@ -250,7 +251,7 @@ namespace Jasper.AzureServiceBus.Tests
         public void the_original_id()
         {
             theEnvelope.CorrelationId = Guid.NewGuid();
-            theMessage.UserProperties[Envelope.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
+            theMessage.UserProperties[EnvelopeSerializer.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
         }
     }
 }

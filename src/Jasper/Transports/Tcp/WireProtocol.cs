@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Jasper.Logging;
+using Jasper.Serialization;
 using Jasper.Transports.Sending;
 using Jasper.Transports.Util;
 
@@ -35,7 +36,7 @@ namespace Jasper.Transports.Tcp
         public static async Task Send(Stream stream, OutgoingMessageBatch batch, byte[] messageBytes,
             ISenderCallback callback)
         {
-            messageBytes = messageBytes ?? Envelope.Serialize(batch.Messages);
+            messageBytes = messageBytes ?? EnvelopeSerializer.Serialize(batch.Messages);
 
             var lengthBytes = BitConverter.GetBytes(messageBytes.Length);
 
@@ -79,7 +80,7 @@ namespace Jasper.Transports.Tcp
                 if (length == 0) return;
 
                 var bytes = await stream.ReadBytesAsync(length);
-                messages = Envelope.ReadMany(bytes);
+                messages = EnvelopeSerializer.ReadMany(bytes);
             }
             catch (Exception e)
             {
