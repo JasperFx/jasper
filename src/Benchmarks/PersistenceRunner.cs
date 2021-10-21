@@ -108,7 +108,7 @@ namespace Benchmarks
         }
 
         [IterationSetup(Target = nameof(LoadOutgoing))]
-        public void LoadOutgoingSetup()
+        public Task LoadOutgoingSetup()
         {
             BuildDatabase();
             StoreOutgoing().GetAwaiter().GetResult();
