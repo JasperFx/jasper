@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.ErrorHandling;
 using Jasper.Logging;
+using Jasper.Persistence.Durability;
 using Jasper.Runtime;
 using Jasper.Testing.Messaging;
 using Jasper.Testing.Runtime;
@@ -24,16 +25,16 @@ namespace Jasper.Testing.ErrorHandling
 
             var envelope = ObjectMother.Envelope();
 
-
-
             var now = DateTime.Today.ToUniversalTime();
 
-            var root = new MockMessagingRoot();
-            await continuation.Execute(root, callback, envelope, null, now);
+            var context = Substitute.For<IExecutionContext>();
+            context.Persistence.Returns(Substitute.For<IEnvelopePersistence>());
+            await continuation.Execute(callback, envelope, context, now);
+
 
             envelope.ExecutionTime.ShouldBe(now.AddMinutes(5));
 
-            await root.Persistence.Received().ScheduleJob(envelope);
+            await context.Persistence.Received().ScheduleJob(envelope);
         }
 
         [Fact]
@@ -49,7 +50,7 @@ namespace Jasper.Testing.ErrorHandling
             var now = DateTime.Today.ToUniversalTime();
 
             var root = new MockMessagingRoot();
-            await continuation.Execute(root, callback, envelope, null, now);
+            await continuation.Execute(callback, envelope, null, now);
 
             envelope.ExecutionTime.ShouldBe(now.AddMinutes(5));
 

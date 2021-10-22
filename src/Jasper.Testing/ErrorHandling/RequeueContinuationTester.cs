@@ -22,7 +22,7 @@ namespace Jasper.Testing.ErrorHandling
 
 
 
-            await RequeueContinuation.Instance.Execute(new MockMessagingRoot(), callback, envelope, null, DateTime.Now);
+            await RequeueContinuation.Instance.Execute(callback, envelope, null, DateTime.Now);
 
             await callback.Received(1).Defer(envelope);
         }

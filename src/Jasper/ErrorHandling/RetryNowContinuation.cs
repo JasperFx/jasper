@@ -15,10 +15,10 @@ namespace Jasper.ErrorHandling
         }
 
 
-        public Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages, DateTime utcNow)
+        public Task Execute(IChannelCallback channel, Envelope envelope,
+            IExecutionContext execution, DateTime utcNow)
         {
-            return root.Pipeline.Invoke(envelope, channel);
+            return execution.Root.Pipeline.Invoke(envelope, channel);
         }
 
         public override string ToString()

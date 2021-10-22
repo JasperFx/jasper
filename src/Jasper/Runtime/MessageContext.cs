@@ -12,15 +12,14 @@ using Jasper.Util;
 
 namespace Jasper.Runtime
 {
-    public class MessageContext : IMessageContext, IQueuedOutgoingMessages
+    public class MessageContext : IMessageContext, IExecutionContext
     {
         private readonly List<Envelope> _outstanding = new List<Envelope>();
-        private readonly IMessagingRoot _root;
         private object _sagaId;
 
         public MessageContext(IMessagingRoot root)
         {
-            _root = root;
+            Root = root;
 
             Persistence = root.Persistence;
         }
@@ -38,7 +37,7 @@ namespace Jasper.Runtime
 
             if (Envelope.AckRequested)
             {
-                var ack = _root.Acknowledgements.BuildAcknowledgement(Envelope);
+                var ack = Root.Acknowledgements.BuildAcknowledgement(Envelope);
 
                 transaction.Queued.Fill(ack);
                 _outstanding.Add(ack);
@@ -62,7 +61,7 @@ namespace Jasper.Runtime
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
             var envelope = new Envelope {Message = message, Destination = destination};
-            _root.Router.RouteToDestination(destination, envelope);
+            Root.Router.RouteToDestination(destination, envelope);
 
             trackEnvelopeCorrelation(envelope);
 
@@ -74,13 +73,13 @@ namespace Jasper.Runtime
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = _root.Router.RouteOutgoingByEnvelope(envelope);
+            var outgoing = Root.Router.RouteOutgoingByEnvelope(envelope);
 
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
-                _root.MessageLogger.NoRoutesFor(envelope);
+                Root.MessageLogger.NoRoutesFor(envelope);
 
                 throw new NoRoutesException(envelope);
             }
@@ -145,10 +144,11 @@ namespace Jasper.Runtime
         }
 
 
-        public IMessageLogger Logger => _root.MessageLogger;
+        public IMessageLogger Logger => Root.MessageLogger;
+        public IMessagingRoot Root { get; }
 
 
-
+        // TODO -- this needs to use the Envelope if it exists
         public Guid CorrelationId { get; } = CombGuidIdGeneration.NewGuid();
         public Envelope Envelope { get; }
 
@@ -191,12 +191,12 @@ namespace Jasper.Runtime
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = _root.Router.RouteOutgoingByEnvelope(envelope);
+            var outgoing = Root.Router.RouteOutgoingByEnvelope(envelope);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
-                _root.MessageLogger.NoRoutesFor(envelope);
+                Root.MessageLogger.NoRoutesFor(envelope);
                 return Task.CompletedTask;
             }
 
@@ -219,7 +219,7 @@ namespace Jasper.Runtime
                 TopicName = topicName
             };
 
-            var outgoing = _root.Router.RouteToTopic(topicName, envelope);
+            var outgoing = Root.Router.RouteToTopic(topicName, envelope);
             return persistOrSend(outgoing);
         }
 
@@ -231,7 +231,7 @@ namespace Jasper.Runtime
                 Destination = TransportConstants.DurableLocalUri
             };
 
-            var writer = _root.Serialization.JsonWriterFor(message.GetType());
+            var writer = Root.Serialization.JsonWriterFor(message.GetType());
             envelope.Data = writer.Write(message);
             envelope.ContentType = writer.ContentType;
 
@@ -255,7 +255,7 @@ namespace Jasper.Runtime
 
             if (Persistence is NulloEnvelopePersistence)
             {
-                _root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                Root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
                 return Task.CompletedTask;
             }
 
@@ -272,7 +272,7 @@ namespace Jasper.Runtime
 
         public Task Send<T>(T message)
         {
-            var outgoing = _root.Router.RouteOutgoingByMessage(message);
+            var outgoing = Root.Router.RouteOutgoingByMessage(message);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
@@ -285,7 +285,7 @@ namespace Jasper.Runtime
 
         public Task Invoke(object message)
         {
-            return _root.Pipeline.InvokeNow(new Envelope(message)
+            return Root.Pipeline.InvokeNow(new Envelope(message)
             {
                 ReplyUri = TransportConstants.RepliesUri,
                 CorrelationId = CorrelationId
@@ -304,7 +304,7 @@ namespace Jasper.Runtime
                 CorrelationId = CorrelationId
             };
 
-            await _root.Pipeline.InvokeNow(envelope);
+            await Root.Pipeline.InvokeNow(envelope);
 
             if (envelope.Response == null)
             {
@@ -316,13 +316,13 @@ namespace Jasper.Runtime
 
         public Task Enqueue<T>(T message)
         {
-            var envelope = _root.Router.RouteLocally(message);
+            var envelope = Root.Router.RouteLocally(message);
             return persistOrSend(envelope);
         }
 
         public Task Enqueue<T>(T message, string workerQueue)
         {
-            var envelope = _root.Router.RouteLocally(message, workerQueue);
+            var envelope = Root.Router.RouteLocally(message, workerQueue);
 
             return persistOrSend(envelope);
         }
@@ -378,7 +378,7 @@ namespace Jasper.Runtime
         {
             if (envelope.Sender != null) return envelope.Sender.IsDurable;
 
-            if (envelope.Destination != null) return _root.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
+            if (envelope.Destination != null) return Root.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
 
             return false;
         }
@@ -393,7 +393,7 @@ namespace Jasper.Runtime
 
         private void trackEnvelopeCorrelation(Envelope outbound)
         {
-            outbound.Source = _root.Settings.ServiceName;
+            outbound.Source = Root.Settings.ServiceName;
             outbound.CorrelationId = CorrelationId;
             outbound.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? outbound.SagaId;
 
@@ -404,9 +404,9 @@ namespace Jasper.Runtime
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
             var messageType = typeof(TResponse).ToMessageTypeName();
-            _root.Serialization.RegisterType(typeof(TResponse));
+            Root.Serialization.RegisterType(typeof(TResponse));
 
-            var reader = _root.Serialization.ReaderFor(messageType);
+            var reader = Root.Serialization.ReaderFor(messageType);
 
             return new Envelope
             {
@@ -446,5 +446,19 @@ namespace Jasper.Runtime
         }
 
 
+        Envelope IAcknowledgementSender.BuildAcknowledgement(Envelope envelope)
+        {
+            return Root.Acknowledgements.BuildAcknowledgement(envelope);
+        }
+
+        Task IAcknowledgementSender.SendAcknowledgement(Envelope envelope)
+        {
+            return Root.Acknowledgements.SendAcknowledgement(envelope);
+        }
+
+        Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope original, string message)
+        {
+            return Root.Acknowledgements.SendFailureAcknowledgement(original, message);
+        }
     }
 }

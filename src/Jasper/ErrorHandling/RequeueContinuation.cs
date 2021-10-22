@@ -14,8 +14,8 @@ namespace Jasper.ErrorHandling
         {
         }
 
-        public Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages, DateTime utcNow)
+        public Task Execute(IChannelCallback channel, Envelope envelope,
+            IExecutionContext execution, DateTime utcNow)
         {
             return channel.Defer(envelope);
         }

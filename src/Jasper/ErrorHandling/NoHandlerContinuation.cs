@@ -15,30 +15,30 @@ namespace Jasper.ErrorHandling
             _handlers = handlers;
         }
 
-        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages,
+        public async Task Execute(IChannelCallback channel, Envelope envelope,
+            IExecutionContext execution,
             DateTime utcNow)
         {
-            root.MessageLogger.NoHandlerFor(envelope);
+            execution.Logger.NoHandlerFor(envelope);
 
             foreach (var handler in _handlers)
                 try
                 {
-                    await handler.Handle(envelope, root);
+                    await handler.Handle(envelope, execution.Root);
                 }
                 catch (Exception e)
                 {
-                    root.MessageLogger.LogException(e);
+                    execution.Logger.LogException(e);
                 }
 
-            if (envelope.AckRequested) await root.Acknowledgements.SendAcknowledgement(envelope);
+            if (envelope.AckRequested) await execution.SendAcknowledgement(envelope);
 
             await channel.Complete(envelope);
 
             // These two lines are important to make the message tracking work
             // if there is no handler
-            root.MessageLogger.ExecutionFinished(envelope);
-            root.MessageLogger.MessageSucceeded(envelope);
+            execution.Logger.ExecutionFinished(envelope);
+            execution.Logger.MessageSucceeded(envelope);
         }
     }
 }

@@ -16,11 +16,11 @@ namespace Jasper.ErrorHandling
 
         public Exception Exception { get; }
 
-        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages,
+        public async Task Execute(IChannelCallback channel, Envelope envelope,
+            IExecutionContext execution,
             DateTime utcNow)
         {
-            await root.Acknowledgements.SendFailureAcknowledgement(envelope,
+            await execution.SendFailureAcknowledgement(envelope,
                 $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 
             if (channel is IHasDeadLetterQueue c)
@@ -30,11 +30,11 @@ namespace Jasper.ErrorHandling
             else
             {
                 // If persistable, persist
-                await root.Persistence.MoveToDeadLetterStorage(envelope, Exception);
+                await execution.Persistence.MoveToDeadLetterStorage(envelope, Exception);
             }
 
-            root.MessageLogger.MessageFailed(envelope, Exception);
-            root.MessageLogger.MovedToErrorQueue(envelope, Exception);
+            execution.Logger.MessageFailed(envelope, Exception);
+            execution.Logger.MovedToErrorQueue(envelope, Exception);
 
 
         }

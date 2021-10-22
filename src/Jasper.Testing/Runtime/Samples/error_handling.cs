@@ -213,12 +213,12 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages,
+        public async Task Execute(IChannelCallback channel, Envelope envelope,
+            IExecutionContext execution,
             DateTime utcNow)
         {
             // Raise a separate "alert" event message
-            var session = root.NewContext();
+            var session = execution.Root.NewContext();
             await session.Schedule(envelope.Message, utcNow.AddHours(1));
             await session.Send(new RescheduledAlert()
             {
