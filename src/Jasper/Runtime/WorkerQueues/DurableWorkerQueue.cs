@@ -114,11 +114,14 @@ namespace Jasper.Runtime.WorkerQueues
         {
             if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
-            Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
+            foreach (var envelope in envelopes)
+            {
+                envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+            }
 
             await _persistence.StoreIncoming(envelopes);
 
-            foreach (var message in incoming)
+            foreach (var message in envelopes)
             {
                 await Enqueue(message);
             }
