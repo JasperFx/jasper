@@ -181,11 +181,6 @@ namespace Jasper.Runtime
             _outstanding.Clear();
         }
 
-        public void AbortAllQueuedOutgoingMessages()
-        {
-            _outstanding.Clear();
-        }
-
         public Task PublishEnvelope(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null)
