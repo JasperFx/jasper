@@ -23,9 +23,10 @@ namespace Jasper.Runtime
             Persistence = root.Persistence;
         }
 
-        public MessageContext(IMessagingRoot root, Envelope originalEnvelope) : this(root)
+        public MessageContext(IMessagingRoot root, Envelope originalEnvelope, IChannelCallback channel) : this(root)
         {
             Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));
+            Channel = channel;
             _sagaId = originalEnvelope.SagaId;
 
             CorrelationId = originalEnvelope.CorrelationId;
@@ -156,6 +157,7 @@ namespace Jasper.Runtime
         }
 
         public Envelope Envelope { get; }
+        public IChannelCallback Channel { get; }
 
         public bool EnlistedInTransaction { get; private set; }
 
@@ -459,6 +461,47 @@ namespace Jasper.Runtime
         Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope original, string message)
         {
             return Root.Acknowledgements.SendFailureAcknowledgement(original, message);
+        }
+
+        Task IExecutionContext.Complete()
+        {
+            return Channel.Complete(Envelope);
+        }
+
+        Task IExecutionContext.Defer()
+        {
+            return Channel.Defer(Envelope);
+        }
+
+        async Task IExecutionContext.ReSchedule(DateTime scheduledTime)
+        {
+            Envelope.ExecutionTime = scheduledTime;
+            if (Channel is IHasNativeScheduling c)
+            {
+                await c.MoveToScheduledUntil(Envelope, Envelope.ExecutionTime.Value);
+            }
+            else
+            {
+                await Persistence.ScheduleJob(Envelope);
+            }
+        }
+
+        async Task IExecutionContext.MoveToDeadLetterQueue(Exception exception)
+        {
+            if (Channel is IHasDeadLetterQueue c)
+            {
+                await c.MoveToErrors(Envelope, exception);
+            }
+            else
+            {
+                // If persistable, persist
+                await Persistence.MoveToDeadLetterStorage(Envelope, exception);
+            }
+        }
+
+        Task IExecutionContext.RetryExecutionNow()
+        {
+            return Root.Pipeline.Invoke(Envelope, Channel);
         }
     }
 }

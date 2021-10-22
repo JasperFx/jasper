@@ -16,27 +16,26 @@ namespace Jasper.Testing.Runtime
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new object();
 
-            theExecutionMessages.Envelope.Returns(theEnvelope);
+            theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theChannel, theExecutionMessages, DateTime.UtcNow);
+                .Execute(theContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
-        private readonly IChannelCallback theChannel = Substitute.For<IChannelCallback>();
 
-        private readonly IExecutionContext theExecutionMessages = Substitute.For<IExecutionContext>();
+        private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
 
         [Fact]
         public void should_mark_the_message_as_successful()
         {
-            theChannel.Received().Complete(theEnvelope);
+            theContext.Received().Complete();
         }
 
         [Fact]
         public void should_send_off_all_queued_up_cascaded_messages()
         {
-            theExecutionMessages.Received().SendAllQueuedOutgoingMessages();
+            theContext.Received().SendAllQueuedOutgoingMessages();
         }
     }
 
@@ -50,7 +49,7 @@ namespace Jasper.Testing.Runtime
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theChannel, theContext, DateTime.UtcNow);
+                .Execute(theContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();

@@ -13,15 +13,14 @@ namespace Jasper.Runtime
         {
         }
 
-        public async Task Execute(IChannelCallback channel,
-            IExecutionContext execution,
+        public async Task Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             try
             {
                 await execution.SendAllQueuedOutgoingMessages();
 
-                await channel.Complete(execution.Envelope);
+                await execution.Complete();
 
                 execution.Logger.MessageSucceeded(execution.Envelope);
             }
@@ -32,7 +31,7 @@ namespace Jasper.Runtime
                 execution.Logger.LogException(ex, execution.Envelope.Id, ex.Message);
                 execution.Logger.MessageFailed(execution.Envelope, ex);
 
-                await new MoveToErrorQueue(ex).Execute(channel, execution, utcNow);
+                await new MoveToErrorQueue(ex).Execute(execution, utcNow);
             }
         }
     }

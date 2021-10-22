@@ -213,8 +213,7 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async Task Execute(IChannelCallback channel,
-            IExecutionContext execution,
+        public async Task Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             // Raise a separate "alert" event message

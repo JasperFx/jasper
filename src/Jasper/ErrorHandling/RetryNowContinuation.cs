@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Runtime;
-using Jasper.Transports;
 
 namespace Jasper.ErrorHandling
 {
@@ -14,11 +13,9 @@ namespace Jasper.ErrorHandling
         {
         }
 
-
-        public Task Execute(IChannelCallback channel,
-            IExecutionContext execution, DateTime utcNow)
+        public Task Execute(IExecutionContext execution, DateTime utcNow)
         {
-            return execution.Root.Pipeline.Invoke(execution.Envelope, channel);
+            return execution.RetryExecutionNow();
         }
 
         public override string ToString()

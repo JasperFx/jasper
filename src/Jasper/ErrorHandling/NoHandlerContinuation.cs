@@ -16,8 +16,7 @@ namespace Jasper.ErrorHandling
             _root = root;
         }
 
-        public async Task Execute(IChannelCallback channel,
-            IExecutionContext execution,
+        public async Task Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             execution.Logger.NoHandlerFor(execution.Envelope);
@@ -34,7 +33,7 @@ namespace Jasper.ErrorHandling
 
             if (execution.Envelope.AckRequested) await execution.SendAcknowledgement(execution.Envelope);
 
-            await channel.Complete(execution.Envelope);
+            await execution.Complete();
 
             // These two lines are important to make the message tracking work
             // if there is no handler

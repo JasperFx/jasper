@@ -14,10 +14,9 @@ namespace Jasper.ErrorHandling
         {
         }
 
-        public Task Execute(IChannelCallback channel,
-            IExecutionContext execution, DateTime utcNow)
+        public Task Execute(IExecutionContext execution, DateTime utcNow)
         {
-            return channel.Defer(execution.Envelope);
+            return execution.Defer();
         }
 
         public override string ToString()

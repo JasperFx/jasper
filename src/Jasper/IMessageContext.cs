@@ -26,7 +26,6 @@ namespace Jasper
         bool EnlistedInTransaction { get; }
 
 
-
         /// <summary>
         ///     If a messaging context is enlisted in a transaction, calling this
         ///     method will force the context to send out any outstanding messages

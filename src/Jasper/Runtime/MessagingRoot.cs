@@ -143,7 +143,7 @@ namespace Jasper.Runtime
         public IMessageContext ContextFor(Envelope envelope)
         {
             // TODO -- make this take in the callback as well
-            return new MessageContext(this, envelope);
+            return new MessageContext(this, envelope, InvocationCallback.Instance);
         }
 
 

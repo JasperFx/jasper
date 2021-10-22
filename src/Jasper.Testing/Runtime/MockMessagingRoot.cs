@@ -60,7 +60,7 @@ namespace Jasper.Testing.Runtime
 
         public IMessageContext ContextFor(Envelope envelope)
         {
-            return new MessageContext(this, envelope);
+            return new MessageContext(this, envelope, InvocationCallback.Instance);
         }
 
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
