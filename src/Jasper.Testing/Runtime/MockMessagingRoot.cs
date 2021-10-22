@@ -15,6 +15,7 @@ using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using ExecutionContext = Jasper.Runtime.ExecutionContext;
 
 namespace Jasper.Testing.Runtime
 {
@@ -35,7 +36,7 @@ namespace Jasper.Testing.Runtime
 
         public IExecutionContext NewContext()
         {
-            return new MessageContext(this);
+            return new ExecutionContext(this);
         }
 
         public AdvancedSettings Settings { get; } = new AdvancedSettings(null);
@@ -60,7 +61,7 @@ namespace Jasper.Testing.Runtime
 
         public IExecutionContext ContextFor(Envelope envelope)
         {
-            return new MessageContext(this, envelope, InvocationCallback.Instance);
+            return new ExecutionContext(this, envelope, InvocationCallback.Instance);
         }
 
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();

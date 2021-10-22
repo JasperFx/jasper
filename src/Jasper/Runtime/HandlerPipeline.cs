@@ -82,7 +82,7 @@ namespace Jasper.Runtime
 
         public async Task Invoke(Envelope envelope, IChannelCallback channel)
         {
-            var context = new MessageContext(_root, envelope, channel);
+            var context = new ExecutionContext(_root, envelope, channel);
 
             try
             {
@@ -110,7 +110,7 @@ namespace Jasper.Runtime
                     $"No known handler for message type {envelope.Message.GetType().FullName}");
 
 
-            var context = new MessageContext(_root, envelope, InvocationCallback.Instance);
+            var context = new ExecutionContext(_root, envelope, InvocationCallback.Instance);
 
             try
             {

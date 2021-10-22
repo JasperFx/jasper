@@ -59,7 +59,7 @@ namespace Jasper.Testing.Acceptance
 
             await context.SendToDestination("tcp://localhost:2001".ToUri(), mySpecialMessage);
 
-            var outgoing = context.As<MessageContext>().Outstanding.Single();
+            var outgoing = context.As<ExecutionContext>().Outstanding.Single();
 
             outgoing.Headers["special"].ShouldBe("true");
         }

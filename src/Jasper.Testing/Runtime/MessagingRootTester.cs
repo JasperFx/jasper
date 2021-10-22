@@ -20,7 +20,7 @@ namespace Jasper.Testing.Runtime
             bus.Envelope.ShouldBe(original);
             bus.EnlistedInTransaction.ShouldBeTrue();
 
-            bus.As<MessageContext>().Transaction.ShouldBeOfType<InMemoryEnvelopeTransaction>();
+            bus.As<ExecutionContext>().Transaction.ShouldBeOfType<InMemoryEnvelopeTransaction>();
         }
     }
 }

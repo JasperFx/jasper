@@ -8,16 +8,16 @@ using Jasper.Util;
 
 namespace Jasper.Runtime
 {
-    public class MessageContext : MessagePublisher, IExecutionContext
+    public class ExecutionContext : MessagePublisher, IExecutionContext
     {
         private object _sagaId;
 
 
-        public MessageContext(IMessagingRoot root) : base(root, CombGuidIdGeneration.NewGuid())
+        public ExecutionContext(IMessagingRoot root) : base(root, CombGuidIdGeneration.NewGuid())
         {
         }
 
-        public MessageContext(IMessagingRoot root, Envelope originalEnvelope, IChannelCallback channel) : base(root,
+        public ExecutionContext(IMessagingRoot root, Envelope originalEnvelope, IChannelCallback channel) : base(root,
             originalEnvelope.CorrelationId)
         {
             Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));

@@ -137,13 +137,13 @@ namespace Jasper.Runtime
 
         public IExecutionContext NewContext()
         {
-            return new MessageContext(this);
+            return new ExecutionContext(this);
         }
 
         public IExecutionContext ContextFor(Envelope envelope)
         {
             // TODO -- make this take in the callback as well
-            return new MessageContext(this, envelope, InvocationCallback.Instance);
+            return new ExecutionContext(this, envelope, InvocationCallback.Instance);
         }
 
 
