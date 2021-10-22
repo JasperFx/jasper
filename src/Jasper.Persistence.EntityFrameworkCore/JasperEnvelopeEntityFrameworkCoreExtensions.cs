@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -22,13 +23,30 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
     public static class JasperEnvelopeEntityFrameworkCoreExtensions
     {
+        /// <summary>
+        /// Persist the active DbContext and flush any persisted messages to the sending
+        /// process to complete the "Outbox"
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="messages"></param>
+        /// <param name="cancellation"></param>
         public static async Task SaveChangesAndFlushMessages(this DbContext context, IMessageContext messages, CancellationToken cancellation = default)
         {
             await context.SaveChangesAsync(cancellation);
             var tx = context.Database.CurrentTransaction?.GetDbTransaction();
             if (tx != null)
             {
-                await tx.CommitAsync(cancellation);
+                try
+                {
+                    await tx.CommitAsync(cancellation);
+                }
+                catch (Exception e)
+                {
+                    if (!e.Message.Contains("has completed"))
+                    {
+                        throw;
+                    }
+                }
             }
 
             await messages.SendAllQueuedOutgoingMessages();
@@ -50,20 +68,5 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
 
 
-        public static void MapEnvelopeStorage(this ModelBuilder builder, string schemaName = "dbo")
-        {
-            builder.Entity<DeadLetterEnvelope>(map =>
-            {
-                map.ToTable(string.IsNullOrEmpty(schemaName) || schemaName.EqualsIgnoreCase("dbo") ? DatabaseConstants.DeadLetterTable : $"{schemaName}.{DatabaseConstants.DeadLetterTable}");
-                map.HasKey(x => x.Id);
-                map.Property(x => x.Source).HasColumnName("source");
-                map.Property(x => x.MessageType).HasColumnName("message_type");
-                map.Property(x => x.Explanation).HasColumnName("explanation");
-                map.Property(x => x.ExceptionText).HasColumnName("exception_text");
-                map.Property(x => x.ExceptionType).HasColumnName("exception_type");
-                map.Property(x => x.ExceptionMessage).HasColumnName("exception_message");
-                map.Property(x => x.Body).HasColumnName("body");
-            });
-        }
     }
 }

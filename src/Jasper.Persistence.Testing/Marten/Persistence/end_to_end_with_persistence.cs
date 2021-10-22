@@ -134,7 +134,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                while (item2 == null && stopwatch.ElapsedMilliseconds < 15000)
+                while (item2 == null && stopwatch.ElapsedMilliseconds < 30000)
                 {
                     await Task.Delay(500);
                     item2 = session.Load<ItemCreated>(item.Id);

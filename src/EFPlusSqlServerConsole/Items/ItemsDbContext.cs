@@ -14,11 +14,6 @@ namespace InMemoryMediator.Items
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // This adds the Jasper Envelope storage mapping to
-            // this DbContext type. This enables the EF Core "outbox"
-            // support with Jasper
-            modelBuilder.MapEnvelopeStorage();
-
             // Your normal EF Core mapping
             modelBuilder.Entity<Item>(map =>
             {

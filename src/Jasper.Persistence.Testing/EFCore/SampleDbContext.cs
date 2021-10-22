@@ -12,11 +12,5 @@ namespace Jasper.Persistence.Testing.EFCore
             _options = options;
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.MapEnvelopeStorage();
-        }
-
-
     }
 }
