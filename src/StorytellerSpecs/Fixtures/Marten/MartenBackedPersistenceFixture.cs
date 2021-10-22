@@ -162,7 +162,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         public Task SendFrom([Header("Sending Node")] [Default("Sender1")]
             string sender, [Header("Message Name")] string name)
         {
-            return _senders[sender].Services.GetService<IMessageContext>().Send(new TraceMessage {Name = name});
+            return _senders[sender].Services.GetService<IExecutionContext>().Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
@@ -173,7 +173,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             for (var i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                await runtime.Services.GetService<IMessageContext>().Send(msg);
+                await runtime.Services.GetService<IExecutionContext>().Send(msg);
             }
         }
 

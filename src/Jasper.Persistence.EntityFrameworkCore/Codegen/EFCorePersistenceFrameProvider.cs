@@ -76,7 +76,7 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 
             public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
             {
-                _context = chain.FindVariable(typeof(IMessageContext));
+                _context = chain.FindVariable(typeof(IExecutionContext));
                 yield return _context;
 
                 _dbContext = chain.FindVariable(_dbContextType);
@@ -99,7 +99,7 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 
             if (chain.ShouldFlushOutgoingMessages())
             {
-                chain.Postprocessors.Add(MethodCall.For<IMessageContext>(x => x.SendAllQueuedOutgoingMessages()));
+                chain.Postprocessors.Add(MethodCall.For<IExecutionContext>(x => x.SendAllQueuedOutgoingMessages()));
             }
         }
 

@@ -87,7 +87,7 @@ namespace StorytellerSpecs.Fixtures
 
             envelope.Destination = address;
 
-            var sender = _host.Get<IMessageContext>();
+            var sender = _host.Get<IExecutionContext>();
             await sender.Send(envelope);
         }
 

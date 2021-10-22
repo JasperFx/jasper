@@ -660,7 +660,7 @@ namespace Jasper.RabbitMQ.Tests
             // Jasper supports method injection similar to ASP.Net Core MVC
             // In this case though, IMessageContext is scoped to the message
             // being handled
-            IMessageContext context)
+            IExecutionContext context)
         {
             ConsoleWriter.Write(ConsoleColor.Blue, $"Got ping #{message.Number}");
 

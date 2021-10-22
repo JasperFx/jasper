@@ -135,12 +135,12 @@ namespace Jasper.Runtime
 
         public IEnvelopePersistence Persistence => _persistence.Value;
 
-        public IMessageContext NewContext()
+        public IExecutionContext NewContext()
         {
             return new MessageContext(this);
         }
 
-        public IMessageContext ContextFor(Envelope envelope)
+        public IExecutionContext ContextFor(Envelope envelope)
         {
             // TODO -- make this take in the callback as well
             return new MessageContext(this, envelope, InvocationCallback.Instance);

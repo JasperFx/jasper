@@ -17,8 +17,8 @@ namespace Jasper.Runtime
         MessagingSerializationGraph Serialization { get; }
         JasperOptions Options { get; }
 
-        IMessageContext NewContext();
-        IMessageContext ContextFor(Envelope envelope);
+        IExecutionContext NewContext();
+        IExecutionContext ContextFor(Envelope envelope);
 
         IEnvelopePersistence Persistence { get; }
         ITransportLogger TransportLogger { get; }

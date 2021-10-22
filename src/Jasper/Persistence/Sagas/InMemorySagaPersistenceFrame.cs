@@ -30,7 +30,7 @@ namespace Jasper.Persistence.Sagas
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
             writer.Write($"var {Persistor.Usage} = new {typeof(InMemoryEnvelopeTransaction).FullNameInCode()}();");
-            writer.Write($"await {_context.Usage}.{nameof(IMessageContext.EnlistInTransaction)}({Persistor.Usage});");
+            writer.Write($"await {_context.Usage}.{nameof(IExecutionContext.EnlistInTransaction)}({Persistor.Usage});");
 
 
             if (_existence == SagaStateExistence.Existing)
@@ -42,7 +42,7 @@ namespace Jasper.Persistence.Sagas
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
-            _context = chain.FindVariable(typeof(IMessageContext));
+            _context = chain.FindVariable(typeof(IExecutionContext));
             yield return _context;
 
             yield return _sagaId;

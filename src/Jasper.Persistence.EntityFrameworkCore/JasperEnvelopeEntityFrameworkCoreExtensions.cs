@@ -30,7 +30,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
         /// <param name="context"></param>
         /// <param name="messages"></param>
         /// <param name="cancellation"></param>
-        public static async Task SaveChangesAndFlushMessages(this DbContext context, IMessageContext messages, CancellationToken cancellation = default)
+        public static async Task SaveChangesAndFlushMessages(this DbContext context, IExecutionContext messages, CancellationToken cancellation = default)
         {
             await context.SaveChangesAsync(cancellation);
             var tx = context.Database.CurrentTransaction?.GetDbTransaction();
@@ -60,7 +60,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
         /// <param name="messaging"></param>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static Task EnlistInTransaction(this IMessageContext messaging, DbContext dbContext)
+        public static Task EnlistInTransaction(this IExecutionContext messaging, DbContext dbContext)
         {
             var transaction = new EFCoreEnvelopeTransaction(dbContext, messaging);
             return messaging.EnlistInTransaction(transaction);

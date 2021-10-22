@@ -7,7 +7,7 @@ namespace Jasper.Testing.Samples
     public class ScheduledExecutionSamples
     {
         // SAMPLE: ScheduleSend-In-3-Days
-        public async Task schedule_send(IMessageContext context, Guid issueId)
+        public async Task schedule_send(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -20,7 +20,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: ScheduleSend-At-5-PM-Tomorrow
-        public async Task schedule_send_at_5_tomorrow_afternoon(IMessageContext context, Guid issueId)
+        public async Task schedule_send_at_5_tomorrow_afternoon(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -38,7 +38,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: ScheduleSend-Yourself
-        public async Task send_at_5_tomorrow_afternoon_yourself(IMessageContext context, Guid issueId)
+        public async Task send_at_5_tomorrow_afternoon_yourself(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -60,7 +60,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: ScheduleLocally-In-3-Days
-        public async Task schedule_locally(IMessageContext context, Guid issueId)
+        public async Task schedule_locally(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -75,7 +75,7 @@ namespace Jasper.Testing.Samples
 
 
         // SAMPLE: ScheduleLocally-At-5-PM-Tomorrow
-        public async Task schedule_locally_at_5_tomorrow_afternoon(IMessageContext context, Guid issueId)
+        public async Task schedule_locally_at_5_tomorrow_afternoon(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {

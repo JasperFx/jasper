@@ -42,7 +42,7 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
             Context = chain.FindVariable(_dbContextType);
 
             // Inside of messaging. Not sure how this is gonna work for HTTP yet
-            _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices) ?? chain.FindVariable(typeof(IMessageContext));
+            _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices) ?? chain.FindVariable(typeof(IExecutionContext));
 
             if (_context != null) yield return _context;
             if (Context != null) yield return Context;

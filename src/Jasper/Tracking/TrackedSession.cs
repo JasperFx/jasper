@@ -48,7 +48,7 @@ namespace Jasper.Tracking
         public bool AssertNoExceptions { get; set; } = true;
         public bool AssertNoTimeout { get; set; } = true;
 
-        public Func<IMessageContext, Task> Execution { get; set; } = c => Task.CompletedTask;
+        public Func<IExecutionContext, Task> Execution { get; set; } = c => Task.CompletedTask;
 
         public void AssertNoExceptionsWereThrown()
         {
@@ -172,7 +172,7 @@ namespace Jasper.Tracking
             {
                 using (var scope = _primaryHost.Services.As<IContainer>().GetNestedContainer())
                 {
-                    var context = scope.GetInstance<IMessageContext>();
+                    var context = scope.GetInstance<IExecutionContext>();
                     await Execution(context);
                 }
             }

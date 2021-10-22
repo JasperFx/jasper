@@ -33,7 +33,7 @@ namespace Jasper.Testing.Runtime
 
         public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
 
-        public IMessageContext NewContext()
+        public IExecutionContext NewContext()
         {
             return new MessageContext(this);
         }
@@ -58,7 +58,7 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IMessageContext ContextFor(Envelope envelope)
+        public IExecutionContext ContextFor(Envelope envelope)
         {
             return new MessageContext(this, envelope, InvocationCallback.Instance);
         }

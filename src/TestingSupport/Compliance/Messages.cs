@@ -49,7 +49,7 @@ namespace TestingSupport.Compliance
 
     public class PingHandler
     {
-        public Task Handle(PingMessage message, IMessageContext context)
+        public Task Handle(PingMessage message, IExecutionContext context)
         {
             var pong = new PongMessage{Id = message.Id};
 

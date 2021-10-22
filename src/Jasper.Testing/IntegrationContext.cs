@@ -54,7 +54,7 @@ namespace Jasper.Testing
 
         public IHost Host { get; private set; }
 
-        public IMessageContext Publisher => Host.Get<IMessageContext>();
+        public IExecutionContext Publisher => Host.Get<IExecutionContext>();
         public ICommandBus Bus => Host.Get<ICommandBus>();
 
         public ITransportRuntime Runtime => Host.Get<IMessagingRoot>().Runtime;

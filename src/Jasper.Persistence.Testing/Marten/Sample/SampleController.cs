@@ -10,7 +10,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         // SAMPLE: using-outbox-with-marten-in-mvc-action
         public async Task<IActionResult> PostCreateUser(
             [FromBody] CreateUser user,
-            [FromServices] IMessageContext context,
+            [FromServices] IExecutionContext context,
             [FromServices] IDocumentSession session)
         {
             await context.EnlistInTransaction(session);

@@ -76,8 +76,8 @@ create table if not exists receiver.item_created
         }
 
 
-        protected override async Task withContext(IHost sender, IMessageContext context,
-            Func<IMessageContext, Task> action)
+        protected override async Task withContext(IHost sender, IExecutionContext context,
+            Func<IExecutionContext, Task> action)
         {
             // SAMPLE: basic-postgresql-outbox-sample
             using (var conn = new NpgsqlConnection(Servers.PostgresConnectionString))
@@ -109,7 +109,7 @@ create table if not exists receiver.item_created
     public class TriggerMessageReceiver
     {
         [Transactional]
-        public Task Handle(TriggerMessage message, IMessageContext context)
+        public Task Handle(TriggerMessage message, IExecutionContext context)
         {
             var response = new CascadedMessage
             {

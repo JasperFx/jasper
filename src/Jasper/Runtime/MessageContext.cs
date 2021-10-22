@@ -11,7 +11,7 @@ using Jasper.Util;
 
 namespace Jasper.Runtime
 {
-    public class MessageContext : IMessageContext, IExecutionContext
+    public class MessageContext : IExecutionContext
     {
         private readonly List<Envelope> _outstanding = new List<Envelope>();
         private object _sagaId;

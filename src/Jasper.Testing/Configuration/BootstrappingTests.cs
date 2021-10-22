@@ -37,7 +37,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void can_build_i_message_context()
         {
-            Host.Get<IMessageContext>().ShouldNotBeNull();
+            Host.Get<IExecutionContext>().ShouldNotBeNull();
 
             Host.Get<ThingThatUsesContext>()
                 .Context.ShouldNotBeNull();
@@ -45,9 +45,9 @@ namespace Jasper.Testing.Configuration
 
         public class ThingThatUsesContext
         {
-            public IMessageContext Context { get; }
+            public IExecutionContext Context { get; }
 
-            public ThingThatUsesContext(IMessageContext context)
+            public ThingThatUsesContext(IExecutionContext context)
             {
                 Context = context;
             }
@@ -128,7 +128,7 @@ namespace Jasper.Testing.Configuration
 
         [Theory]
         [InlineData(typeof(ICommandBus))]
-        [InlineData(typeof(IMessageContext))]
+        [InlineData(typeof(IExecutionContext))]
         [InlineData(typeof(IMessagePublisher))]
         public void can_build_services(Type serviceType)
         {

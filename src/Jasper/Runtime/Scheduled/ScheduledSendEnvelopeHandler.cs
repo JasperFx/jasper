@@ -12,7 +12,7 @@ namespace Jasper.Runtime.Scheduled
             Chain = new HandlerChain(typeof(Envelope));
         }
 
-        public override Task Handle(IMessageContext context, CancellationToken cancellation)
+        public override Task Handle(IExecutionContext context, CancellationToken cancellation)
         {
             var scheduled = (Envelope)context.Envelope.Message;
             return context.SendEnvelope(scheduled);

@@ -12,11 +12,11 @@ namespace Jasper.Persistence.EntityFrameworkCore
     public class EFCoreEnvelopeTransaction : IEnvelopeTransaction
     {
         private readonly DbContext _db;
-        private readonly IMessageContext _messaging;
+        private readonly IExecutionContext _messaging;
         private DatabaseSettings _settings;
         private int _nodeId;
 
-        public EFCoreEnvelopeTransaction(DbContext db, IMessageContext messaging)
+        public EFCoreEnvelopeTransaction(DbContext db, IExecutionContext messaging)
         {
             if (messaging.Persistence is DatabaseBackedEnvelopePersistence persistence)
             {

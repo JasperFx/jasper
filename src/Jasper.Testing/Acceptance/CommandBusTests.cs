@@ -164,7 +164,7 @@ namespace Jasper.Testing.Acceptance
 
 
         // SAMPLE: using_global_request_and_reply
-        internal async Task using_global_request_and_reply(IMessageContext messaging)
+        internal async Task using_global_request_and_reply(IExecutionContext messaging)
         {
             // Send a question to another application, and request that the handling
             // service send back an answer

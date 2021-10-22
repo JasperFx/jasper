@@ -24,8 +24,8 @@ namespace Jasper.Runtime
         private readonly IMessagingRoot _root;
         private readonly MessagingSerializationGraph _serializer;
 
-        private ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>> _executors =
-            ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>>.Empty;
+        private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
+            ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
 
         private readonly CancellationToken _cancellation;
 
@@ -45,7 +45,7 @@ namespace Jasper.Runtime
 
         public IMessageLogger Logger { get; }
 
-        private async Task<IContinuation> execute(IMessageContext context, Envelope envelope)
+        private async Task<IContinuation> execute(IExecutionContext context, Envelope envelope)
         {
             if (envelope.IsExpired())
             {
@@ -125,7 +125,7 @@ namespace Jasper.Runtime
             }
         }
 
-        public Func<IMessageContext, Task<IContinuation>> ExecutorFor(Type messageType)
+        public Func<IExecutionContext, Task<IContinuation>> ExecutorFor(Type messageType)
         {
             if (_executors.TryFind(messageType, out var executor)) return executor;
 
@@ -213,7 +213,7 @@ namespace Jasper.Runtime
             return executor;
         }
 
-        internal void MarkFailure(IMessageContext context, Exception ex)
+        internal void MarkFailure(IExecutionContext context, Exception ex)
         {
             _root.MessageLogger.LogException(ex, context.Envelope.Id, "Failure during message processing execution");
             _root.MessageLogger.ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete

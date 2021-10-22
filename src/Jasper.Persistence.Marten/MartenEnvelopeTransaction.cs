@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Marten
         private readonly IDocumentSession _session;
         private readonly PostgresqlSettings _settings;
 
-        public MartenEnvelopeTransaction(IDocumentSession session, IMessageContext bus)
+        public MartenEnvelopeTransaction(IDocumentSession session, IExecutionContext bus)
         {
             if (bus.Persistence is PostgresqlEnvelopePersistence persistence)
             {
@@ -61,9 +61,9 @@ namespace Jasper.Persistence.Marten
 
     public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
     {
-        private readonly IMessageContext _bus;
+        private readonly IExecutionContext _bus;
 
-        public FlushOutgoingMessagesOnCommit(IMessageContext bus)
+        public FlushOutgoingMessagesOnCommit(IExecutionContext bus)
         {
             _bus = bus;
         }

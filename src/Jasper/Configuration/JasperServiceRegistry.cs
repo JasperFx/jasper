@@ -82,7 +82,7 @@ namespace Jasper.Configuration
 
 
 
-            For<IMessageContext>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
+            For<IExecutionContext>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
             For<ICommandBus>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
             For<IMessagePublisher>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
 

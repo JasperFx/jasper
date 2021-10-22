@@ -12,7 +12,7 @@ namespace Jasper.Persistence.Marten
         /// <param name="context"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        public static Task EnlistInTransaction(this IMessageContext context, IDocumentSession session)
+        public static Task EnlistInTransaction(this IExecutionContext context, IDocumentSession session)
         {
             var persistor = new MartenEnvelopeTransaction(session, context);
             session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));

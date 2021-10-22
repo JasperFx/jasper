@@ -12,7 +12,7 @@ namespace Jasper.Persistence.Database
         private readonly DatabaseBackedEnvelopePersistence _persistence;
         private readonly DbTransaction _tx;
 
-        public DatabaseEnvelopeTransaction(IMessageContext context, DbTransaction tx)
+        public DatabaseEnvelopeTransaction(IExecutionContext context, DbTransaction tx)
         {
             _persistence = context.Persistence as DatabaseBackedEnvelopePersistence ??
                            throw new InvalidOperationException(

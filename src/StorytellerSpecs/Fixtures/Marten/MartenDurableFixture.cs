@@ -55,8 +55,8 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        protected override async Task withContext(IHost sender, IMessageContext context,
-            Func<IMessageContext, Task> action)
+        protected override async Task withContext(IHost sender, IExecutionContext context,
+            Func<IExecutionContext, Task> action)
         {
             var senderStore = sender.Get<IDocumentStore>();
 
@@ -80,7 +80,7 @@ namespace StorytellerSpecs.Fixtures.Marten
     public class TriggerMessageReceiver
     {
         [Transactional]
-        public Task Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
+        public Task Handle(TriggerMessage message, IDocumentSession session, IExecutionContext context)
         {
             var response = new CascadedMessage
             {

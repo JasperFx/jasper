@@ -49,7 +49,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task see_the_customizations_happen_inside_of_message_context()
         {
-            var context = Host.Get<IMessageContext>();
+            var context = Host.Get<IExecutionContext>();
 
             // Just to force the message context to pool up the envelope instead
             // of sending it out

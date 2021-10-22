@@ -14,7 +14,7 @@ namespace Jasper.Runtime.Handlers
             Chain = new HandlerChain(typeof(T));
         }
 
-        public override Task Handle(IMessageContext context, CancellationToken cancellation)
+        public override Task Handle(IExecutionContext context, CancellationToken cancellation)
         {
             var innerMessage = context.Envelope.Message.As<T>();
             context.Envelope.Message = innerMessage.Transform();

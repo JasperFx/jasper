@@ -103,7 +103,7 @@ namespace Jasper.Runtime.Handlers
             handleMethod.Frames.AddRange(DetermineFrames(rules, container));
 
             handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
-                $"context.{nameof(IMessageContext.Envelope)}"));
+                $"context.{nameof(IExecutionContext.Envelope)}"));
 
         }
 

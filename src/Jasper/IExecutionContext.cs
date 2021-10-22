@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.Logging;
 using Jasper.Persistence.Durability;
-using Jasper.Transports;
+using Jasper.Runtime;
 
 namespace Jasper
 {
-    public interface IMessageContext : IMessagePublisher
+    public interface IExecutionContext : IMessagePublisher, IAcknowledgementSender
     {
         /// <summary>
         /// Correlating identifier for the logical workflow. All envelopes sent or executed
@@ -75,5 +76,31 @@ namespace Jasper
         /// <param name="message"></param>
         /// <returns></returns>
         Task EnqueueCascading(object message);
+
+
+        IMessageLogger Logger { get; }
+
+        IMessagePublisher NewPublisher();
+
+
+        /// <summary>
+        /// Mark the message as having been successfully received and processed
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <returns></returns>
+        Task Complete();
+
+        /// <summary>
+        /// Requeue the message for later processing
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <returns></returns>
+        Task Defer();
+
+        Task ReSchedule(DateTime scheduledTime);
+
+        Task MoveToDeadLetterQueue(Exception exception);
+
+        Task RetryExecutionNow();
     }
 }

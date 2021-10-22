@@ -9,7 +9,7 @@ namespace Jasper.Runtime.Handlers
         public HandlerChain Chain { get; set; }
 
         // This method actually processes the incoming Envelope
-        public abstract Task Handle(IMessageContext context, CancellationToken cancellation);
+        public abstract Task Handle(IExecutionContext context, CancellationToken cancellation);
     }
 
     // ENDSAMPLE

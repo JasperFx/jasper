@@ -92,14 +92,14 @@ namespace Jasper.Tracking
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public async Task<ITrackedSession> ExecuteAndWait(Func<IMessageContext, Task> action)
+        public async Task<ITrackedSession> ExecuteAndWait(Func<IExecutionContext, Task> action)
         {
             _session.Execution = action;
             await _session.ExecuteAndTrack();
             return _session;
         }
 
-        public async Task<ITrackedSession> ExecuteWithoutWaiting(Func<IMessageContext, Task> action)
+        public async Task<ITrackedSession> ExecuteWithoutWaiting(Func<IExecutionContext, Task> action)
         {
             _session.Execution = action;
             await _session.ExecuteAndTrack();
