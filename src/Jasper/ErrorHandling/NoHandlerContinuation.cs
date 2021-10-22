@@ -35,8 +35,6 @@ namespace Jasper.ErrorHandling
 
             await channel.Complete(envelope);
 
-            envelope.MarkCompletion(false);
-
             // These two lines are important to make the message tracking work
             // if there is no handler
             root.MessageLogger.ExecutionFinished(envelope);

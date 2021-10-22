@@ -52,8 +52,6 @@ namespace Jasper.Runtime
                 return DiscardExpiredEnvelope.Instance;
             }
 
-            envelope.StartTiming();
-
             // Try to deserialize
             try
             {
@@ -93,8 +91,6 @@ namespace Jasper.Runtime
             }
             catch (Exception e)
             {
-                envelope.MarkCompletion(false);
-
                 // TODO -- gotta do something on the envelope to get it out of the transport
 
                 // Gotta get the message out of here because it's something that
@@ -115,19 +111,15 @@ namespace Jasper.Runtime
 
 
             var context = new MessageContext(_root, envelope);
-            envelope.StartTiming();
 
             try
             {
                 await handler.Handle(context, _cancellation);
 
                 await context.SendAllQueuedOutgoingMessages();
-
-                envelope.MarkCompletion(true);
             }
             catch (Exception e)
             {
-                envelope.MarkCompletion(false);
                 Logger.LogException(e, message: $"Invocation of {envelope} failed!");
                 throw;
             }
@@ -166,8 +158,6 @@ namespace Jasper.Runtime
                             return new MoveToErrorQueue(e);
                         }
 
-                        messageContext.Envelope.MarkCompletion(true);
-
                         return MessageSucceededContinuation.Instance;
                     }
                     catch (Exception e)
@@ -182,7 +172,6 @@ namespace Jasper.Runtime
                 executor = async messageContext =>
                 {
                     messageContext.Envelope.Attempts++;
-                    messageContext.Envelope.StartTiming();
 
                     try
                     {
@@ -203,8 +192,6 @@ namespace Jasper.Runtime
                                 MarkFailure(messageContext, e);
                                 throw;
                             }
-
-                            messageContext.Envelope.MarkCompletion(true);
 
                             return MessageSucceededContinuation.Instance;
                         }, pollyContext);
@@ -228,7 +215,6 @@ namespace Jasper.Runtime
 
         internal void MarkFailure(IMessageContext context, Exception ex)
         {
-            context.Envelope.MarkCompletion(false);
             _root.MessageLogger.LogException(ex, context.Envelope.Id, "Failure during message processing execution");
             _root.MessageLogger.ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
         }

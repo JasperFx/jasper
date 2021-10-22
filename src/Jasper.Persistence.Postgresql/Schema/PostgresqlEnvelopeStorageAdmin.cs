@@ -92,6 +92,8 @@ namespace Jasper.Persistence.Postgresql.Schema
             }
             catch (Exception e)
             {
+                if (e.Message.Contains("does not exist")) return;
+
                 await Task.Delay(250);
                 try
                 {

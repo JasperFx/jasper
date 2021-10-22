@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Persistence.Database;
 using Jasper.Serialization;
 using Marten.Internal;
 using Marten.Internal.Operations;
@@ -28,24 +31,31 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
 
         public void ConfigureCommand(CommandBuilder builder, IMartenSession session)
         {
-            var bytes = EnvelopeSerializer.Serialize(Envelope);
+            var list = new List<DbParameter>
+            {
+                builder.AddParameter(Envelope.Data),
+                builder.AddParameter(Envelope.Id),
+                builder.AddParameter(Envelope.Status.ToString()),
+                builder.AddParameter(Envelope.OwnerId),
+                builder.AddParameter(Envelope.ExecutionTime),
+                builder.AddParameter(Envelope.Attempts),
+                builder.AddParameter(Envelope.CausationId),
+                builder.AddParameter(Envelope.CorrelationId),
+                builder.AddParameter(Envelope.SagaId),
+                builder.AddParameter(Envelope.MessageType),
+                builder.AddParameter(Envelope.ContentType),
+                builder.AddParameter(Envelope.ReplyRequested),
+                builder.AddParameter(Envelope.AckRequested),
+                builder.AddParameter(Envelope.ReplyUri?.ToString()),
+                builder.AddParameter(Envelope.ReceivedAt?.ToString())
+            };
 
-            var id = builder.AddParameter(Envelope.Id, NpgsqlDbType.Uuid);
-            var owner = builder.AddParameter(Envelope.OwnerId, NpgsqlDbType.Integer);
-            var status = builder.AddParameter(Envelope.Status.ToString(), NpgsqlDbType.Varchar);
-            var executionTime =
-                builder.AddParameter(
-                    Envelope.ExecutionTime,
-                    NpgsqlDbType.TimestampTz);
+            // TODO -- this seems like a good thing to generalize and move to Weasel
 
-            var body = builder.AddParameter(bytes, NpgsqlDbType.Bytea);
+            var parameterList = list.Select(x => $":{x.ParameterName}").Join(", ");
 
-            var sql = $@"
-insert into {_incomingTable}
-  (id, owner_id, status, execution_time, body)
-values
-  (:{id.ParameterName}, :{owner.ParameterName}, :{status.ParameterName}, :{executionTime.ParameterName}, :{body.ParameterName})";
-            builder.Append(sql);
+            builder.Append(
+                $@"insert into {_incomingTable} ({DatabaseConstants.IncomingFields}) values ({parameterList});");
         }
 
         public void Postprocess(DbDataReader reader, IList<Exception> exceptions)

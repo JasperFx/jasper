@@ -20,8 +20,6 @@ namespace Jasper.ErrorHandling
             IQueuedOutgoingMessages messages,
             DateTime utcNow)
         {
-            envelope.MarkCompletion(false);
-
             await root.Acknowledgements.SendFailureAcknowledgement(envelope,
                 $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading;
@@ -101,25 +100,27 @@ namespace Jasper.Persistence.Database
 
         public static void BuildIncomingStorageCommand(DatabaseSettings settings, DbCommandBuilder builder, Envelope envelope)
         {
-            var list = new List<DbParameter>();
+            var list = new List<DbParameter>
+            {
+                builder.AddParameter(envelope.Data),
+                builder.AddParameter(envelope.Id),
+                builder.AddParameter(envelope.Status.ToString()),
+                builder.AddParameter(envelope.OwnerId),
+                builder.AddParameter(envelope.ExecutionTime),
+                builder.AddParameter(envelope.Attempts),
+                builder.AddParameter(envelope.CausationId),
+                builder.AddParameter(envelope.CorrelationId),
+                builder.AddParameter(envelope.SagaId),
+                builder.AddParameter(envelope.MessageType),
+                builder.AddParameter(envelope.ContentType),
+                builder.AddParameter(envelope.ReplyRequested),
+                builder.AddParameter(envelope.AckRequested),
+                builder.AddParameter(envelope.ReplyUri?.ToString()),
+                builder.AddParameter(envelope.ReceivedAt?.ToString())
+            };
 
             // TODO -- this seems like a good thing to generalize and move to Weasel
-            list.Add(builder.AddParameter(envelope.Data));
-            list.Add(builder.AddParameter(envelope.Id));
-            list.Add(builder.AddParameter(envelope.Status.ToString()));
-            list.Add(builder.AddParameter(envelope.OwnerId));
-            list.Add(builder.AddParameter(envelope.ExecutionTime));
-            list.Add(builder.AddParameter(envelope.Attempts));
 
-            list.Add(builder.AddParameter(envelope.CausationId));
-            list.Add(builder.AddParameter(envelope.CorrelationId));
-            list.Add(builder.AddParameter(envelope.SagaId));
-            list.Add(builder.AddParameter(envelope.MessageType));
-            list.Add(builder.AddParameter(envelope.ContentType));
-            list.Add(builder.AddParameter(envelope.ReplyRequested));
-            list.Add(builder.AddParameter(envelope.AckRequested));
-            list.Add(builder.AddParameter(envelope.ReplyUri?.ToString()));
-            list.Add(builder.AddParameter(envelope.ReceivedAt?.ToString()));
 
             var parameterList = list.Select(x => $"@{x.ParameterName}").Join(", ");
 

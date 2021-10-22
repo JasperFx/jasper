@@ -35,8 +35,6 @@ namespace Jasper.Persistence
             Usage("Administer the envelope storage").Arguments(x => x.Action);
         }
 
-
-
         public override async Task<bool> Execute(StorageInput input)
         {
             using (var host = input.BuildHost())
@@ -48,6 +46,8 @@ namespace Jasper.Persistence
                 switch (input.Action)
                 {
                     case (StorageAction.counts):
+
+                        await persistor.Admin.RebuildSchemaObjects();
 
                         var counts = await persistor.Admin.GetPersistedCounts();
                         Console.WriteLine("Persisted Enveloper Counts");
@@ -74,6 +74,7 @@ namespace Jasper.Persistence
                         break;
 
                     case StorageAction.release:
+                        await persistor.Admin.RebuildSchemaObjects();
                         Console.WriteLine("Releasing all ownership of persisted envelopes");
                         await persistor.Admin.ReleaseAllOwnership();
 
