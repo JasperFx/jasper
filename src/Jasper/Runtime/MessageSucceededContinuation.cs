@@ -13,7 +13,7 @@ namespace Jasper.Runtime
         {
         }
 
-        public async Task Execute(IChannelCallback channel, Envelope envelope,
+        public async Task Execute(IChannelCallback channel,
             IExecutionContext execution,
             DateTime utcNow)
         {
@@ -21,18 +21,18 @@ namespace Jasper.Runtime
             {
                 await execution.SendAllQueuedOutgoingMessages();
 
-                await channel.Complete(envelope);
+                await channel.Complete(execution.Envelope);
 
-                execution.Logger.MessageSucceeded(envelope);
+                execution.Logger.MessageSucceeded(execution.Envelope);
             }
             catch (Exception ex)
             {
-                await execution.SendFailureAcknowledgement(envelope,"Sending cascading message failed: " + ex.Message);
+                await execution.SendFailureAcknowledgement(execution.Envelope,"Sending cascading message failed: " + ex.Message);
 
-                execution.Logger.LogException(ex, envelope.Id, ex.Message);
-                execution.Logger.MessageFailed(envelope, ex);
+                execution.Logger.LogException(ex, execution.Envelope.Id, ex.Message);
+                execution.Logger.MessageFailed(execution.Envelope, ex);
 
-                await new MoveToErrorQueue(ex).Execute(channel, envelope, execution, utcNow);
+                await new MoveToErrorQueue(ex).Execute(channel, execution, utcNow);
             }
         }
     }

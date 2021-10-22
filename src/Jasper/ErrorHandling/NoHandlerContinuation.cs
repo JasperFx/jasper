@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
 
@@ -9,36 +8,38 @@ namespace Jasper.ErrorHandling
     public class NoHandlerContinuation : IContinuation
     {
         private readonly IMissingHandler[] _handlers;
+        private readonly IMessagingRoot _root;
 
-        public NoHandlerContinuation(IMissingHandler[] handlers)
+        public NoHandlerContinuation(IMissingHandler[] handlers, IMessagingRoot root)
         {
             _handlers = handlers;
+            _root = root;
         }
 
-        public async Task Execute(IChannelCallback channel, Envelope envelope,
+        public async Task Execute(IChannelCallback channel,
             IExecutionContext execution,
             DateTime utcNow)
         {
-            execution.Logger.NoHandlerFor(envelope);
+            execution.Logger.NoHandlerFor(execution.Envelope);
 
             foreach (var handler in _handlers)
                 try
                 {
-                    await handler.Handle(envelope, execution.Root);
+                    await handler.Handle(execution.Envelope, _root);
                 }
                 catch (Exception e)
                 {
                     execution.Logger.LogException(e);
                 }
 
-            if (envelope.AckRequested) await execution.SendAcknowledgement(envelope);
+            if (execution.Envelope.AckRequested) await execution.SendAcknowledgement(execution.Envelope);
 
-            await channel.Complete(envelope);
+            await channel.Complete(execution.Envelope);
 
             // These two lines are important to make the message tracking work
             // if there is no handler
-            execution.Logger.ExecutionFinished(envelope);
-            execution.Logger.MessageSucceeded(envelope);
+            execution.Logger.ExecutionFinished(execution.Envelope);
+            execution.Logger.MessageSucceeded(execution.Envelope);
         }
     }
 }

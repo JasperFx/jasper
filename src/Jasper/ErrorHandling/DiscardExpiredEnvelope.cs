@@ -13,14 +13,14 @@ namespace Jasper.ErrorHandling
 
         private DiscardExpiredEnvelope(){}
 
-        public async Task Execute(IChannelCallback channel, Envelope envelope,
+        public async Task Execute(IChannelCallback channel,
             IExecutionContext execution,
             DateTime utcNow)
         {
             try
             {
-                execution.Logger.DiscardedEnvelope(envelope);
-                await channel.Complete(envelope);
+                execution.Logger.DiscardedEnvelope(execution.Envelope);
+                await channel.Complete(execution.Envelope);
             }
             catch (Exception e)
             {

@@ -29,7 +29,8 @@ namespace Jasper.Testing.ErrorHandling
 
             var context = Substitute.For<IExecutionContext>();
             context.Persistence.Returns(Substitute.For<IEnvelopePersistence>());
-            await continuation.Execute(callback, envelope, context, now);
+            context.Envelope.Returns(envelope);
+            await continuation.Execute(callback, context, now);
 
 
             envelope.ExecutionTime.ShouldBe(now.AddMinutes(5));
@@ -45,12 +46,12 @@ namespace Jasper.Testing.ErrorHandling
 
             var envelope = ObjectMother.Envelope();
 
-
-
             var now = DateTime.Today.ToUniversalTime();
+            var context = Substitute.For<IExecutionContext>();
+            context.Envelope.Returns(envelope);
 
             var root = new MockMessagingRoot();
-            await continuation.Execute(callback, envelope, null, now);
+            await continuation.Execute(callback, context, now);
 
             envelope.ExecutionTime.ShouldBe(now.AddMinutes(5));
 

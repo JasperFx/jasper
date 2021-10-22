@@ -16,25 +16,25 @@ namespace Jasper.ErrorHandling
 
         public Exception Exception { get; }
 
-        public async Task Execute(IChannelCallback channel, Envelope envelope,
+        public async Task Execute(IChannelCallback channel,
             IExecutionContext execution,
             DateTime utcNow)
         {
-            await execution.SendFailureAcknowledgement(envelope,
-                $"Moved message {envelope.Id} to the Error Queue.\n{Exception}");
+            await execution.SendFailureAcknowledgement(execution.Envelope,
+                $"Moved message {execution.Envelope.Id} to the Error Queue.\n{Exception}");
 
             if (channel is IHasDeadLetterQueue c)
             {
-                await c.MoveToErrors(envelope, Exception);
+                await c.MoveToErrors(execution.Envelope, Exception);
             }
             else
             {
                 // If persistable, persist
-                await execution.Persistence.MoveToDeadLetterStorage(envelope, Exception);
+                await execution.Persistence.MoveToDeadLetterStorage(execution.Envelope, Exception);
             }
 
-            execution.Logger.MessageFailed(envelope, Exception);
-            execution.Logger.MovedToErrorQueue(envelope, Exception);
+            execution.Logger.MessageFailed(execution.Envelope, Exception);
+            execution.Logger.MovedToErrorQueue(execution.Envelope, Exception);
 
 
         }

@@ -15,11 +15,10 @@ namespace Jasper.Runtime
         /// Post-message handling action
         /// </summary>
         /// <param name="channel"></param>
-        /// <param name="envelope"></param>
         /// <param name="execution"></param>
         /// <param name="utcNow">The current time</param>
         /// <returns></returns>
-        Task Execute(IChannelCallback channel, Envelope envelope,
+        Task Execute(IChannelCallback channel,
             IExecutionContext execution, DateTime utcNow);
     }
 

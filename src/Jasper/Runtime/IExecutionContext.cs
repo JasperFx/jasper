@@ -12,6 +12,8 @@ namespace Jasper.Runtime
 
         IMessagingRoot Root { get; }
 
+        IMessagePublisher NewPublisher();
+
         Envelope Envelope { get; }
     }
 }

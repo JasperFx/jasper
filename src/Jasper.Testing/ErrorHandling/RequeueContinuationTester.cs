@@ -20,9 +20,11 @@ namespace Jasper.Testing.ErrorHandling
 
             var envelope = ObjectMother.Envelope();
 
+            var context = Substitute.For<IExecutionContext>();
+            context.Envelope.Returns(envelope);
 
 
-            await RequeueContinuation.Instance.Execute(callback, envelope, null, DateTime.Now);
+            await RequeueContinuation.Instance.Execute(callback, context, DateTime.Now);
 
             await callback.Received(1).Defer(envelope);
         }

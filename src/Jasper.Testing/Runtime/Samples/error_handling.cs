@@ -213,16 +213,16 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async Task Execute(IChannelCallback channel, Envelope envelope,
+        public async Task Execute(IChannelCallback channel,
             IExecutionContext execution,
             DateTime utcNow)
         {
             // Raise a separate "alert" event message
-            var session = execution.Root.NewContext();
-            await session.Schedule(envelope.Message, utcNow.AddHours(1));
+            var session = execution.NewPublisher();
+            await session.Schedule(execution.Envelope.Message, utcNow.AddHours(1));
             await session.Send(new RescheduledAlert()
             {
-                Id = envelope.Id,
+                Id = execution.Envelope.Id,
                 ExceptionText = _ex.ToString()
 
             });

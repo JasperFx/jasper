@@ -18,6 +18,7 @@ using NSubstitute;
 
 namespace Jasper.Testing.Runtime
 {
+
     public class MockMessagingRoot : IMessagingRoot
     {
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();

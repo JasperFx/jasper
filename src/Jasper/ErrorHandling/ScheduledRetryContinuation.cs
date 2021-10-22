@@ -15,14 +15,14 @@ namespace Jasper.ErrorHandling
 
         public TimeSpan Delay { get; }
 
-        public Task Execute(IChannelCallback channel, Envelope envelope,
+        public Task Execute(IChannelCallback channel,
             IExecutionContext execution, DateTime utcNow)
         {
-            envelope.ExecutionTime = utcNow.Add(Delay);
+            execution.Envelope.ExecutionTime = utcNow.Add(Delay);
 
-            if (channel is IHasNativeScheduling c) return c.MoveToScheduledUntil(envelope, envelope.ExecutionTime.Value);
+            if (channel is IHasNativeScheduling c) return c.MoveToScheduledUntil(execution.Envelope, execution.Envelope.ExecutionTime.Value);
 
-            return execution.Persistence.ScheduleJob(envelope);
+            return execution.Persistence.ScheduleJob(execution.Envelope);
         }
 
         public override string ToString()

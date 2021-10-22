@@ -16,9 +16,10 @@ namespace Jasper.Testing.Runtime
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new object();
 
+            theExecutionMessages.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theChannel, theEnvelope, theExecutionMessages, DateTime.UtcNow);
+                .Execute(theChannel, theExecutionMessages, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
@@ -46,9 +47,10 @@ namespace Jasper.Testing.Runtime
             theContext.When(x => x.SendAllQueuedOutgoingMessages())
                 .Throw(theException);
 
+            theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theChannel, theEnvelope, theContext, DateTime.UtcNow);
+                .Execute(theChannel, theContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();

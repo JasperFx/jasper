@@ -87,7 +87,7 @@ namespace Jasper.Runtime
             try
             {
                 var continuation = await execute(context, envelope);
-                await continuation.Execute(channel, envelope, context, DateTime.UtcNow);
+                await continuation.Execute(channel, context, DateTime.UtcNow);
             }
             catch (Exception e)
             {

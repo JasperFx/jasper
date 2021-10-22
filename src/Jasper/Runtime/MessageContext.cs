@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Routing;
-using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
 using Jasper.Util;
 
@@ -150,6 +149,12 @@ namespace Jasper.Runtime
 
         // TODO -- this needs to use the Envelope if it exists
         public Guid CorrelationId { get; } = CombGuidIdGeneration.NewGuid();
+
+        IMessagePublisher IExecutionContext.NewPublisher()
+        {
+            return Root.NewContext();
+        }
+
         public Envelope Envelope { get; }
 
         public bool EnlistedInTransaction { get; private set; }

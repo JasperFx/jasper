@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -43,16 +44,15 @@ namespace Jasper.Runtime
 
             MessageLogger = messageLogger;
 
-
-
+            // TODO -- might make NoHandlerContinuation lazy!
             Pipeline = new HandlerPipeline(Serialization, Handlers, MessageLogger,
-                container.GetInstance<NoHandlerContinuation>(),
+                new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
                 this);
 
             Runtime = new TransportRuntime(this);
 
 
-            _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
+            _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
             Router = new EnvelopeRouter(this);
 
