@@ -35,10 +35,10 @@
         public const string AckRequested = "ack_requested"; // add to all
         public const string ReceivedAt = "received_at"; // add to all
 
-        public static readonly string IncomingFields = $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
+        public static readonly string IncomingFields = $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
         public static readonly string OutgoingFields = $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
 
         public static readonly string DeadLetterFields =
-            $"{Id}, {ExecutionTime}, {Attempts}, {Body}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}, {Source}, {Explanation}, {ExceptionText}, {ExceptionType}, {ExceptionMessage}";
+            $"{Id}, {ExecutionTime}, {Attempts}, {Body}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {Source}, {Explanation}, {ExceptionText}, {ExceptionType}, {ExceptionMessage}";
     }
 }

@@ -21,7 +21,6 @@ namespace Jasper.Serialization
         public const string DestinationKey = "destination";
         public const string ReplyUriKey = "reply-uri";
         public const string ExecutionTimeKey = "time-to-send";
-        public const string ReceivedAtKey = "received-at";
         public const string AttemptsKey = "attempts";
         public const string AckRequestedKey = "ack-requested";
         public const string MessageTypeKey = "message-type";
@@ -114,11 +113,6 @@ namespace Jasper.Serialization
                     case DeliverByHeader:
                         env.DeliverBy = DateTime.Parse(value);
                         break;
-
-                    case ReceivedAtKey:
-                        env.ReceivedAt = new Uri(value);
-                        break;
-
 
                     default:
                         env.Headers.Add(key, value);
@@ -256,7 +250,6 @@ namespace Jasper.Serialization
 
             dictionary.WriteProp(AttemptsKey, env.Attempts);
             dictionary.WriteProp(DeliverByHeader, env.DeliverBy);
-            dictionary.WriteProp(ReceivedAtKey, env.ReceivedAt);
 
             foreach (var pair in env.Headers)
             {
@@ -298,7 +291,6 @@ namespace Jasper.Serialization
 
             writer.WriteProp(ref count, AttemptsKey, env.Attempts);
             writer.WriteProp(ref count, DeliverByHeader, env.DeliverBy);
-            writer.WriteProp(ref count, ReceivedAtKey, env.ReceivedAt);
 
             foreach (var pair in env.Headers)
             {

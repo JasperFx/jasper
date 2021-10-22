@@ -56,7 +56,6 @@ namespace Jasper.Runtime.WorkerQueues
         public int QueuedCount => _receiver.InputCount;
         public Task Enqueue(Envelope envelope)
         {
-            envelope.ReceivedAt = Address;
             envelope.ReplyUri = envelope.ReplyUri ?? Address;
             _receiver.Post(envelope);
 

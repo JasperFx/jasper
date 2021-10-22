@@ -57,7 +57,6 @@ namespace StorytellerSpecs.Stub
 
         public Task EnqueueOutgoing(Envelope envelope)
         {
-            envelope.ReceivedAt = Destination;
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri();
 
             var callback = new StubChannelCallback(this, envelope);
@@ -66,10 +65,6 @@ namespace StorytellerSpecs.Stub
             _stubTransport.Callbacks.Add(callback);
 
             Sent.Add(envelope);
-
-
-
-            envelope.ReceivedAt = Destination;
 
             _logger.Sent(envelope);
 

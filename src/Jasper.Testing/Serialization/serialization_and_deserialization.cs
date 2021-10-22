@@ -154,13 +154,6 @@ namespace Jasper.Testing.Serialization
         }
 
         [Fact]
-        public void received_at()
-        {
-            outgoing.ReceivedAt = "http://server1".ToUri();
-            incoming.ReceivedAt.ShouldBe(outgoing.ReceivedAt);
-        }
-
-        [Fact]
         public void reply_requested()
         {
             outgoing.ReplyRequested = Guid.NewGuid().ToString();

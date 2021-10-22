@@ -30,7 +30,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
-            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
         }
@@ -43,23 +42,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
-            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
         }
 
-        [Fact]
-        public async Task handling_a_single_scheduled_envelope()
-        {
-            var envelope = scheduledEnvelope();
-            var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
-            persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
-            persisted.ReceivedAt.ShouldBe(theUri);
-
-            assertEnvelopeWasNotEnqueued(envelope);
-        }
     }
 
     public class MartenBackedListenerContext : PostgresqlContext, IDisposable, IAsyncLifetime

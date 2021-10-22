@@ -50,7 +50,6 @@ namespace Jasper.TestSupport.Storyteller.Logging
             headers.WriteEnvelopeProperty(envelope, x => x.AckRequested);
             headers.WriteEnvelopeProperty(envelope, x => x.ExecutionTime);
             headers.WriteEnvelopeProperty(envelope, x => x.DeliverBy);
-            headers.WriteEnvelopeProperty(envelope, x => x.ReceivedAt);
 
 
             foreach (var pair in envelope.Headers)

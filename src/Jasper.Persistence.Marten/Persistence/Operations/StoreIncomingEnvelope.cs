@@ -47,7 +47,6 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
                 builder.AddParameter(Envelope.ReplyRequested),
                 builder.AddParameter(Envelope.AckRequested),
                 builder.AddParameter(Envelope.ReplyUri?.ToString()),
-                builder.AddParameter(Envelope.ReceivedAt?.ToString())
             };
 
             // TODO -- this seems like a good thing to generalize and move to Weasel

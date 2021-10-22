@@ -23,8 +23,6 @@ namespace Jasper
     {
         internal void MarkReceived(Uri uri, DateTime now, int currentNodeId)
         {
-            ReceivedAt = uri;
-
             if (IsDelayed(now))
             {
                 Status = EnvelopeStatus.Scheduled;

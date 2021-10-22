@@ -89,14 +89,6 @@ namespace Jasper
             set => _deliverBy = value?.ToUniversalTime();
         }
 
-
-        /// <summary>
-        ///     Identifies the listener at which this envelope was received at
-        /// </summary>
-        public Uri ReceivedAt { get; internal set; }
-
-
-
         /// <summary>
         ///     The name of the service that sent this envelope
         /// </summary>

@@ -67,13 +67,13 @@ namespace StorytellerSpecs.Fixtures
         public IGrammar TheMessagesSentShouldBe()
         {
             return VerifySetOf(sent).Titled("All the messages sent should be")
-                .MatchOn(x => x.ReceivedAt, x => x.MessageType, x => x.Name);
+                .MatchOn(x => x.MessageType, x => x.Name);
         }
 
         private IList<MessageRecord> sent()
         {
             return _session.AllRecordsInOrder(EventType.Received).Select(x =>
-                new MessageRecord(x.ServiceName, x.Envelope.Destination, (Message) x.Envelope.Message)).ToList();
+                new MessageRecord(x.ServiceName, (Message) x.Envelope.Message)).ToList();
         }
 
 
@@ -189,7 +189,7 @@ namespace StorytellerSpecs.Fixtures
     {
         public void Handle(T message, MessageTracker tracker, Envelope envelope, JasperOptions options)
         {
-            tracker.Records.Add(new MessageRecord(options.ServiceName, envelope.ReceivedAt, message));
+            tracker.Records.Add(new MessageRecord(options.ServiceName, message));
         }
     }
 
@@ -224,17 +224,14 @@ namespace StorytellerSpecs.Fixtures
 
     public class MessageRecord
     {
-        public MessageRecord(string serviceName, Uri receivedAt, Message message)
+        public MessageRecord(string serviceName, Message message)
         {
             ServiceName = serviceName;
             MessageType = message.GetType().Name;
             Name = message.Name;
-            ReceivedAt = receivedAt?.ToLocalHostUri();
         }
 
         public string ServiceName { get; set; }
-
-        public Uri ReceivedAt { get; set; }
 
         public string Name { get; set; }
 

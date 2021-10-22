@@ -59,11 +59,6 @@ namespace Jasper.Persistence.Database
                 envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(13, cancellation)).ToUri();
             }
 
-            if (!await reader.IsDBNullAsync(14, cancellation))
-            {
-                envelope.ReceivedAt = (await reader.GetFieldValueAsync<string>(14, cancellation)).ToUri();
-            }
-
             return envelope;
         }
 
@@ -116,7 +111,6 @@ namespace Jasper.Persistence.Database
                 builder.AddParameter(envelope.ReplyRequested),
                 builder.AddParameter(envelope.AckRequested),
                 builder.AddParameter(envelope.ReplyUri?.ToString()),
-                builder.AddParameter(envelope.ReceivedAt?.ToString())
             };
 
             // TODO -- this seems like a good thing to generalize and move to Weasel
@@ -182,7 +176,6 @@ namespace Jasper.Persistence.Database
                 list.Add(builder.AddParameter(error.Envelope.ReplyRequested));
                 list.Add(builder.AddParameter(error.Envelope.AckRequested));
                 list.Add(builder.AddParameter(error.Envelope.ReplyUri?.ToString()));
-                list.Add(builder.AddParameter(error.Envelope.ReceivedAt?.ToString()));
                 list.Add(builder.AddParameter(error.Envelope.Source));
                 list.Add(builder.AddParameter(error.Explanation));
                 list.Add(builder.AddParameter(error.ExceptionText));
@@ -228,15 +221,14 @@ namespace Jasper.Persistence.Database
             envelope.ReplyRequested = await reader.MaybeRead<string>(9, _cancellation);
             envelope.AckRequested = await reader.GetFieldValueAsync<bool>(10, _cancellation);
             envelope.ReplyUri = await reader.ReadUri(11, _cancellation);
-            envelope.ReceivedAt = await reader.ReadUri(12, _cancellation);
-            envelope.Source = await reader.MaybeRead<string>(13, _cancellation);
+            envelope.Source = await reader.MaybeRead<string>(12, _cancellation);
 
             var report = new ErrorReport(envelope)
             {
-                Explanation = await reader.GetFieldValueAsync<string>(14, _cancellation),
-                ExceptionText = await reader.GetFieldValueAsync<string>(15, _cancellation),
-                ExceptionType = await reader.GetFieldValueAsync<string>(16, _cancellation),
-                ExceptionMessage = await reader.GetFieldValueAsync<string>(17, _cancellation),
+                Explanation = await reader.GetFieldValueAsync<string>(13, _cancellation),
+                ExceptionText = await reader.GetFieldValueAsync<string>(14, _cancellation),
+                ExceptionType = await reader.GetFieldValueAsync<string>(15, _cancellation),
+                ExceptionMessage = await reader.GetFieldValueAsync<string>(16, _cancellation),
             };
 
             return report;

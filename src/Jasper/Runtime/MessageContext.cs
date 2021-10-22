@@ -101,7 +101,12 @@ namespace Jasper.Runtime
         {
             if (Envelope == null) throw new InvalidOperationException("This operation can only be performed while in the middle of handling an incoming message");
 
-            return SendToDestination(Envelope.ReplyUri ?? Envelope.ReceivedAt, response);
+            if (Envelope.ReplyUri == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Envelope), $"There is no {nameof(Envelope.ReplyUri)}");
+            }
+
+            return SendToDestination(Envelope.ReplyUri, response);
         }
 
 

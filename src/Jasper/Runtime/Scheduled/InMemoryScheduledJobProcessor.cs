@@ -119,7 +119,6 @@ namespace Jasper.Runtime.Scheduled
                 return new ScheduledJob(Envelope.Id)
                 {
                     ExecutionTime = ExecutionTime,
-                    From = Envelope.ReceivedAt.ToString(),
                     ReceivedAt = ReceivedAt,
                     MessageType = Envelope.MessageType
                 };
