@@ -2,12 +2,12 @@ using System.Linq;
 using Alba;
 using Jasper.Http.Routing;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Jasper.Http.Testing.MVCExtensions
 {
@@ -40,14 +40,14 @@ namespace Jasper.Http.Testing.MVCExtensions
 
     public class finding_action_methods : IClassFixture<MvcExtendedApp>
     {
+        private readonly MvcExtendedApp _app;
+
         public finding_action_methods(MvcExtendedApp app)
         {
             _app = app;
 
             app.System.Scenario(x => x.Get.Url("/hello")).GetAwaiter().GetResult();
         }
-
-        private readonly MvcExtendedApp _app;
 
         [Fact]
         public void can_find_and_determine_route_from_HttpGet_marked_method_with_no_arguments()

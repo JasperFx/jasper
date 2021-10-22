@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using BenchmarkDotNet.Running;
 using Jasper;
 using Jasper.Persistence;
@@ -9,11 +8,11 @@ using Jasper.Persistence.Durability;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using TestMessages;
+ using TestMessages;
 
 namespace Benchmarks
 {
-    class Program
+    internal class Program
     {
         static async Task Main(string[] args)
         {

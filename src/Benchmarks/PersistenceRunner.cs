@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +19,6 @@ namespace Benchmarks
 {
     public class PersistenceRunner : IDisposable
     {
-
         private Envelope[] theEnvelopes;
 
         public PersistenceRunner()
@@ -28,13 +26,12 @@ namespace Benchmarks
             theDriver = new Driver();
         }
 
+        [Params("SqlServer", "Postgresql")] public string DatabaseEngine;
+
         public void Dispose()
         {
             theDriver.SafeDispose();
         }
-
-        [Params("SqlServer", "Postgresql")]
-        public string DatabaseEngine;
 
         private readonly Driver theDriver;
 
@@ -79,7 +76,7 @@ namespace Benchmarks
         [Benchmark]
         public async Task StoreIncoming()
         {
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 await theDriver.Persistence.StoreIncoming(theEnvelopes.Skip(i * 100).Take(100).ToArray());
             }
@@ -88,7 +85,7 @@ namespace Benchmarks
         [Benchmark]
         public async Task StoreOutgoing()
         {
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 await theDriver.Persistence.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
             }
@@ -119,7 +116,6 @@ namespace Benchmarks
         {
             return theDriver.Persistence.Admin.AllOutgoingEnvelopes();
         }
-
     }
 
 }

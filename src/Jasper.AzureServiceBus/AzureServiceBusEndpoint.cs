@@ -12,8 +12,6 @@ using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus
 {
-
-
     public class AzureServiceBusEndpoint : Endpoint
     {
         public const string Queue = "queue";
@@ -61,7 +59,6 @@ namespace Jasper.AzureServiceBus
                     list.Add(Topic);
                     list.Add(TopicName.ToLowerInvariant());
                 }
-
             }
 
             if (forReply && Mode == EndpointMode.Durable)
@@ -84,16 +81,13 @@ namespace Jasper.AzureServiceBus
         {
             if (uri.Scheme != AzureServiceBusTransport.ProtocolName)
             {
-                throw new ArgumentOutOfRangeException($"This is not a rabbitmq Uri");
+                throw new ArgumentOutOfRangeException("This is not a rabbitmq Uri");
             }
 
             var raw = uri.Segments.Where(x => x != "/").Select(x => x.Trim('/'));
             var segments = new Queue<string>();
             segments.Enqueue(uri.Host);
-            foreach (var segment in raw)
-            {
-                segments.Enqueue(segment);
-            }
+            foreach (var segment in raw) segments.Enqueue(segment);
 
 
             while (segments.Any())
@@ -120,18 +114,25 @@ namespace Jasper.AzureServiceBus
                 }
                 else
                 {
-                    throw new InvalidOperationException($"The Uri '{uri}' is invalid for an Azure Service Bus endpoint");
+                    throw new InvalidOperationException(
+                        $"The Uri '{uri}' is invalid for an Azure Service Bus endpoint");
                 }
             }
         }
 
 
-
         protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
-            if (!IsListener) return;
+            if (!IsListener)
+            {
+                return;
+            }
 
-            if (Parent.ConnectionString == null) throw new InvalidOperationException("There is no configured connection string for Azure Service Bus, or it is empty");
+            if (Parent.ConnectionString == null)
+            {
+                throw new InvalidOperationException(
+                    "There is no configured connection string for Azure Service Bus, or it is empty");
+            }
 
             var listener = new AzureServiceBusListener(this, Parent, root.TransportLogger, root.Cancellation);
             runtime.AddListener(listener, this);
@@ -139,7 +140,12 @@ namespace Jasper.AzureServiceBus
 
         protected override ISender CreateSender(IMessagingRoot root)
         {
-            if (Parent.ConnectionString == null) throw new InvalidOperationException("There is no configured connection string for Azure Service Bus, or it is empty");
+            if (Parent.ConnectionString == null)
+            {
+                throw new InvalidOperationException(
+                    "There is no configured connection string for Azure Service Bus, or it is empty");
+            }
+
             return new AzureServiceBusSender(this, Parent);
         }
     }

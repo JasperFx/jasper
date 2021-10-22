@@ -10,6 +10,8 @@ namespace Jasper.Http.Testing.Routing
 {
     public class Reverse_Url_Lookup_Tests
     {
+        private static readonly UrlGraph graph = new();
+
         static Reverse_Url_Lookup_Tests()
         {
             readType<OneController>();
@@ -17,7 +19,6 @@ namespace Jasper.Http.Testing.Routing
             readType<OnlyOneActionController>();
         }
 
-        private static readonly UrlGraph graph = new UrlGraph();
         private static IUrlRegistry urls => graph;
 
         private static void readType<T>()

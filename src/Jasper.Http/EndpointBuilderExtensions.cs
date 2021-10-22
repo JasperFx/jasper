@@ -1,12 +1,9 @@
 using System;
-using System.Linq;
 using Lamar;
-using LamarCodeGeneration.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Http
 {
@@ -17,17 +14,18 @@ namespace Jasper.Http
 
         // TODO -- might want an option to add IConfiguration or Hosting options too
         /// <summary>
-        /// Add Jasper HTTP endpoint routes
+        ///     Add Jasper HTTP endpoint routes
         /// </summary>
         /// <param name="builder"></param>
-        public static void MapJasperEndpoints(this IEndpointRouteBuilder builder, Action<JasperHttpOptions> configure = null)
+        public static void MapJasperEndpoints(this IEndpointRouteBuilder builder,
+            Action<JasperHttpOptions> configure = null)
         {
             builder.DataSources.Add(new JasperRouteEndpointSource((IContainer) builder.ServiceProvider, configure));
         }
 
 
         /// <summary>
-        /// Configure the Jasper HTTP routing
+        ///     Configure the Jasper HTTP routing
         /// </summary>
         /// <param name="extensions"></param>
         /// <param name="configure"></param>

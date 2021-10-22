@@ -18,8 +18,7 @@ namespace Jasper.AzureServiceBus.Internal
                 Body = envelope.Data,
                 ContentType = envelope.ContentType,
                 ReplyTo = envelope.ReplyUri?.ToString(),
-                ReplyToSessionId = envelope.CausationId.ToString(),
-
+                ReplyToSessionId = envelope.CausationId.ToString()
             };
 
             if (envelope.ExecutionTime.HasValue)
@@ -33,7 +32,6 @@ namespace Jasper.AzureServiceBus.Internal
             }
 
             EnvelopeSerializer.WriteToDictionary(message.UserProperties, envelope);
-
 
 
             return message;

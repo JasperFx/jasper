@@ -5,7 +5,6 @@ using Jasper.Http.MVCExtensions;
 using Jasper.Http.Routing;
 using Jasper.Serialization;
 using Lamar;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +13,8 @@ namespace Jasper.Http
 {
     public class JasperHttpExtension : IJasperExtension
     {
+        public JasperHttpOptions Options { get; } = new JasperHttpOptions();
+
         public void Configure(JasperOptions registry)
         {
             registry.Services.AddSingleton(Options);
@@ -53,7 +54,5 @@ namespace Jasper.Http
 
             JasperRoute.Rules.Insert(0, new HttpAttributeRoutingRule());
         }
-
-        public JasperHttpOptions Options { get; } = new JasperHttpOptions();
     }
 }

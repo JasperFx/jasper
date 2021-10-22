@@ -4,13 +4,13 @@ using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Http.ContentHandling;
 using Jasper.Http.Model;
+using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Shouldly;
 using TestingSupport.Fakes;
 using Xunit;
-using Container = Lamar.Container;
 
 namespace Jasper.Http.Testing
 {
@@ -107,7 +107,7 @@ namespace Jasper.Http.Testing
 
     public class FakeWrapper3Attribute : ModifyChainAttribute
     {
-        public override void Modify(IChain chain, GenerationRules rules, Lamar.IContainer container)
+        public override void Modify(IChain chain, GenerationRules rules, IContainer container)
         {
             chain.Middleware.Add(new FakeWrapper3());
         }

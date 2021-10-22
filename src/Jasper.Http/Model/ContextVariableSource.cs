@@ -13,7 +13,10 @@ namespace Jasper.Http.Model
         {
             foreach (var property in typeof(HttpContext).GetProperties())
             {
-                if (property.PropertyType == typeof(string)) continue;
+                if (property.PropertyType == typeof(string))
+                {
+                    continue;
+                }
 
                 var variable = new Variable(property.PropertyType, $"{RouteGraph.Context}.{property.Name}");
                 _variables.Add(property.PropertyType, variable);

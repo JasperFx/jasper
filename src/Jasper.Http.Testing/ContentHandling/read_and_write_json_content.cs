@@ -48,7 +48,7 @@ namespace Jasper.Http.Testing.ContentHandling
     {
         public static SumValue post_sum(SomeNumbers input)
         {
-            return new SumValue {Sum = input.X + input.Y};
+            return new() {Sum = input.X + input.Y};
         }
     }
 

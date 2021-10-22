@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Alba;
 using Baseline;
-using Jasper.Runtime.Handlers;
 using Lamar;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,7 +30,6 @@ namespace Jasper.Http.Testing
     {
         public void ConfigureServices(IServiceCollection services)
         {
-
         }
 
         public void Configure(IApplicationBuilder app)

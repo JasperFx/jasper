@@ -119,6 +119,10 @@ namespace Jasper.Http.Testing.Routing
 
     public class building_a_route_from_segments_Tests
     {
+        private readonly JasperRoute route;
+
+        private readonly ISegment[] segments;
+
         public building_a_route_from_segments_Tests()
         {
             segments = new ISegment[]
@@ -127,9 +131,6 @@ namespace Jasper.Http.Testing.Routing
 
             route = new JasperRoute(segments, HttpVerbs.PUT);
         }
-
-        private readonly ISegment[] segments;
-        private readonly JasperRoute route;
 
         [Fact]
         public void should_build_the_pattern_from_the_segments()
@@ -154,10 +155,6 @@ namespace Jasper.Http.Testing.Routing
         {
             route.Segments.ShouldHaveTheSameElementsAs(segments);
         }
-
-
-
-
     }
 
     [JasperIgnore]

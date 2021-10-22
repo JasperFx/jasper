@@ -124,7 +124,7 @@ namespace Jasper.Http.ContentHandling
         public async Task<T> ReadFromRequest<T>(HttpRequest request)
         {
             // TODO -- the encoding should vary here
-            Type targetType = typeof(T);
+            var targetType = typeof(T);
             object ret;
 
             if (!request.Body.CanSeek)
@@ -137,10 +137,9 @@ namespace Jasper.Http.ContentHandling
                 request.Body.Seek(0L, SeekOrigin.Begin);
             }
 
-            using (var streamReader = new HttpRequestStreamReader(request.Body, Encoding.UTF8, _bufferSize, _bytePool, _charPool))
+            using (var streamReader =
+                new HttpRequestStreamReader(request.Body, Encoding.UTF8, _bufferSize, _bytePool, _charPool))
             {
-
-
                 using (var jsonReader = new JsonTextReader(streamReader))
                 {
                     jsonReader.ArrayPool = _jsonCharPool;
@@ -239,7 +238,10 @@ namespace Jasper.Http.ContentHandling
                 })
                 {
                     serializer.Serialize(jsonWriter, model);
-                    if (stream.Position < _bufferSize) return bytes.Take((int) stream.Position).ToArray();
+                    if (stream.Position < _bufferSize)
+                    {
+                        return bytes.Take((int) stream.Position).ToArray();
+                    }
 
                     return stream.ToArray();
                 }
@@ -252,7 +254,10 @@ namespace Jasper.Http.ContentHandling
                     var data = writeWithNoBuffer(model, serializer);
 
                     var bufferSize = 1024;
-                    while (bufferSize < data.Length) bufferSize = bufferSize * 2;
+                    while (bufferSize < data.Length)
+                    {
+                        bufferSize = bufferSize * 2;
+                    }
 
                     _bufferSize = bufferSize;
 

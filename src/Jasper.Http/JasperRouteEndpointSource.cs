@@ -11,25 +11,24 @@ using Microsoft.Extensions.Primitives;
 
 namespace Jasper.Http
 {
-
-
     public class JasperRouteEndpointSource : EndpointDataSource
     {
         private readonly IContainer _container;
         private readonly Action<JasperHttpOptions> _customization;
         private Endpoint[] _endpoints;
+
         public JasperRouteEndpointSource(IContainer container, Action<JasperHttpOptions> customization)
         {
             _container = container;
             _customization = customization;
         }
 
+        public override IReadOnlyList<Endpoint> Endpoints => _endpoints ?? (_endpoints = BuildEndpoints().ToArray());
+
         public override IChangeToken GetChangeToken()
         {
             return NullChangeToken.Singleton;
         }
-
-        public override IReadOnlyList<Endpoint> Endpoints => _endpoints ?? (_endpoints = BuildEndpoints().ToArray());
 
         private IEnumerable<Endpoint> BuildEndpoints()
         {
@@ -39,8 +38,8 @@ namespace Jasper.Http
 
         internal class RouteBuilder
         {
-            private readonly JasperHttpOptions _httpOptions;
             private readonly IContainer _container;
+            private readonly JasperHttpOptions _httpOptions;
             private readonly JasperOptions _options;
 
             public RouteBuilder(JasperHttpOptions httpOptions, IContainer container, JasperOptions options)
@@ -69,7 +68,6 @@ namespace Jasper.Http
                 }
 
 
-
                 graph.AssertNoDuplicateRoutes();
 
                 var rules = _options.Advanced.CodeGeneration;
@@ -81,11 +79,7 @@ namespace Jasper.Http
                 new AssemblyGenerator().Compile(generatedAssembly, services);
 
 
-                foreach (var chain in graph)
-                {
-                    yield return chain.BuildEndpoint(_container);
-                }
-
+                foreach (var chain in graph) yield return chain.BuildEndpoint(_container);
             }
         }
     }

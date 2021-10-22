@@ -1,4 +1,3 @@
-using Jasper.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace InMemoryMediator.Items
@@ -21,7 +20,6 @@ namespace InMemoryMediator.Items
                 map.HasKey(x => x.Id);
                 map.Property(x => x.Name);
             });
-
         }
     }
     // ENDSAMPLE

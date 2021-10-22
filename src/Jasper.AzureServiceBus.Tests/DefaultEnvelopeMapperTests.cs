@@ -12,6 +12,19 @@ namespace Jasper.AzureServiceBus.Tests
 {
     public class DefaultEnvelopeMapperTests
     {
+        private readonly Lazy<Envelope> _mapped;
+
+        private readonly Message theMessage = new()
+        {
+            Body = new byte[] {1, 2, 3, 4}
+        };
+
+        private readonly Envelope theOriginal = new()
+        {
+            Id = Guid.NewGuid(),
+            Data = new byte[] {2, 3, 4, 5, 6}
+        };
+
         public DefaultEnvelopeMapperTests()
         {
             _mapped = new Lazy<Envelope>(() =>
@@ -22,19 +35,6 @@ namespace Jasper.AzureServiceBus.Tests
                 return mapper.ReadEnvelope(message);
             });
         }
-
-        private readonly Envelope theOriginal = new Envelope
-        {
-            Id = Guid.NewGuid(),
-            Data = new byte[] {2, 3, 4, 5, 6}
-        };
-
-        private readonly Lazy<Envelope> _mapped;
-
-        private readonly Message theMessage = new Message
-        {
-            Body = new byte[] {1, 2, 3, 4}
-        };
 
         private Envelope theEnvelope => _mapped.Value;
 
@@ -149,6 +149,13 @@ namespace Jasper.AzureServiceBus.Tests
 
     public class mapping_from_envelope
     {
+        private readonly Lazy<Message> _properties;
+
+        private readonly Envelope theEnvelope = new(new Message1())
+        {
+            Data = new byte[] {1, 2, 3, 4}
+        };
+
         public mapping_from_envelope()
         {
             _properties = new Lazy<Message>(() =>
@@ -156,12 +163,6 @@ namespace Jasper.AzureServiceBus.Tests
                 return new DefaultAzureServiceBusProtocol().WriteFromEnvelope(theEnvelope);
             });
         }
-
-        private readonly Envelope theEnvelope = new Envelope(new Message1())
-        {
-            Data = new byte[]{1,2,3,4}
-        };
-        private readonly Lazy<Message> _properties;
 
         private Message theMessage => _properties.Value;
 
@@ -251,7 +252,8 @@ namespace Jasper.AzureServiceBus.Tests
         public void the_original_id()
         {
             theEnvelope.CorrelationId = Guid.NewGuid();
-            theMessage.UserProperties[EnvelopeSerializer.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
+            theMessage.UserProperties[EnvelopeSerializer.CorrelationIdKey]
+                .ShouldBe(theEnvelope.CorrelationId.ToString());
         }
     }
 }

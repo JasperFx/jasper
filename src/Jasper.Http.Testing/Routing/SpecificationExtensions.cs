@@ -20,7 +20,10 @@ namespace Jasper.Http.Testing.Routing
 
                 actual.Count.ShouldBe(expected.Count);
 
-                for (var i = 0; i < actual.Count; i++) actual[i].ShouldBe(expected[i]);
+                for (var i = 0; i < actual.Count; i++)
+                {
+                    actual[i].ShouldBe(expected[i]);
+                }
             }
             catch (Exception)
             {
@@ -55,7 +58,10 @@ namespace Jasper.Http.Testing.Routing
 
             actualArray.Length.ShouldBe(expectedArray.Length);
 
-            for (var i = 0; i < actual.Count(); i++) keySelector(actualArray[i]).ShouldBe(expectedArray[i]);
+            for (var i = 0; i < actual.Count(); i++)
+            {
+                keySelector(actualArray[i]).ShouldBe(expectedArray[i]);
+            }
         }
     }
 
@@ -75,7 +81,9 @@ namespace Jasper.Http.Testing.Routing
             }
 
             if (exception == null)
+            {
                 throw new Exception("An exception was expected, but not thrown by the given action.");
+            }
 
             return exception;
         }
@@ -94,7 +102,9 @@ namespace Jasper.Http.Testing.Routing
             }
 
             if (exception == null)
+            {
                 throw new Exception("An exception was expected, but not thrown by the given action.");
+            }
 
             return exception;
         }

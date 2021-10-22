@@ -1,13 +1,9 @@
 using InMemoryMediator.Items;
 using Jasper;
 using Jasper.Persistence.EntityFrameworkCore;
-using Jasper.Persistence.EntityFrameworkCore.Codegen;
-using Jasper.Persistence.Sagas;
 using Jasper.Persistence.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace EFPlusSqlServerConsole
 {
@@ -37,9 +33,7 @@ namespace EFPlusSqlServerConsole
                 // of the options allows Jasper + Lamar to significantly
                 // optimize the runtime pipeline of the handlers that
                 // use this DbContext type
-                optionsLifetime:ServiceLifetime.Singleton);
+                optionsLifetime: ServiceLifetime.Singleton);
         }
-
     }
-
 }

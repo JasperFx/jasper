@@ -95,14 +95,26 @@ namespace Jasper.Http.ContentHandling
             try
             {
                 if (chain.InputType != null)
+                {
                     foreach (var reader in _readers)
+                    {
                         if (reader.TryToApply(chain))
+                        {
                             break;
+                        }
+                    }
+                }
 
                 if (chain.ResourceType != null)
+                {
                     foreach (var writer in _writers)
+                    {
                         if (writer.TryToApply(chain))
+                        {
                             break;
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {

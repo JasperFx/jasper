@@ -29,7 +29,9 @@ namespace Jasper.Http
         internal async Task<MethodCall[]> FindActions(Assembly applicationAssembly)
         {
             if (applicationAssembly == null || _disableConventionalDiscovery)
+            {
                 return _explicitTypes.SelectMany(actionsFromType).ToArray();
+            }
 
             var assemblies = Applies.Assemblies.Any() ? Applies.Assemblies : new[] {applicationAssembly};
 

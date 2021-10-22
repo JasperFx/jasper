@@ -27,10 +27,7 @@ namespace Jasper.Http.Testing.Routing
                             .IncludeType<IdiomaticJasperRouteEndpoint>();
                     });
                 })
-                .ConfigureWebHostDefaults(web =>
-                {
-                    web.UseStartup<JasperTestStartup>();
-                });
+                .ConfigureWebHostDefaults(web => { web.UseStartup<JasperTestStartup>(); });
 
             System = new SystemUnderTest(builder);
 
@@ -63,14 +60,14 @@ namespace Jasper.Http.Testing.Routing
 
     public class finding_action_methods : IClassFixture<SampleAppWithRoutedAttributes>
     {
+        private readonly SampleAppWithRoutedAttributes _app;
+
         public finding_action_methods(SampleAppWithRoutedAttributes app)
         {
             _app = app;
 
             _app.System.Scenario(x => x.Get.Url("/stuff/other")).GetAwaiter().GetResult();
         }
-
-        private readonly SampleAppWithRoutedAttributes _app;
 
         [Fact]
         public void can_find_and_determine_route_from_HttpPost_marked_method_with_no_arguments()

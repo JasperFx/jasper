@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Baseline.Reflection;
 using Jasper.Http.Routing;
 using Jasper.Http.Routing.Codegen;
@@ -11,14 +9,6 @@ namespace Jasper.Http.Testing.Routing
 {
     public class RouteArgumentTests
     {
-        public class SomeEndpoint
-        {
-            public void go(string name, int number)
-            {
-            }
-        }
-
-
         [Fact]
         public void can_override_the_arg_type()
         {
@@ -90,5 +80,11 @@ namespace Jasper.Http.Testing.Routing
             parameter.ArgType.ShouldBe(typeof(string));
         }
 
+        public class SomeEndpoint
+        {
+            public void go(string name, int number)
+            {
+            }
+        }
     }
 }

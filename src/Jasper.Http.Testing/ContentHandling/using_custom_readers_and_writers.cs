@@ -37,12 +37,12 @@ namespace Jasper.Http.Testing.ContentHandling
 
         public SpecialOutput post_special_output(SpecialInput input)
         {
-            return new SpecialOutput {Value = input.Name};
+            return new() {Value = input.Name};
         }
 
         public XmlOutput post_xml_output(XmlInput input)
         {
-            return new XmlOutput {Value = input.Name};
+            return new() {Value = input.Name};
         }
     }
 

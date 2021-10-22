@@ -61,10 +61,7 @@ namespace Jasper.Http
 
         public void ApplyPolicies(GenerationRules rules)
         {
-            foreach (var policy in _policies)
-            {
-                policy.Apply(Routes, rules);
-            }
+            foreach (var policy in _policies) policy.Apply(Routes, rules);
         }
     }
 }

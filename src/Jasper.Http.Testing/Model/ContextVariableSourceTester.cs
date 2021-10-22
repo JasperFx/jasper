@@ -2,7 +2,6 @@
 using System.Threading;
 using Jasper.Http.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Shouldly;
 using Xunit;
 
@@ -10,7 +9,7 @@ namespace Jasper.Http.Testing.Model
 {
     public class ContextVariableSourceTester
     {
-        private readonly ContextVariableSource theSource = new ContextVariableSource();
+        private readonly ContextVariableSource theSource = new();
 
         private void matchesAndCanCreate<T>()
         {

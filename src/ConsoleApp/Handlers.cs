@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using StoryTeller.Results;
 using TestingSupport.Compliance;
-using TestMessages;
 
 namespace MyApp
 {
@@ -9,7 +8,6 @@ namespace MyApp
     {
         public void Ping(Envelope envelope, PingMessage message)
         {
-
         }
     }
 

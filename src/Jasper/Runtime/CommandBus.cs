@@ -130,16 +130,13 @@ namespace Jasper.Runtime
 
         private Task persistOrSend(Envelope envelope)
         {
-            // TODO -- do we keep EnlistedInTransaction here?
             if (EnlistedInTransaction)
             {
                 _outstanding.Add(envelope);
                 return envelope.Sender.IsDurable ? Transaction.Persist(envelope) : Task.CompletedTask;
             }
-            else
-            {
-                return envelope.Send();
-            }
+
+            return envelope.Send();
         }
 
         public bool EnlistedInTransaction { get; protected set; }

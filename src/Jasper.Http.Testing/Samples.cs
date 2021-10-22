@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 
 namespace Jasper.Http.Testing
 {
-
     /*
      // SAMPLE: SampleHomeEndpoint
     public class HomeEndpoint
@@ -37,7 +36,7 @@ namespace Jasper.Http.Testing
         // Responds to the route "GET: /add/:one/:two"
         public static Sum get_add_one_two(int one, int two)
         {
-            return new Sum {Total = one + two};
+            return new() {Total = one + two};
         }
     }
     // ENDSAMPLE
@@ -122,7 +121,7 @@ namespace Jasper.Http.Testing
         // Command is the "input" type
         public ResourceModel post_resource(Command model)
         {
-            return new ResourceModel();
+            return new();
         }
 
         // ResourceModel is the "resource" type

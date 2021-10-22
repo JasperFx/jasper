@@ -33,7 +33,10 @@ namespace Jasper.Http.ContentHandling
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
-            if (_return != null) yield return _return;
+            if (_return != null)
+            {
+                yield return _return;
+            }
 
             _response = chain.FindVariable(typeof(HttpResponse));
             yield return _response;
