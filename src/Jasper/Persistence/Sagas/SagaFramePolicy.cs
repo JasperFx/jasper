@@ -75,10 +75,6 @@ namespace Jasper.Persistence.Sagas
                 }
             }
 
-
-
-
-
             var enlistInSagaId = MethodCall.For<IExecutionContext>(x => x.EnlistInSaga(null));
             enlistInSagaId.Arguments[0] = sagaIdVariable;
             chain.Postprocessors.Add(enlistInSagaId);

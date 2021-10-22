@@ -6,7 +6,7 @@ namespace Jasper.Persistence.Marten
     public static class MessageContextExtensions
     {
         /// <summary>
-        ///     Enlists the current IMessageContext in the Marten session's transaction
+        ///     Enlists the current IExecutionContext in the Marten session's transaction
         ///     lifecycle
         /// </summary>
         /// <param name="context"></param>

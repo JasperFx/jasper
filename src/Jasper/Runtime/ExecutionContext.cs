@@ -12,7 +12,6 @@ namespace Jasper.Runtime
     {
         private object _sagaId;
 
-
         public ExecutionContext(IMessagingRoot root) : base(root, CombGuidIdGeneration.NewGuid())
         {
         }
@@ -145,17 +144,17 @@ namespace Jasper.Runtime
             return Root.Acknowledgements.SendFailureAcknowledgement(original, message);
         }
 
-        Task IExecutionContext.Complete()
+        public Task Complete()
         {
             return Channel.Complete(Envelope);
         }
 
-        Task IExecutionContext.Defer()
+        public Task Defer()
         {
             return Channel.Defer(Envelope);
         }
 
-        async Task IExecutionContext.ReSchedule(DateTime scheduledTime)
+        public async Task ReSchedule(DateTime scheduledTime)
         {
             Envelope.ExecutionTime = scheduledTime;
             if (Channel is IHasNativeScheduling c)
@@ -168,7 +167,7 @@ namespace Jasper.Runtime
             }
         }
 
-        async Task IExecutionContext.MoveToDeadLetterQueue(Exception exception)
+        public async Task MoveToDeadLetterQueue(Exception exception)
         {
             if (Channel is IHasDeadLetterQueue c)
             {
@@ -181,7 +180,7 @@ namespace Jasper.Runtime
             }
         }
 
-        Task IExecutionContext.RetryExecutionNow()
+        public Task RetryExecutionNow()
         {
             return Root.Pipeline.Invoke(Envelope, Channel);
         }
