@@ -62,6 +62,9 @@ namespace Benchmarks
                 stream.Position = 0;
                 env.Data = stream.ReadAllBytes();
 
+                env.ContentType = "application/json";
+                env.MessageType = "target";
+
 
                 return env;
             }).ToArray();
