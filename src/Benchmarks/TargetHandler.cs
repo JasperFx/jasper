@@ -31,13 +31,18 @@ namespace Benchmarks
             Interlocked.Increment(ref _count);
             if (_count >= _number)
             {
-                _waiter.TrySetResult(_count);
+                _waiter?.TrySetResult(_count);
             }
         }
 
         public static void Handle(Target target)
         {
-            var data = target.Children?.Sum(x => x.Number) ?? 0;
+            long sum = 0;
+            foreach (var child in target.Children ?? Array.Empty<Target>())
+            {
+                sum += child.Number;
+            }
+
             Increment();
         }
     }

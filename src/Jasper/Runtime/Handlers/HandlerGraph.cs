@@ -75,6 +75,7 @@ namespace Jasper.Runtime.Handlers
                 {
                     _handlers = _handlers.Update(chain.MessageType, handler);
                 }
+
             }
         }
 

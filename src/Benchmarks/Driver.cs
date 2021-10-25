@@ -5,8 +5,10 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.Persistence;
 using Jasper.Persistence.Durability;
+using LamarCodeGeneration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TestMessages;
 
@@ -14,7 +16,6 @@ namespace Benchmarks
 {
     public class Driver : IDisposable
     {
-        private IHost _host;
         private Task _waiter;
 
         public Driver()
@@ -28,17 +29,31 @@ namespace Benchmarks
 
         public async Task Start(Action<JasperOptions> configure)
         {
-            _host = await Host.CreateDefaultBuilder()
-                .UseJasper(configure)
+
+            Host = await Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    configure(opts);
+                    opts.Advanced.CodeGeneration.ApplicationAssembly = GetType().Assembly;
+                    opts.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.LoadFromPreBuiltAssembly;
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                    logging.SetMinimumLevel(LogLevel.Error);
+                })
                 .StartAsync();
 
-            Persistence = _host.Services.GetRequiredService<IEnvelopePersistence>();
-            Publisher = _host.Services.GetRequiredService<IMessagePublisher>();
+            Persistence = Host.Services.GetRequiredService<IEnvelopePersistence>();
+            Publisher = Host.Services.GetRequiredService<IMessagePublisher>();
 
-            await _host.RebuildMessageStorage();
+            await Host.RebuildMessageStorage();
 
-            _waiter = TargetHandler.WaitForNumber(Targets.Length, 30.Seconds());
+            _waiter = TargetHandler.WaitForNumber(Targets.Length, 60.Seconds());
         }
+
+        public IHost Host { get; private set; }
 
         public IMessagePublisher Publisher { get; private set; }
 
@@ -49,23 +64,23 @@ namespace Benchmarks
 
         public T Get<T>()
         {
-            return _host.Services.GetRequiredService<T>();
+            return Host.Services.GetRequiredService<T>();
         }
 
         public IEnvelopePersistence Persistence { get; private set; }
 
         public async Task Teardown()
         {
-            if (_host != null)
+            if (Host != null)
             {
-                await _host.StopAsync();
-                _host = null;
+                await Host.StopAsync();
+                Host = null;
             }
         }
 
         public void Dispose()
         {
-            _host?.Dispose();
+            Host?.Dispose();
         }
     }
 }

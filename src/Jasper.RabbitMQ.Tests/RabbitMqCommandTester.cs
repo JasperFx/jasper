@@ -61,6 +61,7 @@ namespace Jasper.RabbitMQ.Tests
                 {
 
                     x.ConnectionFactory.HostName = "localhost";
+                    x.ConnectionFactory.Port = 5672;
                     x.DeclareQueue("queue15");
                     x.DeclareExchange("ex15", x => x.ExchangeType = ExchangeType.Fanout);
                     x.DeclareBinding(new Binding

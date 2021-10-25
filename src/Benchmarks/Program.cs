@@ -1,4 +1,9 @@
+using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
+using Jasper;
+using Microsoft.Extensions.Hosting;
+using Oakton;
+using TestMessages;
 
 namespace Benchmarks
 {
@@ -6,23 +11,16 @@ namespace Benchmarks
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<PersistenceRunner>();
+            // using var driver = new Driver();
+            // driver.Start(o => { }).GetAwaiter().GetResult();
+            //
+            // driver.Publisher.Invoke(Target.Random()).GetAwaiter().GetResult();
 
-            // using var host = JasperHost.For(opts =>
-            // {
-            //void
-            // });
-            //
-            // var waiter = TargetHandler.WaitForNumber(5, 10.Seconds());
-            //
-            // var publisher = host.Services.GetRequiredService<ICommandBus>();
-            // await publisher.Invoke(Target.Random());
-            // await publisher.Invoke(Target.Random());
-            // await publisher.Invoke(Target.Random());
-            // await publisher.Invoke(Target.Random());
-            // await publisher.Invoke(Target.Random());
-            //
-            // await waiter;
+            var summary = BenchmarkRunner.Run<PersistenceRunner>();
+            //var summary = BenchmarkRunner.Run<InvokeRunner>();
+            //var summary = BenchmarkRunner.Run<LocalRunner>();
+            //var summary = BenchmarkRunner.Run<RabbitMqRunner>();
+
 
 
         }

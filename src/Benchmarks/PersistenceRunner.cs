@@ -17,6 +17,7 @@ using TestMessages;
 
 namespace Benchmarks
 {
+    [MemoryDiagnoser()]
     public class PersistenceRunner : IDisposable
     {
         private Envelope[] theEnvelopes;

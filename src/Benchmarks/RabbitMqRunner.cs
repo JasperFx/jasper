@@ -6,15 +6,16 @@ using BenchmarkDotNet.Attributes;
 using IntegrationTests;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.SqlServer;
+using Jasper.RabbitMQ;
 
 namespace Benchmarks
 {
     [MemoryDiagnoser()]
-    public class LocalRunner : IDisposable
+    public class RabbitMqRunner : IDisposable
     {
         private readonly Driver theDriver;
 
-        public LocalRunner()
+        public RabbitMqRunner()
         {
             theDriver = new Driver();
         }
@@ -24,9 +25,10 @@ namespace Benchmarks
             theDriver.SafeDispose();
         }
 
-        [Params("SqlServer", "Postgresql", "None")] public string DatabaseEngine;
+        [Params("Postgresql", "None")] public string DatabaseEngine;
 
         [Params(1, 5, 10)] public int NumberOfThreads;
+        [Params(1, 3, 5)] public int ListenerCount;
 
         [IterationSetup]
         public void BuildDatabase()
@@ -34,6 +36,7 @@ namespace Benchmarks
             theDriver.Start(opts =>
             {
                 opts.Advanced.DurabilityAgentEnabled = false;
+
                 switch (DatabaseEngine)
                 {
                     case "SqlServer":
@@ -45,10 +48,23 @@ namespace Benchmarks
                         break;
                 }
 
-                opts.Endpoints.DefaultLocalQueue
-                    .MaximumThreads(NumberOfThreads);
+                var queueName = RabbitTesting.NextQueueName();
+
+                opts.Endpoints.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue(queueName);
+                    x.AutoProvision = true;
+                });
+
+                opts.Endpoints.PublishAllMessages().ToRabbit(queueName);
+                opts.Endpoints.ListenToRabbitQueue(queueName)
+                    .MaximumThreads(NumberOfThreads)
+                    .ListenerCount(ListenerCount);
 
             }).GetAwaiter().GetResult();
+
+            theDriver.Host.TryPurgeAllRabbitMqQueues();
 
         }
 

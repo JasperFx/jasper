@@ -132,19 +132,16 @@ namespace Jasper.Persistence.Durability
 
         public Task ClearAllPersistedEnvelopes()
         {
-            Console.WriteLine("There is no durable envelope storage");
             return Task.CompletedTask;
         }
 
         public Task RebuildSchemaObjects()
         {
-            Console.WriteLine("There is no durable envelope storage");
             return Task.CompletedTask;
         }
 
         public string CreateSql()
         {
-            Console.WriteLine("There is no durable envelope storage");
             return string.Empty;
         }
 
