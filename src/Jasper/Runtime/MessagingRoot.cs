@@ -188,7 +188,7 @@ namespace Jasper.Runtime
         private async Task startDurabilityAgent()
         {
             // HOKEY, BUT IT WORKS
-            if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence))
+            if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence) && Options.Advanced.DurabilityAgentEnabled)
             {
                 var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 

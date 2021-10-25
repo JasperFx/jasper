@@ -20,48 +20,41 @@ namespace Benchmarks
 {
     public class PersistenceRunner : IDisposable
     {
-        private readonly Target[] _targets;
-        private IHost theSystem;
+
         private Envelope[] theEnvelopes;
-        private IEnvelopePersistence thePersistor;
 
         public PersistenceRunner()
         {
-            var json = File.ReadAllText("targets.json");
-            _targets = JsonConvert.DeserializeObject<Target[]>(json);
-
-
+            theDriver = new Driver();
         }
 
         public void Dispose()
         {
-            theSystem.SafeDispose();
+            theDriver.SafeDispose();
         }
 
         [Params("SqlServer", "Postgresql")]
         public string DatabaseEngine;
 
+        private readonly Driver theDriver;
+
         [IterationSetup]
         public void BuildDatabase()
         {
-            theSystem = Host.CreateDefaultBuilder()
-                .UseJasper(opts =>
+            theDriver.Start(opts =>
+            {
+                opts.Advanced.DurabilityAgentEnabled = false;
+                if (DatabaseEngine == "SqlServer")
                 {
-                    if (DatabaseEngine == "SqlServer")
-                    {
-                        opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-                    }
-                    else
-                    {
-                        opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
-                    }
+                    opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                }
+                else
+                {
+                    opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
+                }
+            }).GetAwaiter().GetResult();
 
-                })
-                .Build();
-
-            theSystem.RebuildMessageStorage().GetAwaiter().GetResult();
-
-            theEnvelopes = _targets.Select(x =>
+            theEnvelopes = theDriver.Targets.Select(x =>
             {
                 var stream = new MemoryStream();
                 var writer = new JsonTextWriter(new StreamWriter(stream));
@@ -75,13 +68,12 @@ namespace Benchmarks
                 return env;
             }).ToArray();
 
-            thePersistor = theSystem.Services.GetRequiredService<IEnvelopePersistence>();
         }
 
         [IterationCleanup]
         public void Teardown()
         {
-            theSystem.Dispose();
+            theDriver.Teardown().GetAwaiter().GetResult();
         }
 
         [Benchmark]
@@ -89,7 +81,7 @@ namespace Benchmarks
         {
             for (int i = 0; i < 10; i++)
             {
-                await thePersistor.StoreIncoming(theEnvelopes.Skip(i * 100).Take(100).ToArray());
+                await theDriver.Persistence.StoreIncoming(theEnvelopes.Skip(i * 100).Take(100).ToArray());
             }
         }
 
@@ -98,39 +90,36 @@ namespace Benchmarks
         {
             for (int i = 0; i < 10; i++)
             {
-                await thePersistor.Outgoing.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
+                await theDriver.Persistence.Outgoing.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
             }
         }
 
         [IterationSetup(Target = nameof(LoadIncoming))]
-        public Task LoadIncomingSetup()
+        public void LoadIncomingSetup()
         {
-            return StoreIncoming();
+            BuildDatabase();
+            StoreIncoming().GetAwaiter().GetResult();
         }
 
+        [Benchmark]
         public Task LoadIncoming()
         {
-            return thePersistor.Admin.AllIncomingEnvelopes();
+            return theDriver.Persistence.Admin.AllIncomingEnvelopes();
         }
 
         [IterationSetup(Target = nameof(LoadOutgoing))]
-        public Task LoadOutgoingSetup()
+        public void LoadOutgoingSetup()
         {
-            return StoreOutgoing();
+            BuildDatabase();
+            StoreOutgoing().GetAwaiter().GetResult();
         }
 
+        [Benchmark]
         public Task LoadOutgoing()
         {
-            return thePersistor.Admin.AllOutgoingEnvelopes();
+            return theDriver.Persistence.Admin.AllOutgoingEnvelopes();
         }
 
     }
 
-    /*
-     * TODO
-     * -- build out a 1,000 envelopes
-     * -- option for envelopes to be pre-serialized too
-     * -- methods to load the envelopes too, both incoming and outgoing
-     * -- Refactor all the envelope loading to EnveloperPersistence. Move common elements to DatabaseBackedEnvelopePersistence
-     */
 }

@@ -57,6 +57,12 @@ namespace Jasper
             _cancellation.Cancel();
         }
 
+        /// <summary>
+        /// Should the message durability agent be enabled during execution.
+        /// The default is true.
+        /// </summary>
+        public bool DurabilityAgentEnabled { get; set; } = true;
+
         public StorageProvisioning StorageProvisioning { get; set; } = StorageProvisioning.None;
 
         /// <summary>
