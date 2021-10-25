@@ -119,7 +119,10 @@ documentation/compilation/frames/injected-fields/
             Target("install", () =>
                 RunNpm("install"));
 
-
+            Target("benchmark", () =>
+            {
+                Run("dotnet", "run -c Release", workingDirectory:"src/Benchmarks");
+            });
 
             Target("install-mdsnippets", IgnoreIfFailed(() =>
                 Run("dotnet", $"tool install -g MarkdownSnippets.Tool")
