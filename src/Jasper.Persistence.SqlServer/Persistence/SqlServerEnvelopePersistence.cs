@@ -21,6 +21,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
     {
         private readonly SqlServerSettings _databaseSettings;
         private readonly string _findAtLargeEnvelopesSql;
+        private readonly string _moveToDeadLetterStorageSql;
 
 
         public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings)
@@ -30,6 +31,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             _findAtLargeEnvelopesSql =
                 $"select top {settings.RecoveryBatchSize} {DatabaseConstants.IncomingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
 
+            _moveToDeadLetterStorageSql = $"EXEC {_databaseSettings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;";
         }
 
         public override Task DeleteIncomingEnvelopes(Envelope[] envelopes)
@@ -50,7 +52,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
             list.SqlDbType = SqlDbType.Structured;
             list.TypeName = $"{_databaseSettings.SchemaName}.EnvelopeIdList";
 
-            builder.Append($"EXEC {_databaseSettings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;");
+            builder.Append(_moveToDeadLetterStorageSql);
 
             ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
 

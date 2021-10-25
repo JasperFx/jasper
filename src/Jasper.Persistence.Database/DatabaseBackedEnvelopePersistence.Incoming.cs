@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Util;
 using Weasel.Core;
 using DbCommandBuilder = Weasel.Core.DbCommandBuilder;
 
@@ -13,6 +12,8 @@ namespace Jasper.Persistence.Database
 {
     public partial class DatabaseBackedEnvelopePersistence
     {
+        private readonly string _deleteIncomingEnvelopeById;
+        private readonly string _incrementIncominEnvelopeAttempts;
         public abstract Task MoveToDeadLetterStorage(ErrorReport[] errors);
         public abstract Task DeleteIncomingEnvelopes(Envelope[] envelopes);
 
@@ -38,26 +39,13 @@ namespace Jasper.Persistence.Database
 
             envelope.CausationId = await reader.GetFieldValueAsync<Guid>(6, cancellation);
             envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(7, cancellation);
-
-            if (!await reader.IsDBNullAsync(8, cancellation))
-            {
-                envelope.SagaId = await reader.GetFieldValueAsync<string>(8, cancellation);
-            }
+            envelope.SagaId = await reader.MaybeRead<string>(8, cancellation);
 
             envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);
             envelope.ContentType = await reader.GetFieldValueAsync<string>(10, cancellation);
-
-            if (!await reader.IsDBNullAsync(11, cancellation))
-            {
-                envelope.ReplyRequested = await reader.GetFieldValueAsync<string>(11, cancellation);
-            }
-
+            envelope.ReplyRequested = await reader.MaybeRead<string>(11, cancellation);
             envelope.AckRequested = await reader.GetFieldValueAsync<bool>(12, cancellation);
-
-            if (!await reader.IsDBNullAsync(13, cancellation))
-            {
-                envelope.ReplyUri = (await reader.GetFieldValueAsync<string>(13, cancellation)).ToUri();
-            }
+            envelope.ReplyUri = await reader.ReadUri(13, cancellation);
 
             return envelope;
         }
@@ -65,7 +53,7 @@ namespace Jasper.Persistence.Database
         public Task DeleteIncomingEnvelope(Envelope envelope)
         {
             return DatabaseSettings
-                .CreateCommand($"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where id = @id")
+                .CreateCommand(_deleteIncomingEnvelopeById)
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);
         }
@@ -129,7 +117,7 @@ namespace Jasper.Persistence.Database
 
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
         {
-            return DatabaseSettings.CreateCommand($"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set attempts = @attempts where id = @id")
+            return DatabaseSettings.CreateCommand(_incrementIncominEnvelopeAttempts)
                 .With("attempts", envelope.Attempts)
                 .With("id", envelope.Id)
                 .ExecuteOnce(_cancellation);

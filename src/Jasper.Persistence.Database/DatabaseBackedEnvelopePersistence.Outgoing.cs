@@ -45,6 +45,8 @@ namespace Jasper.Persistence.Database
             return envelope;
         }
 
+
+
         public abstract Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
         public abstract Task DeleteOutgoing(Envelope[] envelopes);
 
@@ -52,7 +54,7 @@ namespace Jasper.Persistence.Database
 
         public Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination)
         {
-            return Session.Transaction.CreateCommand(determineOutgoingEnvelopeSql(DatabaseSettings, Settings))
+            return Session.Transaction.CreateCommand(_outgoingEnvelopeSql)
                 .With("destination", destination.ToString())
                 .FetchList(r => ReadOutgoing(r, _cancellation), cancellation: _cancellation);
         }

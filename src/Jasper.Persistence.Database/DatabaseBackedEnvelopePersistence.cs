@@ -10,6 +10,7 @@ namespace Jasper.Persistence.Database
     public abstract partial class DatabaseBackedEnvelopePersistence : IEnvelopePersistence
     {
         protected readonly CancellationToken _cancellation;
+        private readonly string _outgoingEnvelopeSql;
 
         protected DatabaseBackedEnvelopePersistence(DatabaseSettings databaseSettings, AdvancedSettings settings,
             IEnvelopeStorageAdmin admin)
@@ -25,6 +26,11 @@ namespace Jasper.Persistence.Database
             Session = transaction;
 
             _cancellation = settings.Cancellation;
+            _deleteIncomingEnvelopeById = $"delete from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where id = @id";
+            _incrementIncominEnvelopeAttempts = $"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set attempts = @attempts where id = @id";
+
+            // ReSharper disable once VirtualMemberCallInConstructor
+            _outgoingEnvelopeSql = determineOutgoingEnvelopeSql(databaseSettings, settings);
         }
 
         public AdvancedSettings Settings { get; }

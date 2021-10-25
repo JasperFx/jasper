@@ -14,13 +14,13 @@ namespace Benchmarks
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var summary = BenchmarkRunner.Run<PersistenceRunner>();
 
             // using var host = JasperHost.For(opts =>
             // {
-            //
+            //void
             // });
             //
             // var waiter = TargetHandler.WaitForNumber(5, 10.Seconds());

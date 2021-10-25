@@ -24,6 +24,7 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _reassignSql;
         private readonly string _deleteOutgoingEnvelopesSql;
         private readonly string _findAtLargeEnvelopesSql;
+        private readonly string _discardAndReassignOutgoingSql;
 
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
@@ -36,6 +37,8 @@ namespace Jasper.Persistence.Postgresql
             _findAtLargeEnvelopesSql =
                 $"select {DatabaseConstants.IncomingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}' limit {settings.RecoveryBatchSize}";
 
+            _discardAndReassignOutgoingSql = _deleteOutgoingEnvelopesSql +
+                                             $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)";
         }
 
 
@@ -69,8 +72,7 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
-            return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql +
-                                                  $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)")
+            return DatabaseSettings.CreateCommand(_discardAndReassignOutgoingSql)
                 .With("ids", discards)
                 .With("node", nodeId)
                 .With("rids", reassigned)
