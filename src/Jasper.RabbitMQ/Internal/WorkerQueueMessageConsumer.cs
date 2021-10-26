@@ -8,27 +8,26 @@ namespace Jasper.RabbitMQ.Internal
     public abstract class MessageConsumerBase : DefaultBasicConsumer, IDisposable
     {
         protected readonly Uri _address;
+        private readonly RabbitMqSender _rabbitMqSender;
         protected readonly IModel _channel;
         protected readonly ITransportLogger _logger;
         protected readonly IRabbitMqProtocol Mapper;
         private bool _latched;
 
         public MessageConsumerBase(ITransportLogger logger, IModel channel,
-            IRabbitMqProtocol mapper, Uri address) : base(channel)
+            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender) : base(channel)
         {
             _logger = logger;
             _channel = channel;
             Mapper = mapper;
             _address = address;
+            _rabbitMqSender = rabbitMqSender;
         }
 
         public void Dispose()
         {
             _latched = true;
         }
-
-
-
 
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
             IBasicProperties properties, byte[] body)
@@ -39,10 +38,10 @@ namespace Jasper.RabbitMQ.Internal
                 return;
             }
 
-            Envelope envelope;
+            RabbitMqEnvelope envelope = new RabbitMqEnvelope(_channel, deliveryTag, _rabbitMqSender);
             try
             {
-                envelope = Mapper.ReadEnvelope(body, properties);
+                Mapper.ReadIntoEnvelope(envelope, properties, body);
             }
             catch (Exception e)
             {
@@ -70,7 +69,7 @@ namespace Jasper.RabbitMQ.Internal
         private readonly IListeningWorkerQueue _callback;
 
         public WorkerQueueMessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, IModel channel,
-            IRabbitMqProtocol mapper, Uri address) : base(logger, channel, mapper, address)
+            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender) : base(logger, channel, mapper, address, rabbitMqSender)
         {
             _callback = callback;
         }

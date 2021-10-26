@@ -15,6 +15,7 @@ namespace Jasper.RabbitMQ.Internal
         private IListeningWorkerQueue _callback;
         private MessageConsumerBase _consumer;
         private readonly string _routingKey;
+        private readonly RabbitMqSender _sender;
 
         public RabbitMqListener(ITransportLogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
@@ -26,12 +27,15 @@ namespace Jasper.RabbitMQ.Internal
             Address = endpoint.Uri;
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
+
+            _sender = new RabbitMqSender(_endpoint, _transport);
         }
 
         public override void Dispose()
         {
             _callback.Dispose();
             base.Dispose();
+            _sender.Dispose();
         }
 
         public ListeningStatus Status
@@ -61,7 +65,7 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, Channel, _mapper, Address)
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, Channel, _mapper, Address, _sender)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };
@@ -73,7 +77,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             EnsureConnected();
 
-            _consumer = new HandlerPipelineMessageConsumer(new RabbitMqSender(_endpoint, _transport), pipeline, _logger, Channel, _mapper, Address)
+            _consumer = new HandlerPipelineMessageConsumer(_sender, pipeline, _logger, Channel, _mapper, Address, _sender)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };

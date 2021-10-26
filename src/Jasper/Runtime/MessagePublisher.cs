@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Runtime.Routing;
 using Jasper.Util;
 using Lamar;
@@ -173,7 +174,7 @@ namespace Jasper.Runtime
         {
             if (EnlistedInTransaction)
             {
-                _outstanding.Add(envelope);
+                _outstanding.Fill(envelope);
                 return envelope.Sender.IsDurable ? Transaction.Persist(envelope) : Task.CompletedTask;
             }
             else
@@ -188,7 +189,7 @@ namespace Jasper.Runtime
             {
                 await Transaction.Persist(outgoing.Where(isDurable).ToArray());
 
-                _outstanding.AddRange(outgoing);
+                _outstanding.Fill(outgoing);
             }
             else
             {

@@ -9,16 +9,14 @@ namespace Jasper.RabbitMQ.Internal
     // SAMPLE: DefaultRabbitMqProtocol
     public class DefaultRabbitMqProtocol : IRabbitMqProtocol
     {
-        public virtual Envelope ReadEnvelope(byte[] data, IBasicProperties props)
+        public virtual void ReadIntoEnvelope(Envelope envelope, IBasicProperties props, byte[] data)
         {
-            var envelope = new Envelope
-            {
-                Data = data,
-                Source = props.AppId,
-                ContentType = props.ContentType,
-                MessageType = props.Type,
-                ReplyUri = props.ReplyTo.IsEmpty() ? null : new Uri(props.ReplyTo)
-            };
+            envelope.Data = data;
+            envelope.Source = props.AppId;
+            envelope.ContentType = props.ContentType;
+            envelope.MessageType = props.Type;
+            envelope.ReplyUri = props.ReplyTo.IsEmpty() ? null : new Uri(props.ReplyTo);
+
 
             if (Guid.TryParse(props.CorrelationId, out var id))
             {
@@ -29,8 +27,6 @@ namespace Jasper.RabbitMQ.Internal
             {
                 EnvelopeSerializer.ReadPropertiesFromDictionary(props.Headers, envelope);
             }
-
-            return envelope;
         }
 
         public virtual void WriteFromEnvelope(Envelope envelope, IBasicProperties properties)

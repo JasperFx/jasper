@@ -21,7 +21,11 @@ namespace Jasper.RabbitMQ.Tests
                 var mapper = new DefaultRabbitMqProtocol();
                 mapper.WriteFromEnvelope(theOriginal, theEventArgs.BasicProperties);
 
-                return mapper.ReadEnvelope(theEventArgs.Body, theEventArgs.BasicProperties);
+                var envelope = new RabbitMqEnvelope(null, 0, null);
+
+                mapper.ReadIntoEnvelope(envelope, theEventArgs.BasicProperties, theEventArgs.Body);
+
+                return envelope;
             });
         }
 

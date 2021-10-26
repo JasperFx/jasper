@@ -19,7 +19,7 @@ namespace IntegrationTests.Samples
             throw new System.NotImplementedException();
         }
 
-        public Envelope ReadEnvelope(byte[] body, IBasicProperties properties)
+        public void ReadIntoEnvelope(Envelope envelope, IBasicProperties properties, byte[] body)
         {
             throw new System.NotImplementedException();
         }

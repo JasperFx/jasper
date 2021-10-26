@@ -1,33 +1,66 @@
 using System.Threading.Tasks;
+using Jasper.Serialization;
 using Jasper.Transports;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
+    public class RabbitMqEnvelope : Envelope
+    {
+        internal IModel Model { get; }
+        internal ulong DeliveryTag { get; }
+        internal RabbitMqSender RabbitSender { get; }
+
+        public RabbitMqEnvelope(IModel model, ulong deliveryTag, RabbitMqSender rabbitSender) : base()
+        {
+            Model = model;
+            DeliveryTag = deliveryTag;
+            RabbitSender = rabbitSender;
+        }
+
+        internal void Complete()
+        {
+            Model.BasicAck(DeliveryTag, false);
+        }
+
+        internal Task Defer()
+        {
+            // TODO -- how can you do this transactionally?
+            Model.BasicNack(DeliveryTag, false, true);
+            return RabbitSender.Send(this);
+        }
+
+
+    }
+
     public class RabbitMqChannelCallback : IChannelCallback
     {
-        private readonly IModel _model;
-        private readonly ulong _deliveryTag;
-        private readonly RabbitMqSender _sender;
+        public static readonly RabbitMqChannelCallback Instance = new RabbitMqChannelCallback();
 
-        public RabbitMqChannelCallback(IModel model, ulong deliveryTag, RabbitMqSender sender)
+        private RabbitMqChannelCallback()
         {
-            _model = model;
-            _deliveryTag = deliveryTag;
-            _sender = sender;
+
         }
 
         public Task Complete(Envelope envelope)
         {
-            _model.BasicAck(_deliveryTag, false);
+            if (envelope is RabbitMqEnvelope e)
+            {
+                e.Complete();
+                return Task.CompletedTask;
+            }
+
             return Task.CompletedTask;
         }
 
         public Task Defer(Envelope envelope)
         {
-            // TODO -- how can you do this transactionally?
-            _model.BasicNack(_deliveryTag, false, true);
-            return _sender.Send(envelope);
+            if (envelope is RabbitMqEnvelope e)
+            {
+                return e.Defer();
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -189,26 +189,32 @@ namespace Jasper
 
         protected bool Equals(Envelope other)
         {
-            return Equals(Data, other.Data) && Equals(Message, other.Message) &&
-                   Equals(Headers, other.Headers);
+            return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Envelope) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Envelope envelope)
+            {
+                return Equals(envelope);
+            }
+
+            return false;
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Data != null ? Data.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);
-                return hashCode;
-            }
+            return Id.GetHashCode();
         }
 
         /// <summary>

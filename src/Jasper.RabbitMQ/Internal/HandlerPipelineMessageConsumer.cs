@@ -10,7 +10,8 @@ namespace Jasper.RabbitMQ.Internal
         private readonly RabbitMqSender _sender;
         private readonly IHandlerPipeline _pipeline;
 
-        public HandlerPipelineMessageConsumer(RabbitMqSender sender, IHandlerPipeline pipeline, ITransportLogger logger, IModel channel, IRabbitMqProtocol mapper, Uri address) : base(logger, channel, mapper, address)
+        public HandlerPipelineMessageConsumer(RabbitMqSender sender, IHandlerPipeline pipeline, ITransportLogger logger,
+            IModel channel, IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender) : base(logger, channel, mapper, address, rabbitMqSender)
         {
             _sender = sender;
             _pipeline = pipeline;
@@ -18,8 +19,7 @@ namespace Jasper.RabbitMQ.Internal
 
         protected override void executeEnvelope(ulong deliveryTag, Envelope envelope)
         {
-            var callback = new RabbitMqChannelCallback(_channel, deliveryTag, _sender);
-            _pipeline.Invoke(envelope, callback).ContinueWith(t =>
+            _pipeline.Invoke(envelope, RabbitMqChannelCallback.Instance).ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {

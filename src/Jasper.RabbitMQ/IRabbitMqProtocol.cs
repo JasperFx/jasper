@@ -20,10 +20,11 @@ namespace Jasper.RabbitMQ
         /// Create an Envelope object from the raw message data and the header
         /// values in the properties
         /// </summary>
-        /// <param name="body"></param>
+        /// <param name="envelope"></param>
         /// <param name="properties"></param>
+        /// <param name="body"></param>
         /// <returns></returns>
-        Envelope ReadEnvelope(byte[] body, IBasicProperties properties);
+        void ReadIntoEnvelope(Envelope envelope, IBasicProperties properties, byte[] body);
     }
 
     // ENDSAMPLE

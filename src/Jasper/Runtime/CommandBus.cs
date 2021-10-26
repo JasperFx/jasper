@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
@@ -136,7 +137,7 @@ namespace Jasper.Runtime
         {
             if (EnlistedInTransaction)
             {
-                _outstanding.Add(envelope);
+                _outstanding.Fill(envelope);
                 return envelope.Sender.IsDurable ? Transaction.Persist(envelope) : Task.CompletedTask;
             }
 
