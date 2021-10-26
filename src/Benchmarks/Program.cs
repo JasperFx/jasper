@@ -16,9 +16,10 @@ namespace Benchmarks
             //
             // driver.Publisher.Invoke(Target.Random()).GetAwaiter().GetResult();
 
-            var summary = BenchmarkRunner.Run<PersistenceRunner>();
-            //var summary = BenchmarkRunner.Run<InvokeRunner>();
-            //var summary = BenchmarkRunner.Run<LocalRunner>();
+            //var summary = BenchmarkRunner.Run<PersistenceRunner>();
+            var summary = BenchmarkRunner.Run<InvokeRunner>();
+            //var
+            summary = BenchmarkRunner.Run<LocalRunner>();
             //var summary = BenchmarkRunner.Run<RabbitMqRunner>();
 
 
