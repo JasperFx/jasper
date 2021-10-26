@@ -53,7 +53,7 @@ namespace Jasper.Testing.Acceptance
 
             // Just to force the message context to pool up the envelope instead
             // of sending it out
-            await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
+            context.UseInMemoryTransaction();
 
             var mySpecialMessage = new MySpecialMessage();
 

@@ -8,9 +8,11 @@ using Jasper.Util;
 
 namespace Jasper.Runtime
 {
-    public class ExecutionContext : MessagePublisher, IExecutionContext
+    public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTransaction
     {
         private object _sagaId;
+        private readonly IChannelCallback _channel;
+        private readonly IList<Envelope> _scheduled = new List<Envelope>();
 
         public ExecutionContext(IMessagingRoot root) : base(root, CombGuidIdGeneration.NewGuid())
         {
@@ -20,22 +22,46 @@ namespace Jasper.Runtime
             originalEnvelope.CorrelationId)
         {
             Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));
-            Channel = channel;
+            _channel = channel;
             _sagaId = originalEnvelope.SagaId;
 
-            var transaction = new InMemoryEnvelopeTransaction();
-            EnlistInTransaction(transaction);
+            EnlistInTransaction(this);
 
             if (Envelope.AckRequested)
             {
                 var ack = Root.Acknowledgements.BuildAcknowledgement(Envelope);
 
-                transaction.Queued.Fill(ack);
                 _outstanding.Add(ack);
             }
         }
 
-        public IChannelCallback Channel { get; }
+        Task IEnvelopeTransaction.Persist(Envelope envelope)
+        {
+            _outstanding.Fill(envelope);
+            return Task.CompletedTask;
+        }
+
+        Task IEnvelopeTransaction.Persist(Envelope[] envelopes)
+        {
+            _outstanding.Fill(envelopes);
+            return Task.CompletedTask;
+        }
+
+        Task IEnvelopeTransaction.ScheduleJob(Envelope envelope)
+        {
+            _scheduled.Fill(envelope);
+            return Task.CompletedTask;
+        }
+
+        async Task IEnvelopeTransaction.CopyTo(IEnvelopeTransaction other)
+        {
+            await other.Persist(_outstanding.ToArray());
+
+            foreach (var envelope in _scheduled)
+            {
+                await other.ScheduleJob(envelope);
+            }
+        }
 
         /// <summary>
         ///     Send a response message back to the original sender of the message being handled.
@@ -43,6 +69,7 @@ namespace Jasper.Runtime
         /// </summary>
         /// <param name="context"></param>
         /// <param name="response"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <returns></returns>
         public Task RespondToSender(object response)
         {
@@ -120,7 +147,40 @@ namespace Jasper.Runtime
                 }
             }
 
+            if (ReferenceEquals(Transaction, this))
+            {
+                await flushScheduledMessages();
+            }
+
             _outstanding.Clear();
+        }
+
+        private async Task flushScheduledMessages()
+        {
+            if (Persistence is NulloEnvelopePersistence)
+            {
+                foreach (var envelope in _scheduled)
+                {
+                    Root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                }
+            }
+            else
+            {
+                foreach (var envelope in _scheduled)
+                {
+                    await Persistence.ScheduleJob(envelope);
+                }
+            }
+
+            _scheduled.Clear();
+        }
+
+        public void UseInMemoryTransaction()
+        {
+            if (!ReferenceEquals(this, Transaction))
+            {
+                EnlistInTransaction(this);
+            }
         }
 
         public void EnlistInSaga(object sagaId)
@@ -146,18 +206,18 @@ namespace Jasper.Runtime
 
         public Task Complete()
         {
-            return Channel.Complete(Envelope);
+            return _channel.Complete(Envelope);
         }
 
         public Task Defer()
         {
-            return Channel.Defer(Envelope);
+            return _channel.Defer(Envelope);
         }
 
         public async Task ReSchedule(DateTime scheduledTime)
         {
             Envelope.ExecutionTime = scheduledTime;
-            if (Channel is IHasNativeScheduling c)
+            if (_channel is IHasNativeScheduling c)
             {
                 await c.MoveToScheduledUntil(Envelope, Envelope.ExecutionTime.Value);
             }
@@ -169,7 +229,7 @@ namespace Jasper.Runtime
 
         public async Task MoveToDeadLetterQueue(Exception exception)
         {
-            if (Channel is IHasDeadLetterQueue c)
+            if (_channel is IHasDeadLetterQueue c)
             {
                 await c.MoveToErrors(Envelope, exception);
             }
@@ -182,7 +242,7 @@ namespace Jasper.Runtime
 
         public Task RetryExecutionNow()
         {
-            return Root.Pipeline.Invoke(Envelope, Channel);
+            return Root.Pipeline.Invoke(Envelope, _channel);
         }
 
         protected override void trackEnvelopeCorrelation(Envelope outbound)

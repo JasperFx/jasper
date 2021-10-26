@@ -45,6 +45,11 @@ namespace Jasper
         Task EnlistInTransaction(IEnvelopeTransaction transaction);
 
 
+        /// <summary>
+        /// Opt into using an in memory transaction for the execution context.
+        /// Honestly, this is mostly for testing usage
+        /// </summary>
+        void UseInMemoryTransaction();
 
         /// <summary>
         ///     Called by Jasper itself to mark this context as being part

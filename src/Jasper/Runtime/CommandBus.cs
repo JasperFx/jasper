@@ -81,7 +81,7 @@ namespace Jasper.Runtime
             return persistOrSend(envelope);
         }
 
-        public Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)
+        public async Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)
         {
             var envelope = new Envelope(message)
             {
@@ -96,7 +96,9 @@ namespace Jasper.Runtime
             envelope.Status = EnvelopeStatus.Scheduled;
             envelope.OwnerId = TransportConstants.AnyNode;
 
-            return ScheduleEnvelope(envelope).ContinueWith(_ => envelope.Id);
+            await ScheduleEnvelope(envelope);
+
+            return envelope.Id;
         }
 
         public Task<Guid> Schedule<T>(T message, TimeSpan delay)
@@ -116,16 +118,18 @@ namespace Jasper.Runtime
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.Status = EnvelopeStatus.Scheduled;
 
+            if (EnlistedInTransaction)
+            {
+                return Transaction.ScheduleJob(envelope);
+            }
+
             if (Persistence is NulloEnvelopePersistence)
             {
                 Root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
                 return Task.CompletedTask;
             }
 
-
-            return EnlistedInTransaction
-                ? Transaction.ScheduleJob(envelope)
-                : Persistence.ScheduleJob(envelope);
+            return Persistence.ScheduleJob(envelope);
         }
 
         private Task persistOrSend(Envelope envelope)
