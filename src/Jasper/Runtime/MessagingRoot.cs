@@ -17,10 +17,11 @@ using Lamar;
 using LamarCodeGeneration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime
 {
-    public class MessagingRoot : IMessagingRoot, IHostedService
+    public class MessagingRoot : PooledObjectPolicy<ExecutionContext>, IMessagingRoot, IHostedService
     {
         private readonly IContainer _container;
 
@@ -44,13 +45,15 @@ namespace Jasper.Runtime
 
             MessageLogger = messageLogger;
 
+            var provider = container.GetInstance<ObjectPoolProvider>();
+            var pool = provider.Create(this);
+
             // TODO -- might make NoHandlerContinuation lazy!
             Pipeline = new HandlerPipeline(Serialization, Handlers, MessageLogger,
                 new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
-                this);
+                this, pool);
 
             Runtime = new TransportRuntime(this);
-
 
             _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
@@ -62,6 +65,17 @@ namespace Jasper.Runtime
 
             Cancellation = Settings.Cancellation;
 
+        }
+
+        public override ExecutionContext Create()
+        {
+            return new ExecutionContext(this);
+        }
+
+        public override bool Return(ExecutionContext context)
+        {
+            context.ClearState();
+            return true;
         }
 
         public DurabilityAgent Durability { get; private set; }
@@ -142,8 +156,10 @@ namespace Jasper.Runtime
 
         public IExecutionContext ContextFor(Envelope envelope)
         {
-            // TODO -- make this take in the callback as well
-            return new ExecutionContext(this, envelope, InvocationCallback.Instance);
+            var context =  new ExecutionContext(this);
+            context.ReadEnvelope(envelope, InvocationCallback.Instance);
+
+            return context;
         }
 
 

@@ -11,17 +11,26 @@ namespace Jasper.Runtime
     public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTransaction
     {
         private object _sagaId;
-        private readonly IChannelCallback _channel;
+        private IChannelCallback _channel;
         private readonly IList<Envelope> _scheduled = new List<Envelope>();
 
         public ExecutionContext(IMessagingRoot root) : base(root, CombGuidIdGeneration.NewGuid())
         {
         }
 
-        public ExecutionContext(IMessagingRoot root, Envelope originalEnvelope, IChannelCallback channel) : base(root,
-            originalEnvelope.CorrelationId)
+        internal void ClearState()
+        {
+            _outstanding.Clear();
+            _scheduled.Clear();
+            Envelope = null;
+            Transaction = null;
+            _sagaId = null;
+        }
+
+        internal void ReadEnvelope(Envelope originalEnvelope, IChannelCallback channel)
         {
             Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));
+            CorrelationId = originalEnvelope.CorrelationId;
             _channel = channel;
             _sagaId = originalEnvelope.SagaId;
 
@@ -128,7 +137,7 @@ namespace Jasper.Runtime
             return Root.NewContext();
         }
 
-        public Envelope Envelope { get; }
+        public Envelope Envelope { get; protected set; }
 
 
         public async Task SendAllQueuedOutgoingMessages()

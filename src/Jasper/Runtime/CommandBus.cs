@@ -26,7 +26,7 @@ namespace Jasper.Runtime
             CorrelationId = correlationId;
         }
 
-        public Guid CorrelationId { get; }
+        public Guid CorrelationId { get; protected set; }
 
         public IMessagingRoot Root { get; }
         public IEnvelopePersistence Persistence { get; }
@@ -154,6 +154,6 @@ namespace Jasper.Runtime
             return original?.CopyTo(transaction) ?? Task.CompletedTask;
         }
 
-        public IEnvelopeTransaction Transaction { get; private set; }
+        public IEnvelopeTransaction Transaction { get; protected set; }
     }
 }

@@ -12,6 +12,7 @@ using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Util;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.Extensions.ObjectPool;
 using Polly;
 
 namespace Jasper.Runtime
@@ -22,6 +23,7 @@ namespace Jasper.Runtime
         private readonly NoHandlerContinuation _noHandlers;
 
         private readonly IMessagingRoot _root;
+        private readonly ObjectPool<ExecutionContext> _contextPool;
         private readonly MessagingSerializationGraph _serializer;
 
         private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
@@ -31,12 +33,13 @@ namespace Jasper.Runtime
 
 
         public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
-            NoHandlerContinuation noHandlers, IMessagingRoot root)
+            NoHandlerContinuation noHandlers, IMessagingRoot root, ObjectPool<ExecutionContext> contextPool)
         {
             _serializer = serializers;
             _graph = graph;
             _noHandlers = noHandlers;
             _root = root;
+            _contextPool = contextPool;
             _cancellation = root.Cancellation;
 
             Logger = logger;
@@ -82,7 +85,8 @@ namespace Jasper.Runtime
 
         public async Task Invoke(Envelope envelope, IChannelCallback channel)
         {
-            var context = new ExecutionContext(_root, envelope, channel);
+            var context = _contextPool.Get();
+            context.ReadEnvelope(envelope, channel);
 
             try
             {
@@ -97,6 +101,10 @@ namespace Jasper.Runtime
                 // could never be handled
                 Logger.LogException(e, envelope.Id);
             }
+            finally
+            {
+                _contextPool.Return(context);
+            }
         }
 
 
@@ -109,8 +117,8 @@ namespace Jasper.Runtime
                 throw new ArgumentOutOfRangeException(nameof(envelope),
                     $"No known handler for message type {envelope.Message.GetType().FullName}");
 
-
-            var context = new ExecutionContext(_root, envelope, InvocationCallback.Instance);
+            var context = _contextPool.Get();
+            context.ReadEnvelope(envelope, InvocationCallback.Instance);
 
             try
             {
@@ -122,6 +130,10 @@ namespace Jasper.Runtime
             {
                 Logger.LogException(e, message: $"Invocation of {envelope} failed!");
                 throw;
+            }
+            finally
+            {
+                _contextPool.Return(context);
             }
         }
 

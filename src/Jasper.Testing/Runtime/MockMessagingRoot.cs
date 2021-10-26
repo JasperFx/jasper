@@ -61,7 +61,10 @@ namespace Jasper.Testing.Runtime
 
         public IExecutionContext ContextFor(Envelope envelope)
         {
-            return new ExecutionContext(this, envelope, InvocationCallback.Instance);
+            var context = new ExecutionContext(this);
+            context.ReadEnvelope(envelope, InvocationCallback.Instance);
+
+            return context;
         }
 
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
