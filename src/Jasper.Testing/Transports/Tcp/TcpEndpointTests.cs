@@ -1,7 +1,9 @@
+using System;
 using Jasper.Configuration;
 using Jasper.Transports.Tcp;
 using Jasper.Util;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Transports.Tcp
@@ -16,6 +18,15 @@ namespace Jasper.Testing.Transports.Tcp
 
             new TcpEndpoint(3333)
                 .HostName.ShouldBe("localhost");
+        }
+
+        [Fact]
+        public void will_not_allow_you_to_configure_as_inline()
+        {
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() =>
+            {
+                new TcpEndpoint().Mode = EndpointMode.Inline;
+            });
         }
 
         [Theory]
