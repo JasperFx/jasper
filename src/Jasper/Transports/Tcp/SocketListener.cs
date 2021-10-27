@@ -40,10 +40,8 @@ namespace Jasper.Transports.Tcp
 
             _socketHandling = new ActionBlock<Socket>(async s =>
             {
-                using (var stream = new NetworkStream(s, true))
-                {
-                    await HandleStream(callback, stream);
-                }
+                await using var stream = new NetworkStream(s, true);
+                await HandleStream(callback, stream);
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _receivingLoop = Task.Run(async () =>
@@ -60,7 +58,7 @@ namespace Jasper.Transports.Tcp
 
         public void StartHandlingInline(IHandlerPipeline pipeline)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public Uri Address { get; }
@@ -76,9 +74,9 @@ namespace Jasper.Transports.Tcp
 
         public Task HandleStream(IListeningWorkerQueue callback, Stream stream)
         {
-            if (Status == ListeningStatus.TooBusy) return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
-
-            return WireProtocol.Receive(_logger, stream, callback, Address);
+            return Status == ListeningStatus.TooBusy
+                ? stream.SendBuffer(WireProtocol.ProcessingFailureBuffer)
+                : WireProtocol.Receive(_logger, stream, callback, Address);
         }
     }
 }
