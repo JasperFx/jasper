@@ -78,5 +78,15 @@ namespace Jasper.Transports.Tcp
                 ? stream.SendBuffer(WireProtocol.ProcessingFailureBuffer)
                 : WireProtocol.Receive(_logger, stream, callback, Address);
         }
+
+        public Task Complete(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task Defer(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

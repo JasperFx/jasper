@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -59,6 +60,16 @@ namespace Jasper.RabbitMQ.Internal
             {
                 listener.StartHandlingInline(pipeline);
             }
+        }
+
+        public Task Complete(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Complete(envelope);
+        }
+
+        public Task Defer(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Defer(envelope);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Jasper.Runtime.WorkerQueues
         private readonly AdvancedSettings _settings;
         private readonly ActionBlock<Envelope> _receiver;
         private readonly InMemoryScheduledJobProcessor _scheduler;
-        private IListener _agent;
+        private IListener _listener;
 
         public LightweightWorkerQueue(Endpoint endpoint, ITransportLogger logger,
             IHandlerPipeline pipeline, AdvancedSettings settings)
@@ -71,10 +71,10 @@ namespace Jasper.Runtime.WorkerQueues
 
         public void StartListening(IListener listener)
         {
-            _agent = listener;
-            _agent.Start(this);
+            _listener = listener;
+            _listener.Start(this);
 
-            Address = _agent.Address;
+            Address = _listener.Address;
         }
 
         public Uri Address { get; set; }
@@ -82,8 +82,8 @@ namespace Jasper.Runtime.WorkerQueues
 
         public ListeningStatus Status
         {
-            get => _agent.Status;
-            set => _agent.Status = value;
+            get => _listener.Status;
+            set => _listener.Status = value;
         }
 
         Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)

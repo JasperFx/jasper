@@ -114,10 +114,8 @@ namespace Jasper.Transports.Tcp
                 return;
             }
 
-
             try
             {
-
                 await callback.Received(uri, messages);
                 await stream.SendBuffer(ReceivedBuffer);
                 await stream.ReadExpectedBuffer(AcknowledgedBuffer);

@@ -3,7 +3,7 @@ using Jasper.Runtime;
 
 namespace Jasper.Transports
 {
-    public interface IListener : IDisposable
+    public interface IListener : IChannelCallback, IDisposable
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }

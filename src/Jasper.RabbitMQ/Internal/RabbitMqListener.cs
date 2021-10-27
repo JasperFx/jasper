@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -87,5 +88,14 @@ namespace Jasper.RabbitMQ.Internal
 
 
         public Uri Address { get; }
+        public Task Complete(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Complete(envelope);
+        }
+
+        public Task Defer(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Defer(envelope);
+        }
     }
 }
