@@ -6,7 +6,6 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
 
 namespace Jasper.Runtime.WorkerQueues
 {
