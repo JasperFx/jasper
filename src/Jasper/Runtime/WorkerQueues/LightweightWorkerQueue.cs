@@ -108,6 +108,8 @@ namespace Jasper.Runtime.WorkerQueues
                 await Enqueue(envelope);
             }
 
+            await _listener.Complete(envelope);
+
             _logger.IncomingReceived(envelope);
         }
 
@@ -125,6 +127,7 @@ namespace Jasper.Runtime.WorkerQueues
             {
                 envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
                 await Enqueue(envelope);
+                await _listener.Complete(envelope);
             }
 
             _logger.IncomingBatchReceived(envelopes);

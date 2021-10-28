@@ -78,8 +78,7 @@ namespace Jasper.Runtime.WorkerQueues
         public Uri Address { get; set; }
 
 
-
-        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        public Task Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;
 
@@ -97,6 +96,8 @@ namespace Jasper.Runtime.WorkerQueues
             {
                 await Enqueue(envelope);
             }
+
+            await _agent.Complete(envelope);
 
             _logger.IncomingReceived(envelope);
         }
@@ -123,6 +124,7 @@ namespace Jasper.Runtime.WorkerQueues
             foreach (var message in envelopes)
             {
                 await Enqueue(message);
+                await _agent.Complete(message);
             }
 
             _logger.IncomingBatchReceived(envelopes);
