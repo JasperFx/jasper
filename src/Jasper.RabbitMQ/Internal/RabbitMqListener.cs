@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -16,6 +17,7 @@ namespace Jasper.RabbitMQ.Internal
         private WorkerQueueMessageConsumer _consumer;
         private readonly string _routingKey;
         private readonly RabbitMqSender _sender;
+        private CancellationToken _cancellation = CancellationToken.None;
 
         public RabbitMqListener(ITransportLogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
@@ -52,20 +54,23 @@ namespace Jasper.RabbitMQ.Internal
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
-                        Start(_callback);
+                        Start(_callback, _cancellation);
                         break;
                 }
             }
         }
 
-        public void Start(IListeningWorkerQueue callback)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             if (callback == null) return;
+
+            _cancellation = cancellation;
+            _cancellation.Register(teardownConnection);
 
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender)
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender, _cancellation)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };
@@ -97,7 +102,6 @@ namespace Jasper.RabbitMQ.Internal
 
         public Task Requeue(RabbitMqEnvelope envelope)
         {
-            // TODO -- watch if this needs to be requeued w/ the sender
             if (!envelope.Acked)
             {
                 Channel.BasicNack(envelope.DeliveryTag, false, false);

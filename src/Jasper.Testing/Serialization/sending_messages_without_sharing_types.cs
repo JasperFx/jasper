@@ -17,40 +17,49 @@ using Xunit.Abstractions;
 
 namespace Jasper.Testing.Serialization
 {
-    public class sending_messages_without_sharing_types : IDisposable
+    public class NoSharedTypeFixture : IDisposable
     {
-        private readonly ITestOutputHelper _output;
-
-        public sending_messages_without_sharing_types(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
         public void Dispose()
         {
             greenApp?.Dispose();
             blueApp?.Dispose();
         }
 
-        private IHost greenApp;
-        private IHost blueApp;
+        public IHost greenApp;
+        public IHost blueApp;
+
+        public NoSharedTypeFixture()
+        {
+            greenApp = JasperHost.For<GreenApp>();
+            blueApp = JasperHost.For(new BlueApp());
+        }
+    }
+
+    public class sending_messages_without_sharing_types : IClassFixture<NoSharedTypeFixture>
+    {
+        private readonly ITestOutputHelper _output;
+        private readonly NoSharedTypeFixture _fixture;
+
+        public sending_messages_without_sharing_types(ITestOutputHelper output, NoSharedTypeFixture fixture)
+        {
+            _output = output;
+            _fixture = fixture;
+        }
+
+
 
         [Fact] // This test isn't always the most consistent test
         public async Task send_green_as_text_and_receive_as_blue()
         {
-            greenApp = JasperHost.For<GreenApp>();
-            blueApp = JasperHost.For(new BlueApp());
-
             var greenMessage = new GreenMessage {Name = "Magic Johnson"};
             var envelope = new Envelope(greenMessage)
             {
                 ContentType = "text/plain"
             };
 
-            var session = await greenApp
+            var session = await _fixture.greenApp
                 .TrackActivity()
-                .AlsoTrack(blueApp)
-                .Timeout(30.Seconds())
+                .AlsoTrack(_fixture.blueApp)
                 .ExecuteAndWait(c => c.SendEnvelope(envelope));
 
 
@@ -67,12 +76,9 @@ namespace Jasper.Testing.Serialization
         [Fact]
         public async Task send_green_that_gets_received_as_blue()
         {
-            greenApp = JasperHost.For<GreenApp>();
-            blueApp = JasperHost.For<BlueApp>();
-
-            var session = await greenApp
+            var session = await _fixture.greenApp
                 .TrackActivity()
-                .AlsoTrack(blueApp)
+                .AlsoTrack(_fixture.blueApp)
                 .ExecuteAndWait(c =>
                     c.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"}));
 
@@ -121,7 +127,7 @@ namespace Jasper.Testing.Serialization
     {
         public BlueApp()
         {
-            Endpoints.ListenAtPort(2555);
+            Endpoints.ListenAtPort(2566);
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<BlueHandler>();
             Extensions.UseMessageTrackingTestingSupport();
@@ -133,7 +139,7 @@ namespace Jasper.Testing.Serialization
         public GreenApp()
         {
             Endpoints.Publish(x => x.Message<GreenMessage>()
-                .ToPort(2555));
+                .ToPort(2566));
 
             Handlers.DisableConventionalDiscovery();
 

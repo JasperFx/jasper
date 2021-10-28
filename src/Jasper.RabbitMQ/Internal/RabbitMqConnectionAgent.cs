@@ -62,14 +62,5 @@ namespace Jasper.RabbitMQ.Internal
             State = AgentState.Disconnected;
         }
 
-        internal void Stop()
-        {
-            lock (_locker)
-            {
-                if (State == AgentState.Disconnected) return;
-
-                teardownConnection();
-            }
-        }
     }
 }

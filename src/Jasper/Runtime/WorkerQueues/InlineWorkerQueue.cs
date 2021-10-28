@@ -19,7 +19,7 @@ namespace Jasper.Runtime.WorkerQueues
             _logger = logger;
             _settings = settings;
 
-            Listener.Start(this);
+            Listener.Start(this, settings.Cancellation);
         }
 
         public void Dispose()

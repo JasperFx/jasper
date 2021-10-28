@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Jasper.Logging;
 using Jasper.Transports;
 using RabbitMQ.Client;
@@ -9,21 +10,24 @@ namespace Jasper.RabbitMQ.Internal
     {
         private readonly Uri _address;
         private readonly RabbitMqSender _rabbitMqSender;
+        private readonly CancellationToken _cancellation;
         private readonly RabbitMqListener Listener;
-        private readonly IListeningWorkerQueue _callback;
+        private readonly IListeningWorkerQueue _workerQueue;
         private readonly ITransportLogger _logger;
         private readonly IRabbitMqProtocol Mapper;
         private bool _latched;
 
-        public WorkerQueueMessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, RabbitMqListener listener,
-            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender)
+        public WorkerQueueMessageConsumer(IListeningWorkerQueue workerQueue, ITransportLogger logger,
+            RabbitMqListener listener,
+            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender, CancellationToken cancellation)
         {
-            _callback = callback;
+            _workerQueue = workerQueue;
             _logger = logger;
             Listener = listener;
             Mapper = mapper;
             _address = address;
             _rabbitMqSender = rabbitMqSender;
+            _cancellation = cancellation;
         }
 
         public void Dispose()
@@ -34,7 +38,7 @@ namespace Jasper.RabbitMQ.Internal
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
             IBasicProperties properties, byte[] body)
         {
-            if (_latched)
+            if (_latched || _cancellation.IsCancellationRequested)
             {
                 Listener.Channel.BasicReject(deliveryTag, true);
                 return;
@@ -59,17 +63,13 @@ namespace Jasper.RabbitMQ.Internal
                 return;
             }
 
-            _callback.Received(_address, envelope).ContinueWith(t =>
+            _workerQueue.Received(_address, envelope).ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
                     _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");
                     Model.BasicNack(deliveryTag, false, true);
                 }
-                // else
-                // {
-                //     Model.BasicAck(deliveryTag, false);
-                // }
             });
         }
     }

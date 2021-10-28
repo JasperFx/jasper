@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Lamar;
+using LamarCodeGeneration;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Tracking
@@ -57,16 +59,38 @@ namespace Jasper.Tracking
 
         public void AssertNotTimedOut()
         {
+            if (IsCompleted()) return;
+
             if (Status == TrackingStatus.TimedOut)
             {
-                var message = $"This {nameof(TrackedSession)} timed out before all activity completed.\nActivity detected:\n{AllRecordsInOrder().Select(x => x.ToString()).Join("\n")}";
-                if (_conditions.Any())
-                {
-                    message += $"\nConditions:\n{_conditions.Select(x => $"{x} ({x.IsCompleted()})").Join("\n")}";
-                }
+                var message = buildActivityMessage($"This {nameof(TrackedSession)} timed out before all activity completed.");
 
                 throw new TimeoutException(message);
             }
+        }
+
+        private string buildActivityMessage(string description)
+        {
+            var writer = new StringWriter();
+            writer.WriteLine(description);
+            writer.WriteLine("Activity detected:");
+            foreach (var @record in AllRecordsInOrder())
+            {
+                writer.WriteLine(@record);
+            }
+
+            if (_conditions.Any())
+            {
+                writer.WriteLine();
+                writer.WriteLine("Conditions:");
+                foreach (var condition in _conditions)
+                {
+                    writer.WriteLine($"{condition} ({condition.IsCompleted()})");
+                }
+
+            }
+
+            return writer.ToString();
         }
 
 
@@ -86,11 +110,19 @@ namespace Jasper.Tracking
 
         public T FindSingleTrackedMessageOfType<T>()
         {
-            return AllRecordsInOrder()
-                .Select(x => x.Envelope.Message)
-                .OfType<T>()
-                .Distinct()
-                .Single();
+            try
+            {
+                return AllRecordsInOrder()
+                    .Select(x => x.Envelope.Message)
+                    .OfType<T>()
+                    .Distinct()
+                    .Single();
+            }
+            catch (Exception)
+            {
+                throw new InvalidOperationException(
+                    buildActivityMessage($"No single message exists for {typeof(T).FullNameInCode()}"));
+            }
         }
 
         public IEnumerable<object> UniqueMessages()
@@ -107,12 +139,20 @@ namespace Jasper.Tracking
 
         public T FindSingleTrackedMessageOfType<T>(EventType eventType)
         {
-            return AllRecordsInOrder()
-                .Where(x => x.EventType == eventType)
-                .Select(x => x.Envelope.Message)
-                .OfType<T>()
-                .Distinct()
-                .Single();
+            try
+            {
+                return AllRecordsInOrder()
+                    .Where(x => x.EventType == eventType)
+                    .Select(x => x.Envelope.Message)
+                    .OfType<T>()
+                    .Distinct()
+                    .Single();
+            }
+            catch (Exception)
+            {
+                throw new InvalidOperationException(
+                    buildActivityMessage($"No single message exists for {typeof(T).FullNameInCode()}"));
+            }
         }
 
         public EnvelopeRecord[] FindEnvelopesWithMessageType<T>(EventType eventType)
@@ -163,18 +203,15 @@ namespace Jasper.Tracking
 
         public async Task ExecuteAndTrack()
         {
-
             setActiveSession(this);
 
             _stopwatch.Start();
 
             try
             {
-                using (var scope = _primaryHost.Services.As<IContainer>().GetNestedContainer())
-                {
-                    var context = scope.GetInstance<IExecutionContext>();
-                    await Execution(context);
-                }
+                using var scope = _primaryHost.Services.As<IContainer>().GetNestedContainer();
+                var context = scope.GetInstance<IExecutionContext>();
+                await Execution(context);
             }
             catch (Exception)
             {
@@ -250,6 +287,7 @@ namespace Jasper.Tracking
             if (ex != null) _exceptions.Add(ex);
 
             if (IsCompleted()) Status = TrackingStatus.Completed;
+
         }
 
         public bool IsCompleted()

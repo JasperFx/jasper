@@ -71,7 +71,7 @@ namespace Jasper.Runtime.WorkerQueues
         public void StartListening(IListener listener)
         {
             _listener = listener;
-            _listener.Start(this);
+            _listener.Start(this, _settings.Cancellation);
 
             Address = _listener.Address;
         }

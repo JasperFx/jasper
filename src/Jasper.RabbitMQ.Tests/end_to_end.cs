@@ -38,7 +38,7 @@ namespace Jasper.RabbitMQ.Tests
         public async Task send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
             var queueName = RabbitTesting.NextQueueName();
-            var publisher = JasperHost.For(_ =>
+            using var publisher = JasperHost.For(_ =>
             {
                 _.Extensions.UseMessageTrackingTestingSupport();
 
@@ -47,6 +47,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
                     x.AutoProvision = true;
+                    x.AutoPurgeOnStartup = true;
                 });
 
                 _.Endpoints
@@ -65,9 +66,8 @@ namespace Jasper.RabbitMQ.Tests
 
             });
 
-            publisher.TryPurgeAllRabbitMqQueues();
 
-            var receiver = JasperHost.For(_ =>
+            using var receiver = JasperHost.For(_ =>
             {
                 _.Extensions.UseMessageTrackingTestingSupport();
 
@@ -91,25 +91,14 @@ namespace Jasper.RabbitMQ.Tests
                 _.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             });
 
-            receiver.TryPurgeAllRabbitMqQueues();
-
-            try
-            {
-
-                await publisher
-                    .TrackActivity()
-                    .AlsoTrack(receiver)
-                    .Timeout(30.Seconds()) // this one can be slow when it's in a group of tests
-                    .SendMessageAndWait(new ColorChosen {Name = "Orange"});
+            await publisher
+                .TrackActivity()
+                .AlsoTrack(receiver)
+                .Timeout(30.Seconds()) // this one can be slow when it's in a group of tests
+                .SendMessageAndWait(new ColorChosen {Name = "Orange"});
 
 
-                receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
-            }
-            finally
-            {
-                publisher.Dispose();
-                receiver.Dispose();
-            }
+            receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
         }
 
 
@@ -284,7 +273,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
 
-
+                    x.AutoPurgeOnStartup = true;
                     x.AutoProvision = true;
                 });
 

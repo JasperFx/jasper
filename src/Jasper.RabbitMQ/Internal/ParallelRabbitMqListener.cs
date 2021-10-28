@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Logging;
@@ -48,11 +49,11 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public void Start(IListeningWorkerQueue callback)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             foreach (var listener in _listeners)
             {
-                listener.Start(callback);
+                listener.Start(callback, cancellation);
             }
         }
 

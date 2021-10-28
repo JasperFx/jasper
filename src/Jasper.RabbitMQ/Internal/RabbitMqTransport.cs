@@ -98,30 +98,27 @@ namespace Jasper.RabbitMQ.Internal
 
         public void InitializeAllObjects()
         {
-            using (var connection = BuildConnection())
+            using var connection = BuildConnection();
+            using var channel = connection.CreateModel();
+
+            foreach (var exchange in Exchanges)
             {
-                using (var channel = connection.CreateModel())
-                {
-                    foreach (var exchange in Exchanges)
-                    {
-                        exchange.Declare(channel);
-                    }
-
-                    foreach (var queue in Queues)
-                    {
-                        queue.Declare(channel);
-                    }
-
-                    foreach (var binding in Bindings)
-                    {
-                        binding.Declare(channel);
-                    }
-
-                    channel.Close();
-                }
-
-                connection.Close();
+                exchange.Declare(channel);
             }
+
+            foreach (var queue in Queues)
+            {
+                queue.Declare(channel);
+            }
+
+            foreach (var binding in Bindings)
+            {
+                binding.Declare(channel);
+            }
+
+            channel.Close();
+
+            connection.Close();
         }
 
         public void TeardownAll()

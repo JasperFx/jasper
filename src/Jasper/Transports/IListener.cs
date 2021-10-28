@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jasper.Transports
@@ -7,7 +8,7 @@ namespace Jasper.Transports
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        void Start(IListeningWorkerQueue callback);
+        void Start(IListeningWorkerQueue callback, CancellationToken cancellation);
 
         Task<bool> TryRequeue(Envelope envelope);
     }

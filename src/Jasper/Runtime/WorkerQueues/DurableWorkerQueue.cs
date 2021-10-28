@@ -18,7 +18,7 @@ namespace Jasper.Runtime.WorkerQueues
         private readonly IEnvelopePersistence _persistence;
         private readonly ITransportLogger _logger;
         private readonly ActionBlock<Envelope> _receiver;
-        private IListener _agent;
+        private IListener _listener;
         private readonly AsyncRetryPolicy _policy;
 
         public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
@@ -69,10 +69,10 @@ namespace Jasper.Runtime.WorkerQueues
 
         public void StartListening(IListener listener)
         {
-            _agent = listener;
-            _agent.Start(this);
+            _listener = listener;
+            _listener.Start(this, _settings.Cancellation);
 
-            Address = _agent.Address;
+            Address = _listener.Address;
         }
 
         public Uri Address { get; set; }
@@ -97,7 +97,7 @@ namespace Jasper.Runtime.WorkerQueues
                 await Enqueue(envelope);
             }
 
-            await _agent.Complete(envelope);
+            await _listener.Complete(envelope);
 
             _logger.IncomingReceived(envelope);
         }
@@ -124,7 +124,7 @@ namespace Jasper.Runtime.WorkerQueues
             foreach (var message in envelopes)
             {
                 await Enqueue(message);
-                await _agent.Complete(message);
+                await _listener.Complete(message);
             }
 
             _logger.IncomingBatchReceived(envelopes);

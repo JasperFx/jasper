@@ -120,6 +120,14 @@ namespace Jasper.Tracking
                     {
                         record.IsComplete = true;
                     }
+
+                    // This can be out of order with Rabbit MQ *somehow*, so:
+                    var received = _records.LastOrDefault(x => x.EventType == EventType.Received);
+                    if (received != null)
+                    {
+                        record.IsComplete = true;
+                    }
+
                     break;
 
                 case EventType.ExecutionStarted:
