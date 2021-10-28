@@ -54,14 +54,6 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public void StartHandlingInline(IHandlerPipeline pipeline)
-        {
-            foreach (var listener in _listeners)
-            {
-                listener.StartHandlingInline(pipeline);
-            }
-        }
-
         public Task Complete(Envelope envelope)
         {
             return RabbitMqChannelCallback.Instance.Complete(envelope);

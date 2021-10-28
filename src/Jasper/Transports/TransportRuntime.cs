@@ -18,7 +18,7 @@ namespace Jasper.Transports
     public class TransportRuntime : ITransportRuntime
     {
 
-        private readonly IList<IListeningWorkerQueue> _listeners = new List<IListeningWorkerQueue>();
+        private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private readonly IList<ISubscriber> _subscribers = new List<ISubscriber>();
 
         private readonly object _channelLock = new object();
@@ -176,7 +176,7 @@ namespace Jasper.Transports
         public void AddListener(IListener listener, Endpoint settings)
         {
 
-            IWorkerQueue worker = null;
+            IDisposable worker = null;
             switch (settings.Mode)
             {
                 case EndpointMode.Durable:
@@ -189,15 +189,12 @@ namespace Jasper.Transports
                     break;
 
                 case EndpointMode.Inline:
-                    listener.StartHandlingInline(_root.Pipeline);
+                    worker = new InlineWorkerQueue(_root.Pipeline, _root.TransportLogger, listener, _root.Settings);
                     break;
             }
 
-            if (worker != null)
-            {
-                _listeners.Add(worker);
-                worker.StartListening(listener);
-            }
+            if (worker is IWorkerQueue q) q.StartListening(listener);
+            _disposables.Add(worker);
         }
 
         public Task Stop()
@@ -237,7 +234,7 @@ namespace Jasper.Transports
                 kv.Value.SafeDispose();
             }
 
-            foreach (var listener in _listeners)
+            foreach (var listener in _disposables)
             {
                 listener.SafeDispose();
             }

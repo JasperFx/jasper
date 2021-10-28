@@ -172,8 +172,6 @@ namespace TestingSupport.Compliance
                 .DoNotAssertOnExceptionsDetected()
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message2()));
 
-
-
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
 

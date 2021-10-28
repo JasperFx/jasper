@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.Logging;
-using Jasper.Runtime;
 using Jasper.Transports;
 using RabbitMQ.Client;
 
@@ -73,19 +72,6 @@ namespace Jasper.RabbitMQ.Internal
 
             Channel.BasicConsume(_consumer, _routingKey);
         }
-
-        public void StartHandlingInline(IHandlerPipeline pipeline)
-        {
-            EnsureConnected();
-
-            _consumer = new HandlerPipelineMessageConsumer(_sender, pipeline, _logger, Channel, _mapper, Address, _sender)
-            {
-                ConsumerTag = Guid.NewGuid().ToString()
-            };
-
-            Channel.BasicConsume(_consumer, _routingKey);
-        }
-
 
         public Uri Address { get; }
         public Task Complete(Envelope envelope)

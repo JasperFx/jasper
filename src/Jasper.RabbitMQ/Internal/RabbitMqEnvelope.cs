@@ -5,7 +5,7 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqEnvelope : Envelope
     {
-        internal IModel Model { get; }
+        internal IModel Model { get; private set; }
         internal ulong DeliveryTag { get; }
         internal RabbitMqSender RabbitSender { get; }
 
@@ -19,13 +19,18 @@ namespace Jasper.RabbitMQ.Internal
         internal void Complete()
         {
             Model.BasicAck(DeliveryTag, false);
+            Model = null;
+            Sender = null;
         }
 
-        internal Task Defer()
+        internal async Task Defer()
         {
             // TODO -- how can you do this transactionally?
             Model.BasicNack(DeliveryTag, false, true);
-            return RabbitSender.Send(this);
+            await RabbitSender.Send(this);
+
+            Model = null;
+            Sender = null;
         }
 
 

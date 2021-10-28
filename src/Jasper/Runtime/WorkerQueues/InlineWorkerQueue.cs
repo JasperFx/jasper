@@ -8,20 +8,26 @@ namespace Jasper.Runtime.WorkerQueues
     public class InlineWorkerQueue : IListeningWorkerQueue
     {
         private readonly IHandlerPipeline _pipeline;
-        private readonly IMessageLogger _logger;
+        private readonly ITransportLogger _logger;
+        private readonly AdvancedSettings _settings;
 
-        public InlineWorkerQueue(IHandlerPipeline pipeline, IMessageLogger logger)
+        public InlineWorkerQueue(IHandlerPipeline pipeline, ITransportLogger logger, IListener listener,
+            AdvancedSettings settings)
         {
+            Listener = listener;
             _pipeline = pipeline;
             _logger = logger;
+            _settings = settings;
+
+            Listener.Start(this);
         }
 
         public void Dispose()
         {
-            // Nothing
+            Listener = null; // making sure the listener can be released
         }
 
-        public IListener Listener { get; set; }
+        public IListener Listener { get; private set; }
 
         public async Task Received(Uri uri, Envelope[] messages)
         {
@@ -35,8 +41,9 @@ namespace Jasper.Runtime.WorkerQueues
         {
             try
             {
-                // TODO -- log that this was incoming?
+                envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
                 await _pipeline.Invoke(envelope, Listener);
+                _logger.IncomingReceived(envelope);
             }
             catch (Exception e)
             {

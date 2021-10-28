@@ -56,11 +56,6 @@ namespace Jasper.Transports.Tcp
             }, _cancellationToken);
         }
 
-        public void StartHandlingInline(IHandlerPipeline pipeline)
-        {
-            throw new NotSupportedException();
-        }
-
         public Uri Address { get; }
 
         public void Dispose()
