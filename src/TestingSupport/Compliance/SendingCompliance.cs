@@ -170,6 +170,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
+                .Timeout(60.Seconds())
                 .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message2()));
 
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)

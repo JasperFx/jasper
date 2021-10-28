@@ -5,20 +5,22 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public abstract class MessageConsumerBase : DefaultBasicConsumer, IDisposable
+    public class WorkerQueueMessageConsumer : DefaultBasicConsumer, IDisposable
     {
-        protected readonly Uri _address;
+        private readonly Uri _address;
         private readonly RabbitMqSender _rabbitMqSender;
-        protected readonly IModel _channel;
-        protected readonly ITransportLogger _logger;
-        protected readonly IRabbitMqProtocol Mapper;
+        private readonly RabbitMqListener Listener;
+        private readonly IListeningWorkerQueue _callback;
+        private readonly ITransportLogger _logger;
+        private readonly IRabbitMqProtocol Mapper;
         private bool _latched;
 
-        public MessageConsumerBase(ITransportLogger logger, IModel channel,
-            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender) : base(channel)
+        public WorkerQueueMessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, RabbitMqListener listener,
+            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender)
         {
+            _callback = callback;
             _logger = logger;
-            _channel = channel;
+            Listener = listener;
             Mapper = mapper;
             _address = address;
             _rabbitMqSender = rabbitMqSender;
@@ -34,11 +36,11 @@ namespace Jasper.RabbitMQ.Internal
         {
             if (_latched)
             {
-                _channel.BasicReject(deliveryTag, true);
+                Listener.Channel.BasicReject(deliveryTag, true);
                 return;
             }
 
-            RabbitMqEnvelope envelope = new RabbitMqEnvelope(_channel, deliveryTag, _rabbitMqSender);
+            var envelope = new RabbitMqEnvelope(Listener, deliveryTag);
             try
             {
                 Mapper.ReadIntoEnvelope(envelope, properties, body);
@@ -46,49 +48,31 @@ namespace Jasper.RabbitMQ.Internal
             catch (Exception e)
             {
                 _logger.LogException(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
-                _channel.BasicAck(deliveryTag, false);
+                Model.BasicAck(envelope.DeliveryTag, false);
 
                 return;
             }
 
             if (envelope.IsPing())
             {
-                _channel.BasicAck(deliveryTag, false);
+                Model.BasicAck(deliveryTag, false);
                 return;
             }
 
-            // THIS NEEDS TO BE VARIABLE
-            executeEnvelope(deliveryTag, envelope);
-        }
-
-        protected abstract void executeEnvelope(ulong deliveryTag, Envelope envelope);
-    }
-
-    public class WorkerQueueMessageConsumer : MessageConsumerBase
-    {
-        private readonly IListeningWorkerQueue _callback;
-
-        public WorkerQueueMessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, IModel channel,
-            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender) : base(logger, channel, mapper, address, rabbitMqSender)
-        {
-            _callback = callback;
-        }
-
-        protected override void executeEnvelope(ulong deliveryTag, Envelope envelope)
-        {
             _callback.Received(_address, envelope).ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
                     _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");
-                    _channel.BasicNack(deliveryTag, false, true);
+                    Model.BasicNack(deliveryTag, false, true);
                 }
-                else
-                {
-                    _channel.BasicAck(deliveryTag, false);
-                }
+                // else
+                // {
+                //     Model.BasicAck(deliveryTag, false);
+                // }
             });
         }
-
     }
+
+
 }

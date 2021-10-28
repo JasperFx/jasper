@@ -7,6 +7,12 @@ namespace Jasper.RabbitMQ.Internal
     public interface IRabbitMqTransport
     {
         bool AutoProvision { get; set; }
+
+        /// <summary>
+        /// For test automation purposes, setting this to true will direct Jasper
+        /// to purge messages out of all configured queues on startup
+        /// </summary>
+        bool AutoPurgeOnStartup { get; set; }
         ConnectionFactory ConnectionFactory { get; }
         IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; }
         void DeclareBinding(Binding binding);

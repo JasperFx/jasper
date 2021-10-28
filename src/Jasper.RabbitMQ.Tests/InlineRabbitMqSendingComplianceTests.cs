@@ -21,6 +21,7 @@ namespace Jasper.RabbitMQ.Tests
                 x.DeclareQueue(QueueName);
                 x.DeclareQueue(listener);
                 x.AutoProvision = true;
+                x.AutoPurgeOnStartup = true;
             });
 
             Endpoints.ListenToRabbitQueue(listener).UseForReplies().ProcessInline();
@@ -65,23 +66,12 @@ namespace Jasper.RabbitMQ.Tests
             var receiver = new InlineReceiver(sender.QueueName);
 
             await ReceiverIs(receiver);
-
-            Sender.TryPurgeAllRabbitMqQueues();
-            Receiver.TryPurgeAllRabbitMqQueues();
         }
 
         public Task DisposeAsync()
         {
-            Sender.TearDownAllRabbitMqObjects();
-            Receiver.TearDownAllRabbitMqObjects();
             return Task.CompletedTask;
         }
-
-        public override void BeforeEach()
-        {
-            Sender.TryPurgeAllRabbitMqQueues();
-        }
-
 
     }
 

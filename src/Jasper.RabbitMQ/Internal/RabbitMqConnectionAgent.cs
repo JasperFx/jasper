@@ -38,10 +38,18 @@ namespace Jasper.RabbitMQ.Internal
             _connection = _transport.BuildConnection();
 
             Channel = _connection.CreateModel();
+
+            Channel.ModelShutdown += ChannelOnModelShutdown;
+        }
+
+        private void ChannelOnModelShutdown(object? sender, ShutdownEventArgs e)
+        {
+            EnsureConnected();
         }
 
         protected void teardownConnection()
         {
+            Channel.ModelShutdown -= ChannelOnModelShutdown;
             Channel?.Close();
             Channel?.Abort();
             Channel?.Dispose();

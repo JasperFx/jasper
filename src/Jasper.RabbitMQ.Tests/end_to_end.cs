@@ -99,6 +99,7 @@ namespace Jasper.RabbitMQ.Tests
                 await publisher
                     .TrackActivity()
                     .AlsoTrack(receiver)
+                    .Timeout(30.Seconds()) // this one can be slow when it's in a group of tests
                     .SendMessageAndWait(new ColorChosen {Name = "Orange"});
 
 

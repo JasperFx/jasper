@@ -13,7 +13,7 @@ namespace Jasper.RabbitMQ.Internal
         private readonly RabbitMqTransport _transport;
         private readonly IRabbitMqProtocol _mapper;
         private IListeningWorkerQueue _callback;
-        private MessageConsumerBase _consumer;
+        private WorkerQueueMessageConsumer _consumer;
         private readonly string _routingKey;
         private readonly RabbitMqSender _sender;
 
@@ -65,7 +65,7 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, Channel, _mapper, Address, _sender)
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };
@@ -82,6 +82,18 @@ namespace Jasper.RabbitMQ.Internal
         public Task Defer(Envelope envelope)
         {
             return RabbitMqChannelCallback.Instance.Defer(envelope);
+        }
+
+        public Task Requeue(RabbitMqEnvelope envelope)
+        {
+            // TODO -- watch if this needs to be requeued w/ the sender
+            Channel.BasicNack(envelope.DeliveryTag, false, false);
+            return _sender.Send(envelope);
+        }
+
+        public void Complete(ulong deliveryTag)
+        {
+            Channel.BasicAck(deliveryTag, false);
         }
     }
 }

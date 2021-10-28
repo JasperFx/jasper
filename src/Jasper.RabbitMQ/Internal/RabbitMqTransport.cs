@@ -46,9 +46,15 @@ namespace Jasper.RabbitMQ.Internal
             {
                 InitializeAllObjects();
             }
+
+            if (AutoPurgeOnStartup)
+            {
+                PurgeAllQueues();
+            }
         }
 
         public bool AutoProvision { get; set; } = false;
+        public bool AutoPurgeOnStartup { get; set; } = false;
 
         public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
 
@@ -120,53 +126,48 @@ namespace Jasper.RabbitMQ.Internal
 
         public void TeardownAll()
         {
-            using (var connection = BuildConnection())
+            using var connection = BuildConnection();
+            using var channel = connection.CreateModel();
+
+            foreach (var binding in Bindings)
             {
-                using (var channel = connection.CreateModel())
-                {
-
-                    foreach (var binding in Bindings)
-                    {
-                        binding.Teardown(channel);
-                    }
-
-                    foreach (var exchange in Exchanges)
-                    {
-                        exchange.Teardown(channel);
-                    }
-
-                    foreach (var queue in Queues)
-                    {
-                        queue.Teardown(channel);
-                    }
-
-                    channel.Close();
-                }
-
-                connection.Close();
+                binding.Teardown(channel);
             }
+
+            foreach (var exchange in Exchanges)
+            {
+                exchange.Teardown(channel);
+            }
+
+            foreach (var queue in Queues)
+            {
+                queue.Teardown(channel);
+            }
+
+            channel.Close();
+
+            connection.Close();
         }
 
         public void PurgeAllQueues()
         {
             using var connection = BuildConnection();
-            using (var channel = connection.CreateModel())
+            using var channel = connection.CreateModel();
+
+            foreach (var queue in Queues)
             {
-                foreach (var queue in Queues)
-                {
-                    queue.Purge(channel);
-                }
-
-                var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
-                    .Where(x => Queues.All(q => q.Name != x)).ToArray();
-
-                foreach (var other in others)
-                {
-                    channel.QueuePurge(other);
-                }
-
-                channel.Close();
+                queue.Purge(channel);
             }
+
+            var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
+                .Where(x => Queues.All(q => q.Name != x)).ToArray();
+
+            foreach (var other in others)
+            {
+                channel.QueuePurge(other);
+            }
+
+            channel.Close();
 
             connection.Close();
         }
