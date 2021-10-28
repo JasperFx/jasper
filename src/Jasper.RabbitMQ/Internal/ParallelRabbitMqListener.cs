@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -26,7 +28,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             foreach (var listener in _listeners)
             {
-                listener.Dispose();
+                listener.SafeDispose();
             }
         }
 
@@ -52,6 +54,11 @@ namespace Jasper.RabbitMQ.Internal
             {
                 listener.Start(callback);
             }
+        }
+
+        public Task<bool> TryRequeue(Envelope envelope)
+        {
+            return _listeners.FirstOrDefault()?.TryRequeue(envelope) ?? Task.FromResult(false);
         }
 
         public Task Complete(Envelope envelope)

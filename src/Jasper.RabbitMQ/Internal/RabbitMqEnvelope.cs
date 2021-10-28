@@ -17,18 +17,15 @@ namespace Jasper.RabbitMQ.Internal
         internal void Complete()
         {
             Listener.Complete(DeliveryTag);
-            Listener = null;
-            Sender = null;
+            Acked = true;
         }
 
-        internal async Task Defer()
+        internal Task Defer()
         {
-            await Listener.Requeue(this);
-
-            Listener = null;
-            Sender = null;
+            Acked = true;
+            return Listener.Requeue(this);
         }
 
-
+        public bool Acked { get; private set; }
     }
 }

@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
-using Jasper.Runtime;
 using Jasper.Transports.Util;
 using Jasper.Util;
 
@@ -54,6 +53,11 @@ namespace Jasper.Transports.Tcp
                     await _socketHandling.SendAsync(socket, _cancellationToken);
                 }
             }, _cancellationToken);
+        }
+
+        public Task<bool> TryRequeue(Envelope envelope)
+        {
+            return Task.FromResult(false);
         }
 
         public Uri Address { get; }

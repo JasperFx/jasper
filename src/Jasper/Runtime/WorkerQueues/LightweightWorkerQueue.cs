@@ -139,9 +139,19 @@ namespace Jasper.Runtime.WorkerQueues
             return Task.CompletedTask;
         }
 
-        Task IChannelCallback.Defer(Envelope envelope)
+        async Task IChannelCallback.Defer(Envelope envelope)
         {
-            return Enqueue(envelope);
+            if (_listener == null)
+            {
+                await Enqueue(envelope);
+                return;
+            }
+
+            var nativelyRequeued = await _listener.TryRequeue(envelope);
+            if (!nativelyRequeued)
+            {
+                await Enqueue(envelope);
+            }
         }
 
         Task IHasNativeScheduling.MoveToScheduledUntil(Envelope envelope, DateTimeOffset time)

@@ -20,6 +20,7 @@ namespace Jasper.RabbitMQ.Tests
                 x.DeclareQueue(QueueName);
                 x.DeclareQueue(listener);
                 x.AutoProvision = true;
+                x.AutoPurgeOnStartup = true;
             });
 
             Endpoints.ListenToRabbitQueue(listener).UseForReplies();
@@ -62,20 +63,12 @@ namespace Jasper.RabbitMQ.Tests
             var receiver = new Receiver(sender.QueueName);
 
             await ReceiverIs(receiver);
-
-            Sender.TryPurgeAllRabbitMqQueues();
-            Receiver.TryPurgeAllRabbitMqQueues();
         }
 
         public Task DisposeAsync()
         {
 
             return Task.CompletedTask;
-        }
-
-        public override void BeforeEach()
-        {
-            Sender.TryPurgeAllRabbitMqQueues();
         }
     }
 

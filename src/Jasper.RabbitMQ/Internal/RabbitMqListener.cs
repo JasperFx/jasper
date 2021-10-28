@@ -73,6 +73,17 @@ namespace Jasper.RabbitMQ.Internal
             Channel.BasicConsume(_consumer, _routingKey);
         }
 
+        public Task<bool> TryRequeue(Envelope envelope)
+        {
+            if (envelope is RabbitMqEnvelope e)
+            {
+                e.Listener.Requeue(e);
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
+        }
+
         public Uri Address { get; }
         public Task Complete(Envelope envelope)
         {
@@ -87,7 +98,10 @@ namespace Jasper.RabbitMQ.Internal
         public Task Requeue(RabbitMqEnvelope envelope)
         {
             // TODO -- watch if this needs to be requeued w/ the sender
-            Channel.BasicNack(envelope.DeliveryTag, false, false);
+            if (!envelope.Acked)
+            {
+                Channel.BasicNack(envelope.DeliveryTag, false, false);
+            }
             return _sender.Send(envelope);
         }
 
