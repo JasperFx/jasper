@@ -31,6 +31,23 @@ docker compose up -d
 I think that FubuMVC turned some people off by its name ("for us, by us"). This time around I was going for an
 unassuming name that was easy to remember and just named it after my (Jeremy) hometown (Jasper, MO).
 
+## Implementing Jasper Transports
+
+First off, the Rabbit MQ transport is the most mature of all the Jasper transport types, and is somewhat the template for new transports.
+
+The basic steps:
+
+* Start a new project named *Jasper.{transport name}* and a matching *Jasper.{transport name}.Testing* project under the `/src` folder of the repository,
+  but under the logical `/Transports` folder of the solution please.
+* If at all possible (i.e., anything but Azure Service Bus), add a docker container to the `docker-compose.yaml` file for the server piece of the new transport
+  for local testing
+* Implement the `ITransport` interface. See [RabbitMqTransport](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/Internal/RabbitMqTransport.cs) as an example. 
+  Any transport specific configuration should be properties of the concrete type.
+* You'll need a custom subclass for `Endpoint` that represents either an address you're publishing to and/or listening for incoming messages. This will need to parse a custom Uri
+  structure for the transport that identifies the transport type (the Uri scheme) and common properties like 
+* Pair the custom `ITransport` type with a `Configure{tansport name}()` extension method on `IEndpoints` like [ConfigureRabbitMq()](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/RabbitMqTransportExtensions.cs#L36-L39)
+  that let's the user configure transport specific capabilities and connectivity. We're working on the assumption that a single Jasper app will only connect to one broker
+  for each transport type for now
 
 
 
