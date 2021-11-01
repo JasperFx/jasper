@@ -22,12 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>CommonAssemblyInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="dotpulsar" Version="0.9.1" />
   </ItemGroup>
 

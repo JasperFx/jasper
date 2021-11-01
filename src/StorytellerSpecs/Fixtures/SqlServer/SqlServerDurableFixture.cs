@@ -16,6 +16,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
 using Weasel.Core;
+using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
+using SqlTransaction = Microsoft.Data.SqlClient.SqlTransaction;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {

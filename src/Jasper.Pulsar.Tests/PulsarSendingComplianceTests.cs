@@ -2,84 +2,76 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using DotPulsar;
-using DotPulsar.Internal;
-using Jasper.Tracking;
-using Newtonsoft.Json;
-using Shouldly;
+using Jasper.Util;
 using TestingSupport.Compliance;
-using TestMessages;
 using Xunit;
 
-namespace Jasper.DotPulsar.Tests
+namespace Jasper.Pulsar.Tests
 {
-    public class PulsarSendingComplianceTestsShell
+
+    public class Sender : JasperOptions
     {
-        // SAMPLE: PulsarSendReceiveExample
-        private static string Server = "pulsar://localhost:6650";
 
-        public class Sender : JasperOptions
+        public Sender()
         {
-            public Sender(string topic)
-            {
-                Endpoints.ConfigurePulsar(new PulsarClientBuilder()
-                    .ServiceUrl(new Uri(Server)));
-                Endpoints.PublishAllMessages().ToPulsarTopic(new ProducerOptions(topic));
-                Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic + "-reply").UseForReplies();
-            }
+            var topic = Guid.NewGuid().ToString();
+            TopicPath = $"persistent://public/default/compliance{topic}";
+            var listener = $"persistent://public/default/replies{topic}";
+            Endpoints.ConfigurePulsar(e => {});
+            Endpoints.ListenToPulsarTopic(listener).UseForReplies();
+
         }
 
-        public class Receiver : JasperOptions
+        public string TopicPath { get; set; }
+    }
+
+    public class Receiver : JasperOptions
+    {
+        public Receiver(string topicPath)
         {
-            public Receiver(string topic)
-            {
-                Endpoints.ConfigurePulsar(new PulsarClientBuilder().ServiceUrl(new Uri(Server)));
-                Endpoints.PublishAllMessages().ToPulsarTopic(topic + "-reply");
-                Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic);
-            }
-        }
-        // ENDSAMPLE
+            Endpoints.ConnectToLocalPulsar();
+            Endpoints.ListenToPulsarTopic(topicPath);
 
-        public class PulsarSendingComplianceTests : SendingCompliance
-        {
-            public static string Topic { get; } = "persistent://public/default/jasper";
 
-            public PulsarSendingComplianceTests() : base(new Uri(Topic), 30.Seconds())
-            {
-                var sender = new Sender(Topic);
-
-                SenderIs(sender);
-
-                var receiver = new Receiver(Topic);
-
-                ReceiverIs(receiver);
-
-                Thread.Sleep(2000);
-            }
-            
-            [Fact]
-
-            public async Task publish_succeeds()
-            {
-                _ = await theSender.TrackActivity(10.Seconds())
-                    .DoNotAssertOnExceptionsDetected()
-                    .DoNotAssertTimeout()
-                    .ExecuteAndWait(c => c.Publish(new Message1()));
-            }
         }
     }
 
-    public class PoisionMessageException : Exception
+
+    public class PulsarSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
-        public const string PoisonMessage = "Poison message";
-        public PoisionMessageException() : base(PoisonMessage)
+        public PulsarSendingFixture() : base(null)
         {
-            
+
+        }
+
+        public async Task InitializeAsync()
+        {
+            var sender = new Sender();
+            OutboundAddress = PulsarEndpoint.UriFor(sender.TopicPath);
+
+            await SenderIs(sender);
+
+            var receiver = new Receiver(sender.TopicPath);
+
+            await ReceiverIs(receiver);
+        }
+
+        public override void BeforeEach()
+        {
+            // A cooldown makes these tests far more reliable
+            Thread.Sleep(3.Seconds());
+        }
+
+        public Task DisposeAsync()
+        {
+
+            return Task.CompletedTask;
         }
     }
-    
-    public class PoisonEnvelop : Envelope
+
+    [Collection("acceptance")]
+    public class PulsarSendingComplianceTests : SendingCompliance<PulsarSendingFixture>
     {
-        public new byte[] Data => throw new PoisionMessageException();
+
     }
 }

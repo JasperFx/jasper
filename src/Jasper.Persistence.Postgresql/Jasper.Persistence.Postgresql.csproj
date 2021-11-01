@@ -24,8 +24,7 @@
 
     <ItemGroup>
       <PackageReference Include="Baseline" Version="3.2.1" />
-      <PackageReference Include="Weasel.Core" Version="1.0.1" />
-      <PackageReference Include="Weasel.Postgresql" Version="1.0.1" />
+      <PackageReference Include="Weasel.Postgresql" Version="1.0.5" />
     </ItemGroup>
 
 </Project>

@@ -116,6 +116,11 @@ documentation/compilation/frames/injected-fields/
 
             Target("ci", DependsOn("default"));
 
+            Target("pulsar", () =>
+            {
+                Run("docker", "run -it -p 6650:6650 -p 8080:8080 apachepulsar/pulsar:2.8.1  bin/pulsar standalone");
+            });
+
             Target("install", () =>
                 RunNpm("install"));
 

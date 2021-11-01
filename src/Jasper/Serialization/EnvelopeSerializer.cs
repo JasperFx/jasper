@@ -13,9 +13,9 @@ namespace Jasper.Serialization
     {
         public const string CorrelationIdKey = "correlation-id";
         public const string SagaIdKey = "saga-id";
-        private const string IdKey = "id";
+        public const string IdKey = "id";
         public const string CausationIdKey = "parent-id";
-        private const string ContentTypeKey = "content-type";
+        public const string ContentTypeKey = "content-type";
         public const string SourceKey = "source";
         public const string ReplyRequestedKey = "reply-requested";
         public const string DestinationKey = "destination";
@@ -44,6 +44,19 @@ namespace Jasper.Serialization
                 {
                     readData(env, pair.Key, value);
                 }
+            }
+
+        }
+
+        /// <summary>
+        /// Read properties and header values from a dictionary into this envelope object
+        /// </summary>
+        /// <param name="dictionary"></param>
+        public static void ReadPropertiesFromDictionary(IReadOnlyDictionary<string, string> dictionary, Envelope env)
+        {
+            foreach (var pair in dictionary)
+            {
+                readData(env, pair.Key, pair.Value);
             }
 
         }

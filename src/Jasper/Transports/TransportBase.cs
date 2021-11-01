@@ -7,7 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Transports
 {
-    public abstract class TransportBase<TEndpoint> : ITransport where TEndpoint : Endpoint, new()
+    public abstract class TransportBase<TEndpoint> : ITransport where TEndpoint : Endpoint
     {
         public TransportBase(string protocol)
         {
@@ -80,7 +80,7 @@ namespace Jasper.Transports
         }
 
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             foreach (var endpoint in endpoints().OfType<IDisposable>())
             {

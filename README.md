@@ -9,7 +9,7 @@ The [documentation is published here](http://jasperfx.github.io/documentation).
 
 Jasper is a next generation application development framework for distributed server side development in .Net. At the moment, Jasper can be used as:
 
-1. An in-memory command runner 
+1. An in-memory command runner
 1. A robust, but lightweight asynchronous messaging framework (call it a service bus if you have to, but know that there's no centralized broker)
 1. An alternative for authoring HTTP services within ASP.Net Core
 1. A dessert topping (just kidding)
@@ -37,15 +37,20 @@ First off, the Rabbit MQ transport is the most mature of all the Jasper transpor
 
 The basic steps:
 
-* Start a new project named *Jasper.{transport name}* and a matching *Jasper.{transport name}.Testing* project under the `/src` folder of the repository,
+1. If at all possible (i.e., anything but Azure Service Bus), add a docker container to the `docker-compose.yaml` file for the server piece of the new transport
+   for local testing
+1. Start a new project named *Jasper.{transport name}* and a matching *Jasper.{transport name}.Testing* project under the `/src` folder of the repository,
   but under the logical `/Transports` folder of the solution please.
-* If at all possible (i.e., anything but Azure Service Bus), add a docker container to the `docker-compose.yaml` file for the server piece of the new transport
-  for local testing
-* Implement the `ITransport` interface. See [RabbitMqTransport](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/Internal/RabbitMqTransport.cs) as an example. 
-  Any transport specific configuration should be properties of the concrete type.
-* You'll need a custom subclass for `Endpoint` that represents either an address you're publishing to and/or listening for incoming messages. This will need to parse a custom Uri
-  structure for the transport that identifies the transport type (the Uri scheme) and common properties like 
-* Pair the custom `ITransport` type with a `Configure{tansport name}()` extension method on `IEndpoints` like [ConfigureRabbitMq()](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/RabbitMqTransportExtensions.cs#L36-L39)
+
+1. Add a project reference to Jasper itself and a Nuget reference to the .Net adapter library for that transport. E.g., *DotPulsar* or *RabbitMQ.Client*
+1. You'll need a custom subclass for `Endpoint` that represents either an address you're publishing to and/or listening for incoming messages. This will need to parse a custom Uri
+  structure for the transport that identifies the transport type (the Uri scheme) and common properties like queue or topic names. See [RabbitMqEndpoint](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/Internal/RabbitMqEndpoint.cs) for an example
+
+1. Implement the `ITransport` interface. See [RabbitMqTransport](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/Internal/RabbitMqTransport.cs) as an example.
+  Any transport specific configuration should be properties of the concrete type. It's most likely useful to use the `TransportBase<T>` type
+  as the base type, where `T` is the `Endpoint` type
+
+1. Pair the custom `ITransport` type with a `Configure{tansport name}()` extension method on `IEndpoints` like [ConfigureRabbitMq()](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/RabbitMqTransportExtensions.cs#L36-L39)
   that let's the user configure transport specific capabilities and connectivity. We're working on the assumption that a single Jasper app will only connect to one broker
   for each transport type for now
 

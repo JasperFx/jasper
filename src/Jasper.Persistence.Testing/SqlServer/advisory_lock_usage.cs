@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.SqlServer;

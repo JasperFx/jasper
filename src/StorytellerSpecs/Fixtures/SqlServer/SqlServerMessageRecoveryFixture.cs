@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -23,6 +22,8 @@ using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Stub;
+using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
+using SqlTransaction = Microsoft.Data.SqlClient.SqlTransaction;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
