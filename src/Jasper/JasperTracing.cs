@@ -5,6 +5,7 @@ namespace Jasper
     internal static class JasperTracing
     {
         public const string MessageExecution = "message-execution";
+        public const string MessageType = "messaging.message_type";
 
         internal static ActivitySource ActivitySource = new ActivitySource(
             "Jasper",
@@ -33,5 +34,10 @@ namespace Jasper
 
             return activity;
         }
+
+        public const string MessagingConversationId = "messaging.conversation_id";
+        public const string MessagingMessageId = "messaging.message_id";
+        public const string MessagingSystem = "messaging.system";
+        public const string Local = "local";
     }
 }
