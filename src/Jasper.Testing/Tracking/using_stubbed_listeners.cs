@@ -12,23 +12,22 @@ namespace Jasper.Testing.Tracking
         [Fact]
         public async Task track_outgoing_to_tcp_when_stubbed()
         {
-            using (var host = JasperHost.For(options =>
+            using var host = JasperHost.For(options =>
             {
                 options.Endpoints.PublishAllMessages().ToPort(7777);
                 options.Endpoints.StubAllExternallyOutgoingEndpoints();
                 options.Extensions.UseMessageTrackingTestingSupport();
-            }))
-            {
-                var message = new Message1();
+            });
 
-                // The session can be interrogated to see
-                // what activity happened while the tracking was
-                // ongoing
-                var session = await host.SendMessageAndWait(message);
+            var message = new Message1();
 
-                session.FindSingleTrackedMessageOfType<Message1>(EventType.Sent)
-                    .ShouldBeSameAs(message);
-            }
+            // The session can be interrogated to see
+            // what activity happened while the tracking was
+            // ongoing
+            var session = await host.SendMessageAndWait(message);
+
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.Sent)
+                .ShouldBeSameAs(message);
         }
         // ENDSAMPLE
     }
