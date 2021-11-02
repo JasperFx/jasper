@@ -36,6 +36,18 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
+        public void named()
+        {
+            var endpoint = new LocalQueueSettings("foo");
+            endpoint.Mode = EndpointMode.Durable;
+
+            var expression = new SubscriberConfiguration(endpoint);
+            expression.Named("FooEndpoint");
+
+            endpoint.Name.ShouldBe("FooEndpoint");
+        }
+
+        [Fact]
         public void inline()
         {
             var endpoint = new LocalQueueSettings("foo");

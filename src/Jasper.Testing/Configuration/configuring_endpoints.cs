@@ -23,7 +23,7 @@ namespace Jasper.Testing.Configuration
         {
             _host = Host.CreateDefaultBuilder().UseJasper(x =>
             {
-                x.Endpoints.ListenForMessagesFrom("local://one").Sequential();
+                x.Endpoints.ListenForMessagesFrom("local://one").Sequential().Named("one");
                 x.Endpoints.ListenForMessagesFrom("local://two").MaximumThreads(11);
                 x.Endpoints.ListenForMessagesFrom("local://three").DurablyPersistedLocally();
                 x.Endpoints.ListenForMessagesFrom("local://four").DurablyPersistedLocally().BufferedInMemory();
@@ -52,6 +52,12 @@ namespace Jasper.Testing.Configuration
         public void Dispose()
         {
             _host.Dispose();
+        }
+
+        [Fact]
+        public void can_set_the_endpoint_name()
+        {
+            localQueue("one").Name.ShouldBe("one");
         }
 
         [Fact]

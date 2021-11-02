@@ -11,7 +11,7 @@ using Jasper.Util;
 
 namespace StorytellerSpecs.Stub
 {
-    public class StubEndpoint : Endpoint, ISendingAgent, ISender, IDisposable
+    public class StubEndpoint : Endpoint, ISendingAgent, ISender
     {
         private readonly StubTransport _stubTransport;
         public readonly IList<StubChannelCallback> Callbacks = new List<StubChannelCallback>();
