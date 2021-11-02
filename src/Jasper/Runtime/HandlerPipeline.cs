@@ -85,25 +85,33 @@ namespace Jasper.Runtime
 
         public async Task Invoke(Envelope envelope, IChannelCallback channel)
         {
-            var context = _contextPool.Get();
-            context.ReadEnvelope(envelope, channel);
-
+            var activity = JasperTracing.StartExecution(envelope);
             try
             {
-                var continuation = await execute(context, envelope);
-                await continuation.Execute(context, DateTime.UtcNow);
-            }
-            catch (Exception e)
-            {
-                // TODO -- gotta do something on the envelope to get it out of the transport
+                var context = _contextPool.Get();
+                context.ReadEnvelope(envelope, channel);
 
-                // Gotta get the message out of here because it's something that
-                // could never be handled
-                Logger.LogException(e, envelope.Id);
+                try
+                {
+                    var continuation = await execute(context, envelope);
+                    await continuation.Execute(context, DateTime.UtcNow);
+                }
+                catch (Exception e)
+                {
+                    // TODO -- gotta do something on the envelope to get it out of the transport
+
+                    // Gotta get the message out of here because it's something that
+                    // could never be handled
+                    Logger.LogException(e, envelope.Id);
+                }
+                finally
+                {
+                    _contextPool.Return(context);
+                }
             }
             finally
             {
-                _contextPool.Return(context);
+                activity.Stop();
             }
         }
 
@@ -112,28 +120,37 @@ namespace Jasper.Runtime
         {
             if (envelope.Message == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var handler = _graph.HandlerFor(envelope.Message.GetType());
-            if (handler == null)
-                throw new ArgumentOutOfRangeException(nameof(envelope),
-                    $"No known handler for message type {envelope.Message.GetType().FullName}");
-
-            var context = _contextPool.Get();
-            context.ReadEnvelope(envelope, InvocationCallback.Instance);
+            var activity = JasperTracing.StartExecution(envelope);
 
             try
             {
-                await handler.Handle(context, _cancellation);
+                var handler = _graph.HandlerFor(envelope.Message.GetType());
+                if (handler == null)
+                    throw new ArgumentOutOfRangeException(nameof(envelope),
+                        $"No known handler for message type {envelope.Message.GetType().FullName}");
 
-                await context.SendAllQueuedOutgoingMessages();
-            }
-            catch (Exception e)
-            {
-                Logger.LogException(e, message: $"Invocation of {envelope} failed!");
-                throw;
+                var context = _contextPool.Get();
+                context.ReadEnvelope(envelope, InvocationCallback.Instance);
+
+                try
+                {
+                    await handler.Handle(context, _cancellation);
+
+                    await context.SendAllQueuedOutgoingMessages();
+                }
+                catch (Exception e)
+                {
+                    Logger.LogException(e, message: $"Invocation of {envelope} failed!");
+                    throw;
+                }
+                finally
+                {
+                    _contextPool.Return(context);
+                }
             }
             finally
             {
-                _contextPool.Return(context);
+                activity.Stop();
             }
         }
 

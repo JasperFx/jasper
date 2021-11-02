@@ -140,23 +140,19 @@ namespace Jasper.Serialization
 
         public static Envelope[] ReadMany(byte[] buffer)
         {
-            using (var ms = new MemoryStream(buffer))
-            using (var br = new BinaryReader(ms))
-            {
-                var numberOfMessages = br.ReadInt32();
-                var msgs = new Envelope[numberOfMessages];
-                for (var i = 0; i < numberOfMessages; i++) msgs[i] = readSingle(br);
-                return msgs;
-            }
+            using var ms = new MemoryStream(buffer);
+            using var br = new BinaryReader(ms);
+            var numberOfMessages = br.ReadInt32();
+            var msgs = new Envelope[numberOfMessages];
+            for (var i = 0; i < numberOfMessages; i++) msgs[i] = readSingle(br);
+            return msgs;
         }
 
         internal static Envelope Deserialize(byte[] buffer)
         {
-            using (var ms = new MemoryStream(buffer))
-            using (var br = new BinaryReader(ms))
-            {
-                return readSingle(br);
-            }
+            using var ms = new MemoryStream(buffer);
+            using var br = new BinaryReader(ms);
+            return readSingle(br);
         }
 
         private static Envelope readSingle(BinaryReader br)
