@@ -53,6 +53,14 @@ namespace Jasper.Configuration
         /// </summary>
         /// <returns></returns>
         T UseForReplies();
+
+        /// <summary>
+        /// Give this subscriber endpoint a diagnostic name. This will be used
+        /// by Open Telemetry diagnostics if set
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        T Named(string name);
     }
 
     public interface IListenerConfiguration : IListenerConfiguration<IListenerConfiguration>

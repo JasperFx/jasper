@@ -23,6 +23,7 @@ namespace Jasper.Tcp
             HostName = hostName;
             Port = port;
 
+            Name = Uri.ToString();
         }
 
         protected override bool supportsMode(EndpointMode mode)

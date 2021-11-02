@@ -65,5 +65,11 @@ namespace Jasper.Configuration
             endpoint.IsUsedForReplies = true;
             return this.As<TSelf>();
         }
+
+        public TSelf Named(string name)
+        {
+            endpoint.Name = name;
+            return this.As<TSelf>();
+        }
     }
 }

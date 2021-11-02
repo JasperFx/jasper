@@ -25,13 +25,19 @@ namespace Jasper.Configuration
         public T BufferedInMemory()
         {
             _endpoint.Mode = EndpointMode.BufferedInMemory;
-            return TypeExtensions.As<T>(this);
+            return this.As<T>();
         }
 
         public T SendInline()
         {
             _endpoint.Mode = EndpointMode.Inline;
-            return TypeExtensions.As<T>(this);
+            return this.As<T>();
+        }
+
+        public T Named(string name)
+        {
+            _endpoint.Name = name;
+            return this.As<T>();
         }
 
         public T CustomizeOutgoing(Action<Envelope> customize)

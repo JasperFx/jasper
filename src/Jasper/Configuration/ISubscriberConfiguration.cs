@@ -57,11 +57,14 @@ namespace Jasper.Configuration
         /// </summary>
         /// <returns></returns>
         T SendInline();
-    }
 
-    public static class SubscriberConfigurationExtensions
-    {
-
+        /// <summary>
+        /// Give this subscriber endpoint a diagnostic name. This will be used
+        /// by Open Telemetry diagnostics if set
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        T Named(string name);
     }
 
     public interface ISubscriberConfiguration : ISubscriberConfiguration<ISubscriberConfiguration>

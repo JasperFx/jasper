@@ -20,6 +20,8 @@ namespace Jasper.Configuration
     /// </summary>
     public abstract class Endpoint : Subscriber, ICircuitParameters
     {
+        private string _name;
+
         protected Endpoint()
         {
         }
@@ -32,7 +34,11 @@ namespace Jasper.Configuration
         /// <summary>
         ///     Descriptive Name for this listener. Optional.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name ?? Uri?.ToString() ?? "Unknown";
+            set => _name = value;
+        }
 
         /// <summary>
         ///     The actual address of the listener, including the transport scheme
