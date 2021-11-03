@@ -8,6 +8,7 @@ using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Oakton;
+using OpenTelemetry.Trace;
 
 namespace Jasper
 {
@@ -127,6 +128,17 @@ namespace Jasper
         public static Task Invoke<T>(this IHost host, T command)
         {
             return host.Get<ICommandBus>().Invoke(command);
+        }
+
+        /// <summary>
+        /// Add Jasper tracing to your Open Telemetry diagnostic publishing
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        public static TracerProviderBuilder AddJasper(this TracerProviderBuilder builder)
+        {
+
+            return builder.AddSource("Jasper");
         }
     }
 }

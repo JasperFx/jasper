@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="OpenTelemetry" Version="1.2.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Api" Version="1.2.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.2.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
+      <ProjectReference Include="..\OtelMessages\OtelMessages.csproj" />
+    </ItemGroup>
+
+</Project>
