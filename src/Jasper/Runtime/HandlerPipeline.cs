@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.ImTools;
@@ -14,8 +15,6 @@ namespace Jasper.Runtime
 {
     public class HandlerPipeline : IHandlerPipeline
     {
-        private readonly string _activityName;
-
         private readonly CancellationToken _cancellation;
         private readonly ObjectPool<ExecutionContext> _contextPool;
         private readonly HandlerGraph _graph;
@@ -26,6 +25,8 @@ namespace Jasper.Runtime
 
         private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
             ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
+
+        private readonly AdvancedSettings _settings;
 
 
         public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
@@ -39,15 +40,22 @@ namespace Jasper.Runtime
             _cancellation = root.Cancellation;
 
             Logger = logger;
-            _activityName = $"{_root.Settings.ServiceName} process";
+
+            _settings = root.Settings;
         }
 
 
         public IMessageLogger Logger { get; }
 
-        public async Task Invoke(Envelope envelope, IChannelCallback channel)
+        public Task Invoke(Envelope envelope, IChannelCallback channel)
         {
-            var activity = JasperTracing.StartExecution(envelope);
+            using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryProcessSpanName, envelope, ActivityKind.Internal);
+
+            return Invoke(envelope, channel, activity);
+        }
+
+        public async Task Invoke(Envelope envelope, IChannelCallback channel, Activity activity)
+        {
             try
             {
                 var context = _contextPool.Get();
@@ -55,6 +63,7 @@ namespace Jasper.Runtime
 
                 try
                 {
+                    // TODO -- pass the activity into IContinuation?
                     var continuation = await execute(context, envelope);
                     await continuation.Execute(context, DateTime.UtcNow);
                 }
@@ -85,13 +94,7 @@ namespace Jasper.Runtime
                 throw new ArgumentNullException(nameof(envelope.Message));
             }
 
-            // TODO -- probably pull a lot of this into a separate method
-            using var activity = JasperTracing.ActivitySource.StartActivity(_activityName);
-            activity.SetTag(JasperTracing.MessagingSystem, JasperTracing.Local);
-            activity.SetTag(JasperTracing.MessagingMessageId, envelope.Id);
-            activity.SetTag(JasperTracing.MessagingConversationId, envelope.CorrelationId);
-            activity.SetTag(JasperTracing.MessageType, envelope.MessageType); // Jasper specific
-            activity.SetParentId(envelope.CausationId.ToString());
+            using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryProcessSpanName, envelope);
 
             var handler = _graph.HandlerFor(envelope.Message.GetType());
             if (handler == null)

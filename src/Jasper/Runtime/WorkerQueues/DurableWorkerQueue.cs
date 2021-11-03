@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
@@ -87,6 +88,8 @@ namespace Jasper.Runtime.WorkerQueues
 
         public async Task Received(Uri uri, Envelope envelope)
         {
+            using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName, envelope,
+                ActivityKind.Consumer);
             var now = DateTime.UtcNow;
             envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
 

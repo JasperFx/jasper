@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
+      <ProjectReference Include="..\OtelMessages\OtelMessages.csproj" />
+
+      <PackageReference Include="OpenTelemetry" Version="1.2.0-beta1" />
+      <PackageReference Include="OpenTelemetry.Api" Version="1.2.0-beta1" />
+      <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.2.0-beta1" />
+      <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
+    </ItemGroup>
+
+</Project>

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Transports;
@@ -39,14 +40,20 @@ namespace Jasper.Runtime.WorkerQueues
 
         public async Task Received(Uri uri, Envelope envelope)
         {
+            using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName, envelope,
+                ActivityKind.Consumer);
+
             try
             {
                 envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
-                await _pipeline.Invoke(envelope, Listener);
+                await _pipeline.Invoke(envelope, Listener, activity);
                 _logger.IncomingReceived(envelope);
+
+                // TODO -- mark success on the activity?
             }
             catch (Exception e)
             {
+                // TODO -- Mark failures onto the activity?
                 _logger.LogException(e, envelope.Id, "Failure to receive an incoming message");
 
                 try
