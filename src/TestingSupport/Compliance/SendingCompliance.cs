@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
 using Jasper.Persistence;
+using Jasper.Serialization;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,6 +67,8 @@ namespace TestingSupport.Compliance
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
             options.Endpoints.PublishAllMessages().To(OutboundAddress);
+
+            options.Services.AddSingleton<IMessageSerializer, GreenTextWriter>();
         }
 
         public Task ReceiverIs<T>() where T : JasperOptions, new()
@@ -90,7 +94,10 @@ namespace TestingSupport.Compliance
                 .IncludeType<ExecutedMessageGuy>()
                 .IncludeType<ColorHandler>()
                 .IncludeType<ErrorCausingMessageHandler>()
+                .IncludeType<BlueHandler>()
                 .IncludeType<PingHandler>();
+
+            options.Services.AddSingleton<IMessageDeserializer, BlueTextReader>();
 
             options.Handlers.OnException<DivideByZeroException>()
                 .MoveToErrorQueue();
@@ -421,5 +428,73 @@ namespace TestingSupport.Compliance
                 .Id.ShouldBe(ping.Id);
         }
 
+        [Fact] // This test isn't always the most consistent test
+        public async Task send_green_as_text_and_receive_as_blue()
+        {
+            var greenMessage = new GreenMessage {Name = "Magic Johnson"};
+            var envelope = new Envelope(greenMessage)
+            {
+                ContentType = "text/plain"
+            };
+
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .ExecuteAndWait(c => c.SendEnvelope(envelope));
+
+            session.FindSingleTrackedMessageOfType<BlueMessage>()
+                .Name.ShouldBe("Magic Johnson");
+        }
+
+        [Fact]
+        public async Task send_green_that_gets_received_as_blue()
+        {
+            var session = await theSender
+                .TrackActivity()
+                .AlsoTrack(theReceiver)
+                .ExecuteAndWait(c =>
+                    c.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"}));
+
+
+            session.FindSingleTrackedMessageOfType<BlueMessage>()
+                .Name.ShouldBe("Kareem Abdul Jabbar");
+        }
+
     }
+
+
+    // SAMPLE: BlueTextReader
+    public class BlueTextReader : MessageDeserializerBase<BlueMessage>
+    {
+        public BlueTextReader() : base("text/plain")
+        {
+        }
+
+        public override BlueMessage ReadData(byte[] data)
+        {
+            var name = Encoding.UTF8.GetString(data);
+            return new BlueMessage {Name = name};
+        }
+
+        protected override async Task<BlueMessage> ReadData(Stream stream)
+        {
+            var name = await stream.ReadAllTextAsync();
+            return new BlueMessage {Name = name};
+        }
+    }
+    // ENDSAMPLE
+
+        // SAMPLE: GreenTextWriter
+        public class GreenTextWriter : MessageSerializerBase<GreenMessage>
+        {
+            public GreenTextWriter() : base("text/plain")
+            {
+            }
+
+            public override byte[] Write(GreenMessage model)
+            {
+                return Encoding.UTF8.GetBytes(model.Name);
+            }
+        }
+        // ENDSAMPLE
 }

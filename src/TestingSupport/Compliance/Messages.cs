@@ -171,4 +171,16 @@ namespace TestingSupport.Compliance
     {
         public Guid Id { get; set; } = Guid.NewGuid();
     }
+
+    [MessageIdentity("Structural.Typed.Message")]
+    public class BlueMessage
+    {
+        public string Name { get; set; }
+    }
+
+    [MessageIdentity("Structural.Typed.Message")]
+    public class GreenMessage
+    {
+        public string Name { get; set; }
+    }
 }
