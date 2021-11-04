@@ -2,6 +2,8 @@ using System.Diagnostics;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 
+#nullable enable
+
 namespace Jasper
 {
     internal static class JasperTracing
@@ -16,10 +18,10 @@ namespace Jasper
             "Jasper",
             typeof(JasperTracing).Assembly.GetName().Version.ToString());
 
-        public static Activity StartExecution(string spanName, Envelope envelope,
+        public static Activity? StartExecution(string spanName, Envelope envelope,
             ActivityKind kind = ActivityKind.Internal)
         {
-            var activity = ActivitySource.StartActivity(spanName, kind);
+            var activity = ActivitySource.StartActivity(spanName, kind) ?? new Activity(spanName);
             activity.SetTag(MessagingSystem, Local);
             activity.SetTag(MessagingMessageId, envelope.Id);
             activity.SetTag(MessagingConversationId, envelope.CorrelationId);
