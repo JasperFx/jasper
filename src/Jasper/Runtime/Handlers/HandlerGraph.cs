@@ -18,7 +18,7 @@ using LamarCompiler;
 
 namespace Jasper.Runtime.Handlers
 {
-    public class HandlerGraph : IGeneratesCode, IHandlerConfiguration
+    public partial class HandlerGraph : IGeneratesCode, IHandlerConfiguration
     {
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
@@ -48,49 +48,9 @@ namespace Jasper.Runtime.Handlers
 
         internal Task Compiling { get; private set; }
 
-
         internal IContainer Container { get; set; }
 
         public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
-
-        IServiceVariableSource IGeneratesCode.AssemblyTypes(GenerationRules rules, GeneratedAssembly assembly)
-        {
-            foreach (var chain in Chains) chain.AssembleType(rules, assembly, Container);
-
-            return Container.CreateServiceVariableSource();
-        }
-
-        async Task IGeneratesCode.AttachPreBuiltTypes(GenerationRules rules, Assembly assembly,
-            IServiceProvider services)
-        {
-            var typeSet = await TypeRepository.ForAssembly(assembly);
-            var handlerTypes = typeSet.ClosedTypes.Concretes.Where(x => x.CanBeCastTo<MessageHandler>()).ToArray();
-
-            var container = (IContainer) services;
-
-            foreach (var chain in Chains)
-            {
-                var handler = chain.AttachPreBuiltHandler(rules, container, handlerTypes);
-                if (handler != null)
-                {
-                    _handlers = _handlers.Update(chain.MessageType, handler);
-                }
-
-            }
-        }
-
-        Task IGeneratesCode.AttachGeneratedTypes(GenerationRules rules, IServiceProvider services)
-        {
-            foreach (var chain in Chains)
-            {
-                var handler = chain.CreateHandler((IContainer) services);
-                _handlers = _handlers.Update(chain.MessageType, handler);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        string IGeneratesCode.CodeType => "Handlers";
 
         public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
 
