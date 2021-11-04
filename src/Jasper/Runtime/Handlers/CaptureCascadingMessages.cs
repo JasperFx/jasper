@@ -8,10 +8,10 @@ namespace Jasper.Runtime.Handlers
     public class CaptureCascadingMessages : MethodCall
     {
         private static readonly MethodInfo _method =
-            ReflectionHelper.GetMethod<IMessageContext>(x => x.EnqueueCascading(null));
+            ReflectionHelper.GetMethod<IExecutionContext>(x => x.EnqueueCascading(null));
 
 
-        public CaptureCascadingMessages(Variable messages) : base(typeof(IMessageContext),
+        public CaptureCascadingMessages(Variable messages) : base(typeof(IExecutionContext),
             _method)
         {
             Arguments[0] = messages;

@@ -79,12 +79,9 @@ namespace Jasper.Configuration
             MessagingRootService(x => x.ScheduledJobs);
             MessagingRootService(x => x.Runtime);
 
-
-
-
-            For<IMessageContext>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
-            For<ICommandBus>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
-            For<IMessagePublisher>().Use(c => c.GetInstance<IMessagingRoot>().NewContext());
+            For<IExecutionContext>().Use(c => c.GetInstance<IMessagingRoot>().NewContext()).Scoped();
+            For<ICommandBus>().Use<CommandBus>().Scoped();
+            For<IMessagePublisher>().Use<MessagePublisher>().Scoped();
 
 
             // I'm not proud of this code, but you need a non-null

@@ -13,13 +13,11 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public void can_register_a_custom_protocol_per_endpoint()
         {
-            using (var host = JasperHost.For<CustomProtocolApp>())
-            {
-                var endpoint = host.Get<IMessagingRoot>().Options.Endpoints.As<TransportCollection>()
-                    .AllEndpoints().OfType<RabbitMqEndpoint>().Single();
+            using var host = JasperHost.For<CustomProtocolApp>();
+            var endpoint = host.Get<IMessagingRoot>().Options.Endpoints.As<TransportCollection>()
+                .AllEndpoints().OfType<RabbitMqEndpoint>().Single();
 
-                endpoint.Protocol.ShouldBeOfType<CustomProtocol>();
-            }
+            endpoint.Protocol.ShouldBeOfType<CustomProtocol>();
         }
 
         public class CustomProtocolApp : JasperOptions

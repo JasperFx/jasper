@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Baseline;
 using Jasper.Runtime;
 using Jasper.Transports;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -49,9 +46,15 @@ namespace Jasper.RabbitMQ.Internal
             {
                 InitializeAllObjects();
             }
+
+            if (AutoPurgeOnStartup)
+            {
+                PurgeAllQueues();
+            }
         }
 
         public bool AutoProvision { get; set; } = false;
+        public bool AutoPurgeOnStartup { get; set; } = false;
 
         public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
 
@@ -95,85 +98,75 @@ namespace Jasper.RabbitMQ.Internal
 
         public void InitializeAllObjects()
         {
-            using (var connection = BuildConnection())
+            using var connection = BuildConnection();
+            using var channel = connection.CreateModel();
+
+            foreach (var exchange in Exchanges)
             {
-                using (var channel = connection.CreateModel())
-                {
-                    foreach (var exchange in Exchanges)
-                    {
-                        exchange.Declare(channel);
-                    }
-
-                    foreach (var queue in Queues)
-                    {
-                        queue.Declare(channel);
-                    }
-
-                    foreach (var binding in Bindings)
-                    {
-                        binding.Declare(channel);
-                    }
-
-                    channel.Close();
-                }
-
-                connection.Close();
+                exchange.Declare(channel);
             }
+
+            foreach (var queue in Queues)
+            {
+                queue.Declare(channel);
+            }
+
+            foreach (var binding in Bindings)
+            {
+                binding.Declare(channel);
+            }
+
+            channel.Close();
+
+            connection.Close();
         }
 
         public void TeardownAll()
         {
-            using (var connection = BuildConnection())
+            using var connection = BuildConnection();
+            using var channel = connection.CreateModel();
+
+            foreach (var binding in Bindings)
             {
-                using (var channel = connection.CreateModel())
-                {
-
-                    foreach (var binding in Bindings)
-                    {
-                        binding.Teardown(channel);
-                    }
-
-                    foreach (var exchange in Exchanges)
-                    {
-                        exchange.Teardown(channel);
-                    }
-
-                    foreach (var queue in Queues)
-                    {
-                        queue.Teardown(channel);
-                    }
-
-                    channel.Close();
-                }
-
-                connection.Close();
+                binding.Teardown(channel);
             }
+
+            foreach (var exchange in Exchanges)
+            {
+                exchange.Teardown(channel);
+            }
+
+            foreach (var queue in Queues)
+            {
+                queue.Teardown(channel);
+            }
+
+            channel.Close();
+
+            connection.Close();
         }
 
         public void PurgeAllQueues()
         {
-            using (var connection = BuildConnection())
+            using var connection = BuildConnection();
+            using var channel = connection.CreateModel();
+
+            foreach (var queue in Queues)
             {
-                using (var channel = connection.CreateModel())
-                {
-                    foreach (var queue in Queues)
-                    {
-                        queue.Purge(channel);
-                    }
-
-                    var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
-                        .Where(x => Queues.All(q => q.Name != x)).ToArray();
-
-                    foreach (var other in others)
-                    {
-                        channel.QueuePurge(other);
-                    }
-
-                    channel.Close();
-                }
-
-                connection.Close();
+                queue.Purge(channel);
             }
+
+            var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
+                .Where(x => Queues.All(q => q.Name != x)).ToArray();
+
+            foreach (var other in others)
+            {
+                channel.QueuePurge(other);
+            }
+
+            channel.Close();
+
+            connection.Close();
         }
 
         public RabbitMqEndpoint EndpointForQueue(string queueName)

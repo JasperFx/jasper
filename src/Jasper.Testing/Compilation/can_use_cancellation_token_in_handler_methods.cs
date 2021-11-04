@@ -17,7 +17,7 @@ namespace Jasper.Testing.Compilation
             var message = new CancellationTokenUsingMessage();
             await Bus.Invoke(message);
 
-            message.TokenUsed.ShouldNotBeNull();
+            message.TokenUsed.ShouldNotBe(default(CancellationToken));
 
 
         }

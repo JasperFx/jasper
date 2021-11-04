@@ -8,6 +8,7 @@ using Lamar.IoC.Instances;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.SqlServer.Util

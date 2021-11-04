@@ -4,9 +4,9 @@ namespace Jasper.Persistence.Database
 {
     public interface IDatabaseSession
     {
-        DbTransaction Transaction { get; }
+        public DbTransaction Transaction { get; }
         DbConnection Connection { get; }
+        public DbCommand CallFunction(string functionName);
         DbCommand CreateCommand(string sql);
-        DbCommand CallFunction(string functionName);
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Jasper.Util;
 using TestingSupport.Compliance;
 using Xunit;
@@ -51,15 +52,30 @@ namespace Jasper.Testing.Transports.Tcp
         }
     }
 
+    public class LightweightTcpFixture : SendingComplianceFixture, IAsyncLifetime
+    {
+        public LightweightTcpFixture() : base($"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming".ToUri())
+        {
+
+        }
+
+        public async Task InitializeAsync()
+        {
+            await SenderIs(new Sender(PortFinder.GetAvailablePort()));
+
+            await ReceiverIs(new Receiver(OutboundAddress.Port));
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
+        }
+    }
+
 
     [Collection("compliance")]
-    public class LightweightTcpTransportCompliance : SendingCompliance
+    public class LightweightTcpTransportCompliance : SendingCompliance<LightweightTcpFixture>
     {
-        public LightweightTcpTransportCompliance() : base($"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming".ToUri())
-        {
-            SenderIs(new Sender(PortFinder.GetAvailablePort()));
 
-            ReceiverIs(new Receiver(theOutboundAddress.Port));
-        }
     }
 }

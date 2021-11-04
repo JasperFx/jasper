@@ -184,7 +184,7 @@ namespace Jasper.Testing.Configuration
         {
         }
 
-        public void Handle(MovieAdded message, IMessageContext context)
+        public void Handle(MovieAdded message, IExecutionContext context)
         {
         }
 

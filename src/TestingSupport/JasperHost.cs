@@ -1,15 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Oakton.AspNetCore;
+using Oakton;
 
 namespace Jasper
 {
     /// <summary>
-    /// Shortcut to bootstrap simple Jasper applications.
-    /// Syntactical sugar over Host.CreateDefaultBuilder().UseJasper().RunOaktonCommands(args);
+    ///     Shortcut to bootstrap simple Jasper applications.
+    ///     Syntactical sugar over Host.CreateDefaultBuilder().UseJasper().RunOaktonCommands(args);
     /// </summary>
     public static class JasperHost
     {
@@ -67,7 +65,6 @@ namespace Jasper
                 .UseJasper(options)
                 //.ConfigureLogging(x => x.ClearProviders())
                 .Start();
-
         }
 
 

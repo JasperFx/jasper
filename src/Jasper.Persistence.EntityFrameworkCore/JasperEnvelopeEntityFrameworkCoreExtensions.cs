@@ -1,5 +1,10 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
+using Jasper.Persistence.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Jasper.Persistence.EntityFrameworkCore
 {
@@ -18,7 +23,34 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
     public static class JasperEnvelopeEntityFrameworkCoreExtensions
     {
+        /// <summary>
+        /// Persist the active DbContext and flush any persisted messages to the sending
+        /// process to complete the "Outbox"
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="messages"></param>
+        /// <param name="cancellation"></param>
+        public static async Task SaveChangesAndFlushMessages(this DbContext context, IExecutionContext messages, CancellationToken cancellation = default)
+        {
+            await context.SaveChangesAsync(cancellation);
+            var tx = context.Database.CurrentTransaction?.GetDbTransaction();
+            if (tx != null)
+            {
+                try
+                {
+                    await tx.CommitAsync(cancellation);
+                }
+                catch (Exception e)
+                {
+                    if (!e.Message.Contains("has completed"))
+                    {
+                        throw;
+                    }
+                }
+            }
 
+            await messages.SendAllQueuedOutgoingMessages();
+        }
 
         /// <summary>
         /// Enlists the current IMessagingContext in the EF Core DbContext's transaction
@@ -28,7 +60,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
         /// <param name="messaging"></param>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static Task EnlistInTransaction(this IMessageContext messaging, DbContext dbContext)
+        public static Task EnlistInTransaction(this IExecutionContext messaging, DbContext dbContext)
         {
             var transaction = new EFCoreEnvelopeTransaction(dbContext, messaging);
             return messaging.EnlistInTransaction(transaction);
@@ -36,41 +68,5 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
 
 
-        public static void MapEnvelopeStorage(this ModelBuilder builder, string schemaName = "dbo")
-        {
-            builder.Entity<IncomingEnvelope>(map =>
-            {
-                map.ToTable(string.IsNullOrEmpty(schemaName) ? "jasper_incoming_envelopes" : $"{schemaName}.jasper_incoming_envelopes");
-                map.HasKey(x => x.Id);
-                map.Property(x => x.OwnerId).HasColumnName("owner_id");
-                map.Property(x => x.Status).HasColumnName("status").HasConversion<string>();
-                map.Property(x => x.ExecutionTime).HasColumnName("execution_time");
-                map.Property(x => x.Attempts).HasColumnName("attempts");
-                map.Property(x => x.Body).HasColumnName("body");
-            });
-
-            builder.Entity<OutgoingEnvelope>(map =>
-            {
-                map.ToTable(string.IsNullOrEmpty(schemaName) ? "jasper_outgoing_envelopes" : $"{schemaName}.jasper_outgoing_envelopes");
-                map.HasKey(x => x.Id);
-                map.Property(x => x.OwnerId).HasColumnName("owner_id");
-                map.Property(x => x.Destination).HasColumnName("destination");
-                map.Property(x => x.DeliverBy).HasColumnName("deliver_by");
-                map.Property(x => x.Body).HasColumnName("body");
-            });
-
-            builder.Entity<DeadLetterEnvelope>(map =>
-            {
-                map.ToTable(string.IsNullOrEmpty(schemaName) ? "jasper_dead_letters" : $"{schemaName}.jasper_dead_letters");
-                map.HasKey(x => x.Id);
-                map.Property(x => x.Source).HasColumnName("source");
-                map.Property(x => x.MessageType).HasColumnName("message_type");
-                map.Property(x => x.Explanation).HasColumnName("explanation");
-                map.Property(x => x.ExceptionText).HasColumnName("exception_text");
-                map.Property(x => x.ExceptionType).HasColumnName("exception_type");
-                map.Property(x => x.ExceptionMessage).HasColumnName("exception_message");
-                map.Property(x => x.Body).HasColumnName("body");
-            });
-        }
     }
 }

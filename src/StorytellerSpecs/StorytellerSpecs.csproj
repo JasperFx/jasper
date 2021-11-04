@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>StorytellerSpecs</AssemblyName>
     <OutputType>Exe</OutputType>
@@ -21,10 +21,6 @@
     <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
     <ProjectReference Include="..\Jasper.TestSupport.Storyteller\Jasper.TestSupport.Storyteller.csproj" />
     <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="Shouldly" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\IntegrationTests\Servers.cs">

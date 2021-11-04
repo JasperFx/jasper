@@ -24,11 +24,11 @@ namespace Jasper.Testing.Runtime
             original.Id = Guid.NewGuid();
             original.CorrelationId = Guid.NewGuid();
 
-            theContext = theMessagingRoot.ContextFor(original).As<MessageContext>();
+            theContext = theMessagingRoot.ContextFor(original).As<ExecutionContext>();
         }
 
         private readonly MockMessagingRoot theMessagingRoot = new MockMessagingRoot();
-        private readonly MessageContext theContext;
+        private readonly ExecutionContext theContext;
 
         private void routedTo(Envelope envelope, params string[] destinations)
         {

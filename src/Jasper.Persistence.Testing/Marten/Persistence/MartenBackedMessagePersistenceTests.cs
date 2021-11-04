@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper.Persistence.Durability;
@@ -11,7 +12,7 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence
 {
-    public class MartenBackedMessagePersistenceTests : PostgresqlContext, IDisposable
+    public class MartenBackedMessagePersistenceTests : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         public MartenBackedMessagePersistenceTests()
         {
@@ -20,7 +21,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 _.Extensions.UseMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
-                    x.PLV8Enabled = false;
                 });
 
             });
@@ -31,19 +31,29 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
             theEnvelope.Status = EnvelopeStatus.Scheduled;
+            theEnvelope.MessageType = "message1";
+            theEnvelope.ContentType = "application/json";
+        }
 
+        public async Task InitializeAsync()
+        {
             var persistence = theHost.Get<IEnvelopePersistence>();
 
-            persistence.Admin.RebuildSchemaObjects();
+            await persistence.Admin.RebuildSchemaObjects();
+
 
             persistence.ScheduleJob(theEnvelope).Wait(3.Seconds());
 
-            persisted = persistence.Admin
-                .AllIncomingEnvelopes()
-                .GetAwaiter()
-                .GetResult()
-                .FirstOrDefault(x => x.Id == theEnvelope.Id);
+            persisted = (await persistence.Admin
+                .AllIncomingEnvelopes())
 
+                .FirstOrDefault(x => x.Id == theEnvelope.Id);
+        }
+
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -53,7 +63,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         private readonly IHost theHost;
         private readonly Envelope theEnvelope;
-        private readonly Envelope persisted;
+        private Envelope persisted;
 
         [Fact]
         public void should_be_in_scheduled_status()

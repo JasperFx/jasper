@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Pulsar support for Jasper Messaging Systems via DotPulsar</Description>
+    <Authors>Jeremy D. Miller, Jarrod Johnson</Authors>
+    <TargetFramework>net5.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Jasper.Pulsar</AssemblyName>
+    <PackageId>Jasper.DotPulsar</PackageId>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
+    <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/JasperFX/jasper/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper\Jasper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dotpulsar" Version="0.9.1" />
+  </ItemGroup>
+
+</Project>

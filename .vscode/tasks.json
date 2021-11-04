@@ -1,24 +1,29 @@
 {
-    "version": "0.1.0",
+    "version": "2.0.0",
     "command": "dotnet",
-    "isShellCommand": true,
     "args": [],
     "tasks": [
       {
-        "taskName": "build",
+        "label": "build",
+        "type": "shell",
+        "command": "dotnet",
         "args": [
-            "${workspaceRoot}/src/DiagnosticsHarness/DiagnosticsHarness.csproj"
+          "build",
+          "${workspaceRoot}/src/DiagnosticsHarness/DiagnosticsHarness.csproj"
         ],
-        "isBuildCommand": true,
-        "problemMatcher": "$msCompile"
+        "problemMatcher": "$msCompile",
+        "group": "build"
       },
       {
-        "taskName": "restore",
+        "label": "restore",
+        "type": "shell",
+        "command": "dotnet",
         "args": [
-            "${workspaceRoot}/src/DiagnosticsHarness/DiagnosticsHarness.csproj"
+          "restore",
+          "${workspaceRoot}/src/DiagnosticsHarness/DiagnosticsHarness.csproj"
         ],
-        "isBuildCommand": true,
-        "problemMatcher": "$msCompile"
+        "problemMatcher": "$msCompile",
+        "group": "build"
       }
     ]
 }

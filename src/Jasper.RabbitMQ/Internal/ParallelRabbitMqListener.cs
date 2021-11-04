@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Baseline;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -25,7 +29,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             foreach (var listener in _listeners)
             {
-                listener.Dispose();
+                listener.SafeDispose();
             }
         }
 
@@ -45,20 +49,27 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public void Start(IListeningWorkerQueue callback)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             foreach (var listener in _listeners)
             {
-                listener.Start(callback);
+                listener.Start(callback, cancellation);
             }
         }
 
-        public void StartHandlingInline(IHandlerPipeline pipeline)
+        public Task<bool> TryRequeue(Envelope envelope)
         {
-            foreach (var listener in _listeners)
-            {
-                listener.StartHandlingInline(pipeline);
-            }
+            return _listeners.FirstOrDefault()?.TryRequeue(envelope) ?? Task.FromResult(false);
+        }
+
+        public Task Complete(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Complete(envelope);
+        }
+
+        public Task Defer(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Defer(envelope);
         }
     }
 }

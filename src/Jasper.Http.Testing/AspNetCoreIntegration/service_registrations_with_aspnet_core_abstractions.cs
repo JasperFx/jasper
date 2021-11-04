@@ -8,14 +8,6 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
 {
     public class service_registrations_with_aspnet_core_abstractions
     {
-        public interface IService
-        {
-        }
-
-        public class FooService : IService
-        {
-        }
-
         [Fact]
         public void adds_the_core_service_provider_abstractions()
         {
@@ -40,6 +32,14 @@ namespace Jasper.Http.Testing.AspNetCoreIntegration
                 host.Services.GetRequiredService<IContainer>().Model.For<IService>().Default.ImplementationType
                     .ShouldBe(typeof(FooService));
             }
+        }
+
+        public interface IService
+        {
+        }
+
+        public class FooService : IService
+        {
         }
     }
 }

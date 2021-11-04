@@ -52,7 +52,7 @@ namespace Jasper.Testing.Compilation
         public static Message1 LastMessage1;
         public static Message2 LastMessage2;
         public static Envelope LastEnvelope;
-        public static IMessageContext LastContext;
+        public static IExecutionContext LastContext;
 
         public static Task Handle(Message1 message)
         {
@@ -72,7 +72,7 @@ namespace Jasper.Testing.Compilation
             return Task.CompletedTask;
         }
 
-        public static Task Consumes(Message4 message, IMessageContext context)
+        public static Task Consumes(Message4 message, IExecutionContext context)
         {
             LastContext = context;
             return Task.CompletedTask;

@@ -15,12 +15,12 @@ namespace Jasper.Testing.Runtime
             var root = new MockMessagingRoot();
             var original = ObjectMother.Envelope();
 
-            var bus = root.ContextFor(original);
+            var context = root.ContextFor(original);
 
-            bus.Envelope.ShouldBe(original);
-            bus.EnlistedInTransaction.ShouldBeTrue();
+            context.Envelope.ShouldBe(original);
+            context.EnlistedInTransaction.ShouldBeTrue();
 
-            bus.As<MessageContext>().Transaction.ShouldBeOfType<InMemoryEnvelopeTransaction>();
+            context.As<ExecutionContext>().Transaction.ShouldBeSameAs(context);
         }
     }
 }

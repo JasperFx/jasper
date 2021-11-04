@@ -12,7 +12,7 @@ namespace Jasper.Testing.Runtime.Samples
     // SAMPLE: sending-messages-for-static-routing
     public class SendingExample
     {
-        public async Task SendPingsAndPongs(IMessageContext bus)
+        public async Task SendPingsAndPongs(IExecutionContext bus)
         {
             // Publish a message
             await bus.Send(new PingMessage());

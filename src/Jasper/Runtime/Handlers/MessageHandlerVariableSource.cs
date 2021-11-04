@@ -9,7 +9,7 @@ namespace Jasper.Runtime.Handlers
         {
             MessageType = messageType;
 
-            Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IMessageContext.Envelope)}");
+            Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IExecutionContext.Envelope)}");
             Message = new MessageVariable(Envelope, messageType);
         }
 

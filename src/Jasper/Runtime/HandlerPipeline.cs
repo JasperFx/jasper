@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.ImTools;
 using Jasper.ErrorHandling;
 using Jasper.Logging;
 using Jasper.Runtime.Handlers;
@@ -11,6 +12,7 @@ using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Util;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.Extensions.ObjectPool;
 using Polly;
 
 namespace Jasper.Runtime
@@ -21,21 +23,23 @@ namespace Jasper.Runtime
         private readonly NoHandlerContinuation _noHandlers;
 
         private readonly IMessagingRoot _root;
+        private readonly ObjectPool<ExecutionContext> _contextPool;
         private readonly MessagingSerializationGraph _serializer;
 
-        private ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>> _executors =
-            ImHashMap<Type, Func<IMessageContext, Task<IContinuation>>>.Empty;
+        private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
+            ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
 
         private readonly CancellationToken _cancellation;
 
 
         public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
-            NoHandlerContinuation noHandlers, IMessagingRoot root)
+            NoHandlerContinuation noHandlers, IMessagingRoot root, ObjectPool<ExecutionContext> contextPool)
         {
             _serializer = serializers;
             _graph = graph;
             _noHandlers = noHandlers;
             _root = root;
+            _contextPool = contextPool;
             _cancellation = root.Cancellation;
 
             Logger = logger;
@@ -44,14 +48,12 @@ namespace Jasper.Runtime
 
         public IMessageLogger Logger { get; }
 
-        private async Task<IContinuation> execute(IMessageContext context, Envelope envelope)
+        private async Task<IContinuation> execute(IExecutionContext context, Envelope envelope)
         {
             if (envelope.IsExpired())
             {
                 return DiscardExpiredEnvelope.Instance;
             }
-
-            envelope.StartTiming();
 
             // Try to deserialize
             try
@@ -83,22 +85,25 @@ namespace Jasper.Runtime
 
         public async Task Invoke(Envelope envelope, IChannelCallback channel)
         {
-            var context = new MessageContext(_root, envelope);
+            var context = _contextPool.Get();
+            context.ReadEnvelope(envelope, channel);
 
             try
             {
                 var continuation = await execute(context, envelope);
-                await continuation.Execute(_root, channel, envelope, context, DateTime.UtcNow);
+                await continuation.Execute(context, DateTime.UtcNow);
             }
             catch (Exception e)
             {
-                envelope.MarkCompletion(false);
-
                 // TODO -- gotta do something on the envelope to get it out of the transport
 
                 // Gotta get the message out of here because it's something that
                 // could never be handled
                 Logger.LogException(e, envelope.Id);
+            }
+            finally
+            {
+                _contextPool.Return(context);
             }
         }
 
@@ -112,27 +117,27 @@ namespace Jasper.Runtime
                 throw new ArgumentOutOfRangeException(nameof(envelope),
                     $"No known handler for message type {envelope.Message.GetType().FullName}");
 
-
-            var context = new MessageContext(_root, envelope);
-            envelope.StartTiming();
+            var context = _contextPool.Get();
+            context.ReadEnvelope(envelope, InvocationCallback.Instance);
 
             try
             {
                 await handler.Handle(context, _cancellation);
 
                 await context.SendAllQueuedOutgoingMessages();
-
-                envelope.MarkCompletion(true);
             }
             catch (Exception e)
             {
-                envelope.MarkCompletion(false);
                 Logger.LogException(e, message: $"Invocation of {envelope} failed!");
                 throw;
             }
+            finally
+            {
+                _contextPool.Return(context);
+            }
         }
 
-        public Func<IMessageContext, Task<IContinuation>> ExecutorFor(Type messageType)
+        public Func<IExecutionContext, Task<IContinuation>> ExecutorFor(Type messageType)
         {
             if (_executors.TryFind(messageType, out var executor)) return executor;
 
@@ -165,8 +170,6 @@ namespace Jasper.Runtime
                             return new MoveToErrorQueue(e);
                         }
 
-                        messageContext.Envelope.MarkCompletion(true);
-
                         return MessageSucceededContinuation.Instance;
                     }
                     catch (Exception e)
@@ -181,7 +184,6 @@ namespace Jasper.Runtime
                 executor = async messageContext =>
                 {
                     messageContext.Envelope.Attempts++;
-                    messageContext.Envelope.StartTiming();
 
                     try
                     {
@@ -203,8 +205,6 @@ namespace Jasper.Runtime
                                 throw;
                             }
 
-                            messageContext.Envelope.MarkCompletion(true);
-
                             return MessageSucceededContinuation.Instance;
                         }, pollyContext);
                     }
@@ -225,9 +225,8 @@ namespace Jasper.Runtime
             return executor;
         }
 
-        internal void MarkFailure(IMessageContext context, Exception ex)
+        internal void MarkFailure(IExecutionContext context, Exception ex)
         {
-            context.Envelope.MarkCompletion(false);
             _root.MessageLogger.LogException(ex, context.Envelope.Id, "Failure during message processing execution");
             _root.MessageLogger.ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
         }

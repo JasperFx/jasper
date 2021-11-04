@@ -1,19 +1,33 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.Logging;
 using Jasper.Testing.Messaging;
 using Jasper.Tracking;
+using Lamar;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Tracking
 {
-    public class TrackedSessionTester
+    public class TrackedSessionTester : IDisposable
     {
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
-        private readonly TrackedSession theSession = new TrackedSession(null)
-        {
+        private readonly TrackedSession theSession;
+        private readonly IHost _host;
 
-        };
+
+        public TrackedSessionTester()
+        {
+            _host = JasperHost.For(x => x.UseMessageTrackingTestingSupport());
+
+            _host.Services.GetRequiredService<IMessageLogger>()
+                .ShouldBeOfType<MessageTrackingLogger>();
+
+            theSession = new TrackedSession(_host);
+        }
 
         [Fact]
         public async Task throw_if_any_exceptions_happy_path()
@@ -71,5 +85,9 @@ namespace Jasper.Testing.Tracking
         }
 
 
+        public void Dispose()
+        {
+            _host?.Dispose();
+        }
     }
 }

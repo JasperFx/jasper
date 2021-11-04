@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.RabbitMQ.Internal;
+using Jasper.Serialization;
 using Jasper.Util;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -20,7 +21,11 @@ namespace Jasper.RabbitMQ.Tests
                 var mapper = new DefaultRabbitMqProtocol();
                 mapper.WriteFromEnvelope(theOriginal, theEventArgs.BasicProperties);
 
-                return mapper.ReadEnvelope(theEventArgs.Body, theEventArgs.BasicProperties);
+                var envelope = new RabbitMqEnvelope(null, 0);
+
+                mapper.ReadIntoEnvelope(envelope, theEventArgs.BasicProperties, theEventArgs.Body);
+
+                return envelope;
             });
         }
 
@@ -178,14 +183,14 @@ namespace Jasper.RabbitMQ.Tests
         public void ack_requested_false()
         {
             theEnvelope.AckRequested = false;
-            theProperties.Headers.ContainsKey(Envelope.AckRequestedKey).ShouldBeFalse();
+            theProperties.Headers.ContainsKey(EnvelopeSerializer.AckRequestedKey).ShouldBeFalse();
         }
 
         [Fact]
         public void ack_requested_true()
         {
             theEnvelope.AckRequested = true;
-            theProperties.Headers[Envelope.AckRequestedKey].ShouldBe("true");
+            theProperties.Headers[EnvelopeSerializer.AckRequestedKey].ShouldBe("true");
         }
 
         [Fact]
@@ -206,28 +211,28 @@ namespace Jasper.RabbitMQ.Tests
         public void parent_id()
         {
             theEnvelope.CausationId = Guid.NewGuid();
-            theProperties.Headers[Envelope.ParentIdKey].ShouldBe(theEnvelope.CausationId.ToString());
+            theProperties.Headers[EnvelopeSerializer.CausationIdKey].ShouldBe(theEnvelope.CausationId.ToString());
         }
 
         [Fact]
         public void reply_requested_true()
         {
             theEnvelope.ReplyRequested = "somereplymessage";
-            theProperties.Headers[Envelope.ReplyRequestedKey].ShouldBe(theEnvelope.ReplyRequested);
+            theProperties.Headers[EnvelopeSerializer.ReplyRequestedKey].ShouldBe(theEnvelope.ReplyRequested);
         }
 
         [Fact]
         public void reply_uri()
         {
             theEnvelope.ReplyUri = "tcp://localhost:5005".ToUri();
-            theProperties.Headers[Envelope.ReplyUriKey].ShouldBe(theEnvelope.ReplyUri.ToString());
+            theProperties.Headers[EnvelopeSerializer.ReplyUriKey].ShouldBe(theEnvelope.ReplyUri.ToString());
         }
 
         [Fact]
         public void saga_id_key()
         {
             theEnvelope.SagaId = "somesaga";
-            theProperties.Headers[Envelope.SagaIdKey].ShouldBe(theEnvelope.SagaId);
+            theProperties.Headers[EnvelopeSerializer.SagaIdKey].ShouldBe(theEnvelope.SagaId);
         }
 
         [Fact]
@@ -248,7 +253,7 @@ namespace Jasper.RabbitMQ.Tests
         public void the_original_id()
         {
             theEnvelope.CorrelationId = Guid.NewGuid();
-            theProperties.Headers[Envelope.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
+            theProperties.Headers[EnvelopeSerializer.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
         }
     }
 }

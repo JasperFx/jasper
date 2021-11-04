@@ -9,7 +9,7 @@ namespace Jasper.Testing.Samples
     public class PublishingSamples
     {
         // SAMPLE: CustomizingEnvelope
-        public Task CustomizingEnvelope(IMessageContext bus)
+        public Task CustomizingEnvelope(IExecutionContext bus)
         {
             var envelope = new Envelope(new SomeMessage())
             {
@@ -39,7 +39,7 @@ namespace Jasper.Testing.Samples
         }
 
         // SAMPLE: IServiceBus.Invoke
-        public Task Invoke(IMessageContext bus)
+        public Task Invoke(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -54,7 +54,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: IServiceBus.Enqueue
-        public Task Enqueue(IMessageContext bus)
+        public Task Enqueue(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -69,7 +69,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: IServiceBus.Enqueue-to-specific-worker-queue
-        public Task EnqueueToQueue(IMessageContext bus)
+        public Task EnqueueToQueue(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -86,7 +86,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: send-delayed-message
-        public async Task SendScheduledMessage(IMessageContext bus, Guid invoiceId)
+        public async Task SendScheduledMessage(IExecutionContext bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
             {
@@ -103,7 +103,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: schedule-job-locally
-        public async Task ScheduleLocally(IMessageContext bus, Guid invoiceId)
+        public async Task ScheduleLocally(IExecutionContext bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
             {
@@ -120,7 +120,7 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
 
         // SAMPLE: sending-message-with-servicebus
-        public Task SendMessage(IMessageContext bus)
+        public Task SendMessage(IExecutionContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
             // message
@@ -138,7 +138,7 @@ namespace Jasper.Testing.Samples
 
 
         // SAMPLE: publishing-message-with-servicebus
-        public Task PublishMessage(IMessageContext bus)
+        public Task PublishMessage(IExecutionContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
             // message
@@ -156,7 +156,7 @@ namespace Jasper.Testing.Samples
 
 
         // SAMPLE: send-message-to-specific-destination
-        public async Task SendMessageToSpecificDestination(IMessageContext bus)
+        public async Task SendMessageToSpecificDestination(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
             {

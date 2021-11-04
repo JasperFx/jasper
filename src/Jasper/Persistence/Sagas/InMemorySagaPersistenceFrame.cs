@@ -19,19 +19,13 @@ namespace Jasper.Persistence.Sagas
             _sagaId = sagaId;
             _existence = existence;
             Document = new Variable(documentType, this);
-
-            Persistor = new Variable(typeof(InMemoryEnvelopeTransaction), this);
         }
-
-        public Variable Persistor { get; }
 
         public Variable Document { get; }
 
         public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
         {
-            writer.Write($"var {Persistor.Usage} = new {typeof(InMemoryEnvelopeTransaction).FullNameInCode()}();");
-            writer.Write($"await {_context.Usage}.{nameof(IMessageContext.EnlistInTransaction)}({Persistor.Usage});");
-
+            writer.Write($"{_context.Usage}.{nameof(IExecutionContext.UseInMemoryTransaction)}();");
 
             if (_existence == SagaStateExistence.Existing)
                 writer.Write(
@@ -42,7 +36,7 @@ namespace Jasper.Persistence.Sagas
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
-            _context = chain.FindVariable(typeof(IMessageContext));
+            _context = chain.FindVariable(typeof(IExecutionContext));
             yield return _context;
 
             yield return _sagaId;

@@ -52,11 +52,13 @@ namespace Jasper.RabbitMQ.Tests
 
     public class CustomRabbitMqProtocol : DefaultRabbitMqProtocol
     {
-        public override Envelope ReadEnvelope(byte[] data, IBasicProperties props)
+        public override void ReadIntoEnvelope(Envelope envelope, IBasicProperties props, byte[] data)
         {
             // Customize the mappings from RabbitMQ headers to
             // Jasper's Envelope values
-            return base.ReadEnvelope(data, props);
+            base.ReadIntoEnvelope(envelope, props, data);
+
+            envelope.Source = "CustomSystem";
         }
 
         public override void WriteFromEnvelope(Envelope envelope, IBasicProperties properties)

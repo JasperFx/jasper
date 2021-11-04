@@ -2,8 +2,6 @@
 
 using System.Threading.Tasks;
 using Jasper;
-using Microsoft.Extensions.Hosting;
-using Oakton.AspNetCore;
 
 namespace MyApp
 {

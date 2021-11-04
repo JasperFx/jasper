@@ -23,10 +23,7 @@ namespace Jasper.Http.Testing.MVCExtensions
                         http.IncludeType<ControllerUsingJasperRouting>();
                     });
                 })
-                .ConfigureWebHostDefaults(x =>
-                {
-                    x.UseStartup<Startup>();
-                });
+                .ConfigureWebHostDefaults(x => { x.UseStartup<Startup>(); });
 
             System = new SystemUnderTest(builder);
 

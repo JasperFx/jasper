@@ -1,20 +1,17 @@
-using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
-using Jasper.Attributes;
-using Jasper.Configuration;
 using Jasper.Persistence;
 using Jasper.Persistence.Marten;
 using Jasper.Tracking;
 using Jasper.Util;
-using Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using TestingSupport.Compliance;
+using Weasel.Postgresql;
 using Xunit;
 
 namespace Jasper.AzureServiceBus.Tests
@@ -24,55 +21,6 @@ namespace Jasper.AzureServiceBus.Tests
         // TODO -- make this puppy be pulled from an environment variable? Something ignored?
         public const string ConnectionString =
             "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
-
-
-
-
-        public class Sender : JasperOptions
-        {
-
-            public Sender()
-            {
-
-                Endpoints.ConfigureAzureServiceBus(ConnectionString);
-
-                Endpoints.ListenToAzureServiceBusQueue("replies").UseForReplies();
-
-            }
-
-            public string QueueName { get; set; }
-        }
-
-        public class Receiver : JasperOptions
-        {
-            public Receiver(string queueName)
-            {
-                Endpoints.ConfigureAzureServiceBus(ConnectionString);
-
-                Endpoints.ListenToAzureServiceBusQueue("messages");
-
-
-            }
-        }
-
-
-        public class AzureServiceBusSendingComplianceTests : SendingCompliance
-        {
-            public AzureServiceBusSendingComplianceTests() : base($"asb://queue/messages".ToUri())
-            {
-                var sender = new Sender();
-
-                SenderIs(sender);
-
-                var receiver = new Receiver(sender.QueueName);
-
-                ReceiverIs(receiver);
-            }
-        }
-
-
-
-
 
         // SAMPLE: can_stop_and_start_ASB
         [Fact]
@@ -116,7 +64,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -136,7 +84,7 @@ namespace Jasper.AzureServiceBus.Tests
                 });
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             try
@@ -176,7 +124,6 @@ namespace Jasper.AzureServiceBus.Tests
         [Fact]
         public async Task send_message_to_and_receive_through_asb_with_durable_transport_option()
         {
-
             var publisher = JasperHost.For(_ =>
             {
                 _.Endpoints.ConfigureAzureServiceBus(ConnectionString);
@@ -192,7 +139,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -212,7 +159,7 @@ namespace Jasper.AzureServiceBus.Tests
                 _.Handlers.IncludeType<ColorHandler>();
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             try
@@ -236,7 +183,6 @@ namespace Jasper.AzureServiceBus.Tests
         [Fact]
         public async Task send_message_to_and_receive_through_asb_with_named_topic()
         {
-
             var publisher = JasperHost.For(_ =>
             {
                 _.Endpoints.ConfigureAzureServiceBus(ConnectionString);
@@ -250,11 +196,10 @@ namespace Jasper.AzureServiceBus.Tests
                 });
 
 
-
                 _.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            publisher.RebuildMessageStorage();
+            await publisher.RebuildMessageStorage();
 
             var receiver = JasperHost.For(_ =>
             {
@@ -272,10 +217,9 @@ namespace Jasper.AzureServiceBus.Tests
                 });
 
                 _.Handlers.IncludeType<ColorHandler>();
-
             });
 
-            receiver.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             try
@@ -292,9 +236,58 @@ namespace Jasper.AzureServiceBus.Tests
                 publisher.Dispose();
                 receiver.Dispose();
             }
-
         }
 
+
+        public class Sender : JasperOptions
+        {
+            public Sender()
+            {
+                Endpoints.ConfigureAzureServiceBus(ConnectionString);
+
+                Endpoints.ListenToAzureServiceBusQueue("replies").UseForReplies();
+            }
+
+            public string QueueName { get; set; }
+        }
+
+        public class Receiver : JasperOptions
+        {
+            public Receiver(string queueName)
+            {
+                Endpoints.ConfigureAzureServiceBus(ConnectionString);
+
+                Endpoints.ListenToAzureServiceBusQueue("messages");
+            }
+        }
+
+        public class AzureServiceBusSendingFixture : SendingComplianceFixture, IAsyncLifetime
+        {
+            public AzureServiceBusSendingFixture() : base("asb://queue/messages".ToUri())
+            {
+            }
+
+            public async Task InitializeAsync()
+            {
+                var sender = new Sender();
+
+                await SenderIs(sender);
+
+                var receiver = new Receiver(sender.QueueName);
+
+                await ReceiverIs(receiver);
+            }
+
+            public Task DisposeAsync()
+            {
+                return Task.CompletedTask;
+            }
+        }
+
+
+        public class AzureServiceBusSendingComplianceTests : SendingCompliance<AzureServiceBusSendingFixture>
+        {
+        }
     }
 
 
@@ -318,6 +311,4 @@ namespace Jasper.AzureServiceBus.Tests
             //Endpoints.ConfigureAzureServiceBus(config.GetValue<string>("AzureServiceBusConnectionString"));
         }
     }
-
-
 }

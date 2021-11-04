@@ -4,13 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.ImTools;
 using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
-using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Model;
@@ -23,12 +23,14 @@ namespace Jasper.Runtime.Handlers
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();
 
+        private readonly IList<Action> _configurations = new List<Action>();
+        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
+
         private readonly object _groupingLock = new object();
 
-        private ImHashMap<Type, HandlerChain> _chains = ImHashMap<Type, HandlerChain>.Empty;
-
         internal readonly HandlerSource Source = new HandlerSource();
-        private readonly IList<IHandlerPolicy> _globals = new List<IHandlerPolicy>();
+
+        private ImHashMap<Type, HandlerChain> _chains = ImHashMap<Type, HandlerChain>.Empty;
 
         private GenerationRules _generation;
         private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
@@ -44,18 +46,6 @@ namespace Jasper.Runtime.Handlers
             GlobalPolicy<SagaFramePolicy>();
         }
 
-        internal void StartCompiling(JasperOptions options)
-        {
-            Compiling = Source.FindCalls(options).ContinueWith(t =>
-            {
-                var calls = t.Result;
-
-                if (calls != null && calls.Any()) AddRange(calls);
-
-                Group();
-            });
-        }
-
         internal Task Compiling { get; private set; }
 
 
@@ -63,11 +53,110 @@ namespace Jasper.Runtime.Handlers
 
         public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
+        IServiceVariableSource IGeneratesCode.AssemblyTypes(GenerationRules rules, GeneratedAssembly assembly)
+        {
+            foreach (var chain in Chains) chain.AssembleType(rules, assembly, Container);
+
+            return Container.CreateServiceVariableSource();
+        }
+
+        async Task IGeneratesCode.AttachPreBuiltTypes(GenerationRules rules, Assembly assembly,
+            IServiceProvider services)
+        {
+            var typeSet = await TypeRepository.ForAssembly(assembly);
+            var handlerTypes = typeSet.ClosedTypes.Concretes.Where(x => x.CanBeCastTo<MessageHandler>()).ToArray();
+
+            var container = (IContainer) services;
+
+            foreach (var chain in Chains)
+            {
+                var handler = chain.AttachPreBuiltHandler(rules, container, handlerTypes);
+                if (handler != null)
+                {
+                    _handlers = _handlers.Update(chain.MessageType, handler);
+                }
+
+            }
+        }
+
+        Task IGeneratesCode.AttachGeneratedTypes(GenerationRules rules, IServiceProvider services)
+        {
+            foreach (var chain in Chains)
+            {
+                var handler = chain.CreateHandler((IContainer) services);
+                _handlers = _handlers.Update(chain.MessageType, handler);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        string IGeneratesCode.CodeType => "Handlers";
+
         public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
+
+
+        public IHandlerConfiguration Discovery(Action<HandlerSource> configure)
+        {
+            configure(Source);
+            return this;
+        }
+
+        /// <summary>
+        ///     Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
+        {
+            GlobalPolicy(new T());
+        }
+
+        /// <summary>
+        ///     Applies a handler policy to all known message handlers
+        /// </summary>
+        /// <param name="policy"></param>
+        public void GlobalPolicy(IHandlerPolicy policy)
+        {
+            _globals.Add(policy);
+        }
+
+        public void ConfigureHandlerForMessage<T>(Action<HandlerChain> configure)
+        {
+            ConfigureHandlerForMessage(typeof(T), configure);
+        }
+
+        public void ConfigureHandlerForMessage(Type messageType, Action<HandlerChain> configure)
+        {
+            _configurations.Add(() =>
+            {
+                var chain = ChainFor(messageType);
+                if (chain != null)
+                {
+                    configure(chain);
+                }
+            });
+        }
+
+        internal void StartCompiling(JasperOptions options)
+        {
+            Compiling = Source.FindCalls(options).ContinueWith(t =>
+            {
+                var calls = t.Result;
+
+                if (calls != null && calls.Any())
+                {
+                    AddRange(calls);
+                }
+
+                Group();
+            });
+        }
 
         private void assertNotGrouped()
         {
-            if (_hasGrouped) throw new InvalidOperationException("This HandlerGraph has already been grouped/compiled");
+            if (_hasGrouped)
+            {
+                throw new InvalidOperationException("This HandlerGraph has already been grouped/compiled");
+            }
         }
 
         public void AddRange(IEnumerable<HandlerCall> calls)
@@ -95,7 +184,10 @@ namespace Jasper.Runtime.Handlers
 
         public MessageHandler HandlerFor(Type messageType)
         {
-            if (_handlers.TryFind(messageType, out var handler)) return handler;
+            if (_handlers.TryFind(messageType, out var handler))
+            {
+                return handler;
+            }
 
 
             if (_chains.TryFind(messageType, out var chain))
@@ -136,13 +228,9 @@ namespace Jasper.Runtime.Handlers
         }
 
 
-
         internal void Compile(GenerationRules generation, IContainer container)
         {
-            foreach (var policy in _globals)
-            {
-                policy.Apply(this, generation, container);
-            }
+            foreach (var policy in _globals) policy.Apply(this, generation, container);
 
             _generation = generation;
             Container = container;
@@ -150,17 +238,17 @@ namespace Jasper.Runtime.Handlers
             var forwarders = container.GetInstance<Forwarders>();
             AddForwarders(forwarders);
 
-            foreach (var configuration in _configurations)
-            {
-                configuration();
-            }
+            foreach (var configuration in _configurations) configuration();
         }
 
         public void Group()
         {
             lock (_groupingLock)
             {
-                if (_hasGrouped) return;
+                if (_hasGrouped)
+                {
+                    return;
+                }
 
                 _calls.Where(x => x.MessageType.IsConcrete())
                     .GroupBy(x => x.MessageType)
@@ -200,88 +288,6 @@ namespace Jasper.Runtime.Handlers
         public bool CanHandle(Type messageType)
         {
             return _chains.TryFind(messageType, out var chain);
-        }
-
-        IServiceVariableSource IGeneratesCode.AssemblyTypes(GenerationRules rules, GeneratedAssembly assembly)
-        {
-            foreach (var chain in Chains)
-            {
-                chain.AssembleType(rules, assembly, Container);
-            }
-
-            return Container.CreateServiceVariableSource();
-        }
-
-        async Task IGeneratesCode.AttachPreBuiltTypes(GenerationRules rules, Assembly assembly, IServiceProvider services)
-        {
-            var typeSet = await TypeRepository.ForAssembly(assembly);
-            var handlerTypes = typeSet.ClosedTypes.Concretes.Where(x => x.CanBeCastTo<MessageHandler>()).ToArray();
-
-            var container = (IContainer)services;
-
-            foreach (var chain in Chains)
-            {
-                var handler = chain.AttachPreBuiltHandler(rules, container, handlerTypes);
-                if (handler != null) _handlers = _handlers.Update(chain.MessageType, handler);
-            }
-        }
-
-        Task IGeneratesCode.AttachGeneratedTypes(GenerationRules rules, IServiceProvider services)
-        {
-            foreach (var chain in Chains)
-            {
-                var handler = chain.CreateHandler((IContainer) services);
-                _handlers = _handlers.Update(chain.MessageType, handler);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        string IGeneratesCode.CodeType => "Handlers";
-
-
-        public IHandlerConfiguration Discovery(Action<HandlerSource> configure)
-        {
-            configure(Source);
-            return this;
-        }
-
-        /// <summary>
-        ///     Applies a handler policy to all known message handlers
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public void GlobalPolicy<T>() where T : IHandlerPolicy, new()
-        {
-            GlobalPolicy(new T());
-        }
-
-        /// <summary>
-        ///     Applies a handler policy to all known message handlers
-        /// </summary>
-        /// <param name="policy"></param>
-        public void GlobalPolicy(IHandlerPolicy policy)
-        {
-            _globals.Add(policy);
-        }
-
-        private readonly IList<Action> _configurations = new List<Action>();
-
-        public void ConfigureHandlerForMessage<T>(Action<HandlerChain> configure)
-        {
-            ConfigureHandlerForMessage(typeof(T), configure);
-        }
-
-        public void ConfigureHandlerForMessage(Type messageType, Action<HandlerChain> configure)
-        {
-            _configurations.Add(() =>
-            {
-                var chain = ChainFor(messageType);
-                if (chain != null)
-                {
-                    configure(chain);
-                }
-            });
-
         }
     }
 }

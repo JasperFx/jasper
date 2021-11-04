@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ.Internal
             _transport = transport;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             teardownConnection();
         }
@@ -38,10 +38,19 @@ namespace Jasper.RabbitMQ.Internal
             _connection = _transport.BuildConnection();
 
             Channel = _connection.CreateModel();
+
+            Channel.ModelShutdown += ChannelOnModelShutdown;
+        }
+
+        private void ChannelOnModelShutdown(object? sender, ShutdownEventArgs e)
+        {
+            EnsureConnected();
         }
 
         protected void teardownConnection()
         {
+            Channel.ModelShutdown -= ChannelOnModelShutdown;
+            Channel?.Close();
             Channel?.Abort();
             Channel?.Dispose();
             _connection?.Close();
@@ -53,14 +62,5 @@ namespace Jasper.RabbitMQ.Internal
             State = AgentState.Disconnected;
         }
 
-        internal void Stop()
-        {
-            lock (_locker)
-            {
-                if (State == AgentState.Disconnected) return;
-
-                teardownConnection();
-            }
-        }
     }
 }

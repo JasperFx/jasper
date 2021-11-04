@@ -47,7 +47,7 @@ namespace Jasper.Testing.Compilation
             return _host.Get<HandlerGraph>().HandlerFor(typeof(TMessage));
         }
 
-        public async Task<IMessageContext> Execute<TMessage>(TMessage message)
+        public async Task<IExecutionContext> Execute<TMessage>(TMessage message)
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);

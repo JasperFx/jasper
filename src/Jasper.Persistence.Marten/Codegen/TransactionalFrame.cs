@@ -52,7 +52,7 @@ namespace Jasper.Persistence.Marten.Codegen
             _isUsingPersistence = chain.IsUsingMartenPersistence();
 
             // Inside of messaging. Not sure how this is gonna work for HTTP yet
-            _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
+            _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
 
             yield return _store;
             if (_context != null) yield return _context;

@@ -63,10 +63,16 @@ namespace Jasper.Http.Internal
         {
             var s = new StringBuilder('{');
             if (Key != null)
+            {
                 s.Append(Key);
+            }
+
             s.Append(',');
             if (Value != null)
+            {
                 s.Append(Value);
+            }
+
             s.Append('}');
             return s.ToString();
         }
@@ -88,8 +94,8 @@ namespace Jasper.Http.Internal
         {
             unchecked
             {
-                return ((object) Key == null ? 0 : Key.GetHashCode() * 397)
-                       ^ ((object) Value == null ? 0 : Value.GetHashCode());
+                return (Key == null ? 0 : Key.GetHashCode() * 397)
+                       ^ (Value == null ? 0 : Value.GetHashCode());
             }
         }
     }
@@ -184,7 +190,10 @@ namespace Jasper.Http.Internal
             var t = this;
             var hash = key.GetHashCode();
             while (t.Height != 0 && t.Hash != hash)
+            {
                 t = hash < t.Hash ? t.Left : t.Right;
+            }
+
             return t.Height != 0 && (ReferenceEquals(key, t.Key) || key.Equals(t.Key))
                 ? t.Value
                 : t.GetConflictedValueOrDefault(key, defaultValue);
@@ -201,7 +210,9 @@ namespace Jasper.Http.Internal
 
             var t = this;
             while (t.Height != 0 && t._data.Hash != hash)
+            {
                 t = hash < t._data.Hash ? t.Left : t.Right;
+            }
 
             if (t.Height != 0 && (ReferenceEquals(key, t._data.Key) || key.Equals(t._data.Key)))
             {
@@ -220,13 +231,16 @@ namespace Jasper.Http.Internal
         public IEnumerable<KV<K, V>> Enumerate()
         {
             if (Height == 0)
+            {
                 yield break;
+            }
 
             var parents = new ImHashMap<K, V>[Height];
 
             var node = this;
             var parentCount = -1;
             while (node.Height != 0 || parentCount != -1)
+            {
                 if (node.Height != 0)
                 {
                     parents[++parentCount] = node;
@@ -238,11 +252,16 @@ namespace Jasper.Http.Internal
                     yield return new KV<K, V>(node.Key, node.Value);
 
                     if (node.Conflicts != null)
+                    {
                         for (var i = 0; i < node.Conflicts.Length; i++)
+                        {
                             yield return node.Conflicts[i];
+                        }
+                    }
 
                     node = node.Right;
                 }
+            }
         }
 
         /// <summary>
@@ -363,15 +382,25 @@ namespace Jasper.Http.Internal
         private ImHashMap<K, V> UpdateValueAndResolveConflicts(K key, V value, Update<V> update, bool updateOnly)
         {
             if (Conflicts == null) // add only if updateOnly is false.
+            {
                 return updateOnly
                     ? this
                     : new ImHashMap<K, V>(new Data(Hash, Key, Value, new[] {new KV<K, V>(key, value)}), Left, Right);
+            }
 
             var found = Conflicts.Length - 1;
-            while (found >= 0 && !Equals(Conflicts[found].Key, Key)) --found;
+            while (found >= 0 && !Equals(Conflicts[found].Key, Key))
+            {
+                --found;
+            }
+
             if (found == -1)
             {
-                if (updateOnly) return this;
+                if (updateOnly)
+                {
+                    return this;
+                }
+
                 var newConflicts = new KV<K, V>[Conflicts.Length + 1];
                 Array.Copy(Conflicts, 0, newConflicts, 0, Conflicts.Length);
                 newConflicts[Conflicts.Length] = new KV<K, V>(key, value);
@@ -387,21 +416,32 @@ namespace Jasper.Http.Internal
         internal V GetConflictedValueOrDefault(K key, V defaultValue)
         {
             if (Conflicts != null)
+            {
                 for (var i = Conflicts.Length - 1; i >= 0; --i)
+                {
                     if (Equals(Conflicts[i].Key, key))
+                    {
                         return Conflicts[i].Value;
+                    }
+                }
+            }
+
             return defaultValue;
         }
 
         private bool TryFindConflictedValue(K key, out V value)
         {
             if (Height != 0 && Conflicts != null)
+            {
                 for (var i = Conflicts.Length - 1; i >= 0; --i)
+                {
                     if (Equals(Conflicts[i].Key, key))
                     {
                         value = Conflicts[i].Value;
                         return true;
                     }
+                }
+            }
 
             value = default;
             return false;
@@ -416,10 +456,12 @@ namespace Jasper.Http.Internal
                 var leftLeft = left.Left;
                 var leftRight = left.Right;
                 if (leftRight.Height - leftLeft.Height == 1)
+                {
                     return new ImHashMap<K, V>(leftRight._data,
                         new ImHashMap<K, V>(left._data,
                             leftLeft, leftRight.Left), new ImHashMap<K, V>(_data,
                             leftRight.Right, Right));
+                }
 
                 // todo: do we need this?
                 // one rotation:
@@ -437,10 +479,12 @@ namespace Jasper.Http.Internal
                 var rightLeft = right.Left;
                 var rightRight = right.Right;
                 if (rightLeft.Height - rightRight.Height == 1)
+                {
                     return new ImHashMap<K, V>(rightLeft._data,
                         new ImHashMap<K, V>(_data,
                             Left, rightLeft.Left), new ImHashMap<K, V>(right._data,
                             rightLeft.Right, rightRight));
+                }
 
                 return new ImHashMap<K, V>(right._data,
                     new ImHashMap<K, V>(_data,
@@ -458,7 +502,9 @@ namespace Jasper.Http.Internal
         internal ImHashMap<K, V> Remove(int hash, K key, bool ignoreKey = false)
         {
             if (Height == 0)
+            {
                 return this;
+            }
 
             ImHashMap<K, V> result;
             if (hash == Hash) // found node
@@ -466,10 +512,14 @@ namespace Jasper.Http.Internal
                 if (ignoreKey || Equals(Key, key))
                 {
                     if (!ignoreKey && Conflicts != null)
+                    {
                         return ReplaceRemovedWithConflicted();
+                    }
 
                     if (Height == 1) // remove node
+                    {
                         return Empty;
+                    }
 
                     if (Right.IsEmpty)
                     {
@@ -483,7 +533,11 @@ namespace Jasper.Http.Internal
                     {
                         // we have two children, so remove the next highest node and replace this node with it.
                         var successor = Right;
-                        while (!successor.Left.IsEmpty) successor = successor.Left;
+                        while (!successor.Left.IsEmpty)
+                        {
+                            successor = successor.Left;
+                        }
+
                         result = new ImHashMap<K, V>(successor._data,
                             Left, Right.Remove(successor.Hash, default, true));
                     }
@@ -507,7 +561,9 @@ namespace Jasper.Http.Internal
             }
 
             if (result.Height == 1)
+            {
                 return result;
+            }
 
             return result.KeepBalance();
         }
@@ -515,24 +571,41 @@ namespace Jasper.Http.Internal
         private ImHashMap<K, V> TryRemoveConflicted(K key)
         {
             var index = Conflicts.Length - 1;
-            while (index >= 0 && !Equals(Conflicts[index].Key, key)) --index;
+            while (index >= 0 && !Equals(Conflicts[index].Key, key))
+            {
+                --index;
+            }
+
             if (index == -1) // key is not found in conflicts - just return
+            {
                 return this;
+            }
 
             if (Conflicts.Length == 1)
+            {
                 return new ImHashMap<K, V>(new Data(Hash, Key, Value), Left, Right);
+            }
+
             var shrinkedConflicts = new KV<K, V>[Conflicts.Length - 1];
             var newIndex = 0;
             for (var i = 0; i < Conflicts.Length; ++i)
+            {
                 if (i != index)
+                {
                     shrinkedConflicts[newIndex++] = Conflicts[i];
+                }
+            }
+
             return new ImHashMap<K, V>(new Data(Hash, Key, Value, shrinkedConflicts), Left, Right);
         }
 
         private ImHashMap<K, V> ReplaceRemovedWithConflicted()
         {
             if (Conflicts.Length == 1)
+            {
                 return new ImHashMap<K, V>(new Data(Hash, Conflicts[0].Key, Conflicts[0].Value), Left, Right);
+            }
+
             var shrinkedConflicts = new KV<K, V>[Conflicts.Length - 1];
             Array.Copy(Conflicts, 1, shrinkedConflicts, 0, shrinkedConflicts.Length);
             return new ImHashMap<K, V>(new Data(Hash, Conflicts[0].Key, Conflicts[0].Value, shrinkedConflicts), Left,

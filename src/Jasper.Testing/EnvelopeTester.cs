@@ -69,7 +69,7 @@ namespace Jasper.Testing
         [Fact]
         public void has_a_correlation_id_by_default()
         {
-            new Envelope().Id.ShouldNotBeNull();
+            new Envelope().Id.ShouldNotBe(Guid.Empty);
 
             new Envelope().Id.ShouldNotBe(new Envelope().Id);
             new Envelope().Id.ShouldNotBe(new Envelope().Id);
@@ -174,7 +174,6 @@ namespace Jasper.Testing
             envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
             envelope.OwnerId.ShouldBe(uniqueNodeId);
 
-            envelope.ReceivedAt.ShouldBe(uri);
         }
 
 
@@ -192,7 +191,6 @@ namespace Jasper.Testing
             envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
             envelope.OwnerId.ShouldBe(uniqueNodeId);
 
-            envelope.ReceivedAt.ShouldBe(uri);
         }
 
         [Fact]
@@ -209,7 +207,6 @@ namespace Jasper.Testing
             envelope.Status.ShouldBe(EnvelopeStatus.Scheduled);
             envelope.OwnerId.ShouldBe(TransportConstants.AnyNode);
 
-            envelope.ReceivedAt.ShouldBe(uri);
         }
 
 

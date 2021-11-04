@@ -15,9 +15,11 @@ using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using ExecutionContext = Jasper.Runtime.ExecutionContext;
 
 namespace Jasper.Testing.Runtime
 {
+
     public class MockMessagingRoot : IMessagingRoot
     {
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
@@ -32,9 +34,9 @@ namespace Jasper.Testing.Runtime
 
         public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
 
-        public IMessageContext NewContext()
+        public IExecutionContext NewContext()
         {
-            return new MessageContext(this);
+            return new ExecutionContext(this);
         }
 
         public AdvancedSettings Settings { get; } = new AdvancedSettings(null);
@@ -57,9 +59,12 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IMessageContext ContextFor(Envelope envelope)
+        public IExecutionContext ContextFor(Envelope envelope)
         {
-            return new MessageContext(this, envelope);
+            var context = new ExecutionContext(this);
+            context.ReadEnvelope(envelope, InvocationCallback.Instance);
+
+            return context;
         }
 
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();

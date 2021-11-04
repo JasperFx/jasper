@@ -14,14 +14,10 @@ namespace Jasper.Runtime
         /// <summary>
         /// Post-message handling action
         /// </summary>
-        /// <param name="root"></param>
-        /// <param name="channel"></param>
-        /// <param name="envelope"></param>
-        /// <param name="messages"></param>
+        /// <param name="execution"></param>
         /// <param name="utcNow">The current time</param>
         /// <returns></returns>
-        Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages, DateTime utcNow);
+        Task Execute(IExecutionContext execution, DateTime utcNow);
     }
 
     // ENDSAMPLE

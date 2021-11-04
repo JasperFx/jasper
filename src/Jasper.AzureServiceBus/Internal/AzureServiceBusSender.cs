@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Azure.ServiceBus;
@@ -12,19 +11,17 @@ namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusSender : ISender
     {
-        private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusEndpoint _endpoint;
+        private readonly ITransportProtocol<Message> _protocol;
         private readonly AzureServiceBusTransport _transport;
-        private ISenderClient _sender;
-        public bool SupportsNativeScheduledSend { get; } = true;
-        public Uri Destination => _endpoint.Uri;
-        
+        private readonly ISenderClient _sender;
+
         public AzureServiceBusSender(AzureServiceBusEndpoint endpoint, AzureServiceBusTransport transport)
         {
             _protocol = endpoint.Protocol;
             _endpoint = endpoint;
             _transport = transport;
-            
+
             // The variance here should be in constructing the sending & buffer blocks
             if (_endpoint.TopicName.IsEmpty())
             {
@@ -42,6 +39,9 @@ namespace Jasper.AzureServiceBus.Internal
                         _transport.RetryPolicy);
             }
         }
+
+        public bool SupportsNativeScheduledSend { get; } = true;
+        public Uri Destination => _endpoint.Uri;
 
         public void Dispose()
         {
@@ -61,7 +61,7 @@ namespace Jasper.AzureServiceBus.Internal
 
             return _sender.SendAsync(message);
         }
-        
+
         public async Task<bool> Ping(CancellationToken cancellationToken)
         {
             var envelope = Envelope.ForPing(_endpoint.Uri);

@@ -6,7 +6,6 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
 
 namespace Jasper.Runtime.WorkerQueues
 {
@@ -16,7 +15,7 @@ namespace Jasper.Runtime.WorkerQueues
         private readonly AdvancedSettings _settings;
         private readonly ActionBlock<Envelope> _receiver;
         private readonly InMemoryScheduledJobProcessor _scheduler;
-        private IListener _agent;
+        private IListener _listener;
 
         public LightweightWorkerQueue(Endpoint endpoint, ITransportLogger logger,
             IHandlerPipeline pipeline, AdvancedSettings settings)
@@ -71,10 +70,10 @@ namespace Jasper.Runtime.WorkerQueues
 
         public void StartListening(IListener listener)
         {
-            _agent = listener;
-            _agent.Start(this);
+            _listener = listener;
+            _listener.Start(this, _settings.Cancellation);
 
-            Address = _agent.Address;
+            Address = _listener.Address;
         }
 
         public Uri Address { get; set; }
@@ -82,8 +81,8 @@ namespace Jasper.Runtime.WorkerQueues
 
         public ListeningStatus Status
         {
-            get => _agent.Status;
-            set => _agent.Status = value;
+            get => _listener.Status;
+            set => _listener.Status = value;
         }
 
         Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
@@ -109,12 +108,14 @@ namespace Jasper.Runtime.WorkerQueues
                 await Enqueue(envelope);
             }
 
+            await _listener.Complete(envelope);
+
             _logger.IncomingReceived(envelope);
         }
 
         public void Dispose()
         {
-            // nothing
+            _receiver.Complete();
         }
 
         // Separated for testing here.
@@ -122,17 +123,11 @@ namespace Jasper.Runtime.WorkerQueues
         {
             if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
-            Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
-
-            foreach (var envelope in scheduled)
+            foreach (var envelope in envelopes)
             {
-                _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
-            }
-
-
-            foreach (var message in incoming)
-            {
-                await Enqueue(message);
+                envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+                await Enqueue(envelope);
+                await _listener.Complete(envelope);
             }
 
             _logger.IncomingBatchReceived(envelopes);
@@ -144,9 +139,19 @@ namespace Jasper.Runtime.WorkerQueues
             return Task.CompletedTask;
         }
 
-        Task IChannelCallback.Defer(Envelope envelope)
+        async Task IChannelCallback.Defer(Envelope envelope)
         {
-            return Enqueue(envelope);
+            if (_listener == null)
+            {
+                await Enqueue(envelope);
+                return;
+            }
+
+            var nativelyRequeued = await _listener.TryRequeue(envelope);
+            if (!nativelyRequeued)
+            {
+                await Enqueue(envelope);
+            }
         }
 
         Task IHasNativeScheduling.MoveToScheduledUntil(Envelope envelope, DateTimeOffset time)

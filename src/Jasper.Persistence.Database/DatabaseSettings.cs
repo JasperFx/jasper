@@ -3,10 +3,12 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using Weasel.Core;
+using DbCommandBuilder = System.Data.Common.DbCommandBuilder;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract class DatabaseSettings : DataAccessor
+    public abstract class DatabaseSettings
     {
         private string _schemaName;
 
@@ -24,9 +26,9 @@ namespace Jasper.Persistence.Database
             {
                 _schemaName = value;
 
-                IncomingFullName = $"{value}.{IncomingTable}";
-                OutgoingFullName = $"{value}.{OutgoingTable}";
-                DeadLetterFullName = $"{value}.{DeadLetterTable}";
+                IncomingFullName = $"{value}.{DatabaseConstants.IncomingTable}";
+                OutgoingFullName = $"{value}.{DatabaseConstants.OutgoingTable}";
+                DeadLetterFullName = $"{value}.{DatabaseConstants.DeadLetterTable}";
             }
         }
 
@@ -68,10 +70,9 @@ namespace Jasper.Persistence.Database
             }
         }
 
-        public CommandBuilder ToCommandBuilder()
+        public Weasel.Core.DbCommandBuilder ToCommandBuilder()
         {
-            var cmd = CreateConnection().CreateCommand("");
-            return new CommandBuilder(cmd);
+            return CreateConnection().ToCommandBuilder();
         }
 
 

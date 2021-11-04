@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Baseline;
+using Baseline.ImTools;
 using Jasper.Attributes;
 using Jasper.Configuration;
 

@@ -1,25 +1,33 @@
 using System;
+using System.Threading;
 using Jasper.Logging;
 using Jasper.Transports;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public abstract class MessageConsumerBase : DefaultBasicConsumer, IDisposable
+    public class WorkerQueueMessageConsumer : DefaultBasicConsumer, IDisposable
     {
-        protected readonly Uri _address;
-        protected readonly IModel _channel;
-        protected readonly ITransportLogger _logger;
-        protected readonly IRabbitMqProtocol Mapper;
+        private readonly Uri _address;
+        private readonly RabbitMqSender _rabbitMqSender;
+        private readonly CancellationToken _cancellation;
+        private readonly RabbitMqListener Listener;
+        private readonly IListeningWorkerQueue _workerQueue;
+        private readonly ITransportLogger _logger;
+        private readonly IRabbitMqProtocol Mapper;
         private bool _latched;
 
-        public MessageConsumerBase(ITransportLogger logger, IModel channel,
-            IRabbitMqProtocol mapper, Uri address) : base(channel)
+        public WorkerQueueMessageConsumer(IListeningWorkerQueue workerQueue, ITransportLogger logger,
+            RabbitMqListener listener,
+            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender, CancellationToken cancellation)
         {
+            _workerQueue = workerQueue;
             _logger = logger;
-            _channel = channel;
+            Listener = listener;
             Mapper = mapper;
             _address = address;
+            _rabbitMqSender = rabbitMqSender;
+            _cancellation = cancellation;
         }
 
         public void Dispose()
@@ -27,69 +35,44 @@ namespace Jasper.RabbitMQ.Internal
             _latched = true;
         }
 
-
-
-
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
             IBasicProperties properties, byte[] body)
         {
-            if (_latched)
+            if (_latched || _cancellation.IsCancellationRequested)
             {
-                _channel.BasicReject(deliveryTag, true);
+                Listener.Channel.BasicReject(deliveryTag, true);
                 return;
             }
 
-            Envelope envelope;
+            var envelope = new RabbitMqEnvelope(Listener, deliveryTag);
             try
             {
-                envelope = Mapper.ReadEnvelope(body, properties);
+                Mapper.ReadIntoEnvelope(envelope, properties, body);
             }
             catch (Exception e)
             {
                 _logger.LogException(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
-                _channel.BasicAck(deliveryTag, false);
+                Model.BasicAck(envelope.DeliveryTag, false);
 
                 return;
             }
 
             if (envelope.IsPing())
             {
-                _channel.BasicAck(deliveryTag, false);
+                Model.BasicAck(deliveryTag, false);
                 return;
             }
 
-            // THIS NEEDS TO BE VARIABLE
-            executeEnvelope(deliveryTag, envelope);
-        }
-
-        protected abstract void executeEnvelope(ulong deliveryTag, Envelope envelope);
-    }
-
-    public class WorkerQueueMessageConsumer : MessageConsumerBase
-    {
-        private readonly IListeningWorkerQueue _callback;
-
-        public WorkerQueueMessageConsumer(IListeningWorkerQueue callback, ITransportLogger logger, IModel channel,
-            IRabbitMqProtocol mapper, Uri address) : base(logger, channel, mapper, address)
-        {
-            _callback = callback;
-        }
-
-        protected override void executeEnvelope(ulong deliveryTag, Envelope envelope)
-        {
-            _callback.Received(_address, envelope).ContinueWith(t =>
+            _workerQueue.Received(_address, envelope).ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
                     _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");
-                    _channel.BasicNack(deliveryTag, false, true);
-                }
-                else
-                {
-                    _channel.BasicAck(deliveryTag, false);
+                    Model.BasicNack(deliveryTag, false, true);
                 }
             });
         }
-
     }
+
+
 }

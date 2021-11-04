@@ -40,7 +40,7 @@ namespace Jasper.Persistence.Database
 
             if (ShouldFlushOutgoingMessages)
             {
-                writer.Write($"await {_context.Usage}.{nameof(IMessageContext.SendAllQueuedOutgoingMessages)}();");
+                writer.Write($"await {_context.Usage}.{nameof(IExecutionContext.SendAllQueuedOutgoingMessages)}();");
             }
 
             writer.Write($"{_connection.Usage}.{nameof(DbConnection.Close)}();");
@@ -55,9 +55,9 @@ namespace Jasper.Persistence.Database
 
 
             if (ShouldFlushOutgoingMessages)
-                _context = chain.FindVariable(typeof(IMessageContext));
+                _context = chain.FindVariable(typeof(IExecutionContext));
             else
-                _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
+                _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
 
             if (_context != null) yield return _context;
         }

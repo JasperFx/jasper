@@ -17,9 +17,9 @@ namespace Jasper.Testing.Samples
     // SAMPLE: NoCascadingHandler
     public class NoCascadingHandler
     {
-        private readonly IMessageContext _bus;
+        private readonly IExecutionContext _bus;
 
-        public NoCascadingHandler(IMessageContext bus)
+        public NoCascadingHandler(IExecutionContext bus)
         {
             _bus = bus;
         }
@@ -48,9 +48,9 @@ namespace Jasper.Testing.Samples
     // SAMPLE: Request/Replay-with-cascading
     public class Requester
     {
-        private readonly IMessageContext _bus;
+        private readonly IExecutionContext _bus;
 
-        public Requester(IMessageContext bus)
+        public Requester(IExecutionContext bus)
         {
             _bus = bus;
         }

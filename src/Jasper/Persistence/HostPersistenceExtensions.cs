@@ -1,4 +1,5 @@
-﻿using Jasper.Persistence.Durability;
+﻿using System.Threading.Tasks;
+using Jasper.Persistence.Durability;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,9 +12,9 @@ namespace Jasper.Persistence
         ///     Drops and recreates the Sql Server backed persistence database objects
         /// </summary>
         /// <param name="host"></param>
-        public static void RebuildMessageStorage(this IHost host)
+        public static Task RebuildMessageStorage(this IHost host)
         {
-            host.Services.GetRequiredService<IEnvelopePersistence>().Admin.RebuildSchemaObjects();
+            return host.Services.GetRequiredService<IEnvelopePersistence>().Admin.RebuildSchemaObjects();
         }
 
         /// <summary>
@@ -21,9 +22,9 @@ namespace Jasper.Persistence
         /// envelopes from your underlying database
         /// </summary>
         /// <param name="host"></param>
-        public static void ClearAllPersistedMessages(this IHost host)
+        public static Task ClearAllPersistedMessages(this IHost host)
         {
-            host.Services.GetRequiredService<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
+            return host.Services.GetRequiredService<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
         }
 
     }

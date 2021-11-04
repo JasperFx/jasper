@@ -1,6 +1,8 @@
 ﻿using System.Data.SqlClient;
 using Jasper.Attributes;
 using Jasper.Persistence.Database;
+using Weasel.Core;
+using SqlTransaction = Microsoft.Data.SqlClient.SqlTransaction;
 
 namespace StorytellerSpecs.Fixtures.SqlServer.App
 {

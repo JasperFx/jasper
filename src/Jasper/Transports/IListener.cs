@@ -1,20 +1,16 @@
 ﻿using System;
-using Jasper.Runtime;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jasper.Transports
 {
-    public interface IListener : IDisposable
+    public interface IListener : IChannelCallback, IDisposable
     {
         Uri Address { get; }
         ListeningStatus Status { get; set; }
-        void Start(IListeningWorkerQueue callback);
+        void Start(IListeningWorkerQueue callback, CancellationToken cancellation);
 
-        /// <summary>
-        /// This starts a listener in the "inline" native transport mode
-        /// such that the incoming messages are processed inline rather than
-        /// being queued locally
-        /// </summary>
-        /// <param name="pipeline"></param>
-        void StartHandlingInline(IHandlerPipeline pipeline);
+        Task<bool> TryRequeue(Envelope envelope);
     }
+
 }

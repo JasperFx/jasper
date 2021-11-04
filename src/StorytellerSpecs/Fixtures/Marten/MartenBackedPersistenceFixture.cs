@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Fixtures.Marten.App;
+using Weasel.Core;
 
 namespace StorytellerSpecs.Fixtures.Marten
 {
@@ -47,7 +48,6 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             _receiverStore = DocumentStore.For(_ =>
             {
-                _.PLV8Enabled = false;
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "receiver";
 
@@ -56,12 +56,12 @@ namespace StorytellerSpecs.Fixtures.Marten
             });
 
             _receiverStore.Advanced.Clean.CompletelyRemoveAll();
-            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabase();
+            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync()
+                .GetAwaiter().GetResult();
 
 
             _sendingStore = DocumentStore.For(_ =>
             {
-                _.PLV8Enabled = false;
                 _.Connection(Servers.PostgresConnectionString);
                 _.DatabaseSchemaName = "sender";
             });
@@ -72,7 +72,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
-            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabase();
+            _sendingStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync().GetAwaiter().GetResult();
 
             _receivers = new LightweightCache<string, IHost>(key =>
             {
@@ -162,7 +162,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         public Task SendFrom([Header("Sending Node")] [Default("Sender1")]
             string sender, [Header("Message Name")] string name)
         {
-            return _senders[sender].Services.GetService<IMessageContext>().Send(new TraceMessage {Name = name});
+            return _senders[sender].Services.GetService<IExecutionContext>().Send(new TraceMessage {Name = name});
         }
 
         [FormatAs("Send {count} messages from {sender}")]
@@ -173,7 +173,7 @@ namespace StorytellerSpecs.Fixtures.Marten
             for (var i = 0; i < count; i++)
             {
                 var msg = new TraceMessage {Name = Guid.NewGuid().ToString()};
-                await runtime.Services.GetService<IMessageContext>().Send(msg);
+                await runtime.Services.GetService<IExecutionContext>().Send(msg);
             }
         }
 
@@ -215,7 +215,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from receiver.{DataAccessor.IncomingTable}")
+                        $"select count(*) from receiver.{DatabaseConstants.IncomingTable}")
                     .ExecuteScalar();
             }
         }
@@ -228,7 +228,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 conn.Open();
 
                 return (long) conn.CreateCommand(
-                        $"select count(*) from sender.{DataAccessor.OutgoingTable}")
+                        $"select count(*) from sender.{DatabaseConstants.OutgoingTable}")
                     .ExecuteScalar();
             }
         }

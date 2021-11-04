@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using ImTools;
+using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime;
@@ -18,12 +18,12 @@ namespace Jasper.Transports
     public class TransportRuntime : ITransportRuntime
     {
 
-        private readonly IList<IListeningWorkerQueue> _listeners = new List<IListeningWorkerQueue>();
+        private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private readonly IList<ISubscriber> _subscribers = new List<ISubscriber>();
 
         private readonly object _channelLock = new object();
 
-        private ImTools.ImHashMap<Uri, ISendingAgent> _senders = ImTools.ImHashMap<Uri, ISendingAgent>.Empty;
+        private ImHashMap<Uri, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty;
 
 
         private readonly IMessagingRoot _root;
@@ -115,7 +115,7 @@ namespace Jasper.Transports
             _subscribers.Fill(subscriber);
         }
 
-        private ImTools.ImHashMap<string, ISendingAgent> _localSenders = ImTools.ImHashMap<string, ISendingAgent>.Empty;
+        private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
         public ISendingAgent AgentForLocalQueue(string queueName)
         {
@@ -176,7 +176,7 @@ namespace Jasper.Transports
         public void AddListener(IListener listener, Endpoint settings)
         {
 
-            IWorkerQueue worker = null;
+            IDisposable worker = null;
             switch (settings.Mode)
             {
                 case EndpointMode.Durable:
@@ -189,15 +189,12 @@ namespace Jasper.Transports
                     break;
 
                 case EndpointMode.Inline:
-                    listener.StartHandlingInline(_root.Pipeline);
+                    worker = new InlineWorkerQueue(_root.Pipeline, _root.TransportLogger, listener, _root.Settings);
                     break;
             }
 
-            if (worker != null)
-            {
-                _listeners.Add(worker);
-                worker.StartListening(listener);
-            }
+            if (worker is IWorkerQueue q) q.StartListening(listener);
+            _disposables.Add(worker);
         }
 
         public Task Stop()
@@ -237,9 +234,14 @@ namespace Jasper.Transports
                 kv.Value.SafeDispose();
             }
 
-            foreach (var listener in _listeners)
+            foreach (var listener in _disposables)
             {
                 listener.SafeDispose();
+            }
+
+            foreach (var transport in _transports.OfType<IDisposable>())
+            {
+                transport.Dispose();
             }
         }
 

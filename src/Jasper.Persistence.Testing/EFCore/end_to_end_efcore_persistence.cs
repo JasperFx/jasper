@@ -41,7 +41,7 @@ namespace Jasper.Persistence.Testing.EFCore
         public end_to_end_efcore_persistence(EFCorePersistenceContext context)
         {
             Host = context.theHost;
-            Host.RebuildMessageStorage();
+
         }
 
         public IHost Host { get; }
@@ -49,21 +49,25 @@ namespace Jasper.Persistence.Testing.EFCore
         [Fact]
         public async Task persist_an_outgoing_envelope()
         {
+            await Host.RebuildMessageStorage();
+
             var envelope = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
                 OwnerId = 5,
                 Destination = TransportConstants.RetryUri,
                 DeliverBy = new DateTimeOffset(DateTime.Today),
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
-            var messaging = Host.Services.GetRequiredService<IMessageContext>();
+            var messaging = Host.Services.GetRequiredService<IExecutionContext>();
 
             var transaction = new EFCoreEnvelopeTransaction(context, messaging);
 
             await transaction.Persist(envelope);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAndFlushMessages(messaging);
 
             var persisted = await Host.Services.GetRequiredService<IEnvelopePersistence>()
                 .Admin.AllOutgoingEnvelopes();
@@ -84,6 +88,8 @@ namespace Jasper.Persistence.Testing.EFCore
         [Fact]
         public async Task persist_an_incoming_envelope()
         {
+            await Host.RebuildMessageStorage();
+
             var envelope = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
@@ -91,16 +97,18 @@ namespace Jasper.Persistence.Testing.EFCore
                 ExecutionTime = DateTime.Today.AddDays(1),
                 DeliverBy = new DateTimeOffset(DateTime.Today),
                 Status = EnvelopeStatus.Scheduled,
-                Attempts = 2
+                Attempts = 2,
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
-            var messaging = Host.Services.GetRequiredService<IMessageContext>();
+            var messaging = Host.Services.GetRequiredService<IExecutionContext>();
 
             var transaction = new EFCoreEnvelopeTransaction(context, messaging);
 
             await transaction.ScheduleJob(envelope);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAndFlushMessages(messaging);
 
             var persisted = await Host.Services.GetRequiredService<IEnvelopePersistence>()
                 .Admin.AllIncomingEnvelopes();

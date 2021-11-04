@@ -1,6 +1,7 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Logging;
-using Jasper.Runtime;
 using Jasper.Transports;
 using RabbitMQ.Client;
 
@@ -13,8 +14,10 @@ namespace Jasper.RabbitMQ.Internal
         private readonly RabbitMqTransport _transport;
         private readonly IRabbitMqProtocol _mapper;
         private IListeningWorkerQueue _callback;
-        private MessageConsumerBase _consumer;
+        private WorkerQueueMessageConsumer _consumer;
         private readonly string _routingKey;
+        private readonly RabbitMqSender _sender;
+        private CancellationToken _cancellation = CancellationToken.None;
 
         public RabbitMqListener(ITransportLogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
@@ -26,6 +29,15 @@ namespace Jasper.RabbitMQ.Internal
             Address = endpoint.Uri;
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
+
+            _sender = new RabbitMqSender(_endpoint, _transport);
+        }
+
+        public override void Dispose()
+        {
+            _callback.Dispose();
+            base.Dispose();
+            _sender.Dispose();
         }
 
         public ListeningStatus Status
@@ -42,20 +54,23 @@ namespace Jasper.RabbitMQ.Internal
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
-                        Start(_callback);
+                        Start(_callback, _cancellation);
                         break;
                 }
             }
         }
 
-        public void Start(IListeningWorkerQueue callback)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             if (callback == null) return;
+
+            _cancellation = cancellation;
+            _cancellation.Register(teardownConnection);
 
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, Channel, _mapper, Address)
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender, _cancellation)
             {
                 ConsumerTag = Guid.NewGuid().ToString()
             };
@@ -63,19 +78,40 @@ namespace Jasper.RabbitMQ.Internal
             Channel.BasicConsume(_consumer, _routingKey);
         }
 
-        public void StartHandlingInline(IHandlerPipeline pipeline)
+        public Task<bool> TryRequeue(Envelope envelope)
         {
-            EnsureConnected();
-
-            _consumer = new HandlerPipelineMessageConsumer(new RabbitMqSender(_endpoint, _transport), pipeline, _logger, Channel, _mapper, Address)
+            if (envelope is RabbitMqEnvelope e)
             {
-                ConsumerTag = Guid.NewGuid().ToString()
-            };
+                e.Listener.Requeue(e);
+                return Task.FromResult(true);
+            }
 
-            Channel.BasicConsume(_consumer, _routingKey);
+            return Task.FromResult(false);
         }
-
 
         public Uri Address { get; }
+        public Task Complete(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Complete(envelope);
+        }
+
+        public Task Defer(Envelope envelope)
+        {
+            return RabbitMqChannelCallback.Instance.Defer(envelope);
+        }
+
+        public Task Requeue(RabbitMqEnvelope envelope)
+        {
+            if (!envelope.Acked)
+            {
+                Channel.BasicNack(envelope.DeliveryTag, false, false);
+            }
+            return _sender.Send(envelope);
+        }
+
+        public void Complete(ulong deliveryTag)
+        {
+            Channel.BasicAck(deliveryTag, false);
+        }
     }
 }

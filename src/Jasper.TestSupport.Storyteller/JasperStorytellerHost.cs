@@ -111,7 +111,7 @@ namespace Jasper.TestSupport.Storyteller
             return CellHandling;
         }
 
-        public IExecutionContext CreateContext()
+        public StoryTeller.Engine.IExecutionContext CreateContext()
         {
             beforeEach();
             return new JasperContext(this);
@@ -172,7 +172,7 @@ namespace Jasper.TestSupport.Storyteller
         }
 
 
-        public class JasperContext : IExecutionContext, IJasperContext
+        public class JasperContext : StoryTeller.Engine.IExecutionContext, IJasperContext
         {
             private readonly JasperStorytellerHost<T> _parent;
 
@@ -231,11 +231,6 @@ namespace Jasper.TestSupport.Storyteller
         {
             _options.Services.AddSingleton(logger);
             Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_options).Start();
-        }
-
-        public Task Send<T>(T message)
-        {
-            return Host.Services.GetService<IMessageContext>().Send(message);
         }
 
         internal void Teardown()

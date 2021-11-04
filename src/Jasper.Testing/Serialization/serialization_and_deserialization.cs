@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Baseline;
+using Jasper.Serialization;
 using Jasper.Util;
 using Shouldly;
 using TestingSupport;
@@ -22,17 +23,12 @@ namespace Jasper.Testing.Serialization
                 SagaId = Guid.NewGuid().ToString()
             };
 
-
-            sentAttempts = typeof(Envelope).GetProperty("SentAttempts", BindingFlags.Instance | BindingFlags.NonPublic);
-            sentAttempts.SetValue(outgoing, 2);
-
             outgoing.Headers.Add("name", "Jeremy");
             outgoing.Headers.Add("state", "Texas");
         }
 
         private readonly Envelope outgoing;
         private Envelope _incoming;
-        private readonly PropertyInfo sentAttempts;
 
         private Envelope incoming
         {
@@ -40,8 +36,8 @@ namespace Jasper.Testing.Serialization
             {
                 if (_incoming == null)
                 {
-                    var messageBytes = outgoing.Serialize();
-                    _incoming = Envelope.Deserialize(messageBytes);
+                    var messageBytes = EnvelopeSerializer.Serialize(outgoing);
+                    _incoming = EnvelopeSerializer.Deserialize(messageBytes);
                 }
 
                 return _incoming;
@@ -158,13 +154,6 @@ namespace Jasper.Testing.Serialization
         }
 
         [Fact]
-        public void received_at()
-        {
-            outgoing.ReceivedAt = "http://server1".ToUri();
-            incoming.ReceivedAt.ShouldBe(outgoing.ReceivedAt);
-        }
-
-        [Fact]
         public void reply_requested()
         {
             outgoing.ReplyRequested = Guid.NewGuid().ToString();
@@ -183,12 +172,6 @@ namespace Jasper.Testing.Serialization
             incoming.SentAt.ShouldBe(outgoing.SentAt);
         }
 
-
-        [Fact]
-        public void sent_attempts()
-        {
-            sentAttempts.GetValue(incoming).As<int>().ShouldBe(2);
-        }
 
         [Fact]
         public void source()

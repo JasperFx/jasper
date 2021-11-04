@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
 
@@ -9,38 +8,37 @@ namespace Jasper.ErrorHandling
     public class NoHandlerContinuation : IContinuation
     {
         private readonly IMissingHandler[] _handlers;
+        private readonly IMessagingRoot _root;
 
-        public NoHandlerContinuation(IMissingHandler[] handlers)
+        public NoHandlerContinuation(IMissingHandler[] handlers, IMessagingRoot root)
         {
             _handlers = handlers;
+            _root = root;
         }
 
-        public async Task Execute(IMessagingRoot root, IChannelCallback channel, Envelope envelope,
-            IQueuedOutgoingMessages messages,
+        public async Task Execute(IExecutionContext execution,
             DateTime utcNow)
         {
-            root.MessageLogger.NoHandlerFor(envelope);
+            execution.Logger.NoHandlerFor(execution.Envelope);
 
             foreach (var handler in _handlers)
                 try
                 {
-                    await handler.Handle(envelope, root);
+                    await handler.Handle(execution.Envelope, _root);
                 }
                 catch (Exception e)
                 {
-                    root.MessageLogger.LogException(e);
+                    execution.Logger.LogException(e);
                 }
 
-            if (envelope.AckRequested) await root.Acknowledgements.SendAcknowledgement(envelope);
+            if (execution.Envelope.AckRequested) await execution.SendAcknowledgement(execution.Envelope);
 
-            await channel.Complete(envelope);
-
-            envelope.MarkCompletion(false);
+            await execution.Complete();
 
             // These two lines are important to make the message tracking work
             // if there is no handler
-            root.MessageLogger.ExecutionFinished(envelope);
-            root.MessageLogger.MessageSucceeded(envelope);
+            execution.Logger.ExecutionFinished(execution.Envelope);
+            execution.Logger.MessageSucceeded(execution.Envelope);
         }
     }
 }

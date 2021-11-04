@@ -49,17 +49,17 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task see_the_customizations_happen_inside_of_message_context()
         {
-            var context = Host.Get<IMessageContext>();
+            var context = Host.Get<IExecutionContext>();
 
             // Just to force the message context to pool up the envelope instead
             // of sending it out
-            await context.EnlistInTransaction(new InMemoryEnvelopeTransaction());
+            context.UseInMemoryTransaction();
 
             var mySpecialMessage = new MySpecialMessage();
 
             await context.SendToDestination("tcp://localhost:2001".ToUri(), mySpecialMessage);
 
-            var outgoing = context.As<MessageContext>().Outstanding.Single();
+            var outgoing = context.As<ExecutionContext>().Outstanding.Single();
 
             outgoing.Headers["special"].ShouldBe("true");
         }

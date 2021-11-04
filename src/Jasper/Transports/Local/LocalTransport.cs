@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Transports.Sending;

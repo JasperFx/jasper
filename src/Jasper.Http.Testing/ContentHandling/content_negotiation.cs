@@ -26,7 +26,6 @@ namespace Jasper.Http.Testing.ContentHandling
 
             Services.For<IRequestReader>().Add<XmlReader<SpecialInput>>();
             Services.For<IResponseWriter>().Add<XmlWriter<SpecialOutput>>();
-
         }
     }
 

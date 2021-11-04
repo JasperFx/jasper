@@ -1,17 +1,12 @@
 using System;
 using Baseline;
 using Jasper.Configuration;
-using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 
 namespace Jasper.AzureServiceBus.Internal
 {
     public class AzureServiceBusTopicRouter : TopicRouter<AzureServiceBusSubscriberConfiguration>
     {
-        public AzureServiceBusTopicRouter()
-        {
-        }
-
         public override Uri BuildUriForTopic(string topicName)
         {
             var endpoint = new AzureServiceBusEndpoint
@@ -31,7 +26,5 @@ namespace Jasper.AzureServiceBus.Internal
 
             return new AzureServiceBusSubscriberConfiguration((AzureServiceBusEndpoint) endpoint);
         }
-
     }
-
 }

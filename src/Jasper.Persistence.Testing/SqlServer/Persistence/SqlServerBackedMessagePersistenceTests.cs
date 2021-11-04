@@ -41,7 +41,8 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             var persistor = theHost.Get<SqlServerEnvelopePersistence>();
 
-            persisted = persistor.AllIncomingEnvelopes().FirstOrDefault(x => x.Id == theEnvelope.Id);
+            persisted = persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+                .FirstOrDefault(x => x.Id == theEnvelope.Id);
         }
 
         public void Dispose()

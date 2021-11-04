@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
 using Jasper.AzureServiceBus.Internal;
 using Jasper.Configuration;
-using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -102,9 +100,6 @@ namespace Jasper.AzureServiceBus.Tests
                 TopicName = "key1",
                 Mode = EndpointMode.Durable
             }.ReplyUri().ShouldBe(new Uri("asb://topic/key1/durable"));
-
-
         }
-
     }
 }

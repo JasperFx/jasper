@@ -12,7 +12,6 @@ using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Jasper.Transports.Local;
-using Jasper.Transports.Tcp;
 using Jasper.Util;
 using Marten;
 using NSubstitute;
@@ -31,7 +30,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
-            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
         }
@@ -44,26 +42,14 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             persisted.Status.ShouldBe(EnvelopeStatus.Incoming);
             persisted.OwnerId.ShouldBe(theSettings.UniqueNodeId);
-            persisted.ReceivedAt.ShouldBe(theUri);
 
             assertEnvelopeWasEnqueued(envelope);
         }
 
-        [Fact]
-        public async Task handling_a_single_scheduled_envelope()
-        {
-            var envelope = scheduledEnvelope();
-            var persisted = (await afterReceivingTheEnvelopes()).Single();
 
-            persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
-            persisted.OwnerId.ShouldBe(TransportConstants.AnyNode);
-            persisted.ReceivedAt.ShouldBe(theUri);
-
-            assertEnvelopeWasNotEnqueued(envelope);
-        }
     }
 
-    public class MartenBackedListenerContext : PostgresqlContext, IDisposable
+    public class MartenBackedListenerContext : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin =
             new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
@@ -72,7 +58,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        private readonly IHandlerPipeline thePipeline;
+        private IHandlerPipeline thePipeline;
         protected AdvancedSettings theSettings;
         protected DurableWorkerQueue theWorkerQueue;
 
@@ -82,14 +68,15 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theStore = DocumentStore.For(_ =>
             {
                 _.Connection(Servers.PostgresConnectionString);
-                _.PLV8Enabled = false;
             });
+        }
 
-
+        public async Task InitializeAsync()
+        {
             theSettings = new AdvancedSettings(null);
 
 
-            EnvelopeStorageAdmin.RebuildSchemaObjects();
+            await EnvelopeStorageAdmin.RebuildSchemaObjects();
 
             var persistence =
                 new PostgresqlEnvelopePersistence(
@@ -103,6 +90,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theWorkerQueue.StartListening(agent);
         }
 
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
+        }
+
         public void Dispose()
         {
             theStore?.Dispose();
@@ -112,7 +105,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             var env = new Envelope
             {
-                Data = new byte[] {1, 2, 3, 4}
+                Data = new byte[] {1, 2, 3, 4},
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             theEnvelopes.Add(env);
@@ -125,7 +120,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ExecutionTime = DateTime.UtcNow.Add(1.Hours())
+                ExecutionTime = DateTime.UtcNow.Add(1.Hours()),
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             theEnvelopes.Add(env);
@@ -138,7 +135,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ExecutionTime = DateTime.UtcNow.Add(-1.Hours())
+                ExecutionTime = DateTime.UtcNow.Add(-1.Hours()),
+                ContentType = "application/json",
+                MessageType = "foo"
             };
 
             theEnvelopes.Add(env);
@@ -146,7 +145,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             return env;
         }
 
-        protected async Task<Envelope[]> afterReceivingTheEnvelopes()
+        protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
             await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 

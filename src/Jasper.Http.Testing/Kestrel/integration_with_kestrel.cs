@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +28,6 @@ namespace Jasper.Http.Testing.Kestrel
                     web.UseKestrel(o => o.ListenLocalhost(5025));
                     web.UseUrls("http://localhost:5025");
                     web.UseStartup<Startup>();
-
-
                 })
                 .Start();
         }
@@ -59,14 +56,14 @@ namespace Jasper.Http.Testing.Kestrel
 
     public class integration_with_kestrel : IClassFixture<DefaultApp>
     {
+        private readonly DefaultApp _app;
+        private readonly ITestOutputHelper _output;
+
         public integration_with_kestrel(DefaultApp app, ITestOutputHelper output)
         {
             _app = app;
             _output = output;
         }
-
-        private readonly DefaultApp _app;
-        private readonly ITestOutputHelper _output;
 
         [Fact]
         public async Task get_404_when_resource_is_null()
@@ -140,9 +137,21 @@ namespace Jasper.Http.Testing.Kestrel
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((User) obj);
         }
 

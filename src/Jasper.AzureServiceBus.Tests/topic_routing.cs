@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Runtime.Routing;
-using Jasper.Tracking;
 using Jasper.Util;
 using Shouldly;
 using Xunit;
@@ -12,38 +10,6 @@ namespace Jasper.AzureServiceBus.Tests
 {
     public class topics_routing
     {
-        // SAMPLE: AzureServiceBus-TopicSendingApp
-        public class TopicSendingApp : JasperOptions
-        {
-            public TopicSendingApp( )
-            {
-                Endpoints.ConfigureAzureServiceBus(asb =>
-                {
-                    asb.ConnectionString = end_to_end.ConnectionString;
-                });
-
-                // This directs Jasper to send all messages to
-                // an Azure Service Bus topic name derived from the
-                // message type
-                Endpoints.PublishAllMessages()
-                    .ToAzureServiceBusTopics()
-                    .OutgoingTopicNameIs<NumberMessage>(x => x.Topic);
-            }
-        }
-
-        // ENDSAMPLE
-
-        public class ImplicitTopicSendingApp : JasperOptions
-        {
-            public ImplicitTopicSendingApp()
-            {
-                Endpoints.ConfigureAzureServiceBus(asb =>
-                {
-                    asb.ConnectionString = end_to_end.ConnectionString;
-                });
-            }
-        }
-
         [Fact]
         public void route_to_topics_by_type()
         {
@@ -80,7 +46,7 @@ namespace Jasper.AzureServiceBus.Tests
                 var router = host.Get<IEnvelopeRouter>();
 
                 // Overriding the topic name here
-                router.RouteOutgoingByEnvelope(new Envelope(new Topic1()){TopicName = "two"})
+                router.RouteOutgoingByEnvelope(new Envelope(new Topic1()) {TopicName = "two"})
                     .Single()
                     .Destination
                     .ShouldBe("asb://topic/two".ToUri());
@@ -95,7 +61,7 @@ namespace Jasper.AzureServiceBus.Tests
                 var router = host.Get<IEnvelopeRouter>();
 
                 // Overriding the topic name here
-                router.RouteOutgoingByEnvelope(new Envelope(new Topic1()){TopicName = "two"})
+                router.RouteOutgoingByEnvelope(new Envelope(new Topic1()) {TopicName = "two"})
                     .Single()
                     .Destination
                     .ShouldBe("asb://topic/two".ToUri());
@@ -146,7 +112,6 @@ namespace Jasper.AzureServiceBus.Tests
         }
 
 
-
         [Theory]
         [InlineData("one", "asb://topic/one")]
         [InlineData("two", "asb://topic/two")]
@@ -169,9 +134,32 @@ namespace Jasper.AzureServiceBus.Tests
             }
         }
 
+        // SAMPLE: AzureServiceBus-TopicSendingApp
+        public class TopicSendingApp : JasperOptions
+        {
+            public TopicSendingApp()
+            {
+                Endpoints.ConfigureAzureServiceBus(asb => { asb.ConnectionString = end_to_end.ConnectionString; });
 
+                // This directs Jasper to send all messages to
+                // an Azure Service Bus topic name derived from the
+                // message type
+                Endpoints.PublishAllMessages()
+                    .ToAzureServiceBusTopics()
+                    .OutgoingTopicNameIs<NumberMessage>(x => x.Topic);
+            }
+        }
+
+        // ENDSAMPLE
+
+        public class ImplicitTopicSendingApp : JasperOptions
+        {
+            public ImplicitTopicSendingApp()
+            {
+                Endpoints.ConfigureAzureServiceBus(asb => { asb.ConnectionString = end_to_end.ConnectionString; });
+            }
+        }
     }
-
 
 
     public class TopicHandler
@@ -188,17 +176,25 @@ namespace Jasper.AzureServiceBus.Tests
         {
         }
 
-        public void Handle(NumberMessage message){}
+        public void Handle(NumberMessage message)
+        {
+        }
     }
 
     [Topic("one")]
-    public class Topic1{}
+    public class Topic1
+    {
+    }
 
     [Topic("two")]
-    public class Topic2{}
+    public class Topic2
+    {
+    }
 
     [Topic("three")]
-    public class Topic3{}
+    public class Topic3
+    {
+    }
 
     public class NumberMessage
     {

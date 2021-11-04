@@ -1,15 +1,17 @@
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Testing.Messaging;
 using Jasper.Tracking;
 using Jasper.Transports;
 using Jasper.Util;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Tracking
 {
-    public class when_determining_if_the_session_is_done
+    public class when_determining_if_the_session_is_done : IDisposable
     {
         private readonly Envelope env1 = ObjectMother.Envelope();
         private readonly Envelope env2 = ObjectMother.Envelope();
@@ -17,7 +19,14 @@ namespace Jasper.Testing.Tracking
         private readonly Envelope env4 = ObjectMother.Envelope();
         private readonly Envelope env5 = ObjectMother.Envelope();
 
-        private readonly TrackedSession theSession = new TrackedSession(null);
+        private readonly TrackedSession theSession;
+        private readonly IHost _host;
+
+        public when_determining_if_the_session_is_done()
+        {
+            _host = JasperHost.For(x => x.UseMessageTrackingTestingSupport());
+            theSession = new TrackedSession(_host);
+        }
 
         [Theory]
         [InlineData(new[] {EventType.NoRoutes}, true)]
@@ -84,7 +93,7 @@ namespace Jasper.Testing.Tracking
         [Fact]
         public async Task complete_with_one_message()
         {
-            var session = new TrackedSession(null);
+            var session = new TrackedSession(_host);
 
 
             session.Record(EventType.Received, env1, "jasper", 1);
@@ -103,7 +112,7 @@ namespace Jasper.Testing.Tracking
         [Fact]
         public async Task multiple_active_envelopes()
         {
-            var session = new TrackedSession(null);
+            var session = new TrackedSession(_host);
 
             session.Record(EventType.Received, env1, "jasper", 1);
             session.Record(EventType.ExecutionStarted, env1, "jasper", 1);
@@ -129,13 +138,18 @@ namespace Jasper.Testing.Tracking
         [Fact]
         public async Task timeout_session()
         {
-            var session = new TrackedSession(null)
+            var session = new TrackedSession(_host)
             {
                 Timeout = 10.Milliseconds()
             };
             await session.Track();
 
             session.Status.ShouldBe(TrackingStatus.TimedOut);
+        }
+
+        public void Dispose()
+        {
+            _host?.Dispose();
         }
     }
 }

@@ -12,7 +12,6 @@ namespace Jasper.Transports.Local
 {
     public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
     {
-        private readonly ITransportLogger _logger;
         private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
         private readonly MessagingSerializationGraph _serializers;
@@ -24,7 +23,6 @@ namespace Jasper.Transports.Local
         {
             _settings = settings;
             _persistence = persistence;
-            _logger = logger;
             _serializers = serializers;
             _messageLogger = messageLogger;
             Destination = endpoint.Uri;

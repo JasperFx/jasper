@@ -23,8 +23,6 @@ namespace Jasper.Http.Testing.Routing
             JasperRoute.Build<ServiceEndpoint>(x => x.Put()).MethodAndPatternShouldBe("PUT", "");
             JasperRoute.Build<ServiceEndpoint>(x => x.Delete()).MethodAndPatternShouldBe("DELETE", "");
         }
-
-
     }
 
     public static class RouteSpecificationExtensions
@@ -38,7 +36,6 @@ namespace Jasper.Http.Testing.Routing
 
     public class HomeEndpoint
     {
-
         // Responds to GET: /
         public string Get()
         {

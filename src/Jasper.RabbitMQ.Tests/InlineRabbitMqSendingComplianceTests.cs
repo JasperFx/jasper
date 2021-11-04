@@ -1,5 +1,8 @@
+using System;
+using System.Threading.Tasks;
 using Jasper.Util;
 using TestingSupport.Compliance;
+using Xunit;
 
 namespace Jasper.RabbitMQ.Tests
 {
@@ -18,6 +21,7 @@ namespace Jasper.RabbitMQ.Tests
                 x.DeclareQueue(QueueName);
                 x.DeclareQueue(listener);
                 x.AutoProvision = true;
+                x.AutoPurgeOnStartup = true;
             });
 
             Endpoints.ListenToRabbitQueue(listener).UseForReplies().ProcessInline();
@@ -44,23 +48,38 @@ namespace Jasper.RabbitMQ.Tests
     }
 
 
-    public class InlineRabbitMqSendingComplianceTests : SendingCompliance
+    public class InlineRabbitMqSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
-        public InlineRabbitMqSendingComplianceTests() : base($"rabbitmq://queue/compliance".ToUri())
+
+        public InlineRabbitMqSendingFixture() : base($"rabbitmq://queue/{RabbitTesting.NextQueueName()}".ToUri())
+        {
+
+        }
+
+        public async Task InitializeAsync()
         {
             var sender = new InlineSender();
-            theOutboundAddress = $"rabbitmq://routing/{sender.QueueName}".ToUri();
+            OutboundAddress = $"rabbitmq://routing/{sender.QueueName}".ToUri();
 
-            SenderIs(sender);
-
-
-
-            theSender.TryPurgeAllRabbitMqQueues();
+            await SenderIs(sender);
 
             var receiver = new InlineReceiver(sender.QueueName);
 
-            ReceiverIs(receiver);
+            await ReceiverIs(receiver);
         }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+    }
+
+
+    [Collection("acceptance")]
+    public class InlineRabbitMqSendingComplianceTests : SendingCompliance<InlineRabbitMqSendingFixture>
+    {
+
     }
 
 }

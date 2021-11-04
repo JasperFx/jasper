@@ -18,7 +18,7 @@ namespace Jasper.Runtime.WorkerQueues
         private readonly IEnvelopePersistence _persistence;
         private readonly ITransportLogger _logger;
         private readonly ActionBlock<Envelope> _receiver;
-        private IListener _agent;
+        private IListener _listener;
         private readonly AsyncRetryPolicy _policy;
 
         public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
@@ -56,7 +56,6 @@ namespace Jasper.Runtime.WorkerQueues
         public int QueuedCount => _receiver.InputCount;
         public Task Enqueue(Envelope envelope)
         {
-            envelope.ReceivedAt = Address;
             envelope.ReplyUri = envelope.ReplyUri ?? Address;
             _receiver.Post(envelope);
 
@@ -70,17 +69,16 @@ namespace Jasper.Runtime.WorkerQueues
 
         public void StartListening(IListener listener)
         {
-            _agent = listener;
-            _agent.Start(this);
+            _listener = listener;
+            _listener.Start(this, _settings.Cancellation);
 
-            Address = _agent.Address;
+            Address = _listener.Address;
         }
 
         public Uri Address { get; set; }
 
 
-
-        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        public Task Received(Uri uri, Envelope[] messages)
         {
             var now = DateTime.UtcNow;
 
@@ -99,13 +97,16 @@ namespace Jasper.Runtime.WorkerQueues
                 await Enqueue(envelope);
             }
 
+            await _listener.Complete(envelope);
+
             _logger.IncomingReceived(envelope);
         }
 
 
         public void Dispose()
         {
-            // nothing
+            // Might need to drain the block
+            _receiver.Complete();
         }
 
         // Separated for testing here.
@@ -113,13 +114,17 @@ namespace Jasper.Runtime.WorkerQueues
         {
             if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
-            Envelope.MarkReceived(envelopes, uri, DateTime.UtcNow, _settings.UniqueNodeId, out var scheduled, out var incoming);
+            foreach (var envelope in envelopes)
+            {
+                envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+            }
 
             await _persistence.StoreIncoming(envelopes);
 
-            foreach (var message in incoming)
+            foreach (var message in envelopes)
             {
                 await Enqueue(message);
+                await _listener.Complete(message);
             }
 
             _logger.IncomingBatchReceived(envelopes);

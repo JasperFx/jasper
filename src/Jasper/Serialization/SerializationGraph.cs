@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Baseline.ImTools;
 using Jasper.Util;
 
 namespace Jasper.Serialization

@@ -23,7 +23,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
         protected SqlServerSettings mssqlSettings;
-        protected SqlServerEnvelopePersistence ThePersistence;
+        protected SqlServerEnvelopePersistence thePersistence;
         protected AdvancedSettings theSettings;
         protected DurableWorkerQueue theWorkerQueue;
         private IHandlerPipeline thePipeline;
@@ -41,19 +41,20 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 ConnectionString = Servers.SqlServerConnectionString
             };
 
-            ThePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings);
+            thePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings);
 
 
             thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, ThePersistence, TransportLogger.Empty());
-
+            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, thePersistence, TransportLogger.Empty());
         }
 
         protected Envelope notScheduledEnvelope()
         {
             var env = new Envelope
             {
-                Data = new byte[] {1, 2, 3, 4}
+                Data = new byte[] {1, 2, 3, 4},
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             theEnvelopes.Add(env);
@@ -66,7 +67,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ExecutionTime = DateTime.UtcNow.Add(1.Hours())
+                ExecutionTime = DateTime.UtcNow.Add(1.Hours()),
+                MessageType = "foo",
+                ContentType = "application/json"
             };
 
             theEnvelopes.Add(env);
@@ -79,7 +82,10 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ExecutionTime = DateTime.UtcNow.Add(-1.Hours())
+                ExecutionTime = DateTime.UtcNow.Add(-1.Hours()),
+                ContentType = "application/json",
+                MessageType = "foo"
+
             };
 
             theEnvelopes.Add(env);
@@ -91,7 +97,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         {
             await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
-            return ThePersistence.AllIncomingEnvelopes();
+            return await thePersistence.Admin.AllIncomingEnvelopes();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)

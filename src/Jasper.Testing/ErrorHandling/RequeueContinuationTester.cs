@@ -16,15 +16,16 @@ namespace Jasper.Testing.ErrorHandling
         [Fact]
         public async Task executing_just_puts_it_back_in_line_at_the_back_of_the_queue()
         {
-            var callback = Substitute.For<IChannelCallback>();
 
             var envelope = ObjectMother.Envelope();
 
+            var context = Substitute.For<IExecutionContext>();
+            context.Envelope.Returns(envelope);
 
 
-            await RequeueContinuation.Instance.Execute(new MockMessagingRoot(), callback, envelope, null, DateTime.Now);
+            await RequeueContinuation.Instance.Execute(context, DateTime.Now);
 
-            await callback.Received(1).Defer(envelope);
+            await context.Received(1).Defer();
         }
     }
 }

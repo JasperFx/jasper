@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
@@ -23,14 +24,14 @@ namespace Jasper.Persistence.Durability
             _logger = logger;
         }
 
-        public async Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             // TODO -- enforce back pressure here on the retries listener!
 
             await storage.Session.Begin();
 
 
-            Envelope[] incoming = null;
+            IReadOnlyList<Envelope> incoming = null;
             try
             {
                 var gotLock = await storage.Session.TryGetGlobalLock(TransportConstants.IncomingMessageLockId);
@@ -41,7 +42,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                incoming = await storage.Incoming.LoadPageOfLocallyOwned();
+                incoming = await storage.LoadPageOfLocallyOwnedIncoming();
 
                 if (!incoming.Any())
                 {
@@ -49,7 +50,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                await storage.Incoming.Reassign(_settings.UniqueNodeId, incoming);
+                await storage.ReassignIncoming(_settings.UniqueNodeId, incoming);
 
                 await storage.Session.Commit();
             }
@@ -72,7 +73,7 @@ namespace Jasper.Persistence.Durability
             }
 
             // TODO -- this should be smart enough later to check for back pressure before rescheduling
-            if (incoming.Length == _settings.RecoveryBatchSize)
+            if (incoming.Count == _settings.RecoveryBatchSize)
                 agent.RescheduleIncomingRecovery();
         }
 

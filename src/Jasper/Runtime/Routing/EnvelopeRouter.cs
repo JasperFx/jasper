@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using Baseline;
-using ImTools;
-using Jasper.Configuration;
-using Jasper.Runtime.Handlers;
+using Baseline.ImTools;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -13,7 +11,7 @@ namespace Jasper.Runtime.Routing
     public class EnvelopeRouter : IEnvelopeRouter
     {
         private readonly IMessagingRoot _root;
-        private Util.ImHashMap<Type, MessageTypeRouting> _routes = Util.ImHashMap<Type, MessageTypeRouting>.Empty;
+        private ImHashMap<Type, MessageTypeRouting> _routes = ImHashMap<Type, MessageTypeRouting>.Empty;
         private readonly ISendingAgent _durableLocalQueue;
 
         public EnvelopeRouter(IMessagingRoot root)
@@ -118,7 +116,7 @@ namespace Jasper.Runtime.Routing
                 Destination = agent.Destination,
                 ContentType = "application/json",
                 Sender = agent,
-                writer = _root.Serialization.JsonWriterFor(typeof(T))
+                Writer = _root.Serialization.JsonWriterFor(typeof(T))
             };
         }
 
@@ -133,7 +131,7 @@ namespace Jasper.Runtime.Routing
                 Destination = agent.Destination,
                 ContentType = "application/json",
                 Sender = agent,
-                writer = _root.Serialization.JsonWriterFor(typeof(T))
+                Writer = _root.Serialization.JsonWriterFor(typeof(T))
             };
         }
 

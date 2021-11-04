@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Reflection;
@@ -10,111 +11,115 @@ using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql.Util;
 using Npgsql;
 using NpgsqlTypes;
+using Weasel.Core;
+using Weasel.Postgresql;
+using Weasel.Postgresql.Tables;
+using CommandExtensions = Jasper.Persistence.Postgresql.Util.CommandExtensions;
 
 namespace Jasper.Persistence.Postgresql.Schema
 {
-    public class PostgresqlEnvelopeStorageAdmin : DataAccessor, IEnvelopeStorageAdmin
+    public class PostgresqlEnvelopeStorageAdmin : IEnvelopeStorageAdmin
     {
         private readonly string _connectionString;
-
-        private readonly string[] _creationOrder =
-        {
-            "Creation.sql"
-        };
+        private readonly Table[] _tables;
 
         public PostgresqlEnvelopeStorageAdmin(PostgresqlSettings settings)
         {
             _connectionString = settings.ConnectionString;
             SchemaName = settings.SchemaName;
+
+            _tables = new Table[]
+            {
+                new OutgoingEnvelopeTable(SchemaName),
+                new IncomingEnvelopeTable(SchemaName),
+                new DeadLettersTable(SchemaName)
+            };
         }
 
         public string SchemaName { get; set; } = "public";
 
-        private static string toScript(string fileName, string schema)
+        public async Task DropAll()
         {
-            var text = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(PostgresqlEnvelopeStorageAdmin), fileName)
-                .ReadAllText();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
-            return text.Replace("%SCHEMA%", schema);
-        }
-
-        public void DropAll()
-        {
-            using (var conn = new NpgsqlConnection(_connectionString))
+            foreach (var table in _tables)
             {
-                conn.Open();
-
-                execute(conn, "Drop.sql");
+                await table.Drop(conn);
             }
         }
 
-        private void execute(NpgsqlConnection conn, string filename)
+        public async Task CreateAll()
         {
-            var sql = toScript(filename, SchemaName);
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
+            var patch = await SchemaMigration.Determine(conn, _tables);
+
+            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+        }
+
+        public async Task RecreateAll()
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            foreach (var table in _tables)
+            {
+                await table.Drop(conn);
+            }
+
+            var patch = await SchemaMigration.Determine(conn, _tables);
+
+            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+        }
+
+        async Task IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
+        {
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            await truncateEnvelopeData(conn);
+        }
+
+        private async Task truncateEnvelopeData(NpgsqlConnection conn)
+        {
             try
             {
-                conn.CreateCommand(sql).ExecuteNonQuery();
+                await conn.CreateCommand(
+                        $"truncate table {SchemaName}.{DatabaseConstants.OutgoingTable};truncate table {SchemaName}.{DatabaseConstants.IncomingTable};truncate table {SchemaName}.{DatabaseConstants.DeadLetterTable};")
+                    .ExecuteNonQueryAsync();
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException("Failure trying to execute:\n\n" + sql, e);
-            }
-        }
+                if (e.Message.Contains("does not exist")) return;
 
-        public void CreateAll()
-        {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                conn.Open();
-
-                buildSchemaIfNotExists(conn);
-
-                foreach (var file in _creationOrder) execute(conn, file);
-            }
-        }
-
-        public void RecreateAll()
-        {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                conn.Open();
-
-                execute(conn, "Drop.sql");
-
-                buildSchemaIfNotExists(conn);
-
-                foreach (var file in _creationOrder) execute(conn, file);
-            }
-        }
-
-        private void buildSchemaIfNotExists(NpgsqlConnection conn)
-        {
-            conn.CreateCommand($"CREATE SCHEMA IF NOT EXISTS {SchemaName};").ExecuteNonQuery();
-        }
-
-        void IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
-        {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                conn.Open();
-
+                await Task.Delay(250);
                 try
                 {
-                    conn.CreateCommand($"truncate table {SchemaName}.{OutgoingTable};truncate table {SchemaName}.{IncomingTable};truncate table {SchemaName}.{DeadLetterTable};").ExecuteNonQuery();
+                    await truncateEnvelopeData(conn);
+                    return;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    throw new InvalidOperationException("Failure trying to execute the truncate table statements for the envelope storage", e);
+                    // Just let the handler throw in a second
                 }
 
+                throw new InvalidOperationException(
+                    "Failure trying to execute the truncate table statements for the envelope storage", e);
             }
         }
 
-        void IEnvelopeStorageAdmin.RebuildSchemaObjects()
+        async Task IEnvelopeStorageAdmin.RebuildSchemaObjects()
         {
-            DropAll();
-            RecreateAll();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            var patch = await SchemaMigration.Determine(conn, _tables);
+
+            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+
+            await truncateEnvelopeData(conn);
         }
 
         string IEnvelopeStorageAdmin.CreateSql()
@@ -123,11 +128,10 @@ namespace Jasper.Persistence.Postgresql.Schema
             writer.WriteLine($"CREATE SCHEMA IF NOT EXISTS {SchemaName};");
             writer.WriteLine();
 
-            foreach (var file in _creationOrder)
+            var rules = new DdlRules();
+            foreach (var table in _tables)
             {
-                var sql = toScript(file, SchemaName);
-                writer.WriteLine(sql);
-                writer.WriteLine();
+                table.WriteCreateStatement(rules, writer);
             }
 
 
@@ -145,7 +149,7 @@ namespace Jasper.Persistence.Postgresql.Schema
 
                 using (var reader = await conn
                     .CreateCommand(
-                        $"select status, count(*) from {SchemaName}.{IncomingTable} group by status")
+                        $"select status, count(*) from {SchemaName}.{DatabaseConstants.IncomingTable} group by status")
                     .ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -160,7 +164,7 @@ namespace Jasper.Persistence.Postgresql.Schema
                 }
 
                 var longCount = await conn
-                    .CreateCommand($"select count(*) from {SchemaName}.{OutgoingTable}").ExecuteScalarAsync();
+                    .CreateCommand($"select count(*) from {SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteScalarAsync();
 
                 counts.Outgoing =  Convert.ToInt32(longCount);
             }
@@ -169,66 +173,35 @@ namespace Jasper.Persistence.Postgresql.Schema
             return counts;
         }
 
-        public async Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
+        public async Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()
         {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
-                var cmd = conn.CreateCommand(
-                    $"select body, explanation, exception_text, exception_type, exception_message, source, message_type, id from {SchemaName}.{DeadLetterTable} where id = @id");
-                cmd.With("id", id, NpgsqlDbType.Uuid);
-
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    if (!await reader.ReadAsync()) return null;
-
-
-                    var report = new ErrorReport
-                    {
-                        RawData = await reader.GetFieldValueAsync<byte[]>(0),
-                        Explanation = await reader.GetFieldValueAsync<string>(1),
-                        ExceptionText = await reader.GetFieldValueAsync<string>(2),
-                        ExceptionType = await reader.GetFieldValueAsync<string>(3),
-                        ExceptionMessage = await reader.GetFieldValueAsync<string>(4),
-                        Source = await reader.GetFieldValueAsync<string>(5),
-                        MessageType = await reader.GetFieldValueAsync<string>(6),
-                        Id = await reader.GetFieldValueAsync<Guid>(7)
-                    };
-
-                    return report;
-                }
-            }
+            return await conn
+                .CreateCommand(
+                    $"select {DatabaseConstants.IncomingFields} from {SchemaName}.{DatabaseConstants.IncomingTable}")
+                .FetchList(r => DatabaseBackedEnvelopePersistence.ReadIncoming(r));
         }
 
-        public async Task<Envelope[]> AllIncomingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes()
         {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, status, owner_id from {SchemaName}.{IncomingTable}").ExecuteToEnvelopes();
-            }
+            return await conn
+                .CreateCommand(
+                    $"select {DatabaseConstants.OutgoingFields} from {SchemaName}.{DatabaseConstants.OutgoingTable}")
+                .FetchList(r => DatabaseBackedEnvelopePersistence.ReadOutgoing(r));
         }
 
-        public async Task<Envelope[]> AllOutgoingEnvelopes()
+        public async Task ReleaseAllOwnership()
         {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
 
-                return await conn.CreateCommand($"select body, '{EnvelopeStatus.Outgoing}', owner_id from {SchemaName}.{OutgoingTable}").ExecuteToEnvelopes();
-            }
-        }
-
-        public void ReleaseAllOwnership()
-        {
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                conn.Open();
-
-                conn.CreateCommand($"update {SchemaName}.{IncomingTable} set owner_id = 0;update {SchemaName}.{OutgoingTable} set owner_id = 0");
-            }
+            await conn.CreateCommand($"update {SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0;update {SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = 0")
+                .ExecuteNonQueryAsync();
         }
     }
 }

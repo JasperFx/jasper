@@ -4,7 +4,7 @@ namespace Jasper.Http.Testing.Routing
 {
     public class UrlGraphTests
     {
-        private readonly UrlGraph theGraph = new UrlGraph();
+        private readonly UrlGraph theGraph = new();
 
         /*
 

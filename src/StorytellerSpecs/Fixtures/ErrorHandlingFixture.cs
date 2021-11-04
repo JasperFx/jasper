@@ -95,7 +95,7 @@ namespace StorytellerSpecs.Fixtures
 
     public class ErrorHandlingFixture : ErrorHandlingFixtureBase
     {
-        private IMessageContext _bus;
+        private IExecutionContext _bus;
         private HandlerChain _chain;
         private HandlerGraph _graph;
         private IHost _host;
@@ -125,7 +125,7 @@ namespace StorytellerSpecs.Fixtures
             _chain = _graph.ChainFor<ErrorCausingMessage>();
 
 
-            _bus = _host.Get<IMessageContext>();
+            _bus = _host.Get<IExecutionContext>();
         }
 
         public override void TearDown()

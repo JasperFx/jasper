@@ -19,14 +19,13 @@ namespace Jasper.Testing.ErrorHandling
 
             var envelope = ObjectMother.Envelope();
             envelope.Attempts = 1;
-            var channel = Substitute.For<IChannelCallback>();
 
-            var root = new MockMessagingRoot();
-            root.Pipeline.Invoke(envelope, channel).Returns(Task.CompletedTask);
+            var context = Substitute.For<IExecutionContext>();
+            context.Envelope.Returns(envelope);
 
-            await continuation.Execute(root, channel, envelope, null, DateTime.UtcNow);
+            await continuation.Execute(context, DateTime.UtcNow);
 
-            await root.Pipeline.Received(1).Invoke(envelope, channel);
+            await context.Received(1).RetryExecutionNow();
         }
     }
 }

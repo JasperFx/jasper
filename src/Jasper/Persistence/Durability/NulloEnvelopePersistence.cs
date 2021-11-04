@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +12,6 @@ namespace Jasper.Persistence.Durability
     public class NulloEnvelopePersistence : IEnvelopePersistence, IEnvelopeStorageAdmin
     {
         public IEnvelopeStorageAdmin Admin => this;
-        public IDurabilityAgentStorage AgentStorage { get; } = null;
         public IScheduledJobProcessor ScheduledJobs { get; set; }
 
         public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
@@ -33,6 +34,11 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
+        public Task StoreOutgoing(DbTransaction tx, Envelope[] envelopes)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task MoveToDeadLetterStorage(ErrorReport[] errors)
         {
             return Task.CompletedTask;
@@ -53,18 +59,19 @@ namespace Jasper.Persistence.Durability
             return Task.FromResult<ErrorReport>(null);
         }
 
-        public Task<Envelope[]> AllIncomingEnvelopes()
+        public Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()
         {
-            return Task.FromResult(new Envelope[0]);
+            return Task.FromResult((IReadOnlyList<Envelope>)new List<Envelope>());
         }
 
-        public Task<Envelope[]> AllOutgoingEnvelopes()
+        public Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes()
         {
-            return Task.FromResult(new Envelope[0]);
+            return Task.FromResult((IReadOnlyList<Envelope>)new List<Envelope>());
         }
 
-        public void ReleaseAllOwnership()
+        public Task ReleaseAllOwnership()
         {
+            return Task.CompletedTask;
         }
 
         public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
@@ -90,6 +97,11 @@ namespace Jasper.Persistence.Durability
             }
 
             return Task.CompletedTask;
+        }
+
+        public Task<Uri[]> FindAllDestinations()
+        {
+            throw new NotSupportedException();
         }
 
         public Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
@@ -118,19 +130,18 @@ namespace Jasper.Persistence.Durability
             writer.WriteLine("No persistent envelope storage");
         }
 
-        public void ClearAllPersistedEnvelopes()
+        public Task ClearAllPersistedEnvelopes()
         {
-            Console.WriteLine("There is no durable envelope storage");
+            return Task.CompletedTask;
         }
 
-        public void RebuildSchemaObjects()
+        public Task RebuildSchemaObjects()
         {
-            Console.WriteLine("There is no durable envelope storage");
+            return Task.CompletedTask;
         }
 
         public string CreateSql()
         {
-            Console.WriteLine("There is no durable envelope storage");
             return string.Empty;
         }
 
@@ -142,5 +153,50 @@ namespace Jasper.Persistence.Durability
         }
 
 
+        public void Dispose()
+        {
+            // Nothing
+        }
+
+        public IDurableStorageSession Session { get; } = null;
+        public Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task ReassignDormantNodeToAnyNode(int nodeId)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<int[]> FindUniqueOwners(int currentNodeId)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task DeleteByDestination(Uri destination)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

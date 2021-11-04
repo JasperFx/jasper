@@ -53,14 +53,14 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
-            return theHost.Services.GetService<IMessageContext>()
+            return theHost.Services.GetService<IExecutionContext>()
                 .Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theHost.Services.GetService<IMessageContext>()
+            return theHost.Services.GetService<IExecutionContext>()
                 .ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 

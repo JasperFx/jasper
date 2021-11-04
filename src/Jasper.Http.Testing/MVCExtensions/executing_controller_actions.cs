@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Alba;
-using Jasper.Attributes;
 using Lamar;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,14 +13,14 @@ namespace Jasper.Http.Testing.MVCExtensions
 {
     public class executing_controller_actions : IClassFixture<MvcExtendedApp>
     {
+        private readonly MvcExtendedApp _app;
+        private readonly ITestOutputHelper _output;
+
         public executing_controller_actions(MvcExtendedApp app, ITestOutputHelper output)
         {
             _app = app;
             _output = output;
         }
-
-        private readonly MvcExtendedApp _app;
-        private readonly ITestOutputHelper _output;
 
         [Fact]
         public Task run_controller_action_that_uses_http_context_object()
@@ -98,7 +97,7 @@ namespace Jasper.Http.Testing.MVCExtensions
         [HttpGet("json")]
         public JsonResult WriteJson()
         {
-            return new JsonResult(new Hero
+            return new(new Hero
             {
                 Name = "Wolverine",
                 Affiliation = "Xmen"

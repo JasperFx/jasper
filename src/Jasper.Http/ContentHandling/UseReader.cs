@@ -11,7 +11,10 @@ namespace Jasper.Http.ContentHandling
         public UseReader(RouteChain chain, bool isLocal) : base(typeof(IRequestReader),
             selectMethod(chain.InputType))
         {
-            if (isLocal) Target = new Variable(typeof(IRequestReader), nameof(RouteHandler.Reader));
+            if (isLocal)
+            {
+                Target = new Variable(typeof(IRequestReader), nameof(RouteHandler.Reader));
+            }
 
             creates.Add(ReturnVariable);
         }

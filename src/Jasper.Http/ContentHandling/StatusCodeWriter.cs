@@ -6,7 +6,10 @@ namespace Jasper.Http.ContentHandling
     {
         public bool TryToApply(RouteChain chain)
         {
-            if (chain.ResourceType != typeof(int)) return false;
+            if (chain.ResourceType != typeof(int))
+            {
+                return false;
+            }
 
 
             chain.Postprocessors.Add(new SetStatusCode(chain));

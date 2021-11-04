@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -17,11 +16,14 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Stub;
+using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
+using SqlTransaction = Microsoft.Data.SqlClient.SqlTransaction;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
@@ -94,7 +96,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 .Start();
 
 
-            _host.Services.GetService<IEnvelopePersistence>().Admin.ClearAllPersistedEnvelopes();
+            _host.Services.GetService<IEnvelopePersistence>()
+                .Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
 
             _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 
@@ -183,8 +186,9 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
             var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
-            return persistor.AllIncomingEnvelopes()
-                .Concat(persistor.AllOutgoingEnvelopes())
+
+            return persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+                .Concat(persistor.Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
                 .Where(x => x.OwnerId == ownerId)
                 .ToList();
         }

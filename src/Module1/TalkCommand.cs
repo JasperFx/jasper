@@ -1,6 +1,5 @@
 ﻿using System;
 using Oakton;
-using Oakton.AspNetCore;
 
 namespace Module1
 {

@@ -115,12 +115,12 @@ namespace StorytellerSpecs.Fixtures.Durability
         protected abstract ItemCreated loadItem(IHost receiver, Guid id);
 
 
-        protected abstract Task withContext(IHost sender, IMessageContext context,
-            Func<IMessageContext, Task> action);
+        protected abstract Task withContext(IHost sender, IExecutionContext context,
+            Func<IExecutionContext, Task> action);
 
-        private Task send(Func<IMessageContext, Task> action)
+        private Task send(Func<IExecutionContext, Task> action)
         {
-            return withContext(theSender, theSender.Get<IMessageContext>(), action);
+            return withContext(theSender, theSender.Get<IExecutionContext>(), action);
         }
 
         [FormatAs("Can send items durably through persisted channels")]
@@ -234,7 +234,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        protected abstract Envelope[] loadAllOutgoingEnvelopes(IHost sender);
+        protected abstract IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender);
 
 
         [FormatAs("Can send a scheduled message with durable storage")]

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Jasper.Serialization;
 
 namespace Jasper.Transports.Tcp
 {
@@ -12,9 +13,12 @@ namespace Jasper.Transports.Tcp
             messagesList.AddRange(messages);
             Messages = messagesList;
 
-            foreach (var message in messages) message.Destination = destination;
+            foreach (var message in messages)
+            {
+                message.Destination = destination;
+            }
 
-            Data = Envelope.Serialize(Messages);
+            Data = EnvelopeSerializer.Serialize(Messages);
         }
 
         public byte[] Data { get; set; }

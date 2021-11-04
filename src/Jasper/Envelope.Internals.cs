@@ -21,22 +21,8 @@ namespace Jasper
     // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
-        internal static void MarkReceived(Envelope[] messages, Uri uri, DateTime now, int currentNodeId, out Envelope[] scheduled,
-            out Envelope[] incoming)
-        {
-            foreach (var envelope in messages)
-            {
-                envelope.MarkReceived(uri, now, currentNodeId);
-            }
-
-            scheduled = messages.Where(x => x.Status == EnvelopeStatus.Scheduled).ToArray();
-            incoming = messages.Where(x => x.Status == EnvelopeStatus.Incoming).ToArray();
-        }
-
         internal void MarkReceived(Uri uri, DateTime now, int currentNodeId)
         {
-            ReceivedAt = uri;
-
             if (IsDelayed(now))
             {
                 Status = EnvelopeStatus.Scheduled;
@@ -49,9 +35,9 @@ namespace Jasper
             }
         }
 
-        internal int SentAttempts { get; set; }
 
-        internal IMessageSerializer writer { get; set; }
+        [Obsolete("Want to eliminate this if at all possible")]
+        public IMessageSerializer Writer { get; set; }
 
 
 
@@ -83,7 +69,7 @@ namespace Jasper
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Envelope CreateForResponse(object message)
+        internal Envelope CreateForResponse(object message)
         {
             var child = ForSend(message);
             child.CausationId = Id;
@@ -112,7 +98,7 @@ namespace Jasper
         {
             var envelope = (Envelope)MemberwiseClone();
             envelope.Headers = new Dictionary<string, string>(Headers);
-            envelope.writer = writer;
+            envelope.Writer = writer;
 
             return envelope;
         }
@@ -120,7 +106,7 @@ namespace Jasper
         internal Envelope(object message, IMessageSerializer writer)
         {
             Message = message;
-            this.writer = writer;
+            this.Writer = writer;
         }
 
         private bool _enqueued;

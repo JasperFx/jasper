@@ -1,17 +1,18 @@
+using System;
+using System.Threading.Tasks;
 using Jasper.Util;
 using TestingSupport.Compliance;
+using Xunit;
 
 namespace Jasper.RabbitMQ.Tests
 {
 
     public class Sender : JasperOptions
     {
-        public static int Count = 0;
-
         public Sender()
         {
-            QueueName = $"compliance{++Count}";
-            var listener = $"listener{Count}";
+            QueueName = RabbitTesting.NextQueueName();
+            var listener = $"listener{RabbitTesting.Number}";
 
             Endpoints.ConfigureRabbitMq(x =>
             {
@@ -19,6 +20,7 @@ namespace Jasper.RabbitMQ.Tests
                 x.DeclareQueue(QueueName);
                 x.DeclareQueue(listener);
                 x.AutoProvision = true;
+                x.AutoPurgeOnStartup = true;
             });
 
             Endpoints.ListenToRabbitQueue(listener).UseForReplies();
@@ -44,22 +46,35 @@ namespace Jasper.RabbitMQ.Tests
     }
 
 
-    public class RabbitMqSendingComplianceTests : SendingCompliance
+    public class RabbitMqSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
-        public RabbitMqSendingComplianceTests() : base($"rabbitmq://queue/compliance".ToUri())
+        public RabbitMqSendingFixture() : base($"rabbitmq://queue/{RabbitTesting.NextQueueName()}".ToUri())
+        {
+
+        }
+
+        public async Task InitializeAsync()
         {
             var sender = new Sender();
-            theOutboundAddress = $"rabbitmq://queue/{sender.QueueName}".ToUri();
+            OutboundAddress = $"rabbitmq://queue/{sender.QueueName}".ToUri();
 
-            SenderIs(sender);
-
-
-
-            theSender.TryPurgeAllRabbitMqQueues();
+            await SenderIs(sender);
 
             var receiver = new Receiver(sender.QueueName);
 
-            ReceiverIs(receiver);
+            await ReceiverIs(receiver);
         }
+
+        public Task DisposeAsync()
+        {
+
+            return Task.CompletedTask;
+        }
+    }
+
+    [Collection("acceptance")]
+    public class RabbitMqSendingComplianceTests : SendingCompliance<RabbitMqSendingFixture>
+    {
+
     }
 }

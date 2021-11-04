@@ -1,32 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Jasper.Logging;
 
 namespace Jasper.Persistence.Durability
 {
-    public interface IEnvelopeStorageAdmin
-    {
-        void ClearAllPersistedEnvelopes();
-        void RebuildSchemaObjects();
-        string CreateSql();
-        Task<PersistedCounts> GetPersistedCounts();
-
-        Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
-        Task<Envelope[]> AllIncomingEnvelopes();
-        Task<Envelope[]> AllOutgoingEnvelopes();
-
-
-        void ReleaseAllOwnership();
-    }
-
-
-    public interface IEnvelopePersistence
+    public interface IEnvelopePersistence : IDisposable
     {
         IEnvelopeStorageAdmin Admin { get; }
-
-
-        IDurabilityAgentStorage AgentStorage { get; }
 
         // Used by IRetries and DurableCallback
         Task ScheduleExecution(Envelope[] envelopes);
@@ -52,6 +33,24 @@ namespace Jasper.Persistence.Durability
         // Used by DurableCallback
         Task DeleteIncomingEnvelope(Envelope envelope);
 
+        void Describe(TextWriter writer);
+        Task ScheduleJob(Envelope envelope);
+
+        IDurableStorageSession Session { get; }
+
+        Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow);
+
+        Task ReassignDormantNodeToAnyNode(int nodeId);
+        Task<int[]> FindUniqueOwners(int currentNodeId);
+
+
+
+
+        Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination);
+        Task ReassignOutgoing(int ownerId, Envelope[] outgoing);
+        Task DeleteByDestination(Uri destination);
+        Task<Uri[]> FindAllDestinations();
+
         // Used by DurableRetryAgent, could go to IDurabilityAgent
         Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
 
@@ -67,7 +66,8 @@ namespace Jasper.Persistence.Durability
         // Used by DurableSendingAgent
         Task DeleteOutgoing(Envelope envelope);
 
-        void Describe(TextWriter writer);
-        Task ScheduleJob(Envelope envelope);
+        Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
+        Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
+        Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
     }
 }

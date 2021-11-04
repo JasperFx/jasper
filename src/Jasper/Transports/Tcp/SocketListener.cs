@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
-using Jasper.Runtime;
 using Jasper.Transports.Util;
 using Jasper.Util;
 
@@ -33,17 +32,15 @@ namespace Jasper.Transports.Tcp
             Address = $"tcp://{ipaddr}:{port}/".ToUri();
         }
 
-        public void Start(IListeningWorkerQueue callback)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
             _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             _socketHandling = new ActionBlock<Socket>(async s =>
             {
-                using (var stream = new NetworkStream(s, true))
-                {
-                    await HandleStream(callback, stream);
-                }
+                await using var stream = new NetworkStream(s, true);
+                await HandleStream(callback, stream);
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _receivingLoop = Task.Run(async () =>
@@ -58,9 +55,9 @@ namespace Jasper.Transports.Tcp
             }, _cancellationToken);
         }
 
-        public void StartHandlingInline(IHandlerPipeline pipeline)
+        public Task<bool> TryRequeue(Envelope envelope)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(false);
         }
 
         public Uri Address { get; }
@@ -76,9 +73,19 @@ namespace Jasper.Transports.Tcp
 
         public Task HandleStream(IListeningWorkerQueue callback, Stream stream)
         {
-            if (Status == ListeningStatus.TooBusy) return stream.SendBuffer(WireProtocol.ProcessingFailureBuffer);
+            return Status == ListeningStatus.TooBusy
+                ? stream.SendBuffer(WireProtocol.ProcessingFailureBuffer)
+                : WireProtocol.Receive(_logger, stream, callback, Address);
+        }
 
-            return WireProtocol.Receive(_logger, stream, callback, Address);
+        public Task Complete(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task Defer(Envelope envelope)
+        {
+            return Task.CompletedTask;
         }
     }
 }

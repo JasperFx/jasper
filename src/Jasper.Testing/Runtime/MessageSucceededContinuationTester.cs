@@ -16,26 +16,26 @@ namespace Jasper.Testing.Runtime
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new object();
 
+            theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(new MockMessagingRoot(), theChannel, theEnvelope, theOutgoingMessages, DateTime.UtcNow);
+                .Execute(theContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
-        private readonly IChannelCallback theChannel = Substitute.For<IChannelCallback>();
 
-        private readonly IQueuedOutgoingMessages theOutgoingMessages = Substitute.For<IQueuedOutgoingMessages>();
+        private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
 
         [Fact]
         public void should_mark_the_message_as_successful()
         {
-            theChannel.Received().Complete(theEnvelope);
+            theContext.Received().Complete();
         }
 
         [Fact]
         public void should_send_off_all_queued_up_cascaded_messages()
         {
-            theOutgoingMessages.Received().SendAllQueuedOutgoingMessages();
+            theContext.Received().SendAllQueuedOutgoingMessages();
         }
     }
 
@@ -43,25 +43,25 @@ namespace Jasper.Testing.Runtime
     {
         public MessageSucceededContinuation_failure_handling_Tester()
         {
-            theOutgoingMessages.When(x => x.SendAllQueuedOutgoingMessages())
+            theContext.When(x => x.SendAllQueuedOutgoingMessages())
                 .Throw(theException);
 
+            theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theRoot, theChannel, theEnvelope, theOutgoingMessages, DateTime.UtcNow);
+                .Execute(theContext, DateTime.UtcNow);
         }
 
-        private readonly IMessagingRoot theRoot = new MockMessagingRoot();
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
         private readonly IChannelCallback theChannel = Substitute.For<IChannelCallback>();
         private readonly Exception theException = new DivideByZeroException();
-        private readonly IQueuedOutgoingMessages theOutgoingMessages = Substitute.For<IQueuedOutgoingMessages>();
+        private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
 
         [Fact]
         public void should_send_a_failure_ack()
         {
             var message = "Sending cascading message failed: " + theException.Message;
-            theRoot.Acknowledgements.Received().SendFailureAcknowledgement(theEnvelope, message);
+            theContext.Received().SendFailureAcknowledgement(theEnvelope, message);
         }
     }
 }

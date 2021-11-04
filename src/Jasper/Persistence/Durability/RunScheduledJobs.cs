@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
@@ -17,13 +18,13 @@ namespace Jasper.Persistence.Durability
             _logger = logger;
         }
 
-        public Task Execute(IDurabilityAgentStorage storage, IDurabilityAgent agent)
+        public Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             var utcNow = DateTimeOffset.UtcNow;
             return ExecuteAtTime(storage, agent, utcNow);
         }
 
-        public async Task<Envelope[]> ExecuteAtTime(IDurabilityAgentStorage storage, IDurabilityAgent agent, DateTimeOffset utcNow)
+        public async Task<IReadOnlyList<Envelope>> ExecuteAtTime(IEnvelopePersistence storage, IDurabilityAgent agent, DateTimeOffset utcNow)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.ScheduledJobLockId);
             if (!hasLock) return null;
@@ -32,7 +33,7 @@ namespace Jasper.Persistence.Durability
 
             try
             {
-                Envelope[] readyToExecute = null;
+                IReadOnlyList<Envelope> readyToExecute = null;
 
                 try
                 {
@@ -44,7 +45,7 @@ namespace Jasper.Persistence.Durability
                         return readyToExecute;
                     }
 
-                    await storage.Incoming.Reassign(_settings.UniqueNodeId, readyToExecute);
+                    await storage.ReassignIncoming(_settings.UniqueNodeId, readyToExecute);
 
                     await storage.Session.Commit();
                 }

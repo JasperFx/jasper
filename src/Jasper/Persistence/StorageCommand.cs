@@ -1,10 +1,10 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Persistence.Durability;
 using Microsoft.Extensions.DependencyInjection;
 using Oakton;
-using Oakton.AspNetCore;
 
 namespace Jasper.Persistence
 {
@@ -28,14 +28,14 @@ namespace Jasper.Persistence
     }
 
     [Description("Administer the envelope storage")]
-    public class StorageCommand : OaktonCommand<StorageInput>
+    public class StorageCommand : OaktonAsyncCommand<StorageInput>
     {
         public StorageCommand()
         {
             Usage("Administer the envelope storage").Arguments(x => x.Action);
         }
 
-        public override bool Execute(StorageInput input)
+        public override async Task<bool> Execute(StorageInput input)
         {
             using (var host = input.BuildHost())
             {
@@ -47,7 +47,9 @@ namespace Jasper.Persistence
                 {
                     case (StorageAction.counts):
 
-                        var counts = persistor.Admin.GetPersistedCounts().GetAwaiter().GetResult();
+                        await persistor.Admin.RebuildSchemaObjects();
+
+                        var counts = await persistor.Admin.GetPersistedCounts();
                         Console.WriteLine("Persisted Enveloper Counts");
                         Console.WriteLine($"Incoming    {counts.Incoming.ToString().PadLeft(5)}");
                         Console.WriteLine($"Outgoing    {counts.Outgoing.ToString().PadLeft(5)}");
@@ -56,24 +58,25 @@ namespace Jasper.Persistence
                         break;
 
                     case (StorageAction.clear):
-                        persistor.Admin.ClearAllPersistedEnvelopes();
+                        await persistor.Admin.ClearAllPersistedEnvelopes();
                         ConsoleWriter.Write(ConsoleColor.Green, "Successfully deleted all persisted envelopes");
                         break;
 
                     case (StorageAction.rebuild):
-                        persistor.Admin.RebuildSchemaObjects();
+                        await persistor.Admin.RebuildSchemaObjects();
                         ConsoleWriter.Write(ConsoleColor.Green, "Successfully rebuilt the envelope storage");
                         break;
 
                     case (StorageAction.script):
                         Console.WriteLine("Exporting script to " + input.FileFlag.ToFullPath());
-                        File.WriteAllText(input.FileFlag, persistor.Admin.CreateSql());
+                        await File.WriteAllTextAsync(input.FileFlag, persistor.Admin.CreateSql());
 
                         break;
 
                     case StorageAction.release:
+                        await persistor.Admin.RebuildSchemaObjects();
                         Console.WriteLine("Releasing all ownership of persisted envelopes");
-                        persistor.Admin.ReleaseAllOwnership();
+                        await persistor.Admin.ReleaseAllOwnership();
 
                         break;
                 }

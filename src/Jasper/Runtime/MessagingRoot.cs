@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -16,10 +17,11 @@ using Lamar;
 using LamarCodeGeneration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime
 {
-    public class MessagingRoot : IMessagingRoot, IHostedService
+    public class MessagingRoot : PooledObjectPolicy<ExecutionContext>, IMessagingRoot, IHostedService
     {
         private readonly IContainer _container;
 
@@ -43,16 +45,17 @@ namespace Jasper.Runtime
 
             MessageLogger = messageLogger;
 
+            var provider = container.GetInstance<ObjectPoolProvider>();
+            var pool = provider.Create(this);
 
-
+            // TODO -- might make NoHandlerContinuation lazy!
             Pipeline = new HandlerPipeline(Serialization, Handlers, MessageLogger,
-                container.GetInstance<NoHandlerContinuation>(),
-                this);
+                new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
+                this, pool);
 
             Runtime = new TransportRuntime(this);
 
-
-            _persistence = new Lazy<IEnvelopePersistence>(() => container.GetInstance<IEnvelopePersistence>());
+            _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
             Router = new EnvelopeRouter(this);
 
@@ -62,6 +65,17 @@ namespace Jasper.Runtime
 
             Cancellation = Settings.Cancellation;
 
+        }
+
+        public override ExecutionContext Create()
+        {
+            return new ExecutionContext(this);
+        }
+
+        public override bool Return(ExecutionContext context)
+        {
+            context.ClearState();
+            return true;
         }
 
         public DurabilityAgent Durability { get; private set; }
@@ -135,15 +149,17 @@ namespace Jasper.Runtime
 
         public IEnvelopePersistence Persistence => _persistence.Value;
 
-        public IMessageContext NewContext()
+        public IExecutionContext NewContext()
         {
-            return new MessageContext(this);
+            return new ExecutionContext(this);
         }
 
-        public IMessageContext ContextFor(Envelope envelope)
+        public IExecutionContext ContextFor(Envelope envelope)
         {
-            // TODO -- make this take in the callback as well
-            return new MessageContext(this, envelope);
+            var context =  new ExecutionContext(this);
+            context.ReadEnvelope(envelope, InvocationCallback.Instance);
+
+            return context;
         }
 
 
@@ -174,11 +190,11 @@ namespace Jasper.Runtime
             switch (Settings.StorageProvisioning)
             {
                 case StorageProvisioning.Rebuild:
-                    Persistence.Admin.RebuildSchemaObjects();
+                    await Persistence.Admin.RebuildSchemaObjects();
                     break;
 
                 case StorageProvisioning.Clear:
-                    Persistence.Admin.ClearAllPersistedEnvelopes();
+                    await Persistence.Admin.ClearAllPersistedEnvelopes();
                     break;
             }
 
@@ -188,7 +204,7 @@ namespace Jasper.Runtime
         private async Task startDurabilityAgent()
         {
             // HOKEY, BUT IT WORKS
-            if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence))
+            if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence) && Options.Advanced.DurabilityAgentEnabled)
             {
                 var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 

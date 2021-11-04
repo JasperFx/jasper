@@ -11,9 +11,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.AzureServiceBus.Tests
 {
-
-
-
     // SAMPLE: SettingAzureServiceBusOptions
     public class JasperWithAzureServiceBusApp : JasperOptions
     {
@@ -21,7 +18,6 @@ namespace Jasper.AzureServiceBus.Tests
         {
             Endpoints.ConfigureAzureServiceBus(asb =>
             {
-
                 asb.ConnectionString = "an Azure Service Bus connection string";
 
                 // The following properties would be set on all
@@ -37,15 +33,13 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.PublishAllMessages().ToAzureServiceBusQueue("outgoing");
             Endpoints.ListenToAzureServiceBusQueue("incoming");
         }
-
-
     }
     // ENDSAMPLE
 
     // SAMPLE: AzureServiceBus-AzureServiceBusTopicSendingApp
     public class AzureServiceBusTopicSendingApp : JasperOptions
     {
-        public AzureServiceBusTopicSendingApp( )
+        public AzureServiceBusTopicSendingApp()
         {
             Endpoints.ConfigureAzureServiceBus(asb =>
             {
@@ -60,8 +54,6 @@ namespace Jasper.AzureServiceBus.Tests
         }
     }
     // ENDSAMPLE
-
-
 
 
     public class MySpecialProtocol : ITransportProtocol<Message>
@@ -131,9 +123,6 @@ namespace Jasper.AzureServiceBus.Tests
         }
     }
     // ENDSAMPLE
-
-
-
 
 
     // SAMPLE: PublishAndSubscribeToAzureServiceBusTopic
@@ -221,7 +210,6 @@ namespace Jasper.AzureServiceBus.Tests
     // ENDSAMPLE
 
 
-
     // SAMPLE: PublishAndSubscribeToAzureServiceBusTopicAndCustomProtocol
     internal class JasperConfig5 : JasperOptions
     {
@@ -286,7 +274,6 @@ namespace Jasper.AzureServiceBus.Tests
             // This call sends the ItemCreated message to the
             // "NorthAmerica" topic
             await publisher.SendToTopic(@event, "NorthAmerica");
-
         }
         // ENDSAMPLE
 

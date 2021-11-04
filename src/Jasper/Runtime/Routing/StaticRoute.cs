@@ -36,11 +36,11 @@ namespace Jasper.Runtime.Routing
         {
             if (envelope.ContentType.IsNotEmpty())
             {
-                envelope.writer = _writers.ChooseWriter(envelope.ContentType);
+                envelope.Writer = _writers.ChooseWriter(envelope.ContentType);
             }
             else
             {
-                envelope.writer = _writer;
+                envelope.Writer = _writer;
                 envelope.ContentType = _writer.ContentType;
             }
 
@@ -94,7 +94,7 @@ namespace Jasper.Runtime.Routing
         {
             var envelope = new Envelope(message)
             {
-                writer = _writer,
+                Writer = _writer,
                 ContentType = _writer.ContentType,
                 Sender = _agent,
                 Destination = _agent.Destination

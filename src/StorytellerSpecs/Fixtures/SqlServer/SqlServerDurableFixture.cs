@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +12,12 @@ using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 using StorytellerSpecs.Fixtures.Durability;
+using Weasel.Core;
+using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
+using SqlTransaction = Microsoft.Data.SqlClient.SqlTransaction;
 
 namespace StorytellerSpecs.Fixtures.SqlServer
 {
@@ -81,8 +86,8 @@ create table receiver.item_created
             }
         }
 
-        protected override async Task withContext(IHost sender, IMessageContext context,
-            Func<IMessageContext, Task> action)
+        protected override async Task withContext(IHost sender, IExecutionContext context,
+            Func<IExecutionContext, Task> action)
         {
             // SAMPLE: basic-sql-server-outbox-sample
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
@@ -104,17 +109,17 @@ create table receiver.item_created
             // ENDSAMPLE
         }
 
-        protected override Envelope[] loadAllOutgoingEnvelopes(IHost sender)
+        protected override IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender)
         {
             return sender.Get<IEnvelopePersistence>().As<SqlServerEnvelopePersistence>()
-                .AllOutgoingEnvelopes().ToArray();
+                .Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
         }
     }
 
     public class TriggerMessageReceiver
     {
         [Transactional]
-        public Task Handle(TriggerMessage message, IMessageContext context)
+        public Task Handle(TriggerMessage message, IExecutionContext context)
         {
             var response = new CascadedMessage
             {

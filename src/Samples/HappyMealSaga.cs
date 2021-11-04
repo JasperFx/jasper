@@ -113,7 +113,7 @@ namespace Jasper.Testing.Samples
 
         public async Task<HappyMealOrderState> Starts(
             HappyMealOrder order, // The first argument is assumed to be the message type
-            IMessageContext context) // Additional arguments are assumed to be services
+            IExecutionContext context) // Additional arguments are assumed to be services
         {
             var state = new HappyMealOrderState
             {
@@ -139,7 +139,7 @@ namespace Jasper.Testing.Samples
 
         public async Task<HappyMealOrderState> Starts(
             HappyMealOrder order, // The first argument is assumed to be the message type
-            IMessageContext context) // Additional arguments are assumed to be services
+            IExecutionContext context) // Additional arguments are assumed to be services
         {
             var state = new HappyMealOrderState
             {
@@ -182,7 +182,7 @@ namespace Jasper.Testing.Samples
         // is known to be the saga state document, so it'll be treated as
         // the state document, while the object[] will be treated as
         // cascading messages
-        public async Task<HappyMealOrderState> Starts(HappyMealOrder order, IMessageContext context)
+        public async Task<HappyMealOrderState> Starts(HappyMealOrder order, IExecutionContext context)
         {
             var state = new HappyMealOrderState
             {

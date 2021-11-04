@@ -14,8 +14,6 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.MapEnvelopeStorage();
-
             modelBuilder.Entity<GuidWorkflowState>(map =>
             {
 

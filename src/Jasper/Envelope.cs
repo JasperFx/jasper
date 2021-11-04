@@ -9,23 +9,7 @@ namespace Jasper
     [MessageIdentity("envelope")]
     public partial class Envelope
     {
-        private const string SentAttemptsHeaderKey = "sent-attempts";
-        public const string CorrelationIdKey = "correlation-id";
-        public const string SagaIdKey = "saga-id";
-        private const string IdKey = "id";
-        public const string ParentIdKey = "parent-id";
-        private const string ContentTypeKey = "content-type";
-        public const string SourceKey = "source";
-        public const string ReplyRequestedKey = "reply-requested";
-        public const string DestinationKey = "destination";
-        public const string ReplyUriKey = "reply-uri";
-        public const string ExecutionTimeKey = "time-to-send";
-        public const string ReceivedAtKey = "received-at";
-        public const string AttemptsKey = "attempts";
-        public const string AckRequestedKey = "ack-requested";
-        public const string MessageTypeKey = "message-type";
-        public const string AcceptedContentTypesKey = "accepted-content-types";
-        public const string DeliverByHeader = "deliver-by";
+
         public static readonly string PingMessageType = "jasper-ping";
 
 
@@ -62,9 +46,9 @@ namespace Jasper
                     if (_message == null)
                         throw new InvalidOperationException("Cannot ensure data is present when there is no message");
 
-                    if (writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+                    if (Writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
 
-                    _data = writer.Write(_message);
+                    _data = Writer.Write(_message);
                 }
 
                 return _data;
@@ -105,14 +89,6 @@ namespace Jasper
             set => _deliverBy = value?.ToUniversalTime();
         }
 
-
-        /// <summary>
-        ///     Identifies the listener at which this envelope was received at
-        /// </summary>
-        public Uri ReceivedAt { get; internal set; }
-
-
-
         /// <summary>
         ///     The name of the service that sent this envelope
         /// </summary>
@@ -132,7 +108,7 @@ namespace Jasper
         /// <summary>
         ///     Mimetype of the serialized data
         /// </summary>
-        public string ContentType { get; internal set; }
+        public string ContentType { get; set; }
 
         /// <summary>
         ///     Correlating identifier for the logical workflow or system action
@@ -213,26 +189,32 @@ namespace Jasper
 
         protected bool Equals(Envelope other)
         {
-            return Equals(Data, other.Data) && Equals(Message, other.Message) &&
-                   Equals(Headers, other.Headers);
+            return Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Envelope) obj);
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Envelope envelope)
+            {
+                return Equals(envelope);
+            }
+
+            return false;
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Data != null ? Data.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (Message != null ? Message.GetHashCode() : 0);
-                return hashCode;
-            }
+            return Id.GetHashCode();
         }
 
         /// <summary>

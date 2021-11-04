@@ -57,7 +57,7 @@ namespace Jasper.Tracking
                 case EventType.Sent:
                     // Not tracking anything outgoing
                     // when it's testing locally
-                    if (record.Envelope.Destination.Scheme != TransportConstants.Local || record.Envelope.MessageType == TransportConstants.ScheduledEnvelope)
+                    if (record.Envelope.Destination?.Scheme != TransportConstants.Local || record.Envelope.MessageType == TransportConstants.ScheduledEnvelope)
                     {
                         record.IsComplete = true;
                     }
@@ -70,7 +70,7 @@ namespace Jasper.Tracking
                     break;
 
                 case EventType.Received:
-                    if (record.Envelope.Destination.Scheme == TransportConstants.Local)
+                    if (record.Envelope.Destination?.Scheme == TransportConstants.Local)
                     {
                         markLastCompleted(EventType.Sent);
                     }
@@ -120,6 +120,14 @@ namespace Jasper.Tracking
                     {
                         record.IsComplete = true;
                     }
+
+                    // This can be out of order with Rabbit MQ *somehow*, so:
+                    var received = _records.LastOrDefault(x => x.EventType == EventType.Received);
+                    if (received != null)
+                    {
+                        record.IsComplete = true;
+                    }
+
                     break;
 
                 case EventType.ExecutionStarted:

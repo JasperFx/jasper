@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Persistence.Database;
 using Lamar;
+using Microsoft.Data.SqlClient;
 
 namespace Jasper.Persistence.SqlServer
 {

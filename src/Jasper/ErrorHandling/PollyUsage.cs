@@ -24,14 +24,14 @@ namespace Jasper.ErrorHandling
             }, (result, context) => Task.CompletedTask);
         }
 
-        internal static void Store(this Context context, IMessageContext messageContext)
+        internal static void Store(this Context context, IExecutionContext messageContext)
         {
             context.Add(ContextKey, messageContext);
         }
 
-        internal static IMessageContext MessageContext(this Context context)
+        internal static IExecutionContext MessageContext(this Context context)
         {
-            return context[ContextKey].As<IMessageContext>();
+            return context[ContextKey].As<IExecutionContext>();
         }
 
 

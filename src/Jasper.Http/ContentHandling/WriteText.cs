@@ -10,7 +10,10 @@ namespace Jasper.Http.ContentHandling
     {
         public bool TryToApply(RouteChain chain)
         {
-            if (chain.ResourceType != typeof(string)) return false;
+            if (chain.ResourceType != typeof(string))
+            {
+                return false;
+            }
 
             chain.Postprocessors.Add(new CallWriteText(chain.Action.ReturnVariable));
 

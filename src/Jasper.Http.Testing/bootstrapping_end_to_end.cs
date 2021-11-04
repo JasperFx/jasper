@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -36,7 +35,6 @@ namespace Jasper.Http.Testing
             });
         }
     }
-
 
 
     public class bootstrapping_end_to_end : RegistryContext<HttpBootstrappedApp>

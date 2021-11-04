@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence
 {
-    public class end_to_end_with_persistence : PostgresqlContext, IDisposable
+    public class end_to_end_with_persistence : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         private readonly ITestOutputHelper _output;
 
@@ -22,10 +23,18 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             _output = output;
             theSender = JasperHost.For<ItemSender>();
             theReceiver = JasperHost.For<ItemReceiver>();
+        }
 
-            theSender.RebuildMessageStorage();
-            theReceiver.RebuildMessageStorage();
+        public async Task InitializeAsync()
+        {
+            await theSender.RebuildMessageStorage();
+            await theReceiver.RebuildMessageStorage();
+        }
 
+        public Task DisposeAsync()
+        {
+            Dispose();
+            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -66,7 +75,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             counts.Scheduled.ShouldBe(1);
 
-            persistor.Admin.ClearAllPersistedEnvelopes();
+            await persistor.Admin.ClearAllPersistedEnvelopes();
 
             (await persistor.Admin.GetPersistedCounts()).Scheduled.ShouldBe(0);
         }
@@ -102,7 +111,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         }
 
 
-        [Fact]
+        [Fact] // TODO -- this needs a Retry of some sort
         public async Task send_end_to_end()
         {
             var item = new ItemCreated
@@ -119,15 +128,19 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 .SendMessageAndWait(item);
 
 
-            using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
+            await using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
             {
                 var item2 = session.Load<ItemCreated>(item.Id);
-                if (item2 == null)
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                while (item2 == null && stopwatch.ElapsedMilliseconds < 30000)
                 {
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     item2 = session.Load<ItemCreated>(item.Id);
                 }
 
+                stopwatch.Stop();
 
                 item2.Name.ShouldBe("Hat");
 
