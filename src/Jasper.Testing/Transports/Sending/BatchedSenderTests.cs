@@ -4,7 +4,6 @@ using Baseline;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
-using Jasper.Transports.Tcp;
 using NSubstitute;
 using Xunit;
 

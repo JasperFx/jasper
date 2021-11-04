@@ -1,8 +1,8 @@
-﻿using Jasper.Configuration;
+﻿using Jasper;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: SampleExtension
     public class SampleExtension : IJasperExtension

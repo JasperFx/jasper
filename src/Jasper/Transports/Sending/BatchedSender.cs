@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
-using Jasper.Transports.Tcp;
 using Jasper.Transports.Util;
 
 namespace Jasper.Transports.Sending

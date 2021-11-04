@@ -1,6 +1,7 @@
 ﻿using IntegrationTests;
 using Jasper.Configuration;
 using Jasper.Persistence.SqlServer;
+using Jasper.Tcp;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jasper.Persistence.Testing.SqlServer.Persistence

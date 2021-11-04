@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper;
 using Jasper.Attributes;
-using Jasper.Configuration;
 using Marten;
 using TestingSupport;
 using TestMessages;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: ValidMessageHandlers
     public class ValidMessageHandlers
@@ -54,9 +54,6 @@ namespace Jasper.Testing.Samples
     {
     }
 
-    public class MyMessage
-    {
-    }
 
     // SAMPLE: simplest-possible-handler
     public class MyMessageHandler
@@ -109,26 +106,29 @@ namespace Jasper.Testing.Samples
         // ENDSAMPLE
     }
 
-    [JasperIgnore]
-    // SAMPLE: HandlerBuiltByConstructorInjection
-    public class ServiceUsingHandler
+    namespace Sample2
     {
-        private readonly IDocumentSession _session;
-
-        public ServiceUsingHandler(IDocumentSession session)
+         [JasperIgnore]
+        // SAMPLE: HandlerBuiltByConstructorInjection
+        public class ServiceUsingHandler
         {
-            _session = session;
-        }
+            private readonly IDocumentSession _session;
 
-        public Task Handle(InvoiceCreated created)
-        {
-            var invoice = new Invoice {Id = created.InvoiceId};
-            _session.Store(invoice);
+            public ServiceUsingHandler(IDocumentSession session)
+            {
+                _session = session;
+            }
 
-            return _session.SaveChangesAsync();
+            public Task Handle(InvoiceCreated created)
+            {
+                var invoice = new Invoice {Id = created.InvoiceId};
+                _session.Store(invoice);
+
+                return _session.SaveChangesAsync();
+            }
         }
+        // ENDSAMPLE
     }
-    // ENDSAMPLE
 
     namespace Three
     {

@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Jasper;
 using TestMessages;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     public class EnqueueSamples
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using Baseline;
 using Jasper.Transports;
 using Jasper.Transports.Local;
-using Jasper.Transports.Tcp;
+using Jasper.Transports.Stub;
 
 namespace Jasper.Configuration
 {
@@ -17,10 +17,9 @@ namespace Jasper.Configuration
         public TransportCollection(JasperOptions parent)
         {
             _parent = parent;
-            Add(new TcpTransport());
+            Add(new StubTransport());
             Add(new LocalTransport());
         }
-
 
         public ITransport TransportForScheme(string scheme)
         {
@@ -39,7 +38,17 @@ namespace Jasper.Configuration
 
         public T Get<T>() where T : ITransport, new()
         {
-            return _transports.Values.OfType<T>().FirstOrDefault();
+            var transport = _transports.Values.OfType<T>().FirstOrDefault();
+            if (transport == null)
+            {
+                transport = new T();
+                foreach (var protocol in transport.Protocols)
+                {
+                    _transports[protocol] = transport;
+                }
+            }
+
+            return transport;
         }
 
         public IEnumerator<ITransport> GetEnumerator()
@@ -97,16 +106,7 @@ namespace Jasper.Configuration
             return ListenForMessagesFrom(new Uri(uriString));
         }
 
-        /// <summary>
-        ///     Directs the application to listen at the designated port in a
-        ///     fast, but non-durable way
-        /// </summary>
-        /// <param name="port"></param>
-        public IListenerConfiguration ListenAtPort(int port)
-        {
-            var settings = Get<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
-            return new ListenerConfiguration(settings);
-        }
+
 
         public void Publish(Action<PublishingExpression> configuration)
         {

@@ -1,5 +1,6 @@
 ﻿using Jasper.Configuration;
 using Jasper.Persistence.Marten;
+using Jasper.Tcp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 

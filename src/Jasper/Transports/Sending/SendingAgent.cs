@@ -6,7 +6,6 @@ using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Logging;
-using Jasper.Transports.Tcp;
 
 namespace Jasper.Transports.Sending
 {

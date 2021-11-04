@@ -21,27 +21,12 @@ namespace Jasper.Configuration
         ISubscriberConfiguration To(string uriString);
 
         /// <summary>
-        ///     Publish the designated message types using Jasper's lightweight
-        ///     TCP transport locally to the designated port number
-        /// </summary>
-        /// <param name="port"></param>
-        ISubscriberConfiguration ToPort(int port);
-
-        /// <summary>
         ///     Publish the designated message types to the named
         ///     local queue
         /// </summary>
         /// <param name="queueName"></param>
         /// <returns></returns>
         IListenerConfiguration ToLocalQueue(string queueName);
-
-        /// <summary>
-        ///     Publish messages using the TCP transport to the specified
-        ///     server name and port
-        /// </summary>
-        /// <param name="hostName"></param>
-        /// <param name="port"></param>
-        ISubscriberConfiguration ToServerAndPort(string hostName, int port);
 
         /// <summary>
         ///     Publishes the matching messages locally to the default

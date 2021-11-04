@@ -1,11 +1,11 @@
 ﻿using Baseline.Dates;
-using Bootstrapping.Configuration2;
-using Jasper.Configuration;
+using Jasper;
 using Jasper.ErrorHandling;
+using Jasper.Tcp;
 using Microsoft.Extensions.Hosting;
 using TestMessages;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: configuring-messaging-with-JasperOptions
     public class MyMessagingApp : JasperOptions

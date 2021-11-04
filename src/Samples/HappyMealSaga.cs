@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.Persistence;
+using Jasper;
 using Jasper.Persistence.Sagas;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: HappyMealOrderState
     public class HappyMealOrderState

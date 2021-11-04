@@ -1,9 +1,8 @@
-﻿using Lamar;
+﻿using Jasper;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: JasperAppWithServices
     public class JasperAppWithServices : JasperOptions

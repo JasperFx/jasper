@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Jasper.Persistence.Durability;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     public class DeadLetterQueue
     {

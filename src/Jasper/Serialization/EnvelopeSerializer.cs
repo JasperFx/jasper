@@ -138,7 +138,7 @@ namespace Jasper.Serialization
             }
         }
 
-        internal static Envelope[] ReadMany(byte[] buffer)
+        public static Envelope[] ReadMany(byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
             using (var br = new BinaryReader(ms))
@@ -178,30 +178,26 @@ namespace Jasper.Serialization
             return msg;
         }
 
-        internal static byte[] Serialize(IList<Envelope> messages)
+        public static byte[] Serialize(IList<Envelope> messages)
         {
-            using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream);
+            writer.Write(messages.Count);
+            foreach (var message in messages)
             {
-                writer.Write(messages.Count);
-                foreach (var message in messages)
-                {
-                    writeSingle(writer, message);
-                }
-                writer.Flush();
-                return stream.ToArray();
+                writeSingle(writer, message);
             }
+            writer.Flush();
+            return stream.ToArray();
         }
 
-        internal static byte[] Serialize(Envelope env)
+        public static byte[] Serialize(Envelope env)
         {
-            using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
-            {
-                writeSingle(writer, env);
-                writer.Flush();
-                return stream.ToArray();
-            }
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream);
+            writeSingle(writer, env);
+            writer.Flush();
+            return stream.ToArray();
         }
 
         private static void writeSingle(BinaryWriter writer, Envelope env)

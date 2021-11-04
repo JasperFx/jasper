@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper;
 using Microsoft.Extensions.Hosting;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: MyAppOptions
     public class MyAppOptions : JasperOptions
     {
     }
-    // ENDSAMPLE
+// ENDSAMPLE
 
 
-    // SAMPLE: ServiceBusApp
+// SAMPLE: ServiceBusApp
     public class ServiceBusApp : JasperOptions
     {
     }
-    // ENDSAMPLE
+// ENDSAMPLE
 
     public static class Program
     {
@@ -34,7 +35,7 @@ namespace Jasper.Testing.Samples
 
     }
 
-    // SAMPLE: QuickStart-InvoiceCreated
+// SAMPLE: QuickStart-InvoiceCreated
     public class InvoiceCreated
     {
         public Guid InvoiceId { get; set; }
@@ -48,16 +49,6 @@ namespace Jasper.Testing.Samples
         }
     }
 
-    // ENDSAMPLE
-}
+// ENDSAMPLE
 
-namespace Jasper.Testing.Samples2
-{
-    // SAMPLE: MyAppRegistry2
-    public class MyAppOptions : JasperOptions
-    {
-
-    }
-
-    // ENDSAMPLE
 }

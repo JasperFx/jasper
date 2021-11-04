@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Jasper;
 using Jasper.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     // SAMPLE: MyMissingHandler
     public class MyMissingHandler : IMissingHandler

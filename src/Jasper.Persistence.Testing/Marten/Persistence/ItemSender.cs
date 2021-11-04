@@ -2,6 +2,7 @@
 using Jasper.Configuration;
 using Jasper.Persistence.Marten;
 using Jasper.Persistence.Testing.Marten.Persistence.Resiliency;
+using Jasper.Tcp;
 using Jasper.Tracking;
 using Marten;
 

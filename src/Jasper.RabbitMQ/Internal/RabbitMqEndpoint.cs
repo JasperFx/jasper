@@ -120,7 +120,7 @@ namespace Jasper.RabbitMQ.Internal
 
         }
 
-        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
 

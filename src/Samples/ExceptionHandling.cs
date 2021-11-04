@@ -1,10 +1,9 @@
 using System;
-using System.Data.SqlClient;
 using Baseline.Dates;
+using Jasper;
 using Jasper.ErrorHandling;
-using Polly;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     public class ExceptionHandling
     {

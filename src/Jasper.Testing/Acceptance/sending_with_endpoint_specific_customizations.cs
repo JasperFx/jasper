@@ -4,6 +4,7 @@ using Jasper.Testing.Compilation;
 using Jasper.Testing.Configuration;
 using Jasper.Testing.Persistence.Sagas;
 using Jasper.Tracking;
+using Jasper.Util;
 using Shouldly;
 using Xunit;
 
@@ -15,17 +16,17 @@ namespace Jasper.Testing.Acceptance
         {
             public DoubleEndpointApp()
             {
-                Endpoints.PublishAllMessages().ToPort(5678)
+                Endpoints.PublishAllMessages().To("stub://one")
                     .CustomizeOutgoing(e => e.Headers.Add("a", "one"))
                     .CustomizeOutgoingMessagesOfType<BaseMessage>(e => e.Headers.Add("d", "four"));
 
-                Endpoints.PublishAllMessages().ToPort(6789)
+                Endpoints.PublishAllMessages().To("stub://two")
                     .CustomizeOutgoing(e => e.Headers.Add("b", "two"))
                     .CustomizeOutgoing(e => e.Headers.Add("c", "three"))
                     .CustomizeOutgoingMessagesOfType<SenderConfigurationTests.OtherMessage>(e => e.Headers.Add("e", "five"));
 
-                Endpoints.ListenAtPort(5678);
-                Endpoints.ListenAtPort(6789);
+                Endpoints.ListenForMessagesFrom("stub://5678");
+                Endpoints.ListenForMessagesFrom("stub://6789");
 
                 Extensions.UseMessageTrackingTestingSupport();
 
@@ -56,23 +57,21 @@ namespace Jasper.Testing.Acceptance
             [Fact]
             public async Task apply_customizations_to_certain_message_types_for_specific_type()
             {
-                using (var host = JasperHost.For<DoubleEndpointApp>())
-                {
-                    var session = await host.TrackActivity().IncludeExternalTransports()
-                        .SendMessageAndWait(new DifferentMessage());
+                using var host = JasperHost.For<DoubleEndpointApp>();
+                var session = await host.TrackActivity().IncludeExternalTransports()
+                    .SendMessageAndWait(new DifferentMessage());
 
-                    var envelopes = session.FindEnvelopesWithMessageType<DifferentMessage>(EventType.Received);
+                var envelopes = session.FindEnvelopesWithMessageType<DifferentMessage>(EventType.Received);
 
-                    var e5678 = envelopes.Single(x => x.Envelope.Destination.Port == 5678).Envelope;
-                    e5678.Headers["a"].ShouldBe("one");
-                    e5678.Headers.ContainsKey("b").ShouldBeFalse();
-                    e5678.Headers.ContainsKey("c").ShouldBeFalse();
+                var env1 = envelopes.Single(x => x.Envelope.Destination == "stub://one".ToUri()).Envelope;
+                env1.Headers["a"].ShouldBe("one");
+                env1.Headers.ContainsKey("b").ShouldBeFalse();
+                env1.Headers.ContainsKey("c").ShouldBeFalse();
 
-                    var e6789 = envelopes.Single(x => x.Envelope.Destination.Port == 6789).Envelope;
-                    e6789.Headers.ContainsKey("a").ShouldBeFalse();
-                    e6789.Headers["b"].ShouldBe("two");
-                    e6789.Headers["c"].ShouldBe("three");
-                }
+                var env2 = envelopes.Single(x => x.Envelope.Destination == "stub://two".ToUri()).Envelope;
+                env2.Headers.ContainsKey("a").ShouldBeFalse();
+                env2.Headers["b"].ShouldBe("two");
+                env2.Headers["c"].ShouldBe("three");
             }
         }
 

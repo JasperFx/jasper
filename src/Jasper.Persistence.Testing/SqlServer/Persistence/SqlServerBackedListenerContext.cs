@@ -11,7 +11,6 @@ using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports.Local;
-using Jasper.Transports.Tcp;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;

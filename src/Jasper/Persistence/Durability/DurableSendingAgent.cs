@@ -8,7 +8,6 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
-using Jasper.Transports.Tcp;
 using Polly;
 using Polly.Retry;
 

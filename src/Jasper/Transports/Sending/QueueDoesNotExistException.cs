@@ -1,5 +1,4 @@
 using System;
-using Jasper.Transports.Tcp;
 
 namespace Jasper.Transports.Sending
 {

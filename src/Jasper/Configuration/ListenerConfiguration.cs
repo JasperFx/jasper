@@ -4,7 +4,7 @@ using LamarCodeGeneration.Util;
 
 namespace Jasper.Configuration
 {
-    internal class ListenerConfiguration : ListenerConfiguration<IListenerConfiguration, Endpoint>, IListenerConfiguration
+    public class ListenerConfiguration : ListenerConfiguration<IListenerConfiguration, Endpoint>, IListenerConfiguration
     {
         public ListenerConfiguration(Endpoint endpoint) : base(endpoint)
         {

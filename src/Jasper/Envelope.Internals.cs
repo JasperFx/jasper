@@ -141,7 +141,7 @@ namespace Jasper
         /// whether a sending endpoint can be restarted
         /// </summary>
         /// <returns></returns>
-        internal bool IsPing()
+        public bool IsPing()
         {
             return MessageType == PingMessageType;
         }

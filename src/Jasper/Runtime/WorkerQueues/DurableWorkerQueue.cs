@@ -6,7 +6,6 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
 using Polly;
 using Polly.Retry;
 

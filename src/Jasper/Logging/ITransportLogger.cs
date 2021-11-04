@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
 
 namespace Jasper.Logging
 {

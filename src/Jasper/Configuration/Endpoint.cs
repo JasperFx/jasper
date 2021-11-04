@@ -80,7 +80,7 @@ namespace Jasper.Configuration
         public abstract void Parse(Uri uri);
 
 
-        protected internal abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
+        public abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
 
         protected internal ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
             Uri replyUri)

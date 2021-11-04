@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Threading.Tasks;
+using Jasper;
 using Jasper.Attributes;
-using Jasper.Configuration;
 using Jasper.Serialization;
-using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     namespace FirstTry
     {

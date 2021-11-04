@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper;
 using TestingSupport.Compliance;
-using TestMessages;
 
-namespace Jasper.Testing.Samples.HandlerDiscovery
+namespace Samples
 {
     // SAMPLE: SimpleHandler
     public class SimpleHandler

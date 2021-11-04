@@ -1,6 +1,7 @@
 ﻿using Jasper;
+using Jasper.Tcp;
 using LamarCodeGeneration;
-using StorytellerSpecs.Fixtures;
+using TestMessages;
 
 namespace MyApp
 {

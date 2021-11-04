@@ -16,13 +16,6 @@ namespace Jasper.Configuration
         IListenerConfiguration ListenForMessagesFrom(string uriString);
 
         /// <summary>
-        ///     Directs the application to listen at the designated port in a
-        ///     fast, but non-durable way
-        /// </summary>
-        /// <param name="port"></param>
-        IListenerConfiguration ListenAtPort(int port);
-
-        /// <summary>
         /// Create a message publishing rule for a subset of message types
         /// and one or more messaging endpoints
         /// </summary>

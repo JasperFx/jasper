@@ -20,6 +20,7 @@
       <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
       <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj" />
       <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
+      <ProjectReference Include="..\Jasper.Tcp\Jasper.Tcp.csproj" />
       <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
     </ItemGroup>
 

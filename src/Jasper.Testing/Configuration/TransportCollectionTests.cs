@@ -8,7 +8,6 @@ using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Transports.Sending;
-using Jasper.Transports.Tcp;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;
@@ -43,14 +42,6 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
-        public void tcp_is_registered_by_default()
-        {
-            new TransportCollection(new JasperOptions())
-                .OfType<TcpTransport>()
-                .Count().ShouldBe(1);
-        }
-
-        [Fact]
         public void local_is_registered_by_default()
         {
             new TransportCollection(new JasperOptions())
@@ -62,8 +53,8 @@ namespace Jasper.Testing.Configuration
         public void retrieve_transport_by_scheme()
         {
             new TransportCollection(new JasperOptions())
-                .TransportForScheme("tcp")
-                .ShouldBeOfType<TcpTransport>();
+                .TransportForScheme("local")
+                .ShouldBeOfType<LocalTransport>();
         }
 
         [Fact]
@@ -78,8 +69,8 @@ namespace Jasper.Testing.Configuration
         public void all_endpoints()
         {
             var collection = new TransportCollection(new JasperOptions());
-            collection.ListenAtPort(2222);
-            collection.PublishAllMessages().ToPort(2223);
+            collection.ListenForMessagesFrom("stub://one");
+            collection.PublishAllMessages().To("stub://two");
 
             // 2 default local queues + the 2 added here
             collection.AllEndpoints()
@@ -95,12 +86,12 @@ namespace Jasper.Testing.Configuration
                 x.MessagesFromNamespace("One");
                 x.MessagesFromNamespace("Two");
 
-                x.ToPort(3333);
-                x.ToPort(4444);
+                x.To("stub://3333");
+                x.To("stub://4444");
             });
 
-            var endpoint3333 = collection.TryGetEndpoint("tcp://localhost:3333".ToUri());
-            var endpoint4444 = collection.TryGetEndpoint("tcp://localhost:4444".ToUri());
+            var endpoint3333 = collection.TryGetEndpoint("stub://3333".ToUri());
+            var endpoint4444 = collection.TryGetEndpoint("stub://4444".ToUri());
 
             endpoint3333.Subscriptions[0]
                 .ShouldBe(new Subscription{Scope = RoutingScope.Namespace, Match = "One"});

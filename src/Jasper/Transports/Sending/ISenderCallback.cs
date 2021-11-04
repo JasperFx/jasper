@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Transports.Tcp;
 
 namespace Jasper.Transports.Sending
 {

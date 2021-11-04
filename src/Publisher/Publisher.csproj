@@ -5,6 +5,7 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jasper.Tcp\Jasper.Tcp.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper.Util;
-using TestMessages;
+using Jasper;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     public class PublishingSamples
     {

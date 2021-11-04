@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     public class ScheduledExecutionSamples
     {

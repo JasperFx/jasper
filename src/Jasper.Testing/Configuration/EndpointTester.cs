@@ -26,7 +26,8 @@ namespace Jasper.Testing.Configuration
             }
 
             public override Uri Uri { get; }
-            protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+
+            public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
             {
                 throw new NotImplementedException();
             }

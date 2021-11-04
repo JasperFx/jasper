@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Jasper.Transports.Local;
-using Jasper.Transports.Tcp;
 using Jasper.Util;
 
 namespace Jasper.Configuration
@@ -125,16 +124,7 @@ namespace Jasper.Configuration
             return new ListenerConfiguration(settings);
         }
 
-        /// <summary>
-        ///     Publish the designated message types using Jasper's lightweight
-        ///     TCP transport locally to the designated port number
-        /// </summary>
-        /// <param name="port"></param>
-        public ISubscriberConfiguration ToPort(int port)
-        {
-            var uri = TcpEndpoint.ToUri(port);
-            return To(uri);
-        }
+
 
         /// <summary>
         ///     Publish the designated message types to the named
@@ -156,17 +146,7 @@ namespace Jasper.Configuration
             return new ListenerConfiguration(settings);
         }
 
-        /// <summary>
-        ///     Publish messages using the TCP transport to the specified
-        ///     server name and port
-        /// </summary>
-        /// <param name="hostName"></param>
-        /// <param name="port"></param>
-        public ISubscriberConfiguration ToServerAndPort(string hostName, int port)
-        {
-            var uri = TcpEndpoint.ToUri(port, hostName);
-            return To(uri);
-        }
+
 
         internal void AttachSubscriptions()
         {

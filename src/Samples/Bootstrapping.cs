@@ -1,10 +1,11 @@
 ﻿using Jasper;
 using Jasper.Configuration;
+using Jasper.Tcp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Jasper.Testing.Samples
+namespace Samples
 {
     public class Bootstrapping
     {
@@ -39,7 +40,7 @@ namespace Jasper.Testing.Samples
         }
     }
 
-    // SAMPLE: Bootstrapping-CustomJasperExtension
+// SAMPLE: Bootstrapping-CustomJasperExtension
     public class CustomJasperExtension : IJasperExtension
     {
         public int Threshold { get; set; } = 10;
@@ -49,9 +50,9 @@ namespace Jasper.Testing.Samples
             // apply alterations
         }
     }
-    // ENDSAMPLE
+// ENDSAMPLE
 
-    // SAMPLE: AppWithExtensions
+// SAMPLE: AppWithExtensions
     public class AppWithExtensions : JasperOptions
     {
         public AppWithExtensions()
@@ -66,7 +67,7 @@ namespace Jasper.Testing.Samples
             Extensions.Include<CustomJasperExtension>(_ => { _.Threshold = 20; });
         }
     }
-    // ENDSAMPLE
+// ENDSAMPLE
 
 
     public interface ISecurityService
@@ -77,7 +78,7 @@ namespace Jasper.Testing.Samples
     {
     }
 
-    // SAMPLE: Bootstrapping-ServiceRegistrations
+// SAMPLE: Bootstrapping-ServiceRegistrations
     public class MyJasperApp : JasperOptions
     {
         public MyJasperApp()
@@ -91,53 +92,47 @@ namespace Jasper.Testing.Samples
         }
     }
 
-    // ENDSAMPLE
-}
+// ENDSAMPLE
 
-namespace Bootstrapping.Configuration
-{
-    public class MyJasperApp : JasperOptions
+
+
+// SAMPLE: CustomJasperOptions
+    public class MyJasperApp3 : JasperOptions
     {
-
-    }
-}
-
-namespace Bootstrapping.Configuration2
-{
-    // SAMPLE: CustomJasperOptions
-    public class MyJasperApp : JasperOptions
-    {
-        public MyJasperApp()
+        public MyJasperApp3()
         {
             ServiceName = "My Jasper App";
 
             Endpoints.ListenAtPort(2111).DurablyPersistedLocally();
         }
     }
-    // ENDSAMPLE
+// ENDSAMPLE
 
-    public static class Program
+    namespace Sample2
     {
-        public static void Go()
+         public static class Program
         {
-            // SAMPLE: Bootstrapping-with-custom-JasperOptions
-            using (var runtime = JasperHost.For<MyJasperApp>())
+            public static void Go()
             {
-                // do stuff
+                // SAMPLE: Bootstrapping-with-custom-JasperOptions
+                using (var runtime = JasperHost.For<MyJasperApp>())
+                {
+                    // do stuff
+                }
+
+                // or
+
+                using (var runtime = JasperHost.For((JasperOptions) new MyJasperApp()))
+                {
+                    // do stuff
+                }
+
+                // ENDSAMPLE
             }
-
-            // or
-
-            using (var runtime = JasperHost.For(new MyJasperApp()))
-            {
-                // do stuff
-            }
-
-            // ENDSAMPLE
         }
     }
 
-    // SAMPLE: CustomServiceOptions
+// SAMPLE: CustomServiceOptions
     public class CustomServiceOptions : JasperOptions
     {
         public CustomServiceOptions()
@@ -146,10 +141,10 @@ namespace Bootstrapping.Configuration2
             ServiceName = "My Custom Service";
         }
     }
-    // ENDSAMPLE
+// ENDSAMPLE
 
 
-    public class Samples
+    public class Samples2
     {
         public void using_web_host_builder()
         {

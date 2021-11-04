@@ -80,7 +80,7 @@ namespace Jasper.Pulsar
             return $"{Persistence}://{Tenant}/{Namespace}/{TopicName}";
         }
 
-        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
 

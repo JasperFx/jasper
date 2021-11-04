@@ -57,7 +57,7 @@ namespace Jasper.Testing.Acceptance
 
             var mySpecialMessage = new MySpecialMessage();
 
-            await context.SendToDestination("tcp://localhost:2001".ToUri(), mySpecialMessage);
+            await context.SendToDestination("stub://2001".ToUri(), mySpecialMessage);
 
             var outgoing = context.As<ExecutionContext>().Outstanding.Single();
 

@@ -4,11 +4,10 @@ using Jasper.Configuration;
 using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Jasper.Transports.Local;
-using Jasper.Transports.Tcp;
+using Jasper.Transports.Stub;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Shouldly;
 using Xunit;
 
@@ -47,7 +46,7 @@ namespace Jasper.Testing.Configuration
                 .TryGetEndpoint(uri.ToUri());
         }
 
-        private TcpTransport theTcpTransport => theOptions.Endpoints.As<TransportCollection>().Get<TcpTransport>();
+        private StubTransport theStubTransport => theOptions.Endpoints.As<TransportCollection>().Get<StubTransport>();
 
         public void Dispose()
         {
@@ -58,9 +57,9 @@ namespace Jasper.Testing.Configuration
         public void publish_all_adds_an_all_subscription_to_the_endpoint()
         {
             theOptions.Endpoints.PublishAllMessages()
-                .ToPort(5555);
+                .To("stub://5555");
 
-            findEndpoint("tcp://localhost:5555")
+            findEndpoint("stub://5555")
                 .Subscriptions.Single()
                 .Scope.ShouldBe(RoutingScope.All);
         }
@@ -88,12 +87,12 @@ namespace Jasper.Testing.Configuration
         }
 
         [Fact]
-        public void listen_for_port()
+        public void mark_durable()
         {
-            theOptions.Endpoints.ListenAtPort(1111)
+            theOptions.Endpoints.ListenForMessagesFrom("stub://1111")
                 .DurablyPersistedLocally();
 
-            var endpoint = findEndpoint("tcp://localhost:1111");
+            var endpoint = findEndpoint("stub://1111");
             endpoint.ShouldNotBeNull();
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
             endpoint.IsListener.ShouldBeTrue();
@@ -103,14 +102,13 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void prefer_listener()
         {
-            theOptions.Endpoints.ListenAtPort(1111);
-            theOptions.Endpoints.ListenAtPort(2222);
-            theOptions.Endpoints.ListenAtPort(3333).UseForReplies();
+            theOptions.Endpoints.ListenForMessagesFrom("stub://1111");
+            theOptions.Endpoints.ListenForMessagesFrom("stub://2222");
+            theOptions.Endpoints.ListenForMessagesFrom("stub://3333").UseForReplies();
 
-
-            findEndpoint("tcp://localhost:1111").IsUsedForReplies.ShouldBeFalse();
-            findEndpoint("tcp://localhost:2222").IsUsedForReplies.ShouldBeFalse();
-            findEndpoint("tcp://localhost:3333").IsUsedForReplies.ShouldBeTrue();
+            findEndpoint("stub://1111").IsUsedForReplies.ShouldBeFalse();
+            findEndpoint("stub://2222").IsUsedForReplies.ShouldBeFalse();
+            findEndpoint("stub://3333").IsUsedForReplies.ShouldBeTrue();
         }
 
         [Fact]
@@ -182,7 +180,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void sets_is_listener()
         {
-            var uriString = "tcp://localhost:1111";
+            var uriString = "stub://1111";
             theOptions.Endpoints.ListenForMessagesFrom(uriString);
 
             findEndpoint(uriString)
@@ -193,30 +191,30 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void select_reply_endpoint_with_one_listener()
         {
-            theOptions.Endpoints.ListenAtPort(2222);
-            theOptions.Endpoints.PublishAllMessages().ToPort(3333);
+            theOptions.Endpoints.ListenForMessagesFrom("stub://2222");
+            theOptions.Endpoints.PublishAllMessages().To("stub://3333");
 
-            theTcpTransport.ReplyEndpoint()
-                .Uri.ShouldBe("tcp://localhost:2222".ToUri());
+            theStubTransport.ReplyEndpoint()
+                .Uri.ShouldBe("stub://2222".ToUri());
         }
 
         [Fact]
-        public void select_reply_endpoint_with_mulitple_listeners_and_one_designated_reply_endpoint()
+        public void select_reply_endpoint_with_multiple_listeners_and_one_designated_reply_endpoint()
         {
-            theOptions.Endpoints.ListenAtPort(2222);
-            theOptions.Endpoints.ListenAtPort(4444).UseForReplies();
-            theOptions.Endpoints.ListenAtPort(5555);
-            theOptions.Endpoints.PublishAllMessages().ToPort(3333);
+            theOptions.Endpoints.ListenForMessagesFrom("stub://2222");
+            theOptions.Endpoints.ListenForMessagesFrom("stub://4444").UseForReplies();
+            theOptions.Endpoints.ListenForMessagesFrom("stub://5555");
+            theOptions.Endpoints.PublishAllMessages().To("stub://3333");
 
-            theTcpTransport.ReplyEndpoint()
-                .Uri.ShouldBe("tcp://localhost:4444".ToUri());
+            theStubTransport.ReplyEndpoint()
+                .Uri.ShouldBe("stub://4444".ToUri());
         }
 
         [Fact]
         public void select_reply_endpoint_with_no_listeners()
         {
-            theOptions.Endpoints.PublishAllMessages().ToPort(3333);
-            theTcpTransport.ReplyEndpoint().ShouldBeNull();
+            theOptions.Endpoints.PublishAllMessages().To("stub://3333");
+            theStubTransport.ReplyEndpoint().ShouldBeNull();
         }
 
     }

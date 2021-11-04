@@ -21,6 +21,9 @@
 
   <ItemGroup>
     <Folder Include="Persistence" />
+    <Folder Include="Samples" />
+    <Folder Include="Transports\Receiving" />
+    <Folder Include="Transports\Tcp" />
   </ItemGroup>
 
 </Project>

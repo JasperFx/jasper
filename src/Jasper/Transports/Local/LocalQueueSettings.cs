@@ -31,7 +31,7 @@ namespace Jasper.Transports.Local
             return Mode == EndpointMode.Durable ? $"local://durable/{Name}".ToUri() : $"local://{Name}".ToUri();
         }
 
-        protected internal override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
         {
             throw new NotSupportedException();
         }

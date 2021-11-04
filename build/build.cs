@@ -91,7 +91,6 @@ documentation/compilation/frames/injected-fields/
             Target("test", DependsOn("compile"),() =>
             {
                 RunTests("Jasper.Testing");
-                RunTests("Jasper.TestSupport.Tests");
                 RunTests("Jasper.Http.Testing");
             });
 
