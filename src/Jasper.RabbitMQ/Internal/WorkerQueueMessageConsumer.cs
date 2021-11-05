@@ -47,7 +47,8 @@ namespace Jasper.RabbitMQ.Internal
             var envelope = new RabbitMqEnvelope(Listener, deliveryTag);
             try
             {
-                Mapper.ReadIntoEnvelope(envelope, properties, body);
+                envelope.Data = body;
+                Mapper.MapIncomingToEnvelope(envelope, properties);
             }
             catch (Exception e)
             {

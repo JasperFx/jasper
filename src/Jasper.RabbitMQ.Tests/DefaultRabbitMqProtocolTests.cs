@@ -19,11 +19,11 @@ namespace Jasper.RabbitMQ.Tests
             _mapped = new Lazy<Envelope>(() =>
             {
                 var mapper = new DefaultRabbitMqProtocol();
-                mapper.WriteFromEnvelope(theOriginal, theEventArgs.BasicProperties);
+                mapper.MapEnvelopeToOutgoing(theOriginal, theEventArgs.BasicProperties);
 
                 var envelope = new RabbitMqEnvelope(null, 0);
 
-                mapper.ReadIntoEnvelope(envelope, theEventArgs.BasicProperties, theEventArgs.Body);
+                mapper.MapIncomingToEnvelope(envelope, theEventArgs.BasicProperties);
 
                 return envelope;
             });
@@ -82,7 +82,11 @@ namespace Jasper.RabbitMQ.Tests
         public void deliver_by_value()
         {
             theOriginal.DeliverBy = DateTimeOffset.Now;
-            theEnvelope.DeliverBy.ShouldBe(theOriginal.DeliverBy);
+            theEnvelope.DeliverBy.HasValue.ShouldBeTrue();
+
+
+            theEnvelope.DeliverBy.Value.Subtract(theOriginal.DeliverBy.Value)
+                .TotalSeconds.ShouldBeLessThan(5);
         }
 
         [Fact]
@@ -91,11 +95,6 @@ namespace Jasper.RabbitMQ.Tests
             theEnvelope.Id.ShouldBe(theOriginal.Id);
         }
 
-        [Fact]
-        public void map_over_the_body()
-        {
-            theEnvelope.Data.ShouldBe(theEventArgs.Body);
-        }
 
         [Fact]
         public void message_type()
@@ -158,102 +157,4 @@ namespace Jasper.RabbitMQ.Tests
     }
 
 
-    public class mapping_from_envelope
-    {
-        public mapping_from_envelope()
-        {
-            _properties = new Lazy<IBasicProperties>(() =>
-            {
-                var props = new BasicProperties
-                {
-                    Headers = new Dictionary<string, object>()
-                };
-                new DefaultRabbitMqProtocol().WriteFromEnvelope(theEnvelope, props);
-
-                return props;
-            });
-        }
-
-        private readonly Envelope theEnvelope = new Envelope();
-        private readonly Lazy<IBasicProperties> _properties;
-
-        private IBasicProperties theProperties => _properties.Value;
-
-        [Fact]
-        public void ack_requested_false()
-        {
-            theEnvelope.AckRequested = false;
-            theProperties.Headers.ContainsKey(EnvelopeSerializer.AckRequestedKey).ShouldBeFalse();
-        }
-
-        [Fact]
-        public void ack_requested_true()
-        {
-            theEnvelope.AckRequested = true;
-            theProperties.Headers[EnvelopeSerializer.AckRequestedKey].ShouldBe("true");
-        }
-
-        [Fact]
-        public void content_type()
-        {
-            theEnvelope.ContentType = "application/json";
-            theProperties.ContentType.ShouldBe(theEnvelope.ContentType);
-        }
-
-        [Fact]
-        public void message_type()
-        {
-            theEnvelope.MessageType = "something";
-            theProperties.Type.ShouldBe(theEnvelope.MessageType);
-        }
-
-        [Fact]
-        public void parent_id()
-        {
-            theEnvelope.CausationId = Guid.NewGuid();
-            theProperties.Headers[EnvelopeSerializer.CausationIdKey].ShouldBe(theEnvelope.CausationId.ToString());
-        }
-
-        [Fact]
-        public void reply_requested_true()
-        {
-            theEnvelope.ReplyRequested = "somereplymessage";
-            theProperties.Headers[EnvelopeSerializer.ReplyRequestedKey].ShouldBe(theEnvelope.ReplyRequested);
-        }
-
-        [Fact]
-        public void reply_uri()
-        {
-            theEnvelope.ReplyUri = "tcp://localhost:5005".ToUri();
-            theProperties.Headers[EnvelopeSerializer.ReplyUriKey].ShouldBe(theEnvelope.ReplyUri.ToString());
-        }
-
-        [Fact]
-        public void saga_id_key()
-        {
-            theEnvelope.SagaId = "somesaga";
-            theProperties.Headers[EnvelopeSerializer.SagaIdKey].ShouldBe(theEnvelope.SagaId);
-        }
-
-        [Fact]
-        public void source_key()
-        {
-            theEnvelope.Source = "SomeApp";
-            theProperties.AppId.ShouldBe(theEnvelope.Source);
-        }
-
-        [Fact]
-        public void the_correlation_id()
-        {
-            theEnvelope.Id = Guid.NewGuid();
-            theProperties.CorrelationId.ShouldBe(theEnvelope.Id.ToString());
-        }
-
-        [Fact]
-        public void the_original_id()
-        {
-            theEnvelope.CorrelationId = Guid.NewGuid();
-            theProperties.Headers[EnvelopeSerializer.CorrelationIdKey].ShouldBe(theEnvelope.CorrelationId.ToString());
-        }
-    }
 }

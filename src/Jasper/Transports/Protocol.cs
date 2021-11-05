@@ -70,6 +70,11 @@ namespace Jasper.Transports
 
             var list = new List<Expression>();
 
+            var writeHeaders = Expression.Call(protocol,
+                GetType().GetMethod(nameof(writeIncomingHeaders), BindingFlags.NonPublic | BindingFlags.Instance),
+                incoming, envelope);
+            list.Add(writeHeaders);
+
             foreach (var pair in _envelopeToHeader.Where(x => !_envelopeToOutgoing.ContainsKey(x.Key)))
             {
                 MethodInfo getMethod = getString;
@@ -107,10 +112,7 @@ namespace Jasper.Transports
 
             }
 
-            var writeHeaders = Expression.Call(protocol,
-                GetType().GetMethod(nameof(writeIncomingHeaders), BindingFlags.NonPublic | BindingFlags.Instance),
-                incoming, envelope);
-            list.Add(writeHeaders);
+
 
             var block = Expression.Block(list);
 
@@ -135,6 +137,11 @@ namespace Jasper.Transports
             var setStringArray = GetType().GetMethod(nameof(writeStringArray), BindingFlags.NonPublic | BindingFlags.Instance);
 
             var list = new List<Expression>();
+
+            var writeHeaders = Expression.Call(protocol,
+                GetType().GetMethod(nameof(writeOutgoingOtherHeaders), BindingFlags.NonPublic | BindingFlags.Instance),
+                outgoing, envelope);
+            list.Add(writeHeaders);
 
             var headers = _envelopeToHeader.Where(x => !_envelopeToIncoming.ContainsKey(x.Key));
             foreach (var pair in headers)
@@ -172,10 +179,7 @@ namespace Jasper.Transports
 
             }
 
-            var writeHeaders = Expression.Call(protocol,
-                GetType().GetMethod(nameof(writeOutgoingOtherHeaders), BindingFlags.NonPublic | BindingFlags.Instance),
-                outgoing, envelope);
-            list.Add(writeHeaders);
+
 
             var block = Expression.Block(list);
 

@@ -1,45 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using Baseline;
-using Jasper.Serialization;
+using System.Text;
+using Jasper.Transports;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
     // SAMPLE: DefaultRabbitMqProtocol
-    public class DefaultRabbitMqProtocol : IRabbitMqProtocol
+    public class DefaultRabbitMqProtocol : Protocol<IBasicProperties>, IRabbitMqProtocol
     {
-        public virtual void ReadIntoEnvelope(Envelope envelope, IBasicProperties props, byte[] data)
+        protected override void writeOutgoingHeader(IBasicProperties outgoing, string key, string value)
         {
-            envelope.Data = data;
-            envelope.Source = props.AppId;
-            envelope.ContentType = props.ContentType;
-            envelope.MessageType = props.Type;
-            envelope.ReplyUri = props.ReplyTo.IsEmpty() ? null : new Uri(props.ReplyTo);
-
-
-            if (Guid.TryParse(props.CorrelationId, out var id))
-            {
-                envelope.Id = id;
-            }
-
-            if (props.Headers != null)
-            {
-                EnvelopeSerializer.ReadPropertiesFromDictionary(props.Headers, envelope);
-            }
+            outgoing.Headers[key] = value;
         }
 
-        public virtual void WriteFromEnvelope(Envelope envelope, IBasicProperties properties)
+        protected override bool tryReadIncomingHeader(IBasicProperties incoming, string key, out string value)
         {
-            properties.CorrelationId = envelope.Id.ToString();
-            properties.AppId = envelope.Source;
-            properties.ContentType = envelope.ContentType;
-            properties.Type = envelope.MessageType;
-            if (envelope.ReplyUri != null) properties.ReplyTo = envelope.ReplyUri.ToString();
+            if (incoming.Headers.TryGetValue(key, out var raw))
+            {
+                value = raw is byte[] b ? Encoding.Default.GetString(b) : raw.ToString();
+                return true;
+            }
 
-            properties.Headers ??= new Dictionary<string, object>();
+            value = null;
+            return false;
+        }
 
-            EnvelopeSerializer.WriteToDictionary(properties.Headers, envelope);
+        protected override void writeIncomingHeaders(IBasicProperties incoming, Envelope envelope)
+        {
+            foreach (var pair in incoming.Headers)
+            {
+                envelope.Headers[pair.Key] = pair.Value?.ToString();
+            }
         }
     }
     // ENDSAMPLE

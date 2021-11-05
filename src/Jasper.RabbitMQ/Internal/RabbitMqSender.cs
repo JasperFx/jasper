@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
@@ -39,8 +40,9 @@ namespace Jasper.RabbitMQ.Internal
 
             var props = Channel.CreateBasicProperties();
             props.Persistent = _isDurable;
+            props.Headers = new Dictionary<string, object>();
 
-            _protocol.WriteFromEnvelope(envelope, props);
+            _protocol.MapEnvelopeToOutgoing(envelope, props);
 
             Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
         }

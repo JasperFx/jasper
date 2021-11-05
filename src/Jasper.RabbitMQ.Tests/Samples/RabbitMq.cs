@@ -14,12 +14,12 @@ namespace IntegrationTests.Samples
 
     public class MySpecialProtocol : IRabbitMqProtocol
     {
-        public void WriteFromEnvelope(Envelope envelope, IBasicProperties properties)
+        public void MapEnvelopeToOutgoing(Envelope envelope, IBasicProperties properties)
         {
             throw new System.NotImplementedException();
         }
 
-        public void ReadIntoEnvelope(Envelope envelope, IBasicProperties properties, byte[] body)
+        public void MapIncomingToEnvelope(Envelope envelope, IBasicProperties properties)
         {
             throw new System.NotImplementedException();
         }

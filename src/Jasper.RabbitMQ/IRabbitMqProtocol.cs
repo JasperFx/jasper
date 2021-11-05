@@ -14,7 +14,7 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="envelope"></param>
         /// <param name="properties"></param>
-        void WriteFromEnvelope(Envelope envelope, IBasicProperties properties);
+        void MapEnvelopeToOutgoing(Envelope envelope, IBasicProperties properties);
 
         /// <summary>
         /// Create an Envelope object from the raw message data and the header
@@ -22,9 +22,8 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="envelope"></param>
         /// <param name="properties"></param>
-        /// <param name="body"></param>
         /// <returns></returns>
-        void ReadIntoEnvelope(Envelope envelope, IBasicProperties properties, byte[] body);
+        void MapIncomingToEnvelope(Envelope envelope, IBasicProperties properties);
     }
 
     // ENDSAMPLE
