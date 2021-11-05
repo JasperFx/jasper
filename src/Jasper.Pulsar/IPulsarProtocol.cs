@@ -12,7 +12,7 @@ namespace Jasper.Pulsar
         /// <param name="env"></param>
         /// <param name="message"></param>
         /// <param name="properties"></param>
-        void WriteFromEnvelope(Envelope env, MessageMetadata message);
+        void MapEnvelopeToOutgoing(Envelope env, MessageMetadata message);
 
         /// <summary>
         /// Create an Envelope object from the raw message data and the header
@@ -22,6 +22,6 @@ namespace Jasper.Pulsar
         /// <param name="properties"></param>
         /// <param name="body"></param>
         /// <returns></returns>
-        void ReadIntoEnvelope(Envelope envelope, IMessage<ReadOnlySequence<byte>> message);
+        void MapIncomingToEnvelope(Envelope envelope, IMessage<ReadOnlySequence<byte>> message);
     }
 }

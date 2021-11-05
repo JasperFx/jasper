@@ -55,7 +55,8 @@ namespace Jasper.Pulsar
         public Task Send(Envelope envelope)
         {
             var message = new MessageMetadata();
-            _endpoint.Protocol.WriteFromEnvelope(envelope, message);
+
+            _endpoint.Protocol.MapEnvelopeToOutgoing(envelope, message);
 
             return _producer.Send(message, new ReadOnlySequence<byte>(envelope.Data), _cancellation).AsTask();
         }

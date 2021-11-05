@@ -1,66 +1,28 @@
 using System.Buffers;
-using System.Linq;
-using Baseline;
 using DotPulsar;
 using DotPulsar.Abstractions;
-using Jasper.Serialization;
+using Jasper.Transports;
 
 namespace Jasper.Pulsar
 {
-    public class DefaultPulsarProtocol : IPulsarProtocol
+    public class DefaultPulsarProtocol : Protocol<IMessage<ReadOnlySequence<byte>>, MessageMetadata>, IPulsarProtocol
     {
-        public void WriteFromEnvelope(Envelope env, MessageMetadata message)
+        protected override void writeOutgoingHeader(MessageMetadata outgoing, string key, string value)
         {
-            message[EnvelopeSerializer.SourceKey] = env.Source;
-            message[EnvelopeSerializer.MessageTypeKey] = env.MessageType;
-            if (env.ReplyUri is not null)
-            {
-                message[EnvelopeSerializer.ReplyUriKey] = env.ReplyUri.ToString();
-            }
-
-            message[EnvelopeSerializer.ContentTypeKey] = env.ContentType;
-            message[EnvelopeSerializer.CorrelationIdKey] = env.CorrelationId.ToString();
-            message[EnvelopeSerializer.CausationIdKey] = env.CausationId.ToString();
-
-            if (env.SagaId.IsNotEmpty())
-            {
-                message[EnvelopeSerializer.SagaIdKey] = env.SagaId;
-            }
-
-            if (env.AcceptedContentTypes != null && env.AcceptedContentTypes.Any())
-            {
-                message[EnvelopeSerializer.AcceptedContentTypesKey] = string.Join(",", env.AcceptedContentTypes);
-            }
-
-            message[EnvelopeSerializer.IdKey] = env.Id.ToString();
-            if (env.ReplyRequested != null)
-            {
-                message[EnvelopeSerializer.ReplyRequestedKey] = env.ReplyRequested.ToString();
-            }
-
-            message[EnvelopeSerializer.AckRequestedKey] = env.AckRequested.ToString();
-
-            if (env.ExecutionTime.HasValue)
-            {
-                message.DeliverAtTimeAsDateTimeOffset = env.ExecutionTime.Value;
-            }
-
-            message[EnvelopeSerializer.AttemptsKey] = env.Attempts.ToString();
-
-            if (env.DeliverBy.HasValue)
-            {
-                message[EnvelopeSerializer.DeliverByHeader] = env.DeliverBy.Value.ToString("o");
-            }
-
-            foreach (var pair in env.Headers)
-            {
-                message[pair.Key] = pair.Value;
-            }
+            outgoing[key] = value;
         }
 
-        public void ReadIntoEnvelope(Envelope envelope, IMessage<ReadOnlySequence<byte>> message)
+        protected override bool tryReadIncomingHeader(IMessage<ReadOnlySequence<byte>> incoming, string key, out string value)
         {
-            EnvelopeSerializer.ReadPropertiesFromDictionary(message.Properties, envelope);
+            return incoming.Properties.TryGetValue(key, out value);
+        }
+
+        protected override void writeIncomingHeaders(IMessage<ReadOnlySequence<byte>> incoming, Envelope envelope)
+        {
+            foreach (var pair in incoming.Properties)
+            {
+                envelope.Headers[pair.Key] = pair.Value;
+            }
         }
     }
 }

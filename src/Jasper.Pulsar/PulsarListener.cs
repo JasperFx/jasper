@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using DotPulsar.Abstractions;
@@ -93,11 +94,12 @@ namespace Jasper.Pulsar
             {
                 await foreach (var message in _consumer.Messages(cancellationToken: cancellation))
                 {
+                    Debug.WriteLine(message.MessageId);
                     var envelope = new PulsarEnvelope(message);
 
                     // TODO -- invoke the deserialization here. A
                     envelope.Data = message.Data.ToArray();
-                    _endpoint.Protocol.ReadIntoEnvelope(envelope, message);
+                    _endpoint.Protocol.MapIncomingToEnvelope(envelope, message);
 
                     // TODO -- the worker queue should already have the Uri,
                     // so just take in envelope

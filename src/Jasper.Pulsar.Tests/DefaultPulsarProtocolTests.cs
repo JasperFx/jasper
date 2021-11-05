@@ -25,7 +25,7 @@ namespace Jasper.Pulsar.Tests
                 var mapper = new DefaultPulsarProtocol();
                 var metadata = new MessageMetadata();
 
-                mapper.WriteFromEnvelope(theOriginal, metadata);
+                mapper.MapEnvelopeToOutgoing(theOriginal, metadata);
 
                 var prop1 = typeof(MessageMetadata).GetProperty("Metadata",
                     BindingFlags.Instance | BindingFlags.NonPublic);
@@ -45,7 +45,7 @@ namespace Jasper.Pulsar.Tests
 
                 var envelope = new PulsarEnvelope(message);
 
-                mapper.ReadIntoEnvelope(envelope, message);
+                mapper.MapIncomingToEnvelope(envelope, message);
 
                 return envelope;
             });
@@ -95,7 +95,11 @@ namespace Jasper.Pulsar.Tests
         public void deliver_by_value()
         {
             theOriginal.DeliverBy = DateTimeOffset.Now;
-            theEnvelope.DeliverBy.ShouldBe(theOriginal.DeliverBy);
+            theEnvelope.DeliverBy.HasValue.ShouldBeTrue();
+
+
+            theEnvelope.DeliverBy.Value.Subtract(theOriginal.DeliverBy.Value)
+                .TotalSeconds.ShouldBeLessThan(5);
         }
 
         [Fact]
@@ -133,6 +137,14 @@ namespace Jasper.Pulsar.Tests
         {
             theOriginal.CausationId = Guid.NewGuid();
             theEnvelope.CausationId.ShouldBe(theOriginal.CausationId);
+        }
+
+
+        [Fact]
+        public void attempts()
+        {
+            theOriginal.Attempts = 1;
+            theEnvelope.Attempts.ShouldBe(1);
         }
 
         [Fact]

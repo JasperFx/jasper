@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Baseline;
 using Baseline.Reflection;
 using Jasper.Serialization;
 
@@ -35,13 +36,15 @@ namespace Jasper.Transports
             MapPropertyToHeader(x => x.ReplyRequested, EnvelopeSerializer.ReplyRequestedKey);
             MapPropertyToHeader(x => x.ReplyUri, EnvelopeSerializer.ReplyUriKey);
             MapPropertyToHeader(x => x.ExecutionTime, EnvelopeSerializer.ExecutionTimeKey);
-            MapPropertyToHeader(x => x.Attempts, EnvelopeSerializer.AttemptsKey);
+
             MapPropertyToHeader(x => x.AckRequested, EnvelopeSerializer.AckRequestedKey);
             MapPropertyToHeader(x => x.MessageType, EnvelopeSerializer.MessageTypeKey);
             MapPropertyToHeader(x => x.AcceptedContentTypes, EnvelopeSerializer.AcceptedContentTypesKey);
 
             // TODO -- could check it here, then delete it on the spot instead of mapping it!!
             MapPropertyToHeader(x => x.DeliverBy, EnvelopeSerializer.DeliverByHeader);
+
+            MapPropertyToHeader(x => x.Attempts, EnvelopeSerializer.AttemptsKey);
 
         }
 
@@ -57,12 +60,13 @@ namespace Jasper.Transports
             var envelope = Expression.Parameter(typeof(Envelope), "env");
             var protocol = Expression.Constant(this);
 
-            var getUri = GetType().GetMethod(nameof(readUri));
-            var getInt = GetType().GetMethod(nameof(readInt));
-            var getString = GetType().GetMethod(nameof(readString));
-            var getGuid = GetType().GetMethod(nameof(readGuid));
-            var getBoolean = GetType().GetMethod(nameof(readBoolean));
-            var getDateTimeOffset = GetType().GetMethod(nameof(readDateTimeOffset));
+            var getUri = GetType().GetMethod(nameof(readUri), BindingFlags.NonPublic | BindingFlags.Instance);
+            var getInt = GetType().GetMethod(nameof(readInt), BindingFlags.NonPublic | BindingFlags.Instance);
+            var getString = GetType().GetMethod(nameof(readString), BindingFlags.NonPublic | BindingFlags.Instance);
+            var getGuid = GetType().GetMethod(nameof(readGuid), BindingFlags.NonPublic | BindingFlags.Instance);
+            var getBoolean = GetType().GetMethod(nameof(readBoolean), BindingFlags.NonPublic | BindingFlags.Instance);
+            var getDateTimeOffset = GetType().GetMethod(nameof(readDateTimeOffset), BindingFlags.NonPublic | BindingFlags.Instance);
+            var getStringArray = GetType().GetMethod(nameof(readStringArray), BindingFlags.NonPublic | BindingFlags.Instance);
 
             var list = new List<Expression>();
 
@@ -89,6 +93,10 @@ namespace Jasper.Transports
                 {
                     getMethod = getInt;
                 }
+                else if (pair.Key.PropertyType == typeof(string[]))
+                {
+                    getMethod = getStringArray;
+                }
 
                 var setter = pair.Key.SetMethod;
 
@@ -98,6 +106,11 @@ namespace Jasper.Transports
                 list.Add(setValue);
 
             }
+
+            var writeHeaders = Expression.Call(protocol,
+                GetType().GetMethod(nameof(writeIncomingHeaders), BindingFlags.NonPublic | BindingFlags.Instance),
+                incoming, envelope);
+            list.Add(writeHeaders);
 
             var block = Expression.Block(list);
 
@@ -113,16 +126,18 @@ namespace Jasper.Transports
             var envelope = Expression.Parameter(typeof(Envelope), "env");
             var protocol = Expression.Constant(this);
 
-            var setUri = GetType().GetMethod(nameof(writeUri));
-            var setInt = GetType().GetMethod(nameof(writeInt));
-            var setString = GetType().GetMethod(nameof(writeOutgoingHeader));
-            var setGuid = GetType().GetMethod(nameof(writeGuid));
-            var setBoolean = GetType().GetMethod(nameof(writeBoolean));
-            var setDateTimeOffset = GetType().GetMethod(nameof(writeDateTimeOffset));
+            var setUri = GetType().GetMethod(nameof(writeUri), BindingFlags.NonPublic | BindingFlags.Instance);
+            var setInt = GetType().GetMethod(nameof(writeInt), BindingFlags.NonPublic | BindingFlags.Instance);
+            var setString = GetType().GetMethod(nameof(writeString), BindingFlags.NonPublic | BindingFlags.Instance);
+            var setGuid = GetType().GetMethod(nameof(writeGuid), BindingFlags.NonPublic | BindingFlags.Instance);
+            var setBoolean = GetType().GetMethod(nameof(writeBoolean), BindingFlags.NonPublic | BindingFlags.Instance);
+            var setDateTimeOffset = GetType().GetMethod(nameof(writeDateTimeOffset), BindingFlags.NonPublic | BindingFlags.Instance);
+            var setStringArray = GetType().GetMethod(nameof(writeStringArray), BindingFlags.NonPublic | BindingFlags.Instance);
 
             var list = new List<Expression>();
 
-            foreach (var pair in _envelopeToHeader.Where(x => !_envelopeToIncoming.ContainsKey(x.Key)))
+            var headers = _envelopeToHeader.Where(x => !_envelopeToIncoming.ContainsKey(x.Key));
+            foreach (var pair in headers)
             {
                 MethodInfo setMethod = setString;
                 if (pair.Key.PropertyType == typeof(Uri))
@@ -145,7 +160,10 @@ namespace Jasper.Transports
                 {
                     setMethod = setInt;
                 }
-
+                else if (pair.Key.PropertyType == typeof(string[]))
+                {
+                    setMethod = setStringArray;
+                }
 
                 var getEnvelopeValue = Expression.Call(envelope, pair.Key.GetMethod);
                 var setOutgoingValue = Expression.Call(protocol, setMethod, outgoing, Expression.Constant(pair.Value), getEnvelopeValue);
@@ -153,6 +171,11 @@ namespace Jasper.Transports
                 list.Add(setOutgoingValue);
 
             }
+
+            var writeHeaders = Expression.Call(protocol,
+                GetType().GetMethod(nameof(writeOutgoingOtherHeaders), BindingFlags.NonPublic | BindingFlags.Instance),
+                outgoing, envelope);
+            list.Add(writeHeaders);
 
             var block = Expression.Block(list);
 
@@ -163,19 +186,46 @@ namespace Jasper.Transports
         }
 
 
+        protected void writeOutgoingOtherHeaders(TOutgoing outgoing, Envelope envelope)
+        {
+            var reserved = _envelopeToHeader.Values.ToArray();
 
-        public void MapIncoming(Envelope envelope, TIncoming incoming)
+            foreach (var header in envelope.Headers.Where(x => !reserved.Contains(x.Key)))
+            {
+                writeOutgoingHeader(outgoing, header.Key, header.Value);
+            }
+        }
+
+        public void MapIncomingToEnvelope(Envelope envelope, TIncoming incoming)
         {
             _mapIncoming.Value(envelope, incoming);
         }
 
-        public void MapOutgoing(Envelope envelope, TOutgoing outgoing)
+        public void MapEnvelopeToOutgoing(Envelope envelope, TOutgoing outgoing)
         {
             _mapOutgoing.Value(envelope, outgoing);
         }
 
         protected abstract void writeOutgoingHeader(TOutgoing outgoing, string key, string value);
         protected abstract bool tryReadIncomingHeader(TIncoming incoming, string key, out string value);
+
+        /// <summary>
+        /// This is strictly for "other" headers that are passed along that are not
+        /// used by Jasper
+        /// </summary>
+        /// <param name="incoming"></param>
+        /// <param name="envelope"></param>
+        protected virtual void writeIncomingHeaders(TIncoming incoming, Envelope envelope)
+        {
+            // nothing
+        }
+
+        protected string[] readStringArray(TIncoming incoming, string key)
+        {
+            return tryReadIncomingHeader(incoming, key, out var value)
+                ? value.Split(',')
+                : Array.Empty<string>();
+        }
 
         protected int readInt(TIncoming incoming, string key)
         {
@@ -204,11 +254,27 @@ namespace Jasper.Transports
                 : null;
         }
 
+        protected void writeStringArray(TOutgoing outgoing, string key, string[] value)
+        {
+            if (value != null)
+            {
+                writeOutgoingHeader(outgoing, key, value.Join(","));
+            }
+        }
+
         protected void writeUri(TOutgoing outgoing, string key, Uri value)
         {
             if (value != null)
             {
                 writeOutgoingHeader(outgoing, key, value.ToString());
+            }
+        }
+
+        protected void writeString(TOutgoing outgoing, string key, string value)
+        {
+            if (value != null)
+            {
+                writeOutgoingHeader(outgoing, key, value);
             }
         }
 
@@ -229,7 +295,7 @@ namespace Jasper.Transports
         {
             if (value)
             {
-                writeOutgoingHeader(outgoing, key, value.ToString());
+                writeOutgoingHeader(outgoing, key, "true");
             }
         }
 
