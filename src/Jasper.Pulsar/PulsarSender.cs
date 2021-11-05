@@ -54,7 +54,8 @@ namespace Jasper.Pulsar
         // TODO -- use a ValueTask here
         public Task Send(Envelope envelope)
         {
-            var message = _endpoint.Protocol.WriteFromEnvelope(envelope);
+            var message = new MessageMetadata();
+            _endpoint.Protocol.WriteFromEnvelope(envelope, message);
 
             return _producer.Send(message, new ReadOnlySequence<byte>(envelope.Data), _cancellation).AsTask();
         }

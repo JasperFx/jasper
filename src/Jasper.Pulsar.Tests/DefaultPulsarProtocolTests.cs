@@ -23,7 +23,9 @@ namespace Jasper.Pulsar.Tests
             _mapped = new Lazy<Envelope>(() =>
             {
                 var mapper = new DefaultPulsarProtocol();
-                var metadata = mapper.WriteFromEnvelope(theOriginal);
+                var metadata = new MessageMetadata();
+
+                mapper.WriteFromEnvelope(theOriginal, metadata);
 
                 var prop1 = typeof(MessageMetadata).GetProperty("Metadata",
                     BindingFlags.Instance | BindingFlags.NonPublic);

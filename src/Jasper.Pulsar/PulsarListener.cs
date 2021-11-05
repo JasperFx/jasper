@@ -94,6 +94,9 @@ namespace Jasper.Pulsar
                 await foreach (var message in _consumer.Messages(cancellationToken: cancellation))
                 {
                     var envelope = new PulsarEnvelope(message);
+
+                    // TODO -- invoke the deserialization here. A
+                    envelope.Data = message.Data.ToArray();
                     _endpoint.Protocol.ReadIntoEnvelope(envelope, message);
 
                     // TODO -- the worker queue should already have the Uri,

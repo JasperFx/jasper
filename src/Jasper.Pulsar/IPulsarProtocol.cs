@@ -10,8 +10,9 @@ namespace Jasper.Pulsar
         /// Transfer information from Jasper's Envelope to the Rabbit MQ properties
         /// </summary>
         /// <param name="env"></param>
+        /// <param name="message"></param>
         /// <param name="properties"></param>
-        MessageMetadata WriteFromEnvelope(Envelope env);
+        void WriteFromEnvelope(Envelope env, MessageMetadata message);
 
         /// <summary>
         /// Create an Envelope object from the raw message data and the header
