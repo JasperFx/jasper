@@ -8,10 +8,9 @@ namespace Jasper.Runtime.Routing
 {
     public abstract class Subscriber : ISubscriber
     {
-        private readonly IList<Subscription> _subscriptions = new List<Subscription>();
         private EndpointMode _mode = EndpointMode.BufferedInMemory;
 
-        public IList<Subscription> Subscriptions => _subscriptions;
+        public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
 
         /// <summary>
         ///     Mark whether or not the receiver for this listener should use

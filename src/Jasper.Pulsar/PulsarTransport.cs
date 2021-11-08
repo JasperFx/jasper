@@ -14,7 +14,7 @@ namespace Jasper.Pulsar
 
         private readonly LightweightCache<Uri, PulsarEndpoint> _endpoints;
 
-        public PulsarTransport() : base(ProtocolName)
+        public PulsarTransport() : base(ProtocolName, "Pulsar")
         {
             Builder = PulsarClient.Builder();
 

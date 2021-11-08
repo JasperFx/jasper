@@ -9,18 +9,23 @@ namespace Jasper.Transports
 {
     public abstract class TransportBase<TEndpoint> : ITransport where TEndpoint : Endpoint
     {
-        public TransportBase(string protocol)
+        public TransportBase(string protocol, string name)
         {
             Protocols.Add(protocol);
+            Name = name;
         }
 
-        public TransportBase(IEnumerable<string> protocols)
+        public TransportBase(IEnumerable<string> protocols, string name)
         {
             foreach (string protocol in protocols)
             {
                 Protocols.Add(protocol);
             }
+
+            Name = name;
         }
+
+        public string Name { get; }
 
         public ICollection<string> Protocols { get; } = new List<string>();
 

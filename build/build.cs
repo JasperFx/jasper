@@ -108,6 +108,7 @@ documentation/compilation/frames/injected-fields/
                 Directory.SetCurrentDirectory(Path.Combine(original, "src", "ConsoleApp"));
                 RunCurrentProject("?");
                 RunCurrentProject("export-json-schema obj/schema");
+                RunCurrentProject("describe");
 
 
                 Directory.SetCurrentDirectory(original);

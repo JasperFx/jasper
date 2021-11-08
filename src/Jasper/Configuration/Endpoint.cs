@@ -5,6 +5,7 @@ using Baseline.Dates;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 using Jasper.Transports.Sending;
+using Spectre.Console;
 
 namespace Jasper.Configuration
 {
@@ -15,10 +16,22 @@ namespace Jasper.Configuration
         Inline
     }
 
+    // TODO -- move this into Oakton
+    public interface IDescribesProperties
+    {
+        IDictionary<string, object> DescribeProperties();
+    }
+
+    // TODO -- move this into Oakton itself
+    public interface ITreeDescriber
+    {
+        void Describe(TreeNode parentNode);
+    }
+
     /// <summary>
     ///     Configuration for a single message listener within a Jasper application
     /// </summary>
-    public abstract class Endpoint : Subscriber, ICircuitParameters
+    public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesProperties
     {
         private string _name;
 
@@ -107,6 +120,35 @@ namespace Jasper.Configuration
             if (Agent == null) throw new InvalidOperationException($"The agent has not been initialized for this endpoint");
 
             routing.AddStaticRoute(Agent);
+        }
+
+        public virtual IDictionary<string, object> DescribeProperties()
+        {
+            var dict = new Dictionary<string, object>
+            {
+                {nameof(Name), Name},
+                {nameof(Mode), Mode},
+                {nameof(PingIntervalForCircuitResume), PingIntervalForCircuitResume},
+                {nameof(FailuresBeforeCircuitBreaks), PingIntervalForCircuitResume},
+
+            };
+
+            if (Mode == EndpointMode.BufferedInMemory)
+            {
+                dict.Add(nameof(MaximumEnvelopeRetryStorage), MaximumEnvelopeRetryStorage);
+
+                if (IsListener && Mode != EndpointMode.Inline)
+                {
+                    dict.Add("ExecutionOptions.MaxDegreeOfParallelism", ExecutionOptions.MaxDegreeOfParallelism);
+                    dict.Add("ExecutionOptions.EnsureOrdered", ExecutionOptions.EnsureOrdered);
+                    dict.Add("ExecutionOptions.SingleProducerConstrained", ExecutionOptions.SingleProducerConstrained);
+                    dict.Add("ExecutionOptions.MaxMessagesPerTask", ExecutionOptions.MaxMessagesPerTask);
+                }
+            }
+
+
+
+            return dict;
         }
     }
 }

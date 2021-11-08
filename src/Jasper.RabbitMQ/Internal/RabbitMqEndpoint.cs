@@ -25,6 +25,35 @@ namespace Jasper.RabbitMQ.Internal
 
         public int ListenerCount { get; set; } = 0;
 
+        public override IDictionary<string, object> DescribeProperties()
+        {
+            var dict = base.DescribeProperties();
+
+            if (ExchangeName.IsNotEmpty())
+            {
+                dict.Add(nameof(ExchangeName), ExchangeName);
+            }
+
+            if (RoutingKey.IsNotEmpty())
+            {
+                dict.Add(nameof(RoutingKey), RoutingKey);
+            }
+
+            if (QueueName.IsNotEmpty())
+            {
+                dict.Add(nameof(QueueName), QueueName);
+            }
+
+            if (ListenerCount > 0 && IsListener)
+            {
+                dict.Add(nameof(ListenerCount), ListenerCount);
+            }
+
+            // TODO -- there will be more here as we allow the rabbit connection to vary more
+
+            return dict;
+        }
+
         internal RabbitMqTransport Parent { get; set; }
 
         public IRabbitMqProtocol Protocol { get; set; } = new DefaultRabbitMqProtocol();

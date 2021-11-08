@@ -33,7 +33,7 @@ namespace Jasper.Transports.Stub
     {
         public LightweightCache<Uri, StubEndpoint> Endpoints { get; }
 
-        public StubTransport() : base("stub")
+        public StubTransport() : base("stub", "Stub")
         {
             Endpoints =
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));

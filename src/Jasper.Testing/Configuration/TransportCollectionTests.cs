@@ -119,6 +119,8 @@ namespace Jasper.Testing.Configuration
 
         public class FakeTransport : ITransport
         {
+            public string Name { get; } = "Fake";
+
             public void Dispose()
             {
                 throw new NotImplementedException();

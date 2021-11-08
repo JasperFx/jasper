@@ -21,5 +21,11 @@ namespace Jasper.Transports
 
         IEnumerable<Endpoint> Endpoints();
         void Initialize(IMessagingRoot root);
+
+
+        /// <summary>
+        /// Strictly a diagnostic name for this transport type
+        /// </summary>
+        string Name { get; }
     }
 }

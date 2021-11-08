@@ -82,6 +82,7 @@ namespace Jasper
                 options.HandlerGraph.StartCompiling(options);
 
                 services.AddSingleton<IDescribedSystemPart>(options.HandlerGraph);
+                services.AddSingleton<IDescribedSystemPart>(options.Transports);
 
                 services.AddSingleton(options);
 

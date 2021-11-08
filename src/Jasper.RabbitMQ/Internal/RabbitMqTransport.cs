@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Transports;
 using RabbitMQ.Client;
+using Spectre.Console;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IRabbitMqTransport
+    public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IRabbitMqTransport, ITreeDescriber
     {
         public const string ProtocolName = "rabbitmq";
 
         private readonly LightweightCache<Uri, RabbitMqEndpoint> _endpoints;
 
-        public RabbitMqTransport() : base(ProtocolName)
+        public RabbitMqTransport() : base(ProtocolName, "Rabbit MQ")
         {
             _endpoints =
                 new LightweightCache<Uri, RabbitMqEndpoint>(uri =>
@@ -192,6 +194,57 @@ namespace Jasper.RabbitMQ.Internal
         {
             var temp = new RabbitMqEndpoint{ExchangeName = exchangeName};
             return findEndpointByUri(temp.Uri);
+        }
+
+        public void Describe(TreeNode parentNode)
+        {
+            var props = new Dictionary<string, object>{
+                {"HostName", ConnectionFactory.HostName},
+                {"Port", ConnectionFactory.Port == -1 ? 5672 : ConnectionFactory.Port},
+                {nameof(AutoProvision), AutoProvision},
+                {nameof(AutoPurgeOnStartup), AutoPurgeOnStartup}
+            };
+
+            var table = TransportCollection.BuildTableForProperties(props);
+            parentNode.AddNode(table);
+
+
+            if (Exchanges.Any())
+            {
+                var exchangesNode = parentNode.AddNode("Exchanges");
+                foreach (var exchange in Exchanges)
+                {
+                    exchangesNode.AddNode(exchange.Name);
+                }
+            }
+
+            var queueNode = parentNode.AddNode("Queues");
+            foreach (var queue in Queues)
+            {
+                queueNode.AddNode(queue.Name);
+            }
+
+            if (Bindings.Any())
+            {
+                var bindings = parentNode.AddNode("Bindings");
+
+                var bindingTable = new Table();
+                bindingTable.AddColumn("Key");
+                bindingTable.AddColumn("Exchange Name");
+                bindingTable.AddColumn("Queue Name");
+                bindingTable.AddColumn("Arguments");
+
+                foreach (var binding in Bindings)
+                {
+                    bindingTable.AddRow(binding.BindingKey, binding.ExchangeName ?? string.Empty, binding.QueueName,
+                        binding.Arguments.Select(pair => $"{pair.Key}={pair.Value}").Join(", "));
+                }
+
+                bindings.AddNode(bindingTable);
+            }
+
+
+
         }
     }
 }

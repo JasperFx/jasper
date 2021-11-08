@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using DotPulsar;
@@ -42,6 +43,18 @@ namespace Jasper.Pulsar
         {
             _parent = parent;
             Uri = uri;
+        }
+
+        public override IDictionary<string, object> DescribeProperties()
+        {
+            var dict = base.DescribeProperties();
+
+            dict.Add(nameof(Persistent), Persistent);
+            dict.Add(nameof(Tenant), Tenant);
+            dict.Add(nameof(Namespace), Namespace);
+            dict.Add(nameof(TopicName), TopicName);
+
+            return dict;
         }
 
         public override Uri Uri { get; }

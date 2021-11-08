@@ -30,5 +30,10 @@ namespace Jasper.RabbitMQ
                 throw new InvalidOperationException($"{nameof(BindingKey)} properties {nameof(BindingKey)}, {nameof(QueueName)}, and {nameof(ExchangeName)} are all required for this operation");
             }
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(BindingKey)}: {BindingKey}, {nameof(QueueName)}: {QueueName}, {nameof(ExchangeName)}: {ExchangeName}";
+        }
     }
 }

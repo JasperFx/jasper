@@ -1,15 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Transports.Stub;
+using Oakton.Descriptions;
+using Spectre.Console;
 
 namespace Jasper.Configuration
 {
-    public class TransportCollection : IEnumerable<ITransport>, IEndpoints
+    public class TransportCollection : IEnumerable<ITransport>, IEndpoints, IDescribedSystemPart, IWriteToConsole
     {
         private readonly JasperOptions _parent;
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
@@ -146,5 +150,80 @@ namespace Jasper.Configuration
             return _transports.Values.SelectMany(x => x.Endpoints()).ToArray();
         }
 
+        async Task IDescribedSystemPart.Write(TextWriter writer)
+        {
+            foreach (var transport in _transports.Values.Where(x => x.Endpoints().Any()))
+            {
+                await writer.WriteLineAsync(transport.Name);
+
+                foreach (var endpoint in transport.Endpoints())
+                {
+                    await writer.WriteLineAsync(
+                        $"{endpoint.Uri}, Incoming: {endpoint.IsListener}, Reply Uri: {endpoint.IsUsedForReplies}");
+                }
+
+                await writer.WriteLineAsync();
+            }
+        }
+
+        string IDescribedSystemPart.Title => "Jasper Messaging Endpoints";
+
+        Task IWriteToConsole.WriteToConsole()
+        {
+            var tree = new Tree("Transports and Endpoints");
+
+            foreach (var transport in _transports.Values.Where(x => x.Endpoints().Any()))
+            {
+                var transportNode = tree.AddNode($"[bold]{transport.Name}[/] [dim]({transport.Protocols.Join(", ")}[/])");
+                if (transport is ITreeDescriber d)
+                {
+                    d.Describe(transportNode);
+                }
+
+                foreach (var endpoint in transport.Endpoints())
+                {
+                    var endpointTitle = endpoint.Uri.ToString();
+                    if (endpoint.IsUsedForReplies || object.ReferenceEquals(endpoint, transport.ReplyEndpoint()))
+                    {
+                        endpointTitle += $" ([bold]Used for Replies[/])";
+                    }
+
+                    var endpointNode = transportNode.AddNode(endpointTitle);
+
+                    if (endpoint.IsListener)
+                    {
+                        endpointNode.AddNode("[bold green]Listener[/]");
+                    }
+
+                    var props = endpoint.DescribeProperties();
+                    if (props.Any())
+                    {
+                        var table = BuildTableForProperties(props);
+
+                        endpointNode.AddNode(table);
+                    }
+
+                }
+            }
+
+            AnsiConsole.Render(tree);
+
+            return Task.CompletedTask;
+        }
+
+        // TODO -- this should be in Oakton
+        public static Table BuildTableForProperties(IDictionary<string, object> props)
+        {
+            var table = new Table();
+            table.AddColumn("Property");
+            table.AddColumn("Value");
+
+            foreach (var prop in props)
+            {
+                table.AddRow(prop.Key, prop.Value?.ToString() ?? string.Empty);
+            }
+
+            return table;
+        }
     }
 }

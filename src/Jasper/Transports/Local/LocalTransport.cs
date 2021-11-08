@@ -50,6 +50,8 @@ namespace Jasper.Transports.Local
             // Nothing
         }
 
+        public string Name => "Local (In Memory)";
+
 
         public ICollection<string> Protocols { get; } = new []{ TransportConstants.Local };
 

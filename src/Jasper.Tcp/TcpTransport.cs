@@ -17,7 +17,7 @@ namespace Jasper.Tcp
             });
 
         public TcpTransport() :
-            base("tcp")
+            base("tcp", "TCP Sockets")
         {
         }
 
