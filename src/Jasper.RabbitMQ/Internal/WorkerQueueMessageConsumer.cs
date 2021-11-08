@@ -36,7 +36,7 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
-            IBasicProperties properties, byte[] body)
+            IBasicProperties properties, ReadOnlyMemory<byte> body)
         {
             if (_latched || _cancellation.IsCancellationRequested)
             {
@@ -47,7 +47,7 @@ namespace Jasper.RabbitMQ.Internal
             var envelope = new RabbitMqEnvelope(Listener, deliveryTag);
             try
             {
-                envelope.Data = body;
+                envelope.Data = body.ToArray(); // TODO -- use byte sequence instead!
                 Mapper.MapIncomingToEnvelope(envelope, properties);
             }
             catch (Exception e)
@@ -71,7 +71,7 @@ namespace Jasper.RabbitMQ.Internal
                     _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");
                     Model.BasicNack(deliveryTag, false, true);
                 }
-            });
+            }, _cancellation);
         }
     }
 

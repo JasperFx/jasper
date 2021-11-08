@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Logging;
@@ -50,7 +51,7 @@ namespace Jasper.RabbitMQ.Internal
                     case ListeningStatus.TooBusy when _consumer != null:
                         _consumer.Dispose();
 
-                        Channel.BasicCancel(_consumer.ConsumerTag);
+                        Channel.BasicCancel(_consumer.ConsumerTags.FirstOrDefault());
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
@@ -70,10 +71,7 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender, _cancellation)
-            {
-                ConsumerTag = Guid.NewGuid().ToString()
-            };
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender, _cancellation);
 
             Channel.BasicConsume(_consumer, _routingKey);
         }
