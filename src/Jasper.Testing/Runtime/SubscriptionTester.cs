@@ -3,6 +3,7 @@ using Jasper.Configuration;
 using Jasper.Runtime.Routing;
 using Jasper.Testing.Runtime.Green;
 using Jasper.Testing.Runtime.Red;
+using Jasper.Util;
 using Shouldly;
 using TestingSupport.Compliance;
 using TestMessages;
@@ -12,7 +13,49 @@ namespace Jasper.Testing.Runtime
 {
     public class SubscriptionTester
     {
-        public class RandomClass{}
+        [Fact]
+        public void description_of_assembly_rule()
+        {
+            var rule = new Subscription(typeof(RandomClass).Assembly);
+            rule.ToString().ShouldBe("Message assembly is Jasper.Testing");
+        }
+
+        [Fact]
+        public void description_of_namespace_rule()
+        {
+            var rule = new Subscription
+            {
+                Match = typeof(RandomClass).Namespace,
+                Scope = RoutingScope.Namespace
+            };
+            rule.ToString().ShouldBe("Message type is within namespace Jasper.Testing.Runtime");
+        }
+
+        [Fact]
+        public void description_of_type_rule()
+        {
+            var rule = Subscription.ForType(typeof(RandomClass));
+            rule.ToString().ShouldBe("Message type is Jasper.Testing.Runtime.RandomClass");
+        }
+
+        [Fact]
+        public void description_of_type_name_rule()
+        {
+            var rule = new Subscription
+            {
+                Match = typeof(RandomClass).ToMessageTypeName(),
+                Scope = RoutingScope.TypeName
+            };
+            rule.ToString().ShouldBe("Message name is 'Jasper.Testing.Runtime.RandomClass'");
+        }
+
+
+        [Fact]
+        public void description_of_all_types()
+        {
+            var rule = Subscription.All();
+            rule.ToString().ShouldBe("All Messages");
+        }
 
         [Fact]
         public void negative_assembly_test()
@@ -62,6 +105,5 @@ namespace Jasper.Testing.Runtime
         }
     }
 
-
-
+    public class RandomClass{}
 }

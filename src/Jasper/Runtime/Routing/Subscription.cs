@@ -73,24 +73,15 @@ namespace Jasper.Runtime.Routing
 
         public bool Matches(Type type)
         {
-            switch (Scope)
+            return Scope switch
             {
-                case RoutingScope.Assembly:
-                    return type.Assembly.GetName().Name.EqualsIgnoreCase(Match);
-
-                case RoutingScope.Namespace:
-                    return type.IsInNamespace(Match);
-
-                case RoutingScope.Type:
-                    return type.Name.EqualsIgnoreCase(Match) || type.FullName.EqualsIgnoreCase(Match) ||
-                           type.ToMessageTypeName().EqualsIgnoreCase(Match);
-
-                case RoutingScope.TypeName:
-                    return type.ToMessageTypeName().EqualsIgnoreCase(Match);
-
-                default:
-                    return true;
-            }
+                RoutingScope.Assembly => type.Assembly.GetName().Name.EqualsIgnoreCase(Match),
+                RoutingScope.Namespace => type.IsInNamespace(Match),
+                RoutingScope.Type => type.Name.EqualsIgnoreCase(Match) || type.FullName.EqualsIgnoreCase(Match) ||
+                                     type.ToMessageTypeName().EqualsIgnoreCase(Match),
+                RoutingScope.TypeName => type.ToMessageTypeName().EqualsIgnoreCase(Match),
+                _ => true
+            };
         }
 
 
@@ -119,6 +110,27 @@ namespace Jasper.Runtime.Routing
             }
         }
 
+        public override string ToString()
+        {
+            switch (Scope)
+            {
+                case RoutingScope.All:
+                    return "All Messages";
 
+                case RoutingScope.Assembly:
+                    return $"Message assembly is {Match}";
+
+                case RoutingScope.Namespace:
+                    return $"Message type is within namespace {Match}";
+
+                case RoutingScope.Type:
+                    return $"Message type is {Match}";
+
+                case RoutingScope.TypeName:
+                    return $"Message name is '{Match}'";
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
     }
 }
