@@ -62,6 +62,10 @@ namespace InteroperabilityTests
                 var sender = theFixture.MassTransit.Services.GetRequiredService<ISendEndpointProvider>();
                 var endpoint = await sender.GetSendEndpoint(new Uri("rabbitmq://localhost/jasper"));
                 await endpoint.Send(new ResponseMessage {Id = id});
+                for (int i = 0; i < 1000; i++)
+                {
+                    await endpoint.Send(new ResponseMessage {Id = Guid.NewGuid()});
+                }
             });
 
             var envelope = ResponseHandler.Received.FirstOrDefault();
