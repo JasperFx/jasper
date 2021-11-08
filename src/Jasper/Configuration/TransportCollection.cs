@@ -203,6 +203,15 @@ namespace Jasper.Configuration
                         endpointNode.AddNode(table);
                     }
 
+                    if (endpoint.Subscriptions.Any())
+                    {
+                        var subscriptions = endpointNode.AddNode("Subscriptions");
+                        foreach (var subscription in endpoint.Subscriptions)
+                        {
+                            subscriptions.AddNode($"{subscription} ({subscription.ContentTypes.Join(", ")})");
+                        }
+                    }
+
                 }
             }
 
