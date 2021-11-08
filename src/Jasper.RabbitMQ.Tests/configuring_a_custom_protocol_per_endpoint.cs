@@ -24,13 +24,15 @@ namespace Jasper.RabbitMQ.Tests
         {
             public CustomProtocolApp()
             {
+                var queueName = RabbitTesting.NextQueueName();
                 Endpoints.ConfigureRabbitMq(x =>
                 {
-                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue(queueName);
                     x.AutoProvision = true;
                 });
 
-                Endpoints.ListenToRabbitQueue("queue1").Protocol<CustomProtocol>();
+
+                Endpoints.ListenToRabbitQueue(queueName).Protocol<CustomProtocol>();
             }
         }
 

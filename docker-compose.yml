@@ -5,9 +5,10 @@ services:
     ports:
      - "5433:5432"
   rabbitmq:
-    image: "rabbitmq:latest"
+    image: "rabbitmq:3-management"
     ports:
      - "5672:5672"
+     - "15672:15672"
   sqlserver:
     image: "microsoft/mssql-server-linux"
     ports:
