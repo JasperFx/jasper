@@ -8,6 +8,7 @@ using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Oakton;
+using Oakton.Descriptions;
 using OpenTelemetry.Trace;
 
 namespace Jasper
@@ -79,6 +80,8 @@ namespace Jasper
                 customization?.Invoke(context, options);
 
                 options.HandlerGraph.StartCompiling(options);
+
+                services.AddSingleton<IDescribedSystemPart>(options.HandlerGraph);
 
                 services.AddSingleton(options);
 
