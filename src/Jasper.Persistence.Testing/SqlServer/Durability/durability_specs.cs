@@ -18,23 +18,23 @@ namespace Jasper.Persistence.Testing.SqlServer.Durability
     [Collection("sqlserver")]
     public class durability_specs : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
     {
-        protected override void initializeStorage(IHost sender, IHost receiver)
+        protected override async Task initializeStorage(IHost sender, IHost receiver)
         {
-            sender.RebuildMessageStorage();
-            receiver.RebuildMessageStorage();
+            await sender.RebuildMessageStorage();
+            await receiver.RebuildMessageStorage();
 
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
-                CommandExtensions.CreateCommand(conn, @"
+                await conn.CreateCommand(@"
 IF OBJECT_ID('receiver.item_created', 'U') IS NOT NULL
   drop table receiver.item_created;
 
-").ExecuteNonQuery();
+").ExecuteNonQueryAsync();
 
-                CommandExtensions.CreateCommand(conn, @"
+                await conn.CreateCommand(@"
 create table receiver.item_created
 (
 	id uniqueidentifier not null
@@ -42,7 +42,7 @@ create table receiver.item_created
 	name varchar(100) not null
 );
 
-").ExecuteNonQuery();
+").ExecuteNonQueryAsync();
             }
         }
 

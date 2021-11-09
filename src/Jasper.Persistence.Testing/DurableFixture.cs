@@ -73,7 +73,7 @@ namespace Jasper.Persistence.Testing
             await theReceiver.RebuildMessageStorage();
 
 
-            initializeStorage(theSender, theReceiver);
+            await initializeStorage(theSender, theReceiver);
         }
 
         public Task DisposeAsync()
@@ -84,27 +84,32 @@ namespace Jasper.Persistence.Testing
             return Task.CompletedTask;
         }
 
-        private void cleanDatabase()
+        private async Task cleanDatabase()
         {
-            initializeStorage(theSender, theReceiver);
+            await initializeStorage(theSender, theReceiver);
             ScheduledMessageHandler.Reset();
         }
 
 
-        protected abstract void initializeStorage(IHost sender, IHost receiver);
+        protected virtual async Task initializeStorage(IHost sender, IHost receiver)
+        {
+            await theSender.RebuildMessageStorage();
+
+            await theReceiver.RebuildMessageStorage();
+        }
 
         protected abstract void configureReceiver(JasperOptions receiverOptions);
 
         protected abstract void configureSender(JasperOptions senderOptions);
 
         [Fact]
-        public Task can_send_message_end_to_end()
+        public async Task can_send_message_end_to_end()
         {
-            cleanDatabase();
+            await cleanDatabase();
 
             var trigger = new TriggerMessage {Name = Guid.NewGuid().ToString()};
 
-            return theSender
+            await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .WaitForMessageToBeReceivedAt<CascadedMessage>(theSender)
@@ -125,7 +130,7 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task can_send_items_durably_through_persisted_channels()
         {
-            cleanDatabase();
+            await cleanDatabase();
 
 
             var item = new ItemCreated
@@ -185,7 +190,7 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task can_schedule_job_durably()
         {
-            cleanDatabase();
+            await cleanDatabase();
 
             var item = new ItemCreated
             {
@@ -208,7 +213,7 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task<bool> send_scheduled_message()
         {
-            cleanDatabase();
+            await cleanDatabase();
 
             var message1 = new ScheduledMessage {Id = 1};
             var message2 = new ScheduledMessage {Id = 22};
@@ -234,7 +239,7 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task<bool> schedule_job_locally()
         {
-            cleanDatabase();
+            await cleanDatabase();
 
             var message1 = new ScheduledMessage {Id = 1};
             var message2 = new ScheduledMessage {Id = 2};
@@ -263,7 +268,7 @@ namespace Jasper.Persistence.Testing
         [Fact]
         public async Task<bool> can_send_durably_with_receiver_down()
         {
-            cleanDatabase();
+            await cleanDatabase();
 
             // Shutting it down
             theReceiver.Dispose();

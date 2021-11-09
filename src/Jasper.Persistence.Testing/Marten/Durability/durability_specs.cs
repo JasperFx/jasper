@@ -33,13 +33,6 @@ namespace Jasper.Persistence.Testing.Marten.Durability
         }
 
 
-        protected override void initializeStorage(IHost theSender, IHost theReceiver)
-        {
-            theSender.RebuildMessageStorage();
-
-            theReceiver.RebuildMessageStorage();
-        }
-
         protected override ItemCreated loadItem(IHost receiver, Guid id)
         {
             using (var session = receiver.Get<IDocumentStore>().QuerySession())

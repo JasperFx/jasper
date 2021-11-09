@@ -42,12 +42,6 @@ namespace Jasper.Persistence.Testing.SqlServer.ScheduledJobs
             return theHost.StopAsync();
         }
 
-        public Task ScheduleMessage(int id, int seconds)
-        {
-            return theHost.Services.GetService<IExecutionContext>()
-                .Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
-        }
-
         public Task ScheduleSendMessage(int id, int seconds)
         {
             return theHost.Services.GetService<IExecutionContext>()
