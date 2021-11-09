@@ -33,8 +33,8 @@ namespace Jasper.Persistence.Database
             }
 
             envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
-            envelope.CausationId = await reader.GetFieldValueAsync<Guid>(6, cancellation);
-            envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(7, cancellation);
+            envelope.CausationId = await reader.MaybeRead<string>(6, cancellation);
+            envelope.CorrelationId = await reader.MaybeRead<string>(7, cancellation);
             envelope.SagaId = await reader.MaybeRead<string>(8, cancellation);
             envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);
             envelope.ContentType = await reader.GetFieldValueAsync<string>(10, cancellation);

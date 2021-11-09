@@ -31,7 +31,7 @@ namespace Jasper.Persistence.Durability
                 .Handle<Exception>()
                 .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
                     , (e, timeSpan) => {
-                        _logger.LogException(e, message:"Failed while trying to enqueue a message batch for retries");
+                        _logger.LogException(e, message: "Failed while trying to enqueue a message batch for retries");
                     });
         }
 

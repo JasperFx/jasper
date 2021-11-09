@@ -14,7 +14,7 @@ namespace Jasper.Runtime
         private IChannelCallback _channel;
         private readonly IList<Envelope> _scheduled = new List<Envelope>();
 
-        public ExecutionContext(IMessagingRoot root) : base(root, CombGuidIdGeneration.NewGuid())
+        public ExecutionContext(IMessagingRoot root) : base(root, Guid.NewGuid().ToString())
         {
         }
 
@@ -261,7 +261,7 @@ namespace Jasper.Runtime
 
             if (Envelope != null)
             {
-                outbound.CausationId = Envelope.Id;
+                outbound.CausationId = Envelope.Id.ToString();
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Jasper.Runtime
         {
         }
 
-        public MessagePublisher(IMessagingRoot root, Guid correlationId) : base(root, correlationId)
+        public MessagePublisher(IMessagingRoot root, string correlationId) : base(root, correlationId)
         {
         }
 

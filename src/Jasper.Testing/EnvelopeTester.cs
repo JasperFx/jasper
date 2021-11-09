@@ -35,8 +35,8 @@ namespace Jasper.Testing
         {
             var parent = new Envelope();
 
-            parent.CorrelationId.ShouldBe(Guid.Empty);
-            parent.CausationId.ShouldBe(Guid.Empty);
+            parent.CorrelationId.ShouldBeNull();
+            parent.CausationId.ShouldBeNull();
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace Jasper.Testing
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid(),
+                CorrelationId = Guid.NewGuid().ToString(),
                 ReplyUri = "foo://bar".ToUri(),
                 ReplyRequested = typeof(Message1).ToMessageTypeName()
             };
@@ -92,7 +92,7 @@ namespace Jasper.Testing
 
             var child = parent.CreateForResponse(childMessage);
 
-            child.CausationId.ShouldBe(parent.Id);
+            child.CausationId.ShouldBe(parent.CorrelationId);
             child.Destination.ShouldBe(parent.ReplyUri);
         }
 
@@ -125,8 +125,8 @@ namespace Jasper.Testing
 
             child.Message.ShouldBeSameAs(childMessage);
 
-            child.CorrelationId.ShouldBe(parent.Id);
-            child.CausationId.ShouldBe(parent.Id);
+            child.CorrelationId.ShouldBe(parent.CorrelationId);
+            child.CausationId.ShouldBe(parent.CorrelationId);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace Jasper.Testing
         {
             var parent = new Envelope
             {
-                CorrelationId = Guid.NewGuid()
+                CorrelationId = Guid.NewGuid().ToString()
             };
 
             var childMessage = new Message1();
@@ -144,7 +144,7 @@ namespace Jasper.Testing
             child.Message.ShouldBeSameAs(childMessage);
 
             child.CorrelationId.ShouldBe(parent.CorrelationId);
-            child.CausationId.ShouldBe(parent.Id);
+            child.CausationId.ShouldBe(parent.CorrelationId);
         }
 
         [Fact]

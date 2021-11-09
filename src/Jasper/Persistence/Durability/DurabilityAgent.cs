@@ -211,7 +211,7 @@ namespace Jasper.Persistence.Durability
             }
             catch (Exception e)
             {
-                Logger.LogException(e, message:"Failure trying to restart the connection in DurabilityAgent");
+                Logger.LogException(e, message: "Failure trying to restart the connection in DurabilityAgent");
             }
         }
 

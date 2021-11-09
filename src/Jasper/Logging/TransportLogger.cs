@@ -151,11 +151,11 @@ namespace Jasper.Logging
 
 
 
-        public virtual void LogException(Exception ex, Guid correlationId = default(Guid),
+        public virtual void LogException(Exception ex, object correlationId = null,
             string message = "Exception detected:")
         {
             _metrics.LogException(ex);
-            var exMessage = correlationId == Guid.Empty ? message : message + correlationId;
+            var exMessage = correlationId == null ? message : message + correlationId;
             _logger.LogError(ex, exMessage);
         }
 

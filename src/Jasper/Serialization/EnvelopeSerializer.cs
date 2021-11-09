@@ -84,7 +84,7 @@ namespace Jasper.Serialization
                         break;
 
                     case CorrelationIdKey:
-                        if (Guid.TryParse(value, out var originalId)) env.CorrelationId = originalId;
+                        env.CorrelationId = value;
                         break;
 
                     case SagaIdKey:
@@ -92,7 +92,7 @@ namespace Jasper.Serialization
                         break;
 
                     case CausationIdKey:
-                        if (Guid.TryParse(value, out var parentId)) env.CausationId = parentId;
+                        env.CausationId = value;
                         break;
 
                     case DestinationKey:

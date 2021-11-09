@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline.ImTools;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -72,7 +73,8 @@ namespace Jasper
         internal Envelope CreateForResponse(object message)
         {
             var child = ForSend(message);
-            child.CausationId = Id;
+            child.CorrelationId = CorrelationId;
+            child.CausationId = CorrelationId;
 
             if (message.GetType().ToMessageTypeName() == ReplyRequested)
             {
@@ -88,8 +90,8 @@ namespace Jasper
             return new Envelope
             {
                 Message = message,
-                CorrelationId = CorrelationId.IsEmpty() ? Id : CorrelationId,
-                CausationId = Id,
+                CorrelationId = Id.ToString(),
+                CausationId = Id.ToString(),
                 SagaId = SagaId
             };
         }

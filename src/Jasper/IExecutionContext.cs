@@ -13,7 +13,7 @@ namespace Jasper
         /// through this context will be tracked with this identifier. If this context is the
         /// result of a received message, this will be the original Envelope.CorrelationId
         /// </summary>
-        Guid CorrelationId { get; }
+        string CorrelationId { get; }
 
         /// <summary>
         ///     The envelope being currently handled. This will only be non-null during

@@ -22,7 +22,7 @@ namespace Jasper.Testing.Runtime
         {
             var original = ObjectMother.Envelope();
             original.Id = Guid.NewGuid();
-            original.CorrelationId = Guid.NewGuid();
+            original.CorrelationId = Guid.NewGuid().ToString();
 
             theContext = theMessagingRoot.ContextFor(original).As<ExecutionContext>();
         }
@@ -66,7 +66,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void new_context_gets_a_non_empty_correlation_id()
         {
-            theMessagingRoot.NewContext().CorrelationId.ShouldNotBe(Guid.Empty);
+            theMessagingRoot.NewContext().CorrelationId.ShouldNotBeNull();
         }
 
 
@@ -78,7 +78,7 @@ namespace Jasper.Testing.Runtime
 
             var outgoing = theContext.Outstanding.Single();
 
-            outgoing.CausationId.ShouldBe(theContext.Envelope.Id);
+            outgoing.CausationId.ShouldBe(theContext.Envelope.Id.ToString());
             outgoing.CorrelationId.ShouldBe(theContext.Envelope.CorrelationId);
         }
 
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Runtime
 
             var outgoing = theContext.Outstanding.Single();
 
-            outgoing.CausationId.ShouldBe(theContext.Envelope.Id);
+            outgoing.CausationId.ShouldBe(theContext.Envelope.Id.ToString());
             outgoing.CorrelationId.ShouldBe(theContext.Envelope.CorrelationId);
         }
     }
@@ -105,7 +105,7 @@ namespace Jasper.Testing.Runtime
         {
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Id = Guid.NewGuid();
-            theEnvelope.CorrelationId = Guid.NewGuid();
+            theEnvelope.CorrelationId = Guid.NewGuid().ToString();
             theEnvelope.ReplyUri = "tcp://server2:2000".ToUri();
 
             theEnvelope.AckRequested = true;
@@ -132,7 +132,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void ack_parent_id()
         {
-            theAcknowledgement.CausationId.ShouldBe(theEnvelope.Id);
+            theAcknowledgement.CausationId.ShouldBe(theEnvelope.Id.ToString());
         }
 
         [Fact]

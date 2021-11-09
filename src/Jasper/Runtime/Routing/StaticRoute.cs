@@ -64,8 +64,6 @@ namespace Jasper.Runtime.Routing
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message), "Envelope.Message cannot be null");
 
-
-
             var writer = envelope.ContentType.IsEmpty()
                 ? _writer
                 : _writers.ChooseWriter(envelope.ContentType);
@@ -73,7 +71,7 @@ namespace Jasper.Runtime.Routing
             var sending = envelope.CloneForWriter(writer);
 
             sending.Id = CombGuidIdGeneration.NewGuid();
-            sending.CorrelationId = envelope.Id;
+            sending.CorrelationId = envelope.Id.ToString();
 
             sending.ReplyUri = envelope.ReplyUri ?? _agent.ReplyUri;
 

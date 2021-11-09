@@ -13,7 +13,7 @@ namespace Jasper.Logging
         /// <param name="ex"></param>
         /// <param name="correlationId"></param>
         /// <param name="message"></param>
-        void LogException(Exception ex, Guid correlationId = default(Guid), string message = "Exception detected:");
+        void LogException(Exception ex, object correlationId = null, string message = "Exception detected:");
 
         /// <summary>
         ///     An outgoing batch of messages were sent successfully

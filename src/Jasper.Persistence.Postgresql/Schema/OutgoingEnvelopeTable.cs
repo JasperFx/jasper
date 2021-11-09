@@ -17,8 +17,8 @@ namespace Jasper.Persistence.Postgresql.Schema
 
             AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
 
-            AddColumn<Guid>(DatabaseConstants.CausationId);
-            AddColumn<Guid>(DatabaseConstants.CorrelationId);
+            AddColumn<string>(DatabaseConstants.CausationId);
+            AddColumn<string>(DatabaseConstants.CorrelationId);
             AddColumn<string>(DatabaseConstants.SagaId);
             AddColumn<string>(DatabaseConstants.MessageType).NotNull();
             AddColumn<string>(DatabaseConstants.ContentType);

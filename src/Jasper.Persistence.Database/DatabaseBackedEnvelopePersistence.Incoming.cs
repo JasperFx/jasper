@@ -37,8 +37,8 @@ namespace Jasper.Persistence.Database
 
             envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
 
-            envelope.CausationId = await reader.GetFieldValueAsync<Guid>(6, cancellation);
-            envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(7, cancellation);
+            envelope.CausationId = await reader.MaybeRead<string>(6, cancellation);
+            envelope.CorrelationId = await reader.MaybeRead<string>(7, cancellation);
             envelope.SagaId = await reader.MaybeRead<string>(8, cancellation);
 
             envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);
@@ -201,8 +201,8 @@ namespace Jasper.Persistence.Database
 
             envelope.Attempts = await reader.GetFieldValueAsync<int>(2, _cancellation);
             envelope.Data = await reader.GetFieldValueAsync<byte[]>(3, _cancellation);
-            envelope.CausationId = await reader.GetFieldValueAsync<Guid>(4, _cancellation);
-            envelope.CorrelationId = await reader.GetFieldValueAsync<Guid>(5, _cancellation);
+            envelope.CausationId = await reader.MaybeRead<string>(4, _cancellation);
+            envelope.CorrelationId = await reader.MaybeRead<string>(5, _cancellation);
             envelope.SagaId = await reader.MaybeRead<string>(6, cancellation: _cancellation);
             envelope.MessageType = await reader.GetFieldValueAsync<string>(7, _cancellation);
             envelope.ContentType = await reader.GetFieldValueAsync<string>(8, _cancellation);

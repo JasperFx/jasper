@@ -113,7 +113,7 @@ namespace Jasper
         /// <summary>
         ///     Correlating identifier for the logical workflow or system action
         /// </summary>
-        public Guid CorrelationId { get; internal set; }
+        public string CorrelationId { get; internal set; }
 
         /// <summary>
         ///     If this message is part of a stateful saga, this property identifies
@@ -124,7 +124,7 @@ namespace Jasper
         /// <summary>
         ///     Id of the immediate message or workflow that caused this envelope to be sent
         /// </summary>
-        public Guid CausationId { get; internal set; }
+        public string CausationId { get; internal set; }
 
         /// <summary>
         ///     Location that this message should be sent

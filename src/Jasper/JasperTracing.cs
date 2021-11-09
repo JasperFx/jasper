@@ -26,7 +26,7 @@ namespace Jasper
             activity.SetTag(MessagingMessageId, envelope.Id);
             activity.SetTag(MessagingConversationId, envelope.CorrelationId);
             activity.SetTag(MessageType, envelope.MessageType); // Jasper specific
-            activity.SetParentId(envelope.CausationId.ToString());
+            activity.SetParentId(envelope.CausationId);
 
 
             return activity;

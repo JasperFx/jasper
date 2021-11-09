@@ -237,7 +237,7 @@ namespace TestingSupport.Compliance
         public async Task tracking_correlation_id_on_everything()
         {
 
-            var id2 = Guid.Empty;
+            var id2 = string.Empty;
             var session2 = await theSender
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)

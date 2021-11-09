@@ -118,7 +118,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void original_id()
         {
-            theOriginal.CorrelationId = Guid.NewGuid();
+            theOriginal.CorrelationId = Guid.NewGuid().ToString();
             theEnvelope.CorrelationId.ShouldBe(theOriginal.CorrelationId);
         }
 
@@ -135,7 +135,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parent_id()
         {
-            theOriginal.CausationId = Guid.NewGuid();
+            theOriginal.CausationId = Guid.NewGuid().ToString();
             theEnvelope.CausationId.ShouldBe(theOriginal.CausationId);
         }
 

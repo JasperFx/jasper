@@ -31,8 +31,8 @@ namespace Jasper.Persistence.SqlServer.Schema
             AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
             AddColumn(DatabaseConstants.Body, "varbinary(max)").NotNull();
 
-            AddColumn<Guid>(DatabaseConstants.CausationId);
-            AddColumn<Guid>(DatabaseConstants.CorrelationId);
+            AddColumn<string>(DatabaseConstants.CausationId);
+            AddColumn<string>(DatabaseConstants.CorrelationId);
             AddColumn<string>(DatabaseConstants.SagaId);
             AddColumn<string>(DatabaseConstants.MessageType).NotNull();
             AddColumn<string>(DatabaseConstants.ContentType);

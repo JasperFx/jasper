@@ -66,7 +66,7 @@ namespace Jasper.Testing.Acceptance
             Exceptions.Add(ex);
         }
 
-        void IMessageLogger.LogException(Exception ex, Guid correlationId, string message)
+        void IMessageLogger.LogException(Exception ex, object correlationId, string message = "Exception detected:")
         {
             Exceptions.Add(ex);
         }

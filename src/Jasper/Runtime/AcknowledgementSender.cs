@@ -21,7 +21,7 @@ namespace Jasper.Runtime
             var writer = _serialization.JsonWriterFor(typeof(Acknowledgement));
             var ack = new Envelope(new Acknowledgement {CorrelationId = envelope.Id}, writer)
             {
-                CausationId = envelope.Id,
+                CausationId = envelope.Id.ToString(),
                 Destination = envelope.ReplyUri,
                 SagaId = envelope.SagaId,
             };
@@ -41,7 +41,7 @@ namespace Jasper.Runtime
 
             var envelope = new Envelope
             {
-                CausationId = original.Id,
+                CausationId = original.Id.ToString(),
                 Destination = original.ReplyUri,
                 Message = ack
             };
@@ -63,7 +63,7 @@ namespace Jasper.Runtime
             {
                 var envelope = new Envelope
                 {
-                    CausationId = original.Id,
+                    CausationId = original.Id.ToString(),
                     Destination = original.ReplyUri,
                     Message = new FailureAcknowledgement
                     {

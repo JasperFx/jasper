@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Baseline;
+using Baseline.ImTools;
 using Jasper.Serialization;
 using Jasper.Util;
 using Shouldly;
@@ -142,14 +143,14 @@ namespace Jasper.Testing.Serialization
         [Fact]
         public void original_id()
         {
-            outgoing.CorrelationId = Guid.NewGuid();
+            outgoing.CorrelationId = Guid.NewGuid().ToString();
             incoming.CorrelationId.ShouldBe(outgoing.CorrelationId);
         }
 
         [Fact]
         public void parent_id()
         {
-            outgoing.CausationId = Guid.NewGuid();
+            outgoing.CausationId = Guid.NewGuid().ToString();
             incoming.CausationId.ShouldBe(outgoing.CausationId);
         }
 

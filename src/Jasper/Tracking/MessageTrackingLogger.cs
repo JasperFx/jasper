@@ -43,7 +43,7 @@ namespace Jasper.Tracking
             base.NoHandlerFor(envelope);
         }
 
-        public override void LogException(Exception ex, Guid correlationId = default(Guid),
+        public override void LogException(Exception ex, object correlationId = null,
             string message = "Exception detected:")
         {
             ActiveSession?.LogException(ex, _serviceName);
