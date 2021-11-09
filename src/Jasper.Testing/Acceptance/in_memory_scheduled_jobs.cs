@@ -1,21 +1,132 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper;
 using Jasper.Runtime.Scheduled;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
 using Jasper.Util;
-using NSubstitute;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
-using StoryTeller;
+using Xunit;
 
-namespace StorytellerSpecs.Fixtures
+namespace Jasper.Testing.Acceptance
 {
-    public class InMemoryScheduledJobFixture : Fixture, IWorkerQueue
+
+    public class in_memory_scheduled_jobs : IAsyncLifetime
+    {
+        private IHost theHost;
+        private ScheduledMessageReceiver theReceiver;
+
+        public async Task InitializeAsync()
+        {
+            var registry = new ScheduledMessageApp();
+            theReceiver = registry.Receiver;
+
+            theHost = await Host.CreateDefaultBuilder().UseJasper(registry).StartAsync();
+        }
+
+        public Task DisposeAsync()
+        {
+            return theHost.StopAsync();
+        }
+
+        public Task ScheduleMessage(int id, int seconds)
+        {
+            return theHost.Get<IMessagePublisher>().Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+        }
+
+        public Task ScheduleSendMessage(int id, int seconds)
+        {
+            return theHost.Get<IMessagePublisher>().ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+        }
+
+        public int ReceivedMessageCount()
+        {
+            return theReceiver.ReceivedMessages.Count;
+        }
+
+        public Task AfterReceivingMessages()
+        {
+            return theReceiver.Received;
+        }
+
+        public int TheIdOfTheOnlyReceivedMessage()
+        {
+            return theReceiver.ReceivedMessages.Single().Id;
+        }
+
+        [Fact]
+        public async Task run_scheduled_jobs_locally()
+        {
+            await ScheduleMessage(1, 7200);
+            await ScheduleMessage(2, 5);
+            await ScheduleMessage(3, 7200);
+            ReceivedMessageCount().ShouldBe(0);
+
+            await AfterReceivingMessages();
+
+            TheIdOfTheOnlyReceivedMessage().ShouldBe(2);
+        }
+    }
+
+    public class ScheduledMessageApp : JasperOptions
+    {
+        public readonly ScheduledMessageReceiver Receiver = new ScheduledMessageReceiver();
+
+        public ScheduledMessageApp()
+        {
+            Services.AddSingleton(Receiver);
+
+            Endpoints.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageApp>()
+                .ToLocalQueue("incoming"));
+
+            Endpoints.ListenForMessagesFrom("local://incoming");
+
+            Handlers.Discovery(x =>
+            {
+                x.DisableConventionalDiscovery();
+                x.IncludeType<ScheduledMessageCatcher>();
+            });
+        }
+    }
+
+    public class ScheduledMessage
+    {
+        public int Id { get; set; }
+    }
+
+
+    public class ScheduledMessageReceiver
+    {
+        public readonly IList<ScheduledMessage> ReceivedMessages = new List<ScheduledMessage>();
+
+        public readonly TaskCompletionSource<ScheduledMessage> Source = new TaskCompletionSource<ScheduledMessage>();
+
+        public Task<ScheduledMessage> Received => Source.Task;
+    }
+
+    public class ScheduledMessageCatcher
+    {
+        private readonly ScheduledMessageReceiver _receiver;
+
+        public ScheduledMessageCatcher(ScheduledMessageReceiver receiver)
+        {
+            _receiver = receiver;
+        }
+
+
+        public void Consume(ScheduledMessage message)
+        {
+            _receiver.Source.SetResult(message);
+
+            _receiver.ReceivedMessages.Add(message);
+        }
+    }
+
+    public class InMemoryScheduledJobFixture : IWorkerQueue
     {
         private readonly Dictionary<Guid, TaskCompletionSource<Envelope>>
             _callbacks = new Dictionary<Guid, TaskCompletionSource<Envelope>>();
@@ -23,16 +134,17 @@ namespace StorytellerSpecs.Fixtures
         private readonly IList<Envelope> sent = new List<Envelope>();
         private InMemoryScheduledJobProcessor theScheduledJobs;
 
-
-        public InMemoryScheduledJobFixture()
-        {
-            Title = "In Memory Scheduled Jobs Compliance";
-        }
-
         public Uri Uri { get; }
         public Uri ReplyUri { get; }
         public Uri Destination { get; } = "local://delayed".ToUri();
         public Uri Alias { get; }
+
+        public InMemoryScheduledJobFixture()
+        {
+            theScheduledJobs = new InMemoryScheduledJobProcessor(this);
+            sent.Clear();
+            _callbacks.Clear();
+        }
 
         Task IWorkerQueue.Enqueue(Envelope envelope)
         {
@@ -67,18 +179,9 @@ namespace StorytellerSpecs.Fixtures
 
         void IDisposable.Dispose()
         {
-            throw new NotImplementedException();
+
         }
 
-
-
-
-        public override void SetUp()
-        {
-            theScheduledJobs = new InMemoryScheduledJobProcessor(this);
-            sent.Clear();
-            _callbacks.Clear();
-        }
 
         private Task<Envelope> waitForReceipt(Envelope envelope)
         {
@@ -89,11 +192,9 @@ namespace StorytellerSpecs.Fixtures
         }
 
 
-        [FormatAs("Run multiple messages through the in memory scheduler")]
-        public async Task<bool> run_multiple_messages_through()
+        [Fact]
+        public async Task run_multiple_messages_through()
         {
-            SetUp();
-
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -111,15 +212,11 @@ namespace StorytellerSpecs.Fixtures
             waiter1.IsCompleted.ShouldBeFalse();
             waiter2.IsCompleted.ShouldBeTrue();
             waiter3.IsCompleted.ShouldBeFalse();
-
-            return true;
         }
 
-        [FormatAs("Play All Expored Jobs")]
-        public async Task<bool> play_all()
+        [Fact]
+        public async Task play_all()
         {
-            SetUp();
-
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -137,16 +234,12 @@ namespace StorytellerSpecs.Fixtures
             sent.ShouldContain(env1);
             sent.ShouldContain(env2);
             sent.ShouldContain(env3);
-
-            return true;
         }
 
 
-        [FormatAs("Empty all queued jobs")]
+        [Fact]
         public async Task<bool> empty_all()
         {
-            SetUp();
-
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
@@ -170,11 +263,9 @@ namespace StorytellerSpecs.Fixtures
         }
 
 
-        [FormatAs("Play scheduled jobs at a given time")]
+        [Fact]
         public async Task<bool> play_at_certain_time()
         {
-            SetUp();
-
             var env1 = ObjectMother.Envelope();
             var env2 = ObjectMother.Envelope();
             var env3 = ObjectMother.Envelope();
