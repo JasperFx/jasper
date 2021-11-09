@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IntegrationTests;
-using Jasper.Attributes;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.Hosting;
+using Polly;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten.Durability
@@ -68,30 +68,6 @@ namespace Jasper.Persistence.Testing.Marten.Durability
         {
             var admin = sender.Get<IEnvelopePersistence>().Admin;
             return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
-        }
-    }
-
-    public class TriggerMessageReceiver
-    {
-        [Transactional]
-        public Task Handle(TriggerMessage message, IDocumentSession session, IExecutionContext context)
-        {
-            var response = new CascadedMessage
-            {
-                Name = message.Name
-            };
-
-            return context.RespondToSender(response);
-        }
-    }
-
-    public class ItemCreatedHandler
-    {
-        [Transactional]
-        public static void Handle(ItemCreated created, IDocumentSession session,
-            Envelope envelope)
-        {
-            session.Store(created);
         }
     }
 }

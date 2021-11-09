@@ -1,30 +1,26 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
-using Jasper;
 using Jasper.Logging;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
-using Jasper.TestSupport.Storyteller.Logging;
+using Jasper.Persistence.Testing.Marten.Durability.App;
 using Marten;
-using Marten.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using StoryTeller;
-using StoryTeller.Grammars.Tables;
-using StorytellerSpecs.Fixtures.Marten.App;
+using Shouldly;
 using Weasel.Core;
+using Xunit;
 
-namespace StorytellerSpecs.Fixtures.Marten
+namespace Jasper.Persistence.Testing.Marten.Durability
 {
-    public class MartenBackedPersistenceFixture : Fixture
+    [Collection("marten")]
+    public class MartenBackedPersistenceFixture : IAsyncLifetime
     {
-        private StorytellerMessageLogger _messageLogger;
-
         private LightweightCache<string, IHost> _receivers;
         private DocumentStore _receiverStore;
 
@@ -32,18 +28,8 @@ namespace StorytellerSpecs.Fixtures.Marten
         private SenderLatchDetected _senderWatcher;
         private DocumentStore _sendingStore;
 
-        public MartenBackedPersistenceFixture()
+        public async Task InitializeAsync()
         {
-            Title = "Marten-Backed Durable Messaging";
-        }
-
-        public override void SetUp()
-        {
-            _messageLogger =
-                new StorytellerMessageLogger(new LoggerFactory(), new NulloMetrics(), new JasperOptions());
-
-            _messageLogger.Start(Context);
-
             _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
             _receiverStore = DocumentStore.For(_ =>
@@ -55,9 +41,8 @@ namespace StorytellerSpecs.Fixtures.Marten
                 _.Schema.For<TraceDoc>();
             });
 
-            _receiverStore.Advanced.Clean.CompletelyRemoveAll();
-            _receiverStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync()
-                .GetAwaiter().GetResult();
+            await _receiverStore.Advanced.Clean.CompletelyRemoveAllAsync();
+            await _receiverStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync();
 
 
             _sendingStore = DocumentStore.For(_ =>
@@ -66,24 +51,19 @@ namespace StorytellerSpecs.Fixtures.Marten
                 _.DatabaseSchemaName = "sender";
             });
 
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RecreateAll();
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll();
+            await new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RebuildSchemaObjects();
 
-            _sendingStore.Advanced.Clean.CompletelyRemoveAll();
+
+            await new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RebuildSchemaObjects();
+
+            await _sendingStore.Advanced.Clean.CompletelyRemoveAllAsync();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync().GetAwaiter().GetResult();
 
             _receivers = new LightweightCache<string, IHost>(key =>
             {
                 var registry = new ReceiverApp();
-                registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
-
-                var logger = new StorytellerAspNetCoreLogger(key);
-
-                // Tell Storyteller about the new logger so that it'll be
-                // rendered as part of Storyteller's results
-                Context.Reporting.Log(logger);
 
                 // This is bootstrapping a Jasper application through the
                 // normal ASP.Net Core IWebHostBuilder
@@ -92,10 +72,6 @@ namespace StorytellerSpecs.Fixtures.Marten
                     .ConfigureLogging(x =>
                     {
                         x.SetMinimumLevel(LogLevel.Debug);
-
-                        // Add the logger to the new Jasper app
-                        // being built up
-                        x.AddProvider(logger);
                     })
                     .UseJasper(registry)
                     .Start();
@@ -103,14 +79,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             _senders = new LightweightCache<string, IHost>(key =>
             {
-                var logger = new StorytellerAspNetCoreLogger(key);
-
-                // Tell Storyteller about the new logger so that it'll be
-                // rendered as part of Storyteller's results
-                Context.Reporting.Log(logger);
-
                 var registry = new SenderApp();
-                registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
@@ -120,16 +89,13 @@ namespace StorytellerSpecs.Fixtures.Marten
                     {
                         x.SetMinimumLevel(LogLevel.Debug);
 
-                        // Add the logger to the new Jasper app
-                        // being built up
-                        x.AddProvider(logger);
                     })
                     .UseJasper(registry)
                     .Start();
             });
         }
 
-        public override void TearDown()
+        public Task DisposeAsync()
         {
             _receivers.Each(x => x.Dispose());
             _receivers.ClearAll();
@@ -137,36 +103,28 @@ namespace StorytellerSpecs.Fixtures.Marten
             _senders.Each(x => x.Dispose());
             _senders.ClearAll();
 
-            _messageLogger.BuildReports().Each(x => Context.Reporting.Log(x));
-
             _receiverStore.Dispose();
             _receiverStore = null;
             _sendingStore.Dispose();
             _sendingStore = null;
+
+            return Task.CompletedTask;
+
         }
 
-        [FormatAs("Start receiver node {name}")]
         public void StartReceiver(string name)
         {
             _receivers.FillDefault(name);
         }
 
-        [FormatAs("Start sender node {name}")]
-        public void StartSender([Default("Sender1")] string name)
+        public void StartSender(string name)
         {
             _senderWatcher.Reset();
             _senders.FillDefault(name);
         }
 
-        [ExposeAsTable("Send Messages")]
-        public Task SendFrom([Header("Sending Node")] [Default("Sender1")]
-            string sender, [Header("Message Name")] string name)
-        {
-            return _senders[sender].Services.GetService<IExecutionContext>().Send(new TraceMessage {Name = name});
-        }
 
-        [FormatAs("Send {count} messages from {sender}")]
-        public async Task SendMessages([Default("Sender1")] string sender, int count)
+        public async Task SendMessages(string sender, int count)
         {
             var runtime = _senders[sender];
 
@@ -177,7 +135,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             }
         }
 
-        [FormatAs("The persisted document count in the receiver should be {count}")]
         public int ReceivedMessageCount()
         {
             using (var session = _receiverStore.LightweightSession())
@@ -187,7 +144,6 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
 
 
-        [FormatAs("Wait for {count} messages to be processed by the receivers")]
         public async Task WaitForMessagesToBeProcessed(int count)
         {
             using (var session = _receiverStore.QuerySession())
@@ -204,10 +160,9 @@ namespace StorytellerSpecs.Fixtures.Marten
                 }
             }
 
-            StoryTellerAssert.Fail("All messages were not received");
+            throw new Exception("All messages were not received");
         }
 
-        [FormatAs("There should be {count} persisted, incoming messages in the receiver storage")]
         public long PersistedIncomingCount()
         {
             using (var conn = _receiverStore.Tenancy.Default.CreateConnection())
@@ -220,7 +175,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             }
         }
 
-        [FormatAs("There should be {count} persisted, outgoing messages in the sender storage")]
         public long PersistedOutgoingCount()
         {
             using (var conn = _sendingStore.Tenancy.Default.CreateConnection())
@@ -233,7 +187,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             }
         }
 
-        [FormatAs("Receiver node {name} stops")]
         public async Task StopReceiver(string name)
         {
             var receiver = _receivers[name];
@@ -242,7 +195,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             _receivers.Remove(name);
         }
 
-        [FormatAs("Sender node {name} stops")]
         public async Task StopSender(string name)
         {
             var sender = _senders[name];
@@ -250,36 +202,35 @@ namespace StorytellerSpecs.Fixtures.Marten
             sender.Dispose();
             _senders.Remove(name);
         }
-    }
 
-
-    public class SenderLatchDetected : TransportLogger
-    {
-        public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
-
-        public SenderLatchDetected(ILoggerFactory factory) : base(factory, new NulloMetrics())
+        [Fact]
+        public async Task Sending_Recovered_Messages_when_Sender_Starts_Up()
         {
+            await StopSender("Sender1");
+            await SendMessages("Sender1", 10);
+            await StopSender("Sender1");
+            PersistedOutgoingCount().ShouldBe(10);
+            StartReceiver("Receiver1");
+            StartSender("Sender2");
+            await WaitForMessagesToBeProcessed(10);
+
+            PersistedIncomingCount().ShouldBe(0);
+            PersistedIncomingCount().ShouldBe(0);
+
+            ReceivedMessageCount().ShouldBe(10);
         }
 
-        public Task<bool> Received => Waiter.Task;
-
-        public override void CircuitResumed(Uri destination)
+        [Fact]
+        public async Task Sending_Resumes_when_the_Receiver_is_Detected()
         {
-            if (destination == ReceiverApp.Listener) Waiter.TrySetResult(true);
+            StartSender("Sender1");
+            await SendMessages("Sender1", 5);
+            StartReceiver("Receiver1");
+            await WaitForMessagesToBeProcessed(5);
+            PersistedIncomingCount().ShouldBe(0);
+            PersistedOutgoingCount().ShouldBe(0);
+            ReceivedMessageCount().ShouldBe(5);
 
-            base.CircuitResumed(destination);
-        }
-
-        public override void CircuitBroken(Uri destination)
-        {
-            if (destination == ReceiverApp.Listener) Reset();
-
-            base.CircuitBroken(destination);
-        }
-
-        public void Reset()
-        {
-            Waiter = new TaskCompletionSource<bool>();
         }
     }
 }

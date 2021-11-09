@@ -1,7 +1,7 @@
 ﻿using Jasper.Attributes;
 using Marten;
 
-namespace StorytellerSpecs.Fixtures.Marten.App
+namespace Jasper.Persistence.Testing.Marten.Durability.App
 {
     [JasperIgnore]
     public class TraceHandler

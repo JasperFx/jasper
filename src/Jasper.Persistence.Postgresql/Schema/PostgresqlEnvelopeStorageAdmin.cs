@@ -74,7 +74,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
         }
 
-        async Task IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
+        public async Task ClearAllPersistedEnvelopes()
         {
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
@@ -110,7 +110,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             }
         }
 
-        async Task IEnvelopeStorageAdmin.RebuildSchemaObjects()
+        public async Task RebuildSchemaObjects()
         {
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();

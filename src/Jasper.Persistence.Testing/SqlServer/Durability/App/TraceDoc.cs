@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StorytellerSpecs.Fixtures.SqlServer.App
+namespace Jasper.Persistence.Testing.SqlServer.Durability.App
 {
     public class TraceDoc
     {

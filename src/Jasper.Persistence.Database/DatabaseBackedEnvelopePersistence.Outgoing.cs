@@ -79,7 +79,7 @@ namespace Jasper.Persistence.Database
 
         public async Task<Uri[]> FindAllDestinations()
         {
-            var cmd = Session.Transaction.CreateCommand($"select distinct destination from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}");
+            var cmd = Session.CreateCommand($"select distinct destination from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}");
             var uris = await cmd.FetchList<string>(cancellation: _cancellation);
             return uris.Select(x => x.ToUri()).ToArray();
         }

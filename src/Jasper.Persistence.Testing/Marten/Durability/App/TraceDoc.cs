@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StorytellerSpecs.Fixtures.Marten.App
+namespace Jasper.Persistence.Testing.Marten.Durability.App
 {
     public class TraceDoc
     {

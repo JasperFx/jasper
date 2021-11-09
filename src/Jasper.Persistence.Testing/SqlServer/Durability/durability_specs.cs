@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
-using Jasper.Attributes;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
@@ -11,9 +10,12 @@ using Jasper.Persistence.SqlServer.Persistence;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
 using Weasel.Core;
+using Xunit;
+using CommandExtensions = Weasel.Core.CommandExtensions;
 
 namespace Jasper.Persistence.Testing.SqlServer.Durability
 {
+    [Collection("sqlserver")]
     public class durability_specs : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
     {
         protected override void initializeStorage(IHost sender, IHost receiver)
@@ -26,13 +28,13 @@ namespace Jasper.Persistence.Testing.SqlServer.Durability
             {
                 conn.Open();
 
-                conn.CreateCommand(@"
+                CommandExtensions.CreateCommand(conn, @"
 IF OBJECT_ID('receiver.item_created', 'U') IS NOT NULL
   drop table receiver.item_created;
 
 ").ExecuteNonQuery();
 
-                conn.CreateCommand(@"
+                CommandExtensions.CreateCommand(conn, @"
 create table receiver.item_created
 (
 	id uniqueidentifier not null
@@ -60,7 +62,7 @@ create table receiver.item_created
             {
                 conn.Open();
 
-                var name = (string) conn.CreateCommand("select name from receiver.item_created where id = @id")
+                var name = (string) CommandExtensions.CreateCommand(conn, "select name from receiver.item_created where id = @id")
                     .With("id", id)
                     .ExecuteScalar();
 
@@ -102,76 +104,6 @@ create table receiver.item_created
         }
     }
 
-    public class TriggerMessageReceiver
-    {
-        [Transactional]
-        public Task Handle(TriggerMessage message, IExecutionContext context)
-        {
-            var response = new CascadedMessage
-            {
-                Name = message.Name
-            };
-
-            return context.RespondToSender(response);
-        }
-    }
-
     // SAMPLE: UsingSqlTransaction
-    public class ItemCreatedHandler
-    {
-        [Transactional]
-        public static async Task Handle(
-            ItemCreated created,
-            SqlTransaction tx // the current transaction
-        )
-        {
-            // Using some extension method helpers inside of Jasper here
-            await tx.CreateCommand("insert into receiver.item_created (id, name) values (@id, @name)")
-                .With("id", created.Id)
-                .With("name", created.Name)
-                .ExecuteNonQueryAsync();
-        }
-    }
     // ENDSAMPLE
-
-    public class CreateItemHandler
-    {
-        // SAMPLE: SqlServerOutboxWithSqlTransaction
-        [Transactional]
-        public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, SqlTransaction tx)
-        {
-            var item = new Item {Name = command.Name};
-
-            // persist the new Item with the
-            // current transaction
-            await persist(tx, item);
-
-            return new ItemCreatedEvent {Item = item};
-        }
-        // ENDSAMPLE
-
-        private Task persist(SqlTransaction tx, Item item)
-        {
-            // whatever you do to write the new item
-            // to your sql server application database
-            return Task.CompletedTask;
-        }
-
-
-        public class CreateItemCommand
-        {
-            public string Name { get; set; }
-        }
-
-        public class ItemCreatedEvent
-        {
-            public Item Item { get; set; }
-        }
-
-        public class Item
-        {
-            public Guid Id;
-            public string Name;
-        }
-    }
 }

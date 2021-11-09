@@ -57,7 +57,7 @@ where
   owner_id = @owner;
 ";
 
-            return Session.Transaction.CreateCommand(sql)
+            return Session.CreateCommand(sql)
                 .With("owner", nodeId)
                 .ExecuteNonQueryAsync(_cancellation);
         }

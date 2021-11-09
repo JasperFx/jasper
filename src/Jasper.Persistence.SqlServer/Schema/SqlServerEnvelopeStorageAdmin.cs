@@ -138,7 +138,7 @@ namespace Jasper.Persistence.SqlServer.Schema
             }
         }
 
-        async Task IEnvelopeStorageAdmin.ClearAllPersistedEnvelopes()
+        public async Task ClearAllPersistedEnvelopes()
         {
             await using var conn = new SqlConnection(_settings.ConnectionString);
             await conn.OpenAsync();
@@ -150,7 +150,7 @@ namespace Jasper.Persistence.SqlServer.Schema
             await tx.CommitAsync();
         }
 
-        async Task IEnvelopeStorageAdmin.RebuildSchemaObjects()
+        public async Task RebuildSchemaObjects()
         {
             await using var conn = new SqlConnection(_settings.ConnectionString);
             await conn.OpenAsync();

@@ -1,17 +1,20 @@
 ﻿using System;
 using IntegrationTests;
-using Jasper;
 using Jasper.Persistence.Marten;
+using Jasper.Tcp;
 using Jasper.Util;
+using TestingSupport;
 
-namespace StorytellerSpecs.Fixtures.Marten.App
+namespace Jasper.Persistence.Testing.Marten.Durability.App
 {
     public class ReceiverApp : JasperOptions
     {
-        public static readonly Uri Listener = "tcp://localhost:2555/durable".ToUri();
+        public static readonly Uri Listener = $"tcp://localhost:{PortFinder.GetAvailablePort()}/durable".ToUri();
 
         public ReceiverApp()
         {
+            Extensions.Include<TcpTransportExtension>();
+
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
