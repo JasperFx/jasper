@@ -189,7 +189,7 @@ namespace Jasper.Persistence.Durability
             throw new NotSupportedException();
         }
 
-        public Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
+        public Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming()
         {
             throw new NotSupportedException();
         }

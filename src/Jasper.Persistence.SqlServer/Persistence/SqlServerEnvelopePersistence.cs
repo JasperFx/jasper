@@ -96,7 +96,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
                 .WithIdList(DatabaseSettings, envelopes).ExecuteOnce(_cancellation);
         }
 
-        public override Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
+        public override Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming()
         {
             return Session.CreateCommand(_findAtLargeEnvelopesSql)
                 .FetchList(r => ReadIncoming(r));

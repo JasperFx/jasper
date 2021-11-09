@@ -3,11 +3,12 @@ using Baseline;
 using Jasper;
 using Jasper.Configuration;
 using Jasper.Logging;
-using Jasper.TestSupport.Storyteller.Logging;
+using Jasper.Tcp;
 using Jasper.Tracking;
+using Jasper.Transports.Stub;
 using Lamar;
 using StoryTeller;
-using StorytellerSpecs.Stub;
+using StorytellerSpecs.Logging;
 
 namespace StorytellerSpecs.Fixtures
 {
@@ -20,8 +21,8 @@ namespace StorytellerSpecs.Fixtures
         {
             _options = new JasperOptions();
 
+            _options.Extensions.Include<TcpTransportExtension>();
             _options.Extensions.UseMessageTrackingTestingSupport();
-            _options.Endpoints.As<TransportCollection>().Add(new StubTransport());
 
 
             _options.Services.For<IMessageLogger>().Use<StorytellerMessageLogger>().Singleton();

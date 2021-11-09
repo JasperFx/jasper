@@ -188,6 +188,13 @@ documentation/compilation/frames/injected-fields/
                 Run("git", $"commit -a -m \"Documentation Update for {BUILD_VERSION}\" --allow-empty", docTargetDir);
                 Run("git", $"push origin {branchName}", docTargetDir);
             });
+			
+			Target("storyteller", DependsOn("compile"), () =>
+                Run("dotnet", $"run --culture en-US", "src/StorytellerSpecs"));
+
+            Target("open_st", DependsOn("compile"), () =>
+                Run("dotnet", $"storyteller open  --culture en-US", "src/StorytellerSpecs"));
+
 
             Target("docker-up", () =>
             {

@@ -98,7 +98,10 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
 
-            if (_host == null) _host = JasperHost.For(_options);
+            if (_host == null)
+            {
+                _host = JasperHost.For(_options);
+            }
 
             var router = _host.Get<IEnvelopeRouter>();
 

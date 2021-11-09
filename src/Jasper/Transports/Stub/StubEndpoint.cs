@@ -65,9 +65,9 @@ namespace Jasper.Transports.Stub
 
             Sent.Add(envelope);
 
-            _logger.Sent(envelope);
+            _logger?.Sent(envelope);
 
-            _pipeline.Invoke(envelope, callback).Wait();
+            _pipeline?.Invoke(envelope, callback).Wait();
 
             return Task.CompletedTask;
         }

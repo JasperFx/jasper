@@ -7,43 +7,43 @@ using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
 using Jasper.Configuration;
-using Jasper.Persistence;
 using Jasper.Persistence.Durability;
-using Jasper.Persistence.SqlServer;
-using Jasper.Persistence.SqlServer.Persistence;
+using Jasper.Persistence.Marten;
+using Jasper.Persistence.Marten.Persistence.Operations;
+using Jasper.Persistence.Postgresql;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
-using Microsoft.Data.SqlClient;
+using Jasper.Transports.Stub;
+using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
-using StorytellerSpecs.Stub;
-using SqlConnection = Microsoft.Data.SqlClient.SqlConnection;
-using SqlTransaction = Microsoft.Data.SqlClient.SqlTransaction;
 
-namespace StorytellerSpecs.Fixtures.SqlServer
+namespace StorytellerSpecs.Fixtures.Marten
 {
-    public class SqlServerMessageRecoveryFixture : Fixture, IDurabilityAgent
+    public class MessageRecoveryFixture : Fixture, IDurabilityAgent
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
 
         private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
 
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
+        private IEnvelopeStorageAdmin _admin;
         private int _currentNodeId;
 
         private IHost _host;
-        private RecordingSchedulingAgent _schedulerAgent;
         private MessagingSerializationGraph _serializers;
+        private PostgresqlSettings _settings;
         private RecordingWorkerQueue _workers;
+        private IDocumentStore theStore;
 
-        public SqlServerMessageRecoveryFixture()
+        public MessageRecoveryFixture()
         {
-            Title = "SqlServer-backed Message Recovery";
+            Title = "Marten-backed Message Recovery";
 
             _owners["Any Node"] = TransportConstants.AnyNode;
             _owners["Other Node"] = -13234;
@@ -76,18 +76,17 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             _nodeLockers.Clear();
 
             _workers = new RecordingWorkerQueue();
-            _schedulerAgent = new RecordingSchedulingAgent();
-
 
             _host = Host.CreateDefaultBuilder()
                 .UseJasper(_ =>
                 {
-                    _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                    _.ServiceName = Guid.NewGuid().ToString();
 
-                    _.Endpoints.As<TransportCollection>().Add(new StubTransport());
+                    _.Extensions.UseMarten(Servers.PostgresConnectionString);
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
-                    _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
+
+
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
                     _.Advanced.ScheduledJobFirstExecution = 30.Minutes();
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
@@ -96,12 +95,14 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 .Start();
 
 
-            _host.Services.GetService<IEnvelopePersistence>()
-                .Admin.ClearAllPersistedEnvelopes().GetAwaiter().GetResult();
+            _admin = _host.Services.GetService<IEnvelopePersistence>().Admin;
+            _admin.RebuildSchemaObjects().GetAwaiter().GetResult();
 
+            _settings = _host.Services.GetService<PostgresqlSettings>();
             _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 
-            _host.RebuildMessageStorage();
+            theStore = _host.Services.GetService<IDocumentStore>();
+            theStore.Advanced.Clean.DeleteAllDocuments();
 
             _currentNodeId = _host.Services.GetService<AdvancedSettings>().UniqueNodeId;
 
@@ -151,7 +152,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         [FormatAs("Channel {channel} is unavailable and latched for sending")]
         public void ChannelIsLatched(Uri channel)
         {
-            getStubTransport().Endpoints[channel].Latched = true;
+            _host.GetStubTransport().Endpoints[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
             _host.Services.GetService<IMessagingRoot>().Runtime.GetOrBuildSendingAgent(channel);
@@ -185,10 +186,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
-            var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
-
-            return persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
-                .Concat(persistor.Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
+            return _admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+                .Concat(_admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
                 .Where(x => x.OwnerId == ownerId)
                 .ToList();
         }
@@ -223,13 +222,22 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            var persistor = _host.Get<SqlServerEnvelopePersistence>();
+            using (var session = theStore.LightweightSession())
+            {
+                foreach (var envelope in _envelopes)
+                {
+                    if (envelope.Status == EnvelopeStatus.Outgoing)
+                    {
+                        session.StoreOutgoing(_settings, envelope, envelope.OwnerId);
+                    }
+                    else
+                    {
+                        session.StoreIncoming(_settings, envelope);
+                    }
+                }
 
-            foreach (var envelope in _envelopes)
-                if (envelope.Status == EnvelopeStatus.Outgoing)
-                    await persistor.StoreOutgoing(envelope, envelope.OwnerId);
-                else
-                    await persistor.StoreIncoming(envelope);
+                await session.SaveChangesAsync();
+            }
 
             var agent = DurabilityAgent.ForHost(_host);
 
@@ -258,16 +266,16 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
     public class NodeLocker : IDisposable
     {
-        private readonly SqlConnection _conn;
-        private readonly SqlTransaction _tx;
+        private readonly NpgsqlConnection _conn;
+        private readonly NpgsqlTransaction _tx;
 
         public NodeLocker(int nodeId)
         {
-            _conn = new SqlConnection(Servers.SqlServerConnectionString);
+            _conn = new NpgsqlConnection(Servers.PostgresConnectionString);
             _conn.Open();
             _tx = _conn.BeginTransaction();
 
-            new SqlServerSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
+            new PostgresqlSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
         }
 
         public void Dispose()
@@ -283,21 +291,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         public Uri Destination { get; set; }
     }
 
-    public class RecordingSchedulingAgent : IDurabilityAgent
-    {
-        public void RescheduleOutgoingRecovery()
-        {
-        }
-
-        public Task EnqueueLocally(Envelope envelope)
-        {
-            return Task.CompletedTask;
-        }
-
-        public void RescheduleIncomingRecovery()
-        {
-        }
-    }
 
     public class RecordingWorkerQueue : IWorkerQueue
     {
@@ -313,17 +306,18 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public Task ScheduleExecution(Envelope envelope)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         void IWorkerQueue.StartListening(IListener listener)
         {
-            // Nothing
+            throw new NotImplementedException();
         }
+
 
         Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         public Task Received(Uri uri, Envelope envelope)
@@ -331,10 +325,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             throw new NotImplementedException();
         }
 
-
         void IDisposable.Dispose()
         {
         }
-
     }
 }

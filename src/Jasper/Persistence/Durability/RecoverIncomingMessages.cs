@@ -42,7 +42,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                incoming = await storage.LoadPageOfLocallyOwnedIncoming();
+                incoming = await storage.LoadPageOfGloballyOwnedIncoming();
 
                 if (!incoming.Any())
                 {

@@ -21,17 +21,19 @@ namespace Jasper.Persistence.Postgresql
     public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence
     {
         private readonly string _deleteIncomingEnvelopesSql;
-        private readonly string _reassignSql;
+        private readonly string _reassignOutgoingSql;
         private readonly string _deleteOutgoingEnvelopesSql;
         private readonly string _findAtLargeEnvelopesSql;
         private readonly string _discardAndReassignOutgoingSql;
+        private readonly string _reassignIncomingSql;
 
 
         public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
             settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
         {
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
-            _reassignSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
+            _reassignOutgoingSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
+            _reassignIncomingSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = @owner where id = ANY(@ids)";
             _deleteOutgoingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} WHERE id = ANY(@ids);";
 
             _findAtLargeEnvelopesSql =
@@ -94,13 +96,13 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
         {
-            return Session.Transaction.CreateCommand(_reassignSql)
+            return Session.Transaction.CreateCommand(_reassignOutgoingSql)
                 .With("owner", ownerId)
                 .With("ids", outgoing)
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
-        public override Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming()
+        public override Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming()
         {
             return Session
                 .CreateCommand(_findAtLargeEnvelopesSql)
@@ -109,7 +111,7 @@ namespace Jasper.Persistence.Postgresql
 
         public override Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming)
         {
-            return Session.CreateCommand(_reassignSql)
+            return Session.CreateCommand(_reassignIncomingSql)
                 .With("owner", ownerId)
                 .With("ids", incoming.Select(x => x.Id).ToArray())
                 .ExecuteNonQueryAsync(_cancellation);

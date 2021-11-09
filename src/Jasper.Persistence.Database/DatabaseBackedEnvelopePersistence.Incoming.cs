@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Database
         public abstract Task MoveToDeadLetterStorage(ErrorReport[] errors);
         public abstract Task DeleteIncomingEnvelopes(Envelope[] envelopes);
 
-        public abstract Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
+        public abstract Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming();
         public abstract Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
 
         public static async Task<Envelope> ReadIncoming(DbDataReader reader, CancellationToken cancellation = default)

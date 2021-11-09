@@ -7,44 +7,40 @@ using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
 using Jasper.Configuration;
+using Jasper.Persistence;
 using Jasper.Persistence.Durability;
-using Jasper.Persistence.Marten;
-using Jasper.Persistence.Marten.Persistence.Operations;
-using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports;
-using Jasper.Transports.Tcp;
-using Marten;
+using Jasper.Transports.Stub;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
-using StorytellerSpecs.Stub;
 
-namespace StorytellerSpecs.Fixtures.Marten
+namespace StorytellerSpecs.Fixtures.SqlServer
 {
-    public class MessageRecoveryFixture : Fixture, IDurabilityAgent
+    public class SqlServerMessageRecoveryFixture : Fixture, IDurabilityAgent
     {
         private readonly IList<Envelope> _envelopes = new List<Envelope>();
 
         private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
 
         private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
-        private IEnvelopeStorageAdmin _admin;
         private int _currentNodeId;
 
         private IHost _host;
+        private RecordingSchedulingAgent _schedulerAgent;
         private MessagingSerializationGraph _serializers;
-        private PostgresqlSettings _settings;
         private RecordingWorkerQueue _workers;
-        private IDocumentStore theStore;
 
-        public MessageRecoveryFixture()
+        public SqlServerMessageRecoveryFixture()
         {
-            Title = "Marten-backed Message Recovery";
+            Title = "SqlServer-backed Message Recovery";
 
             _owners["Any Node"] = TransportConstants.AnyNode;
             _owners["Other Node"] = -13234;
@@ -77,19 +73,16 @@ namespace StorytellerSpecs.Fixtures.Marten
             _nodeLockers.Clear();
 
             _workers = new RecordingWorkerQueue();
+            _schedulerAgent = new RecordingSchedulingAgent();
+
 
             _host = Host.CreateDefaultBuilder()
                 .UseJasper(_ =>
                 {
-                    _.ServiceName = Guid.NewGuid().ToString();
-
-                    _.Endpoints.As<TransportCollection>().Add(new StubTransport());
-
-                    _.Extensions.UseMarten(Servers.PostgresConnectionString);
+                    _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
-
-
+                    _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
                     _.Advanced.ScheduledJobFirstExecution = 30.Minutes();
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
@@ -97,15 +90,9 @@ namespace StorytellerSpecs.Fixtures.Marten
                 })
                 .Start();
 
-
-            _admin = _host.Services.GetService<IEnvelopePersistence>().Admin;
-            _admin.RebuildSchemaObjects();
-
-            _settings = _host.Services.GetService<PostgresqlSettings>();
             _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 
-            theStore = _host.Services.GetService<IDocumentStore>();
-            theStore.Advanced.Clean.DeleteAllDocuments();
+            _host.RebuildMessageStorage().GetAwaiter().GetResult();
 
             _currentNodeId = _host.Services.GetService<AdvancedSettings>().UniqueNodeId;
 
@@ -155,7 +142,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Channel {channel} is unavailable and latched for sending")]
         public void ChannelIsLatched(Uri channel)
         {
-            _host.GetStubTransport().Endpoints[channel].Latched = true;
+            getStubTransport().Endpoints[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
             _host.Services.GetService<IMessagingRoot>().Runtime.GetOrBuildSendingAgent(channel);
@@ -189,8 +176,10 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
         {
-            return _admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
-                .Concat(_admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
+            var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
+
+            return persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+                .Concat(persistor.Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
                 .Where(x => x.OwnerId == ownerId)
                 .ToList();
         }
@@ -225,15 +214,18 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         private async Task runAction<T>() where T : IMessagingAction
         {
-            using (var session = theStore.LightweightSession())
-            {
-                foreach (var envelope in _envelopes)
-                    if (envelope.Status == EnvelopeStatus.Outgoing)
-                        session.StoreOutgoing(_settings, envelope, envelope.OwnerId);
-                    else
-                        session.StoreIncoming(_settings, envelope);
+            var persistor = _host.Get<SqlServerEnvelopePersistence>();
 
-                await session.SaveChangesAsync();
+            foreach (var envelope in _envelopes)
+            {
+                if (envelope.Status == EnvelopeStatus.Outgoing)
+                {
+                    await persistor.StoreOutgoing(envelope, envelope.OwnerId);
+                }
+                else
+                {
+                    await persistor.StoreIncoming(envelope);
+                }
             }
 
             var agent = DurabilityAgent.ForHost(_host);
@@ -263,16 +255,16 @@ namespace StorytellerSpecs.Fixtures.Marten
 
     public class NodeLocker : IDisposable
     {
-        private readonly NpgsqlConnection _conn;
-        private readonly NpgsqlTransaction _tx;
+        private readonly SqlConnection _conn;
+        private readonly SqlTransaction _tx;
 
         public NodeLocker(int nodeId)
         {
-            _conn = new NpgsqlConnection(Servers.PostgresConnectionString);
+            _conn = new SqlConnection(Servers.SqlServerConnectionString);
             _conn.Open();
             _tx = _conn.BeginTransaction();
 
-            new PostgresqlSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
+            new SqlServerSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
         }
 
         public void Dispose()
@@ -288,6 +280,21 @@ namespace StorytellerSpecs.Fixtures.Marten
         public Uri Destination { get; set; }
     }
 
+    public class RecordingSchedulingAgent : IDurabilityAgent
+    {
+        public void RescheduleOutgoingRecovery()
+        {
+        }
+
+        public Task EnqueueLocally(Envelope envelope)
+        {
+            return Task.CompletedTask;
+        }
+
+        public void RescheduleIncomingRecovery()
+        {
+        }
+    }
 
     public class RecordingWorkerQueue : IWorkerQueue
     {
@@ -303,18 +310,17 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public Task ScheduleExecution(Envelope envelope)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         void IWorkerQueue.StartListening(IListener listener)
         {
-            throw new NotImplementedException();
+            // Nothing
         }
-
 
         Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task Received(Uri uri, Envelope envelope)
@@ -322,10 +328,9 @@ namespace StorytellerSpecs.Fixtures.Marten
             throw new NotImplementedException();
         }
 
+
         void IDisposable.Dispose()
         {
-
         }
-
     }
 }

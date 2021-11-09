@@ -66,7 +66,7 @@ namespace Jasper.Persistence.Durability
         // Used by DurableSendingAgent
         Task DeleteOutgoing(Envelope envelope);
 
-        Task<IReadOnlyList<Envelope>> LoadPageOfLocallyOwnedIncoming();
+        Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming();
         Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
         Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
     }
