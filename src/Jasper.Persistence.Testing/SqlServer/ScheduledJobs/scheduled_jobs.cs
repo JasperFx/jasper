@@ -1,93 +1,103 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
-using Jasper;
 using Jasper.Persistence.Durability;
-using Jasper.Persistence.Marten;
-using Jasper.Persistence.Postgresql;
-using Jasper.Persistence.Postgresql.Schema;
-using Jasper.TestSupport.Storyteller.Logging;
+using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using StoryTeller;
+using Shouldly;
+using Xunit;
 
-namespace StorytellerSpecs.Fixtures.Marten
+namespace Jasper.Persistence.Testing.SqlServer.ScheduledJobs
 {
-    public class MartenScheduledJobFixture : Fixture
+
+    public class scheduled_jobs : IAsyncLifetime
     {
         private IHost theHost;
         private ScheduledMessageReceiver theReceiver;
 
-        public MartenScheduledJobFixture()
+        public async Task InitializeAsync()
         {
-            Title = "Marten Scheduled Jobs";
-        }
-
-        public override void SetUp()
-        {
-            var admin = new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString});
-            admin.RecreateAll();
+            var admin = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings()
+                {ConnectionString = Servers.SqlServerConnectionString});
+            await admin.RecreateAll();
 
             var registry = new ScheduledMessageApp();
             theReceiver = registry.Receiver;
 
-            var logger = new StorytellerAspNetCoreLogger();
-            Context.Reporting.Log(logger);
 
-
-            theHost = Host
+            theHost = await Host
                 .CreateDefaultBuilder()
-                .ConfigureLogging(x => x.AddProvider(logger))
                 .UseJasper(registry)
-                .Start();
+                .StartAsync();
         }
 
-        public override void TearDown()
+        public Task DisposeAsync()
         {
-            theHost?.Dispose();
+            return theHost.StopAsync();
         }
 
-        [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
         public Task ScheduleMessage(int id, int seconds)
         {
             return theHost.Services.GetService<IExecutionContext>()
                 .Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
-        [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
             return theHost.Services.GetService<IExecutionContext>()
                 .ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
-        [FormatAs("The received message count should be {count}")]
         public int ReceivedMessageCount()
         {
             return theReceiver.ReceivedMessages.Count;
         }
 
-        [FormatAs("Wait for at least one message to be received")]
         public Task AfterReceivingMessages()
         {
             return theReceiver.Received;
         }
 
-        [FormatAs("The id of the only received message should be {id}")]
         public int TheIdOfTheOnlyReceivedMessageShouldBe()
         {
             return theReceiver.ReceivedMessages.Single().Id;
         }
 
-        [FormatAs("The persisted count of scheduled jobs should be {count}")]
         public async Task<int> PersistedScheduledCount()
         {
             var counts = await theHost.Services.GetService<IEnvelopePersistence>().Admin.GetPersistedCounts();
             return counts.Scheduled;
+        }
+
+        [Fact]
+        public async Task execute_scheduled_job()
+        {
+            await ScheduleSendMessage(1, 7200);
+            await ScheduleSendMessage(2, 5);
+            await ScheduleSendMessage(3, 7200);
+
+            ReceivedMessageCount().ShouldBe(0);
+            await AfterReceivingMessages();
+            TheIdOfTheOnlyReceivedMessageShouldBe().ShouldBe(2);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            while (stopwatch.Elapsed < 10.Seconds())
+            {
+                var count = await PersistedScheduledCount();
+                if (count == 2) return;
+
+                await Task.Delay(100.Milliseconds());
+            }
+
+            throw new Exception("The persisted count never reached 2");
         }
     }
 
@@ -108,7 +118,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 x.IncludeType<ScheduledMessageCatcher>();
             });
 
-            Extensions.UseMarten(Servers.PostgresConnectionString);
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
         }
     }
 
