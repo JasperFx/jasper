@@ -10,6 +10,7 @@ using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
+using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Util;
 using NSubstitute;
@@ -45,6 +46,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             thePipeline = Substitute.For<IHandlerPipeline>();
             theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, thePersistence, TransportLogger.Empty());
+            theWorkerQueue.StartListening(Substitute.For<IListener>());
         }
 
         protected Envelope notScheduledEnvelope()

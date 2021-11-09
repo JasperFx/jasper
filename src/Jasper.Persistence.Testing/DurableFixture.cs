@@ -1,32 +1,31 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper;
 using Jasper.Logging;
-using Jasper.Persistence;
 using Jasper.Persistence.Durability;
+using Jasper.Persistence.Testing.Marten;
+using Jasper.Tcp;
 using Jasper.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
-using StoryTeller;
+using TestingSupport;
+using Xunit;
 
-namespace StorytellerSpecs.Fixtures.Durability
+namespace Jasper.Persistence.Testing
 {
-    public abstract class DurableFixture<TTriggerHandler, TItemCreatedHandler> : Fixture
+
+    public abstract class DurableFixture<TTriggerHandler, TItemCreatedHandler> : IAsyncLifetime
     {
         private IHost theReceiver;
         private IHost theSender;
 
-        public override void SetUp()
+        public async Task InitializeAsync()
         {
-            var receiverPort = PortFinder.FindPort(3340);
-            var senderPort = PortFinder.FindPort(3370);
-
-            var publishingUri = $"tcp://localhost:{receiverPort}/durable";
-
+            var receiverPort = PortFinder.GetAvailablePort();
+            var senderPort = PortFinder.GetAvailablePort();
 
             var senderRegistry = new JasperOptions();
             senderRegistry.Handlers
@@ -52,7 +51,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             configureSender(senderRegistry);
 
             theSender = JasperHost.For(senderRegistry);
-            theSender.RebuildMessageStorage();
+            await theSender.RebuildMessageStorage();
 
 
             var receiverRegistry = new JasperOptions();
@@ -71,10 +70,18 @@ namespace StorytellerSpecs.Fixtures.Durability
 
 
             theReceiver = JasperHost.For(receiverRegistry);
-            theReceiver.RebuildMessageStorage();
+            await theReceiver.RebuildMessageStorage();
 
 
             initializeStorage(theSender, theReceiver);
+        }
+
+        public Task DisposeAsync()
+        {
+            theSender?.Dispose();
+            theReceiver?.Dispose();
+
+            return Task.CompletedTask;
         }
 
         private void cleanDatabase()
@@ -90,26 +97,18 @@ namespace StorytellerSpecs.Fixtures.Durability
 
         protected abstract void configureSender(JasperOptions senderOptions);
 
-        public override void TearDown()
-        {
-            theSender?.Dispose();
-            theReceiver?.Dispose();
-        }
-
-        [FormatAs("Can send a message end to end with a cascading return")]
-        public async Task<bool> CanSendMessageEndToEnd()
+        [Fact]
+        public Task can_send_message_end_to_end()
         {
             cleanDatabase();
 
             var trigger = new TriggerMessage {Name = Guid.NewGuid().ToString()};
 
-            await theSender
+            return theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .WaitForMessageToBeReceivedAt<CascadedMessage>(theSender)
                 .SendMessageAndWait(trigger);
-
-            return true;
         }
 
         protected abstract ItemCreated loadItem(IHost receiver, Guid id);
@@ -123,8 +122,8 @@ namespace StorytellerSpecs.Fixtures.Durability
             return withContext(theSender, theSender.Get<IExecutionContext>(), action);
         }
 
-        [FormatAs("Can send items durably through persisted channels")]
-        public async Task<bool> CanSendItemDurably()
+        [Fact]
+        public async Task can_send_items_durably_through_persisted_channels()
         {
             cleanDatabase();
 
@@ -147,9 +146,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             var senderCounts = await assertNoPersistedOutgoingEnvelopes();
 
-            StoryTellerAssert.Fail(senderCounts.Outgoing > 0, "There are still persisted, outgoing messages");
-
-            return true;
+            senderCounts.Outgoing.ShouldBe(0, "There are still persisted, outgoing messages");
         }
 
         private async Task<PersistedCounts> assertNoPersistedOutgoingEnvelopes()
@@ -170,7 +167,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             if (received == null) await Task.Delay(500.Milliseconds());
             received = loadItem(theReceiver, item.Id);
 
-            StoryTellerAssert.Fail(received.Name != item.Name, "The persisted item does not match");
+            received.Name.ShouldBe(item.Name, "The persisted item does not match");
         }
 
         private async Task assertIncomingEnvelopesIsZero()
@@ -182,11 +179,11 @@ namespace StorytellerSpecs.Fixtures.Durability
                 receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
             }
 
-            StoryTellerAssert.Fail(receiverCounts.Incoming > 0, "There are still persisted, incoming messages");
+            receiverCounts.Incoming.ShouldBe(0, "There are still persisted, incoming messages");
         }
 
-        [FormatAs("Can schedule job durably")]
-        public async Task<bool> CanScheduleJobDurably()
+        [Fact]
+        public async Task can_schedule_job_durably()
         {
             cleanDatabase();
 
@@ -200,45 +197,16 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             var persistor = theSender.Get<IEnvelopePersistence>();
             var counts = await persistor.Admin.GetPersistedCounts();
-            StoryTellerAssert.Fail(counts.Scheduled != 1, $"counts.Scheduled = {counts.Scheduled}, should be 0");
 
-
-            return true;
+            counts.Scheduled.ShouldBe(1, $"counts.Scheduled = {counts.Scheduled}, should be 1");
         }
 
-
-        [FormatAs("Can send durably with the receiver down (*must be last*)")]
-        public async Task<bool> SendWithReceiverDown()
-        {
-            cleanDatabase();
-
-            // Shutting it down
-            theReceiver.Dispose();
-            theReceiver = null;
-
-
-            var item = new ItemCreated
-            {
-                Name = "Shoe",
-                Id = Guid.NewGuid()
-            };
-
-            await send(c => c.Send(item));
-
-            var outgoing = loadAllOutgoingEnvelopes(theSender).SingleOrDefault();
-
-            StoryTellerAssert.Fail(outgoing == null, "No outgoing envelopes are persisted");
-            StoryTellerAssert.Fail(outgoing.MessageType != typeof(ItemCreated).ToMessageTypeName(),
-                $"Envelope message type expected {typeof(ItemCreated).ToMessageTypeName()}, but was {outgoing.MessageType}");
-
-            return true;
-        }
 
         protected abstract IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender);
 
 
-        [FormatAs("Can send a scheduled message with durable storage")]
-        public async Task<bool> SendScheduledMessage()
+        [Fact]
+        public async Task<bool> send_scheduled_message()
         {
             cleanDatabase();
 
@@ -263,8 +231,8 @@ namespace StorytellerSpecs.Fixtures.Durability
             return true;
         }
 
-        [FormatAs("Can schedule a local job")]
-        public async Task<bool> ScheduleJobLocally()
+        [Fact]
+        public async Task<bool> schedule_job_locally()
         {
             cleanDatabase();
 
@@ -290,6 +258,34 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             return true;
         }
+
+
+        [Fact]
+        public async Task<bool> can_send_durably_with_receiver_down()
+        {
+            cleanDatabase();
+
+            // Shutting it down
+            theReceiver.Dispose();
+            theReceiver = null;
+
+
+            var item = new ItemCreated
+            {
+                Name = "Shoe",
+                Id = Guid.NewGuid()
+            };
+
+            await send(c => c.Send(item));
+
+            var outgoing = loadAllOutgoingEnvelopes(theSender).SingleOrDefault();
+
+            outgoing.ShouldNotBeNull("No outgoing envelopes are persisted");
+            outgoing.MessageType.ShouldBe(typeof(ItemCreated).ToMessageTypeName(), $"Envelope message type expected {typeof(ItemCreated).ToMessageTypeName()}, but was {outgoing.MessageType}");
+
+            return true;
+        }
+
     }
 
 

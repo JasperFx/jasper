@@ -43,6 +43,7 @@ namespace TestingSupport.Compliance
 
         protected Task TheOnlyAppIs<T>() where T : JasperOptions, new()
         {
+            AllLocally = true;
             var options = new T();
             configureReceiver(options);
             configureSender(options);
@@ -51,6 +52,8 @@ namespace TestingSupport.Compliance
 
             return Sender.RebuildMessageStorage();
         }
+
+        public bool AllLocally { get; set; }
 
         protected Task SenderIs(JasperOptions options)
         {
@@ -431,6 +434,8 @@ namespace TestingSupport.Compliance
         [Fact] // This test isn't always the most consistent test
         public async Task send_green_as_text_and_receive_as_blue()
         {
+            if (Fixture.AllLocally) return; // this just doesn't apply when running all with local queues
+
             var greenMessage = new GreenMessage {Name = "Magic Johnson"};
             var envelope = new Envelope(greenMessage)
             {
@@ -449,15 +454,17 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task send_green_that_gets_received_as_blue()
         {
+            if (Fixture.AllLocally) return; // this just doesn't apply when running all with local queues
+
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .ExecuteAndWait(c =>
-                    c.Send(new GreenMessage {Name = "Kareem Abdul Jabbar"}));
+                    c.Send(new GreenMessage {Name = "Kareem Abdul-Jabbar"}));
 
 
             session.FindSingleTrackedMessageOfType<BlueMessage>()
-                .Name.ShouldBe("Kareem Abdul Jabbar");
+                .Name.ShouldBe("Kareem Abdul-Jabbar");
         }
 
     }

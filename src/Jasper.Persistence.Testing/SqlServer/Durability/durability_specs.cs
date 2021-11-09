@@ -3,61 +3,60 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Baseline;
 using IntegrationTests;
-using Jasper;
 using Jasper.Attributes;
-using Jasper.Persistence;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
-using Jasper.Persistence.Postgresql;
+using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Persistence;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
-using Npgsql;
-using StorytellerSpecs.Fixtures.Durability;
 using Weasel.Core;
 
-namespace StorytellerSpecs.Fixtures.Postgresql
+namespace Jasper.Persistence.Testing.SqlServer.Durability
 {
-    public class PostgresqlDurableFixture : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
+    public class durability_specs : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
     {
-        public PostgresqlDurableFixture()
+        protected override void initializeStorage(IHost sender, IHost receiver)
         {
-            Title = "Postgresql-Only Outbox & Scheduled Message Mechanics";
-        }
-
-        protected override void configureReceiver(JasperOptions receiverOptions)
-        {
-            receiverOptions.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString,
-                "outbox_receiver");
-        }
-
-        protected override void configureSender(JasperOptions senderOptions)
-        {
-            senderOptions.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString, "outbox_sender");
-        }
+            sender.RebuildMessageStorage();
+            receiver.RebuildMessageStorage();
 
 
-        protected override void initializeStorage(IHost theSender, IHost theReceiver)
-        {
-            theSender.RebuildMessageStorage();
-
-            theReceiver.RebuildMessageStorage();
-
-            using (var conn = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
                 conn.CreateCommand(@"
-create table if not exists receiver.item_created
+IF OBJECT_ID('receiver.item_created', 'U') IS NOT NULL
+  drop table receiver.item_created;
+
+").ExecuteNonQuery();
+
+                conn.CreateCommand(@"
+create table receiver.item_created
 (
-	id uuid not null primary key,
+	id uniqueidentifier not null
+		primary key,
 	name varchar(100) not null
-)
+);
+
 ").ExecuteNonQuery();
             }
         }
 
+        protected override void configureReceiver(JasperOptions receiverOptions)
+        {
+            receiverOptions.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+        }
+
+        protected override void configureSender(JasperOptions senderOptions)
+        {
+            senderOptions.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
+        }
+
         protected override ItemCreated loadItem(IHost receiver, Guid id)
         {
-            using (var conn = new NpgsqlConnection(Servers.PostgresConnectionString))
+            using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 conn.Open();
 
@@ -75,34 +74,31 @@ create table if not exists receiver.item_created
             }
         }
 
-
         protected override async Task withContext(IHost sender, IExecutionContext context,
             Func<IExecutionContext, Task> action)
         {
-            // SAMPLE: basic-postgresql-outbox-sample
-            using (var conn = new NpgsqlConnection(Servers.PostgresConnectionString))
-            {
-                await conn.OpenAsync();
+            // SAMPLE: basic-sql-server-outbox-sample
+            await using var conn = new SqlConnection(Servers.SqlServerConnectionString);
+            await conn.OpenAsync();
 
-                var tx = conn.BeginTransaction();
+            var tx = conn.BeginTransaction();
 
-                // "context" is an IMessageContext object
-                await context.EnlistInTransaction(tx);
+            // "context" is an IMessageContext object
+            await context.EnlistInTransaction(tx);
 
-                await action(context);
+            await action(context);
 
-                tx.Commit();
+            tx.Commit();
 
-                await context.SendAllQueuedOutgoingMessages();
-            }
+            await context.SendAllQueuedOutgoingMessages();
 
             // ENDSAMPLE
         }
 
         protected override IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender)
         {
-            var admin = sender.Get<IEnvelopePersistence>().Admin;
-            return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
+            return sender.Get<IEnvelopePersistence>().As<SqlServerEnvelopePersistence>()
+                .Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
         }
     }
 
@@ -120,14 +116,14 @@ create table if not exists receiver.item_created
         }
     }
 
-    // SAMPLE: UsingNpgsqlTransaction
+    // SAMPLE: UsingSqlTransaction
     public class ItemCreatedHandler
     {
         [Transactional]
         public static async Task Handle(
             ItemCreated created,
-            NpgsqlTransaction tx, // the current transaction
-            Envelope envelope)
+            SqlTransaction tx // the current transaction
+        )
         {
             // Using some extension method helpers inside of Jasper here
             await tx.CreateCommand("insert into receiver.item_created (id, name) values (@id, @name)")
@@ -140,9 +136,9 @@ create table if not exists receiver.item_created
 
     public class CreateItemHandler
     {
-        // SAMPLE: PostgresqlOutboxWithNpgsqlTransaction
+        // SAMPLE: SqlServerOutboxWithSqlTransaction
         [Transactional]
-        public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, NpgsqlTransaction tx)
+        public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, SqlTransaction tx)
         {
             var item = new Item {Name = command.Name};
 
@@ -154,7 +150,7 @@ create table if not exists receiver.item_created
         }
         // ENDSAMPLE
 
-        private Task persist(NpgsqlTransaction tx, Item item)
+        private Task persist(SqlTransaction tx, Item item)
         {
             // whatever you do to write the new item
             // to your sql server application database

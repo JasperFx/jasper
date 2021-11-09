@@ -136,7 +136,6 @@ namespace Jasper.Runtime
         /// <typeparam name="T"></typeparam>
         public Task ScheduleSend<T>(T message, DateTime time)
         {
-            // TODO -- optimize this here
             return SendEnvelope(new Envelope
             {
                 Message = message,

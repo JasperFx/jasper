@@ -110,44 +110,5 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             incoming.Any().ShouldBeFalse();
         }
 
-
-        [Fact] // TODO -- this needs a Retry of some sort
-        public async Task send_end_to_end()
-        {
-            var item = new ItemCreated
-            {
-                Name = "Hat",
-                Id = Guid.NewGuid()
-            };
-
-            await theSender
-                .TrackActivity()
-                .AlsoTrack(theReceiver)
-                // In case there are trash, leftover persisted messages
-                .DoNotAssertOnExceptionsDetected()
-                .SendMessageAndWait(item);
-
-
-            await using (var session = theReceiver.Get<IDocumentStore>().QuerySession())
-            {
-                var item2 = session.Load<ItemCreated>(item.Id);
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                while (item2 == null && stopwatch.ElapsedMilliseconds < 30000)
-                {
-                    await Task.Delay(500);
-                    item2 = session.Load<ItemCreated>(item.Id);
-                }
-
-                stopwatch.Stop();
-
-                item2.Name.ShouldBe("Hat");
-
-            }
-
-            var admin = theReceiver.Get<IEnvelopePersistence>().Admin;
-            (await admin.AllIncomingEnvelopes()).Any().ShouldBeFalse();
-        }
     }
 }

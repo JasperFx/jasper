@@ -3,11 +3,14 @@ using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Tcp;
 
-[assembly:JasperModule(typeof(TcpExtension))]
+[assembly:JasperModule(typeof(TcpTransportExtension))]
 
 namespace Jasper.Tcp
 {
-    internal class TcpExtension : IJasperExtension
+    /// <summary>
+    /// Including this extension will enable Jasper's TCP socket transport
+    /// </summary>
+    public class TcpTransportExtension : IJasperExtension
     {
         public void Configure(JasperOptions options)
         {

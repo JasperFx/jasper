@@ -1,25 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IntegrationTests;
-using Jasper;
 using Jasper.Attributes;
-using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.Hosting;
-using StorytellerSpecs.Fixtures.Durability;
+using Xunit;
 
-namespace StorytellerSpecs.Fixtures.Marten
+namespace Jasper.Persistence.Testing.Marten.Durability
 {
-    public class MartenDurableFixture : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
+    [Collection("marten")]
+    public class durability_specs : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
     {
-        public MartenDurableFixture()
-        {
-            Title = "Marten Outbox & Scheduled Message Mechanics";
-        }
-
         protected override void configureReceiver(JasperOptions receiverOptions)
         {
             receiverOptions.Extensions.UseMarten(marten =>

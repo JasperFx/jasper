@@ -122,7 +122,7 @@ namespace Jasper.Transports.Sending
             return true;
         }
 
-        public bool SupportsNativeScheduledSend { get; } = true;
+        public bool SupportsNativeScheduledSend { get; } = false;
 
         public Task Send(Envelope message)
         {
