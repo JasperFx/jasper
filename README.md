@@ -25,6 +25,22 @@ The main solution file is `Jasper.sln`, and you should be good to go to simply o
 docker compose up -d
 ```
 
+At the command line, the build script can be executed:
+
+* on Windows with `build [task]`
+* with Powershell with `./build.sh [task]`
+* on *nix with `./build.sh [task]`
+
+The default build task will run the basic unit tests along with the *Jasper.Http* tests. These other tasks may be helpful:
+
+* `test-persistence* - runs the *Jasper.Persistence.Tests*
+* `test-rabbitmq* - runs the Rabbit MQ transport tests
+* `test-pulsar` - runs the Pulsar transport tests
+* `test-tcp` - runs the TCP transport tests
+* `storyteller`- runs the Storyteller specifications (think big, slow integration tests)
+* `open_st` - opens the Storyteller UI to edit specifications or run interactively
+* `full` - runs all possible tests. Get a cup of coffee or maybe just go out to lunch or the gym after you start this.
+
 
 ## What's with the name?
 

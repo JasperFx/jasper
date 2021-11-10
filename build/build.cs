@@ -94,6 +94,8 @@ documentation/compilation/frames/injected-fields/
                 RunTests("Jasper.Http.Testing");
             });
 
+            Target("full", DependsOn("test", "test-persistence", "storyteller", "test-tcp", "test-rabbitmq", "test-pulsar"));
+
             Target("test-persistence", DependsOn("docker-up", "compile"), () =>
             {
                 RunTests("Jasper.Persistence.Testing");
@@ -104,7 +106,7 @@ documentation/compilation/frames/injected-fields/
                 RunTests("Jasper.RabbitMQ.Tests");
             });
 
-            Target("test-pulsar", DependsOn("pulsar", "compile"), () =>
+            Target("test-pulsar", DependsOn("docker-up", "compile"), () =>
             {
                 RunTests("Jasper.Pulsar.Tests");
             });
@@ -135,11 +137,6 @@ documentation/compilation/frames/injected-fields/
             });
 
             Target("ci", DependsOn("default"));
-
-            Target("pulsar", () =>
-            {
-                Run("docker", "run -itd --name jasper-pulsar -p 6650:6650 -p 8080:8080 apachepulsar/pulsar:2.8.1  bin/pulsar standalone");
-            });
 
             Target("install", () =>
                 RunNpm("install"));

@@ -16,4 +16,10 @@ services:
       - "ACCEPT_EULA=Y"
       - "SA_PASSWORD=P@55w0rd"
       - "MSSQL_PID=Developer"
+  pulsar:
+    image: "apachepulsar/pulsar:2.8.1"
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    command: bin/pulsar standalone
 
