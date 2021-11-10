@@ -28,8 +28,8 @@ namespace StorytellerSpecs.Fixtures.Marten
         private DocumentStore _receiverStore;
 
         private LightweightCache<string, IHost> _senders;
-        private SenderLatchDetected _senderWatcher;
         private DocumentStore _sendingStore;
+        private Uri _listener;
 
         public MartenBackedPersistenceFixture()
         {
@@ -38,12 +38,11 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public override void SetUp()
         {
+            _listener = new Uri($"tcp://localhost:{PortFinder.FindPort(2555)}");
             _messageLogger =
                 new StorytellerMessageLogger(new LoggerFactory(), new NulloMetrics(), new JasperOptions());
 
             _messageLogger.Start(Context);
-
-            _senderWatcher = new SenderLatchDetected(new LoggerFactory());
 
             _receiverStore = DocumentStore.For(_ =>
             {
@@ -66,16 +65,16 @@ namespace StorytellerSpecs.Fixtures.Marten
             });
 
             new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RecreateAll().GetAwaiter().GetResult();
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RebuildSchemaObjects().GetAwaiter().GetResult();
             new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RecreateAll().GetAwaiter().GetResult();
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RebuildSchemaObjects().GetAwaiter().GetResult();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync().GetAwaiter().GetResult();
 
             _receivers = new LightweightCache<string, IHost>(key =>
             {
-                var registry = new ReceiverApp();
+                var registry = new ReceiverApp(_listener);
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 var logger = new StorytellerAspNetCoreLogger(key);
@@ -108,11 +107,8 @@ namespace StorytellerSpecs.Fixtures.Marten
                 // rendered as part of Storyteller's results
                 Context.Reporting.Log(logger);
 
-                var registry = new SenderApp();
+                var registry = new SenderApp(_listener);
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
-
-                registry.Services.For<ITransportLogger>().Use(_senderWatcher);
-
 
                 return Host.CreateDefaultBuilder()
                     .ConfigureLogging(x =>
@@ -153,7 +149,6 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("Start sender node {name}")]
         public void StartSender([Default("Sender1")] string name)
         {
-            _senderWatcher.Reset();
             _senders.FillDefault(name);
         }
 
@@ -251,34 +246,4 @@ namespace StorytellerSpecs.Fixtures.Marten
         }
     }
 
-
-    public class SenderLatchDetected : TransportLogger
-    {
-        public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
-
-        public SenderLatchDetected(ILoggerFactory factory) : base(factory, new NulloMetrics())
-        {
-        }
-
-        public Task<bool> Received => Waiter.Task;
-
-        public override void CircuitResumed(Uri destination)
-        {
-            if (destination == ReceiverApp.Listener) Waiter.TrySetResult(true);
-
-            base.CircuitResumed(destination);
-        }
-
-        public override void CircuitBroken(Uri destination)
-        {
-            if (destination == ReceiverApp.Listener) Reset();
-
-            base.CircuitBroken(destination);
-        }
-
-        public void Reset()
-        {
-            Waiter = new TaskCompletionSource<bool>();
-        }
-    }
 }

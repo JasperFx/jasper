@@ -15,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
-using StorytellerSpecs.Fixtures.Marten.App;
+using StorytellerSpecs.Fixtures.SqlServer.App;
 using StorytellerSpecs.Logging;
 using Weasel.Core;
 
@@ -28,7 +28,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         private LightweightCache<string, IHost> _receivers;
 
         private LightweightCache<string, IHost> _senders;
-        private SenderLatchDetected _senderWatcher;
+        private Uri _listener;
 
         public SqlServerBackedPersistenceFixture()
         {
@@ -37,17 +37,16 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public override void SetUp()
         {
+            _listener = new Uri($"tcp://localhost:{PortFinder.FindPort(2600)}");
             _messageLogger =
                 new StorytellerMessageLogger(new LoggerFactory(), new NulloMetrics(), new JasperOptions());
 
             _messageLogger.Start(Context);
 
-            _senderWatcher = new SenderLatchDetected(new LoggerFactory());
-
             new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
-                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RecreateAll().GetAwaiter().GetResult();
+                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RebuildSchemaObjects().GetAwaiter().GetResult();
             new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
-                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RecreateAll().GetAwaiter().GetResult();
+                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RebuildSchemaObjects().GetAwaiter().GetResult();
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
@@ -72,7 +71,7 @@ create table receiver.trace_doc
 
             _receivers = new LightweightCache<string, IHost>(key =>
             {
-                var registry = new ReceiverApp();
+                var registry = new ReceiverApp(_listener);
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
 
                 return JasperHost.For(registry);
@@ -80,10 +79,8 @@ create table receiver.trace_doc
 
             _senders = new LightweightCache<string, IHost>(key =>
             {
-                var registry = new SenderApp();
+                var registry = new SenderApp(_listener);
                 registry.Services.AddSingleton<IMessageLogger>(_messageLogger);
-
-                registry.Services.For<ITransportLogger>().Use(_senderWatcher);
 
                 return JasperHost.For(registry);
             });
@@ -109,7 +106,6 @@ create table receiver.trace_doc
         [FormatAs("Start sender node {name}")]
         public void StartSender([Default("Sender1")] string name)
         {
-            _senderWatcher.Reset();
             _senders.FillDefault(name);
         }
 
@@ -215,34 +211,4 @@ create table receiver.trace_doc
         }
     }
 
-
-    public class SenderLatchDetected : TransportLogger
-    {
-        public TaskCompletionSource<bool> Waiter = new TaskCompletionSource<bool>();
-
-        public SenderLatchDetected(ILoggerFactory factory) : base(factory, new NulloMetrics())
-        {
-        }
-
-        public Task<bool> Received => Waiter.Task;
-
-        public override void CircuitResumed(Uri destination)
-        {
-            if (destination == ReceiverApp.Listener) Waiter.TrySetResult(true);
-
-            base.CircuitResumed(destination);
-        }
-
-        public override void CircuitBroken(Uri destination)
-        {
-            if (destination == ReceiverApp.Listener) Reset();
-
-            base.CircuitBroken(destination);
-        }
-
-        public void Reset()
-        {
-            Waiter = new TaskCompletionSource<bool>();
-        }
-    }
 }

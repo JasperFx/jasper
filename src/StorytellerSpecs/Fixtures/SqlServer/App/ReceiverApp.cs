@@ -1,12 +1,11 @@
 ﻿using System;
 using IntegrationTests;
 using Jasper;
-using Jasper.Persistence.Marten;
+using Jasper.Persistence.SqlServer;
 using Jasper.Tcp;
 using Jasper.Util;
-using StoryTeller;
 
-namespace StorytellerSpecs.Fixtures.Marten.App
+namespace StorytellerSpecs.Fixtures.SqlServer.App
 {
     public class ReceiverApp : JasperOptions
     {
@@ -16,11 +15,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
-            Extensions.UseMarten(o =>
-            {
-                o.Connection(Servers.PostgresConnectionString);
-                o.DatabaseSchemaName = "receiver";
-            });
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
             Endpoints.ListenForMessagesFrom(listener).DurablyPersistedLocally();
         }

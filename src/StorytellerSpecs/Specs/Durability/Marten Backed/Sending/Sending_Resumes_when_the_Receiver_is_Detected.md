@@ -2,8 +2,8 @@
 
 -> id = 204bb3d3-bbf7-409a-b959-ab27bad87032
 -> lifecycle = Regression
--> max-retries = 0
--> last-updated = 2018-08-06T00:55:43.9709210Z
+-> max-retries = 3
+-> last-updated = 2021-11-10T14:51:25.9125276Z
 -> tags = 
 
 [MartenBackedPersistence]

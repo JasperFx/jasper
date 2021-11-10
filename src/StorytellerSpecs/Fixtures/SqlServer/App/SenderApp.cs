@@ -2,10 +2,10 @@
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper;
-using Jasper.Persistence.Marten;
+using Jasper.Persistence.SqlServer;
 using Jasper.Tcp;
 
-namespace StorytellerSpecs.Fixtures.Marten.App
+namespace StorytellerSpecs.Fixtures.SqlServer.App
 {
     public class SenderApp : JasperOptions
     {
@@ -16,11 +16,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Endpoints.Publish(x => x.Message<TraceMessage>().To(listener).Durably());
 
-            Extensions.UseMarten(_ =>
-            {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "sender";
-            });
+            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
 
             Advanced.ScheduledJobPollingTime = 1.Seconds();
             Advanced.ScheduledJobFirstExecution = 0.Seconds();

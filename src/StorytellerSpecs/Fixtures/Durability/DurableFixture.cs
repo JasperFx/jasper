@@ -28,8 +28,6 @@ namespace StorytellerSpecs.Fixtures.Durability
             var receiverPort = PortFinder.FindPort(3340);
             var senderPort = PortFinder.FindPort(3370);
 
-            var publishingUri = $"tcp://localhost:{receiverPort}/durable";
-
 
             var senderRegistry = new JasperOptions();
             senderRegistry.Extensions.Include<TcpTransportExtension>();
@@ -56,7 +54,6 @@ namespace StorytellerSpecs.Fixtures.Durability
             configureSender(senderRegistry);
 
             theSender = JasperHost.For(senderRegistry);
-            theSender.RebuildMessageStorage();
 
 
             var receiverRegistry = new JasperOptions();
@@ -76,7 +73,6 @@ namespace StorytellerSpecs.Fixtures.Durability
 
 
             theReceiver = JasperHost.For(receiverRegistry);
-            theReceiver.RebuildMessageStorage().GetAwaiter().GetResult();
 
 
             initializeStorage(theSender, theReceiver);

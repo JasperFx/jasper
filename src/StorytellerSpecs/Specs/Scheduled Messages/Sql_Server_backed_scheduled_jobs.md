@@ -2,8 +2,8 @@
 
 -> id = e7589592-0af1-473a-ba7e-497f5728ad0a
 -> lifecycle = Regression
--> max-retries = 0
--> last-updated = 2021-11-10T12:36:24.6497536Z
+-> max-retries = 3
+-> last-updated = 2021-11-10T15:28:03.9637657Z
 -> tags = 
 
 [SqlServerScheduledJob]
