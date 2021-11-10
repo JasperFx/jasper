@@ -41,9 +41,9 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         protected override void initializeStorage(IHost theSender, IHost theReceiver)
         {
-            theSender.RebuildMessageStorage();
+            theSender.RebuildMessageStorage().GetAwaiter().GetResult();
 
-            theReceiver.RebuildMessageStorage();
+            theReceiver.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
         protected override ItemCreated loadItem(IHost receiver, Guid id)

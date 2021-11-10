@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Logging;
@@ -10,6 +11,7 @@ using Jasper.Persistence.Durability;
 using Jasper.Tcp;
 using Jasper.Tracking;
 using Jasper.Util;
+using Lamar;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using StoryTeller;
@@ -121,9 +123,13 @@ namespace StorytellerSpecs.Fixtures.Durability
         protected abstract Task withContext(IHost sender, IExecutionContext context,
             Func<IExecutionContext, Task> action);
 
-        private Task send(Func<IExecutionContext, Task> action)
+        private async Task send(Func<IExecutionContext, Task> action)
         {
-            return withContext(theSender, theSender.Get<IExecutionContext>(), action);
+            var container = theSender.Services.As<IContainer>();
+            using (var nested = container.GetNestedContainer())
+            {
+                await withContext(theSender, nested.GetInstance<IExecutionContext>(), action);
+            }
         }
 
         [FormatAs("Can send items durably through persisted channels")]
@@ -199,10 +205,13 @@ namespace StorytellerSpecs.Fixtures.Durability
                 Id = Guid.NewGuid()
             };
 
-            await send(async c => { await c.Schedule(item, 1.Hours()); });
+            await send(async c =>
+            {
+                await c.Schedule(item, 1.Hours());
+            });
 
-            var persistor = theSender.Get<IEnvelopePersistence>();
-            var counts = await persistor.Admin.GetPersistedCounts();
+            var persistence = theSender.Get<IEnvelopePersistence>();
+            var counts = await persistence.Admin.GetPersistedCounts();
             StoryTellerAssert.Fail(counts.Scheduled != 1, $"counts.Scheduled = {counts.Scheduled}, should be 0");
 
 

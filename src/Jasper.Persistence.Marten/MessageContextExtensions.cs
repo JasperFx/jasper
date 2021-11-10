@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Marten;
 
 namespace Jasper.Persistence.Marten
@@ -14,10 +15,16 @@ namespace Jasper.Persistence.Marten
         /// <returns></returns>
         public static Task EnlistInTransaction(this IExecutionContext context, IDocumentSession session)
         {
-            var persistor = new MartenEnvelopeTransaction(session, context);
+            if (context.Transaction is MartenEnvelopeTransaction)
+            {
+                throw new InvalidOperationException(
+                    "This execution context is already enrolled in a Marten Envelope Transaction");
+            }
+
+            var persistence = new MartenEnvelopeTransaction(session, context);
             session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));
 
-            return context.EnlistInTransaction(persistor);
+            return context.EnlistInTransaction(persistence);
         }
     }
 }

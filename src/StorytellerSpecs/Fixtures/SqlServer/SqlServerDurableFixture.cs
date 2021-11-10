@@ -30,8 +30,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         protected override void initializeStorage(IHost sender, IHost receiver)
         {
-            sender.RebuildMessageStorage();
-            receiver.RebuildMessageStorage();
+            sender.RebuildMessageStorage().GetAwaiter().GetResult();
+            receiver.RebuildMessageStorage().GetAwaiter().GetResult();
 
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))

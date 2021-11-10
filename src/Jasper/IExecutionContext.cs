@@ -106,6 +106,15 @@ namespace Jasper
 
         Task MoveToDeadLetterQueue(Exception exception);
 
+        /// <summary>
+        /// Immediately execute the message again
+        /// </summary>
+        /// <returns></returns>
         Task RetryExecutionNow();
+
+        /// <summary>
+        /// Current outbox transaction
+        /// </summary>
+        IEnvelopeTransaction Transaction { get;}
     }
 }
