@@ -1,4 +1,4 @@
-﻿namespace Jasper.Persistence.Testing.Marten.Durability.App
+﻿namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class TraceMessage
     {

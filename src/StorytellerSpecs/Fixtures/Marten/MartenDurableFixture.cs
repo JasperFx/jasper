@@ -1,19 +1,25 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IntegrationTests;
+using Jasper;
+using Jasper.Attributes;
+using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Marten;
 using Microsoft.Extensions.Hosting;
-using Polly;
-using Xunit;
+using StorytellerSpecs.Fixtures.Durability;
 
-namespace Jasper.Persistence.Testing.Marten.Durability
+namespace StorytellerSpecs.Fixtures.Marten
 {
-    [Collection("marten")]
-    public class durability_specs : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
+    public class MartenDurableFixture : DurableFixture<TriggerMessageReceiver, ItemCreatedHandler>
     {
+        public MartenDurableFixture()
+        {
+            Title = "Marten Outbox & Scheduled Message Mechanics";
+        }
+
         protected override void configureReceiver(JasperOptions receiverOptions)
         {
             receiverOptions.Extensions.UseMarten(marten =>
@@ -32,6 +38,13 @@ namespace Jasper.Persistence.Testing.Marten.Durability
             });
         }
 
+
+        protected override void initializeStorage(IHost theSender, IHost theReceiver)
+        {
+            theSender.RebuildMessageStorage();
+
+            theReceiver.RebuildMessageStorage();
+        }
 
         protected override ItemCreated loadItem(IHost receiver, Guid id)
         {
@@ -61,6 +74,30 @@ namespace Jasper.Persistence.Testing.Marten.Durability
         {
             var admin = sender.Get<IEnvelopePersistence>().Admin;
             return admin.AllOutgoingEnvelopes().GetAwaiter().GetResult();
+        }
+    }
+
+    public class TriggerMessageReceiver
+    {
+        [Transactional]
+        public Task Handle(TriggerMessage message, IDocumentSession session, IExecutionContext context)
+        {
+            var response = new CascadedMessage
+            {
+                Name = message.Name
+            };
+
+            return context.RespondToSender(response);
+        }
+    }
+
+    public class ItemCreatedHandler
+    {
+        [Transactional]
+        public static void Handle(ItemCreated created, IDocumentSession session,
+            Envelope envelope)
+        {
+            session.Store(created);
         }
     }
 }

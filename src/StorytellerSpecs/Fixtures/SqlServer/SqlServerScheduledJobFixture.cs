@@ -1,97 +1,111 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
+using Jasper;
+using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
-using Jasper.Persistence.SqlServer.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Shouldly;
-using Xunit;
+using Microsoft.Extensions.Logging;
+using StoryTeller;
+using StorytellerSpecs.Logging;
 
-namespace Jasper.Persistence.Testing.SqlServer.ScheduledJobs
+namespace StorytellerSpecs.Fixtures.SqlServer
 {
-
-    public class scheduled_jobs : IAsyncLifetime
+    public class SqlServerScheduledJobFixture : Fixture
     {
         private IHost theHost;
         private ScheduledMessageReceiver theReceiver;
 
-        public async Task InitializeAsync()
+        public SqlServerScheduledJobFixture()
         {
-            var admin = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings()
-                {ConnectionString = Servers.SqlServerConnectionString});
-            await admin.RecreateAll();
+            Title = "Sql Server Scheduled Jobs";
+        }
+
+        public override void SetUp()
+        {
 
             var registry = new ScheduledMessageApp();
             theReceiver = registry.Receiver;
 
+            var logger = new StorytellerAspNetCoreLogger();
+            Context.Reporting.Log(logger);
 
-            theHost = await Host
+
+            theHost = Host
                 .CreateDefaultBuilder()
+                .ConfigureLogging(x => x.AddProvider(logger))
                 .UseJasper(registry)
-                .StartAsync();
+                .Start();
+
+            theHost.RebuildMessageStorage().GetAwaiter().GetResult();
         }
 
-        public Task DisposeAsync()
+        public override void TearDown()
         {
-            return theHost.StopAsync();
+            theHost?.Dispose();
         }
 
+        [FormatAs("Schedule message locally {id} for {seconds} seconds from now")]
+        public Task ScheduleMessage(int id, int seconds)
+        {
+            return theHost.Services.GetService<IExecutionContext>()
+                .Schedule(new ScheduledMessage {Id = id}, seconds.Seconds());
+        }
+
+        [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
             return theHost.Services.GetService<IExecutionContext>()
                 .ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
+        [FormatAs("The received message count should be {count}")]
         public int ReceivedMessageCount()
         {
             return theReceiver.ReceivedMessages.Count;
         }
 
+        [FormatAs("Wait for at least one message to be received")]
         public Task AfterReceivingMessages()
         {
             return theReceiver.Received;
         }
 
+        [FormatAs("The id of the only received message should be {id}")]
         public int TheIdOfTheOnlyReceivedMessageShouldBe()
         {
             return theReceiver.ReceivedMessages.Single().Id;
         }
 
+        [Hidden]
         public async Task<int> PersistedScheduledCount()
         {
             var counts = await theHost.Services.GetService<IEnvelopePersistence>().Admin.GetPersistedCounts();
             return counts.Scheduled;
         }
 
-        [Fact]
-        public async Task execute_scheduled_job()
+        [FormatAs("The persisted count of scheduled jobs should be {expected}")]
+        public async Task PersistedScheduledCountShouldBe(int expected)
         {
-            await ScheduleSendMessage(1, 7200);
-            await ScheduleSendMessage(2, 5);
-            await ScheduleSendMessage(3, 7200);
-
-            ReceivedMessageCount().ShouldBe(0);
-            await AfterReceivingMessages();
-            TheIdOfTheOnlyReceivedMessageShouldBe().ShouldBe(2);
-
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            while (stopwatch.Elapsed < 10.Seconds())
+            int count = await PersistedScheduledCount();
+            while (stopwatch.Elapsed < 5.Seconds() && count != expected)
             {
-                var count = await PersistedScheduledCount();
-                if (count == 2) return;
-
                 await Task.Delay(100.Milliseconds());
+                count = await PersistedScheduledCount();
+
+
             }
 
-            throw new Exception("The persisted count never reached 2");
+            StoryTellerAssert.Fail(count != expected, $"Expected {expected}, but was {count}");
+
         }
     }
 

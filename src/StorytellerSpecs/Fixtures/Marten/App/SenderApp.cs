@@ -1,17 +1,16 @@
 ﻿using Baseline.Dates;
 using IntegrationTests;
+using Jasper;
 using Jasper.Persistence.Marten;
 using Jasper.Tcp;
-using TestingSupport;
 
-namespace Jasper.Persistence.Testing.Marten.Durability.App
+namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class SenderApp : JasperOptions
     {
         public SenderApp()
         {
             Extensions.Include<TcpTransportExtension>();
-
             Handlers.DisableConventionalDiscovery();
 
             Endpoints.Publish(x => x.Message<TraceMessage>().To(ReceiverApp.Listener));

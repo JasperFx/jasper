@@ -1,16 +1,15 @@
 ﻿using System;
 using IntegrationTests;
-using Jasper.Persistence.SqlServer;
-using Jasper.Persistence.Testing.Marten;
+using Jasper;
+using Jasper.Persistence.Marten;
 using Jasper.Tcp;
 using Jasper.Util;
-using TestingSupport;
 
-namespace Jasper.Persistence.Testing.SqlServer.Durability.App
+namespace StorytellerSpecs.Fixtures.Marten.App
 {
     public class ReceiverApp : JasperOptions
     {
-        public static readonly Uri Listener = $"tcp://localhost:{PortFinder.GetAvailablePort()}/durable".ToUri();
+        public static readonly Uri Listener = "tcp://localhost:2555/durable".ToUri();
 
         public ReceiverApp()
         {
@@ -18,7 +17,11 @@ namespace Jasper.Persistence.Testing.SqlServer.Durability.App
             Handlers.DisableConventionalDiscovery();
             Handlers.IncludeType<TraceHandler>();
 
-            Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+            Extensions.UseMarten(o =>
+            {
+                o.Connection(Servers.PostgresConnectionString);
+                o.DatabaseSchemaName = "receiver";
+            });
 
             Endpoints.ListenForMessagesFrom(Listener);
         }
