@@ -94,6 +94,26 @@ documentation/compilation/frames/injected-fields/
                 RunTests("Jasper.Http.Testing");
             });
 
+            Target("test-persistence", DependsOn("docker-up", "compile"), () =>
+            {
+                RunTests("Jasper.Persistence.Testing");
+            });
+
+            Target("test-rabbitmq", DependsOn("docker-up", "compile"), () =>
+            {
+                RunTests("Jasper.RabbitMQ.Tests");
+            });
+
+            Target("test-pulsar", DependsOn("pulsar", "compile"), () =>
+            {
+                RunTests("Jasper.Pulsar.Tests");
+            });
+
+            Target("test-tcp", DependsOn("compile"), () =>
+            {
+                RunTests("Jasper.Tcp.Tests");
+            });
+
             Target("commands", DependsOn("compile"),() =>
             {
                 var original = Directory.GetCurrentDirectory();
@@ -118,7 +138,7 @@ documentation/compilation/frames/injected-fields/
 
             Target("pulsar", () =>
             {
-                Run("docker", "run -it -p 6650:6650 -p 8080:8080 apachepulsar/pulsar:2.8.1  bin/pulsar standalone");
+                Run("docker", "run -itd --name jasper-pulsar -p 6650:6650 -p 8080:8080 apachepulsar/pulsar:2.8.1  bin/pulsar standalone");
             });
 
             Target("install", () =>
@@ -188,7 +208,7 @@ documentation/compilation/frames/injected-fields/
                 Run("git", $"commit -a -m \"Documentation Update for {BUILD_VERSION}\" --allow-empty", docTargetDir);
                 Run("git", $"push origin {branchName}", docTargetDir);
             });
-			
+
 			Target("storyteller", DependsOn("compile"), () =>
                 Run("dotnet", $"run --culture en-US", "src/StorytellerSpecs"));
 
