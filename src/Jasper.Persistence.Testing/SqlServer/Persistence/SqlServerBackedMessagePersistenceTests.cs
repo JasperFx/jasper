@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
 using Jasper.Attributes;
@@ -22,16 +23,21 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
     }
 
 
-    public class SqlServerBackedMessagePersistenceTests : SqlServerContext, IDisposable
+    public class SqlServerBackedMessagePersistenceTests : SqlServerContext, IAsyncLifetime
     {
         public SqlServerBackedMessagePersistenceTests()
+        {
+
+        }
+
+        protected override async Task initialize()
         {
             theHost = JasperHost.For(_ =>
             {
                 _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
-            theHost.RebuildMessageStorage();
+            await theHost.RebuildMessageStorage();
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
@@ -41,18 +47,18 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             var persistor = theHost.Get<SqlServerEnvelopePersistence>();
 
-            persisted = persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+            persisted = (await persistor.Admin.AllIncomingEnvelopes())
                 .FirstOrDefault(x => x.Id == theEnvelope.Id);
         }
 
-        public void Dispose()
+        public override Task DisposeAsync()
         {
-            theHost.Dispose();
+            return theHost.StopAsync();
         }
 
-        private readonly IHost theHost;
-        private readonly Envelope theEnvelope;
-        private readonly Envelope persisted;
+        private IHost theHost;
+        private Envelope theEnvelope;
+        private Envelope persisted;
 
         [Fact]
         public void should_be_in_scheduled_status()

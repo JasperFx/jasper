@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing.SqlServer
             return Task.CompletedTask;
         }
 
-        public Task DisposeAsync()
+        public virtual Task DisposeAsync()
         {
             return Task.CompletedTask;
         }
