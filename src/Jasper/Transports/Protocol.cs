@@ -14,11 +14,11 @@ namespace Jasper.Transports
         private readonly Lazy<Action<Envelope, TIncoming>> _mapIncoming;
         private readonly Lazy<Action<Envelope, TOutgoing>> _mapOutgoing;
 
-        private readonly Dictionary<PropertyInfo, PropertyInfo> _envelopeToIncoming =
-            new Dictionary<PropertyInfo, PropertyInfo>();
+        private readonly Dictionary<PropertyInfo, Action<Envelope, TIncoming>> _incomingToEnvelope =
+            new Dictionary<PropertyInfo, Action<Envelope, TIncoming>>();
 
-        private readonly Dictionary<PropertyInfo, PropertyInfo> _envelopeToOutgoing =
-            new Dictionary<PropertyInfo, PropertyInfo>();
+        private readonly Dictionary<PropertyInfo, Action<Envelope, TOutgoing>> _envelopeToOutgoing =
+            new Dictionary<PropertyInfo, Action<Envelope, TOutgoing>>();
 
         private readonly Dictionary<PropertyInfo, string> _envelopeToHeader = new Dictionary<PropertyInfo, string>();
 
@@ -46,6 +46,14 @@ namespace Jasper.Transports
 
             MapPropertyToHeader(x => x.Attempts, EnvelopeSerializer.AttemptsKey);
 
+        }
+
+        public void MapProperty(Expression<Func<Envelope, object>> property, Action<Envelope, TIncoming> readFromIncoming,
+            Action<Envelope, TOutgoing> writeToOutgoing)
+        {
+            var prop = ReflectionHelper.GetProperty(property);
+            _incomingToEnvelope[prop] = readFromIncoming;
+            _envelopeToOutgoing[prop] = writeToOutgoing;
         }
 
         public void MapPropertyToHeader(Expression<Func<Envelope, object>> property, string headerKey)
@@ -112,6 +120,15 @@ namespace Jasper.Transports
 
             }
 
+            foreach (var pair in _incomingToEnvelope)
+            {
+                var constant = Expression.Constant(pair.Value);
+                var method = typeof(Action<Envelope, TIncoming>).GetMethod(nameof(Action.Invoke));
+
+                var invoke = Expression.Call(constant, method, envelope, incoming);
+                list.Add(invoke);
+            }
+
 
 
             var block = Expression.Block(list);
@@ -143,7 +160,7 @@ namespace Jasper.Transports
                 outgoing, envelope);
             list.Add(writeHeaders);
 
-            var headers = _envelopeToHeader.Where(x => !_envelopeToIncoming.ContainsKey(x.Key));
+            var headers = _envelopeToHeader.Where(x => !_incomingToEnvelope.ContainsKey(x.Key));
             foreach (var pair in headers)
             {
                 MethodInfo setMethod = setString;
@@ -177,6 +194,15 @@ namespace Jasper.Transports
 
                 list.Add(setOutgoingValue);
 
+            }
+
+            foreach (var pair in _envelopeToOutgoing)
+            {
+                var constant = Expression.Constant(pair.Value);
+                var method = typeof(Action<Envelope, TOutgoing>).GetMethod(nameof(Action.Invoke));
+
+                var invoke = Expression.Call(constant, method, envelope, outgoing);
+                list.Add(invoke);
             }
 
 

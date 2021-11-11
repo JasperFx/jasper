@@ -9,6 +9,11 @@ namespace Jasper.RabbitMQ.Internal
     // SAMPLE: DefaultRabbitMqProtocol
     public class DefaultRabbitMqProtocol : Protocol<IBasicProperties>, IRabbitMqProtocol
     {
+        public DefaultRabbitMqProtocol()
+        {
+            MapProperty(x => x.CorrelationId, (e, p) => e.CorrelationId = p.MessageId, (e,p) => p.MessageId = e.CorrelationId);
+        }
+
         protected override void writeOutgoingHeader(IBasicProperties outgoing, string key, string value)
         {
             outgoing.Headers[key] = value;
@@ -30,7 +35,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             foreach (var pair in incoming.Headers)
             {
-                envelope.Headers[pair.Key] = pair.Value?.ToString();
+                envelope.Headers[pair.Key] = pair.Value is byte[] b ? Encoding.Default.GetString(b) : pair.Value?.ToString();
             }
         }
     }
