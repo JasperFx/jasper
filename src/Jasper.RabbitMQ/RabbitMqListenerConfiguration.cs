@@ -24,5 +24,30 @@ namespace Jasper.RabbitMQ
             endpoint.ListenerCount = count;
             return this;
         }
+
+        /// <summary>
+        /// Assume that any unidentified, incoming message types is the
+        /// type "T". This is primarily for interoperability with non-Jasper
+        /// applications
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public RabbitMqListenerConfiguration DefaultIncomingMessage<T>()
+        {
+            return DefaultIncomingMessage(typeof(T));
+        }
+
+        /// <summary>
+        /// Assume that any unidentified, incoming message types is the
+        /// type "T". This is primarily for interoperability with non-Jasper
+        /// applications
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public RabbitMqListenerConfiguration DefaultIncomingMessage(Type messageType)
+        {
+            endpoint.ReceivesMessage(messageType);
+            return this;
+        }
     }
 }

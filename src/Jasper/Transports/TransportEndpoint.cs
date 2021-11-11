@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
 using Jasper.Serialization;
+using Jasper.Util;
 
 namespace Jasper.Transports
 {
@@ -56,6 +57,18 @@ namespace Jasper.Transports
             MapPropertyToHeader(x => x.DeliverBy, EnvelopeSerializer.DeliverByHeader);
 
             MapPropertyToHeader(x => x.Attempts, EnvelopeSerializer.AttemptsKey);
+        }
+
+        /// <summary>
+        /// This endpoint will assume that any unidentified incoming message types
+        /// are the supplied message type. This is meant primarily for interaction
+        /// with incoming messages from MassTransit
+        /// </summary>
+        /// <param name="messageType"></param>
+        public void ReceivesMessage(Type messageType)
+        {
+            _incomingToEnvelope[ReflectionHelper.GetProperty<Envelope>(x => x.MessageType)] =
+                (e, i) => e.MessageType = messageType.ToMessageTypeName();
         }
 
         public void MapProperty(Expression<Func<Envelope, object>> property, Action<Envelope, TIncoming> readFromIncoming,

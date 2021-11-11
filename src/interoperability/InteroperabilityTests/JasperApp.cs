@@ -1,3 +1,4 @@
+using InteropMessages;
 using Jasper;
 using Jasper.RabbitMQ;
 using Jasper.Tracking;
@@ -25,7 +26,8 @@ namespace InteroperabilityTests
             });
 
             Endpoints.PublishAllMessages().ToRabbit("masstransit");
-            Endpoints.ListenToRabbitQueue("jasper");
+            Endpoints.ListenToRabbitQueue("jasper")
+                .DefaultIncomingMessage<ResponseMessage>();
 
             Extensions.UseMessageTrackingTestingSupport();
         }
