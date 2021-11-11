@@ -12,19 +12,6 @@ namespace IntegrationTests.Samples
 {
 
 
-    public class MySpecialProtocol : IRabbitMqProtocol
-    {
-        public void MapEnvelopeToOutgoing(Envelope envelope, IBasicProperties properties)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void MapIncomingToEnvelope(Envelope envelope, IBasicProperties properties)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
 
     // SAMPLE: PublishAndListenForRabbitMqQueue
     internal class JasperConfig : JasperOptions

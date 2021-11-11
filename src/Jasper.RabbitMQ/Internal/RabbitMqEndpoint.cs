@@ -1,22 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
+using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqEndpoint : Endpoint, IDisposable
+    public class RabbitMqEndpoint : TransportEndpoint<IBasicProperties>, IDisposable
     {
         public const string Queue = "queue";
         public const string Exchange = "exchange";
         public const string Routing = "routing";
 
         private IListener _listener;
+
+        public RabbitMqEndpoint()
+        {
+            MapProperty(x => x.CorrelationId, (e, p) => e.CorrelationId = p.MessageId, (e,p) => p.MessageId = e.CorrelationId);
+        }
 
         public string ExchangeName { get; set; } = string.Empty;
         public string RoutingKey { get; set; }
@@ -55,12 +62,6 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         internal RabbitMqTransport Parent { get; set; }
-
-        public IRabbitMqProtocol Protocol { get; set; } = new DefaultRabbitMqProtocol();
-
-        public RabbitMqEndpoint()
-        {
-        }
 
         public override Uri Uri
         {
@@ -173,6 +174,31 @@ namespace Jasper.RabbitMQ.Internal
         public void Dispose()
         {
             _listener?.Dispose();
+        }
+
+        protected override void writeOutgoingHeader(IBasicProperties outgoing, string key, string value)
+        {
+            outgoing.Headers[key] = value;
+        }
+
+        protected override bool tryReadIncomingHeader(IBasicProperties incoming, string key, out string value)
+        {
+            if (incoming.Headers.TryGetValue(key, out var raw))
+            {
+                value = raw is byte[] b ? Encoding.Default.GetString(b) : raw.ToString();
+                return true;
+            }
+
+            value = null;
+            return false;
+        }
+
+        protected override void writeIncomingHeaders(IBasicProperties incoming, Envelope envelope)
+        {
+            foreach (var pair in incoming.Headers)
+            {
+                envelope.Headers[pair.Key] = pair.Value is byte[] b ? Encoding.Default.GetString(b) : pair.Value?.ToString();
+            }
         }
     }
 

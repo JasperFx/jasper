@@ -22,7 +22,7 @@ namespace Jasper.Pulsar.Tests
         {
             _mapped = new Lazy<Envelope>(() =>
             {
-                var mapper = new DefaultPulsarProtocol();
+                var mapper = new PulsarEndpoint("pulsar://persistent/public/default/one".ToUri(), new PulsarTransport());
                 var metadata = new MessageMetadata();
 
                 mapper.MapEnvelopeToOutgoing(theOriginal, metadata);

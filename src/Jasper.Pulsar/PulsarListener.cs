@@ -99,7 +99,7 @@ namespace Jasper.Pulsar
 
                     // TODO -- invoke the deserialization here. A
                     envelope.Data = message.Data.ToArray();
-                    _endpoint.Protocol.MapIncomingToEnvelope(envelope, message);
+                    _endpoint.MapIncomingToEnvelope(envelope, message);
 
                     // TODO -- the worker queue should already have the Uri,
                     // so just take in envelope

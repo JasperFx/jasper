@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using Jasper.Runtime;
 using Jasper.Transports;
+using Jasper.Transports.Sending;
 using Xunit;
 
 namespace Jasper.Testing.Transports
@@ -13,7 +16,7 @@ namespace Jasper.Testing.Transports
         }
     }
 
-    public class DummyMessageProtocol : Protocol<DummyMessage>
+    public class DummyMessageProtocol : TransportEndpoint<DummyMessage>
     {
         protected override void writeOutgoingHeader(DummyMessage outgoing, string key, string value)
         {
@@ -23,6 +26,27 @@ namespace Jasper.Testing.Transports
         protected override bool tryReadIncomingHeader(DummyMessage incoming, string key, out string value)
         {
             return incoming.StringHeaders.TryGetValue(key, out value);
+        }
+
+        public override Uri Uri { get; }
+        public override Uri ReplyUri()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Parse(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ISender CreateSender(IMessagingRoot root)
+        {
+            throw new NotImplementedException();
         }
     }
 

@@ -5,14 +5,15 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
+using Jasper.Configuration;
 using Jasper.Serialization;
 
 namespace Jasper.Transports
 {
-    public abstract class Protocol<TIncoming, TOutgoing>
+    public abstract class TransportEndpoint<TIncoming, TOutgoing> : Endpoint
     {
-        private readonly Lazy<Action<Envelope, TIncoming>> _mapIncoming;
-        private readonly Lazy<Action<Envelope, TOutgoing>> _mapOutgoing;
+        private Lazy<Action<Envelope, TIncoming>> _mapIncoming;
+        private Lazy<Action<Envelope, TOutgoing>> _mapOutgoing;
 
         private readonly Dictionary<PropertyInfo, Action<Envelope, TIncoming>> _incomingToEnvelope =
             new Dictionary<PropertyInfo, Action<Envelope, TIncoming>>();
@@ -22,7 +23,17 @@ namespace Jasper.Transports
 
         private readonly Dictionary<PropertyInfo, string> _envelopeToHeader = new Dictionary<PropertyInfo, string>();
 
-        public Protocol()
+        public TransportEndpoint(Uri uri) : base(uri)
+        {
+            initialize();
+        }
+
+        public TransportEndpoint() : base()
+        {
+            initialize();
+        }
+
+        private void initialize()
         {
             _mapIncoming = new Lazy<Action<Envelope, TIncoming>>(compileIncoming);
             _mapOutgoing = new Lazy<Action<Envelope, TOutgoing>>(compileOutgoing);
@@ -45,7 +56,6 @@ namespace Jasper.Transports
             MapPropertyToHeader(x => x.DeliverBy, EnvelopeSerializer.DeliverByHeader);
 
             MapPropertyToHeader(x => x.Attempts, EnvelopeSerializer.AttemptsKey);
-
         }
 
         public void MapProperty(Expression<Func<Envelope, object>> property, Action<Envelope, TIncoming> readFromIncoming,
@@ -368,7 +378,7 @@ namespace Jasper.Transports
         }
     }
 
-    public abstract class Protocol<T> : Protocol<T, T>
+    public abstract class TransportEndpoint<T> : TransportEndpoint<T, T>
     {
 
     }

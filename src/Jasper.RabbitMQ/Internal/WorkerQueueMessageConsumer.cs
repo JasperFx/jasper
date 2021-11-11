@@ -14,17 +14,17 @@ namespace Jasper.RabbitMQ.Internal
         private readonly RabbitMqListener Listener;
         private readonly IListeningWorkerQueue _workerQueue;
         private readonly ITransportLogger _logger;
-        private readonly IRabbitMqProtocol Mapper;
+        private readonly RabbitMqEndpoint _endpoint;
         private bool _latched;
 
         public WorkerQueueMessageConsumer(IListeningWorkerQueue workerQueue, ITransportLogger logger,
             RabbitMqListener listener,
-            IRabbitMqProtocol mapper, Uri address, RabbitMqSender rabbitMqSender, CancellationToken cancellation)
+            RabbitMqEndpoint endpoint, Uri address, RabbitMqSender rabbitMqSender, CancellationToken cancellation)
         {
             _workerQueue = workerQueue;
             _logger = logger;
             Listener = listener;
-            Mapper = mapper;
+            _endpoint = endpoint;
             _address = address;
             _rabbitMqSender = rabbitMqSender;
             _cancellation = cancellation;
@@ -48,7 +48,7 @@ namespace Jasper.RabbitMQ.Internal
             try
             {
                 envelope.Data = body.ToArray(); // TODO -- use byte sequence instead!
-                Mapper.MapIncomingToEnvelope(envelope, properties);
+                _endpoint.MapIncomingToEnvelope(envelope, properties);
             }
             catch (Exception e)
             {

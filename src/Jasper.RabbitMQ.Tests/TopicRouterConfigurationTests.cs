@@ -57,17 +57,14 @@ namespace Jasper.RabbitMQ.Tests
             options.Endpoints.ConfigureRabbitMq(rabbit => { rabbit.ConnectionFactory.HostName = "localhost"; });
 
             options.Endpoints.PublishAllMessages().ToRabbitTopics("numbers")
-                .ConfigureTopicConfiguration("one", topic => { topic.Protocol(new MySpecialProtocol()); });
+                .ConfigureTopicConfiguration("one", topic => { topic.SendInline(); });
 
-            using (var host = JasperHost.For(options))
-            {
-                var one = host.Get<IMessagingRoot>().Runtime
-                    .GetOrBuildSendingAgent("rabbitmq://exchange/numbers/routing/one".ToUri())
-                    .Endpoint.As<RabbitMqEndpoint>();
+            using var host = JasperHost.For(options);
+            var one = host.Get<IMessagingRoot>().Runtime
+                .GetOrBuildSendingAgent("rabbitmq://exchange/numbers/routing/one".ToUri())
+                .Endpoint.As<RabbitMqEndpoint>();
 
-                one.Protocol.ShouldBeOfType<MySpecialProtocol>();
-
-            }
+            one.Mode.ShouldBe(EndpointMode.Inline);
         }
     }
 }

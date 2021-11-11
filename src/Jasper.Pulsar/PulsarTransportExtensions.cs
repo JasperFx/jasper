@@ -107,29 +107,6 @@ namespace Jasper.Pulsar
         {
         }
 
-        /// <summary>
-        /// Override the header protocol for outgoing messages at this location. This is mostly
-        /// useful for integrating Jasper with non-Jasper applications
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public PulsarListenerConfiguration Protocol<T>() where T : IPulsarProtocol, new()
-        {
-            return Protocol(new T());
-        }
-
-        /// <summary>
-        /// Override the header protocol for outgoing messages at this location. This is mostly
-        /// useful for integrating Jasper with non-Jasper applications
-        /// </summary>
-        /// <param name="protocol"></param>
-        /// <returns></returns>
-        public PulsarListenerConfiguration Protocol(IPulsarProtocol protocol)
-        {
-            endpoint.Protocol = protocol;
-            return this;
-        }
-
         // /// <summary>
         // /// To optimize the message listener throughput,
         // /// start up multiple listening endpoints. This is
@@ -151,30 +128,6 @@ namespace Jasper.Pulsar
         public PulsarSubscriberConfiguration(PulsarEndpoint endpoint) : base(endpoint)
         {
         }
-
-        /// <summary>
-        /// Override the header protocol for outgoing messages at this location. This is mostly
-        /// useful for integrating Jasper with non-Jasper applications
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public PulsarSubscriberConfiguration Protocol<T>() where T : IPulsarProtocol, new()
-        {
-            return Protocol(new T());
-        }
-
-        /// <summary>
-        /// Override the header protocol for outgoing messages at this location. This is mostly
-        /// useful for integrating Jasper with non-Jasper applications
-        /// </summary>
-        /// <param name="protocol"></param>
-        /// <returns></returns>
-        public PulsarSubscriberConfiguration Protocol(IPulsarProtocol protocol)
-        {
-            _endpoint.Protocol = protocol;
-            return this;
-        }
-
 
     }
 }

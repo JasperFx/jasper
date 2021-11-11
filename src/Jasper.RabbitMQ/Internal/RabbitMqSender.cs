@@ -11,7 +11,7 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqSender : RabbitMqConnectionAgent, ISender
     {
-        private readonly IRabbitMqProtocol _protocol;
+        private readonly RabbitMqEndpoint _endpoint;
         private readonly string _exchangeName;
         private readonly string _key;
         private readonly bool _isDurable;
@@ -20,7 +20,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
-            _protocol = endpoint.Protocol;
+            _endpoint = endpoint;
             Destination = endpoint.Uri;
 
             _isDurable = endpoint.Mode == EndpointMode.Durable;
@@ -42,7 +42,7 @@ namespace Jasper.RabbitMQ.Internal
             props.Persistent = _isDurable;
             props.Headers = new Dictionary<string, object>();
 
-            _protocol.MapEnvelopeToOutgoing(envelope, props);
+            _endpoint.MapEnvelopeToOutgoing(envelope, props);
 
             Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
         }

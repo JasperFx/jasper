@@ -13,7 +13,6 @@ namespace Jasper.RabbitMQ.Internal
         private readonly ITransportLogger _logger;
         private readonly RabbitMqEndpoint _endpoint;
         private readonly RabbitMqTransport _transport;
-        private readonly IRabbitMqProtocol _mapper;
         private IListeningWorkerQueue _callback;
         private WorkerQueueMessageConsumer _consumer;
         private readonly string _routingKey;
@@ -26,7 +25,6 @@ namespace Jasper.RabbitMQ.Internal
             _logger = logger;
             _endpoint = endpoint;
             _transport = transport;
-            _mapper = endpoint.Protocol;
             Address = endpoint.Uri;
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
@@ -71,7 +69,7 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
 
             _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _mapper, Address, _sender, _cancellation);
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _endpoint, Address, _sender, _cancellation);
 
             Channel.BasicConsume(_consumer, _routingKey);
         }
