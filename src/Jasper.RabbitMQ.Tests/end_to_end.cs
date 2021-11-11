@@ -493,10 +493,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver = JasperHost.For(_ =>
             {
-                _.Endpoints.ConfigureRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                });
+                _.Endpoints.ConnectToRabbitMqLocally();
 
                 _.Endpoints.ListenToRabbitQueue(queueName);
 

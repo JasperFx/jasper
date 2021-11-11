@@ -39,6 +39,16 @@ namespace Jasper.RabbitMQ
         }
 
         /// <summary>
+        /// Connect to Rabbit MQ on the local machine with all the default
+        /// Rabbit MQ client options
+        /// </summary>
+        /// <param name="endpoints"></param>
+        public static void ConnectToRabbitMqLocally(this IEndpoints endpoints)
+        {
+            endpoints.ConfigureRabbitMq(t => {});
+        }
+
+        /// <summary>
         /// Listen for incoming messages at the designated Rabbit MQ queue by name
         /// </summary>
         /// <param name="endpoints"></param>
