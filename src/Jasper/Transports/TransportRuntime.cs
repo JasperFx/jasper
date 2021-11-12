@@ -40,6 +40,10 @@ namespace Jasper.Transports
             foreach (var transport in _transports)
             {
                 transport.Initialize(_root);
+                foreach (var endpoint in transport.Endpoints())
+                {
+                    endpoint.Root = _root; // necessary to locate serialization
+                }
             }
 
             foreach (var transport in _transports)
@@ -225,6 +229,16 @@ namespace Jasper.Transports
         {
             var routers = FindSubscribersForMessageType(messageType).OfType<ITopicRouter>().ToArray();
             return routers.Any() ? routers : _subscribers.OfType<ITopicRouter>().ToArray();
+        }
+
+        public IEnumerable<Endpoint> AllEndpoints()
+        {
+            return _transports.SelectMany(x => x.Endpoints());
+        }
+
+        public Endpoint EndpointFor(Uri uri)
+        {
+            return AllEndpoints().FirstOrDefault(x => x.Uri == uri);
         }
 
         public void Dispose()

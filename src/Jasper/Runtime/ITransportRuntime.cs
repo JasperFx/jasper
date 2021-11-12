@@ -24,5 +24,7 @@ namespace Jasper.Runtime
         ISendingAgent AgentForLocalQueue(string queueName);
         ISendingAgent[] FindLocalSubscribers(Type messageType);
         ITopicRouter[] FindTopicRoutersForMessageType(Type messageType);
+        IEnumerable<Endpoint> AllEndpoints();
+        Endpoint EndpointFor(Uri uri);
     }
 }

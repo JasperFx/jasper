@@ -11,9 +11,11 @@ using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
+using Jasper.Serialization.New;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NSubstitute;
 using ExecutionContext = Jasper.Runtime.ExecutionContext;
 

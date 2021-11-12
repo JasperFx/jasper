@@ -7,6 +7,7 @@ using Jasper.Util;
 
 namespace Jasper.Serialization
 {
+    [Obsolete("Eliminating this soon")]
     public abstract class SerializationGraph<TReader, TWriter>
         where TReader : class, IReaderStrategy
         where TWriter : class, IWriterStrategy

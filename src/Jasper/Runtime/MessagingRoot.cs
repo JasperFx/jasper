@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
+using Jasper.Serialization.New;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Lamar;
@@ -65,6 +67,7 @@ namespace Jasper.Runtime
 
             Cancellation = Settings.Cancellation;
 
+            Options.Serializers.Add(new NewtonsoftSerializer(Settings.JsonSerialization));
         }
 
         public override ExecutionContext Create()

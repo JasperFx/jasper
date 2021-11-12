@@ -6,6 +6,7 @@ using Baseline;
 using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
+using Jasper.Serialization.New;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Model;
@@ -108,6 +109,11 @@ namespace Jasper
             get => Advanced.ServiceName;
             set => Advanced.ServiceName = value;
         }
+
+        /// <summary>
+        /// Default message serializers for the application
+        /// </summary>
+        public IList<INewSerializer> Serializers { get; } = new List<INewSerializer>();
 
         /// <summary>
         ///     Applies the extension to this application

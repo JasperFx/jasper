@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
+using Jasper.Serialization.New;
 
 namespace Jasper.Runtime
 {

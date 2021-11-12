@@ -1,5 +1,7 @@
 using System;
 using Baseline;
+using Jasper.Serialization.New;
+using Newtonsoft.Json;
 using TypeExtensions = LamarCodeGeneration.Util.TypeExtensions;
 
 namespace Jasper.Configuration
@@ -37,6 +39,20 @@ namespace Jasper.Configuration
         public T Named(string name)
         {
             _endpoint.Name = name;
+            return this.As<T>();
+        }
+
+        public ISubscriberConfiguration<T> CustomNewtonsoftJsonSerialization(JsonSerializerSettings customSettings)
+        {
+            var serializer = new NewtonsoftSerializer(customSettings);
+            _endpoint.RegisterSerializer(serializer);
+            return this;
+        }
+
+        public ISubscriberConfiguration<T> DefaultSerializer(INewSerializer serializer)
+        {
+            _endpoint.RegisterSerializer(serializer);
+            _endpoint.DefaultSerializer = serializer;
             return this.As<T>();
         }
 

@@ -36,7 +36,11 @@ namespace Jasper.Serialization.New
             _bytePool = ArrayPool<byte>.Shared;
             _charPool = ArrayPool<char>.Shared;
             _jsonCharPool = new JsonArrayPool<char>(_charPool);
+
+            Settings = settings;
         }
+
+        public JsonSerializerSettings Settings { get; }
 
         public string ContentType { get; } = EnvelopeConstants.JsonContentType;
         public byte[] Write(object message)

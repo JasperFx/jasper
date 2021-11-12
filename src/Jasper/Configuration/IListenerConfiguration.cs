@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Serialization.New;
+using Newtonsoft.Json;
 
 namespace Jasper.Configuration
 {
@@ -61,6 +63,20 @@ namespace Jasper.Configuration
         /// <param name="name"></param>
         /// <returns></returns>
         T Named(string name);
+
+        /// <summary>
+        /// Use custom Newtonsoft.Json settings for this listener endpoint
+        /// </summary>
+        /// <param name="customSettings"></param>
+        /// <returns></returns>
+        T CustomNewtonsoftJsonSerialization(JsonSerializerSettings customSettings);
+
+        /// <summary>
+        /// Override the default serializer for this endpoint
+        /// </summary>
+        /// <param name="serializer"></param>
+        /// <returns></returns>
+        T DefaultSerializer(INewSerializer serializer);
     }
 
     public interface IListenerConfiguration : IListenerConfiguration<IListenerConfiguration>

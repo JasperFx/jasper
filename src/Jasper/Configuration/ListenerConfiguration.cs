@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks.Dataflow;
+using Jasper.Serialization.New;
 using LamarCodeGeneration.Util;
+using Newtonsoft.Json;
 
 namespace Jasper.Configuration
 {
@@ -69,6 +71,19 @@ namespace Jasper.Configuration
         public TSelf Named(string name)
         {
             endpoint.Name = name;
+            return this.As<TSelf>();
+        }
+
+        public TSelf CustomNewtonsoftJsonSerialization(JsonSerializerSettings customSettings)
+        {
+            endpoint.RegisterSerializer(new NewtonsoftSerializer(customSettings));
+            return this.As<TSelf>();
+        }
+
+        public TSelf DefaultSerializer(INewSerializer serializer)
+        {
+            endpoint.RegisterSerializer(serializer);
+            endpoint.DefaultSerializer = serializer;
             return this.As<TSelf>();
         }
     }

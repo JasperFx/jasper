@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks.Dataflow;
+using Baseline;
 using Baseline.Dates;
+using Baseline.ImTools;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization.New;
 using Jasper.Transports.Sending;
-using Newtonsoft.Json;
 using Spectre.Console;
+
+#nullable enable
 
 namespace Jasper.Configuration
 {
@@ -35,6 +39,7 @@ namespace Jasper.Configuration
     /// </summary>
     public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesProperties
     {
+        private ImHashMap<string, INewSerializer?> _serializers = ImHashMap<string, INewSerializer?>.Empty;
         private string _name;
 
         protected Endpoint()
@@ -46,12 +51,35 @@ namespace Jasper.Configuration
             Parse(uri);
         }
 
-        // TODO -- this will surely change
-        public INewSerializer DefaultSerializer { get; set; } = new NewtonsoftSerializer(new JsonSerializerSettings
+        internal IMessagingRoot Root { get; set; }
+
+        internal INewSerializer? TryFindSerializer(string contentType)
         {
-            TypeNameHandling = TypeNameHandling.Auto,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-        });
+            if (_serializers.TryFind(contentType, out var serializer))
+            {
+                return serializer;
+            }
+
+            serializer = Root?.Options.Serializers.FirstOrDefault(x => x.ContentType.EqualsIgnoreCase(contentType));
+            _serializers = _serializers.AddOrUpdate(contentType, serializer);
+
+            return serializer;
+        }
+
+        public void RegisterSerializer(INewSerializer serializer)
+        {
+            _serializers = _serializers.AddOrUpdate(serializer.ContentType, serializer);
+        }
+
+        private INewSerializer? _defaultSerializer;
+        public INewSerializer? DefaultSerializer
+        {
+            get
+            {
+                return _defaultSerializer ??= TryFindSerializer(EnvelopeConstants.JsonContentType) ?? Root?.Options.Serializers.FirstOrDefault();
+            }
+            set => _defaultSerializer = value;
+        }
 
         /// <summary>
         ///     Descriptive Name for this listener. Optional.
