@@ -4,7 +4,9 @@ using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
+using Jasper.Serialization.New;
 using Jasper.Transports.Sending;
+using Newtonsoft.Json;
 using Spectre.Console;
 
 namespace Jasper.Configuration
@@ -43,6 +45,13 @@ namespace Jasper.Configuration
         {
             Parse(uri);
         }
+
+        // TODO -- this will surely change
+        public INewSerializer DefaultSerializer { get; set; } = new NewtonsoftSerializer(new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        });
 
         /// <summary>
         ///     Descriptive Name for this listener. Optional.

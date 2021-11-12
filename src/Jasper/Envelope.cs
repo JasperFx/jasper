@@ -37,6 +37,7 @@ namespace Jasper
         /// <summary>
         ///     The raw, serialized message data
         /// </summary>
+        [Obsolete("Deleting this soon")]
         public byte[] Data
         {
             get

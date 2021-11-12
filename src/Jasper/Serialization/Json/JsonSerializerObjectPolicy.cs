@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.ObjectPool;
+﻿using System;
+using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 
 namespace Jasper.Serialization.Json
 {
+    [Obsolete("Gonna make this go away")]
     internal class JsonSerializerObjectPolicy : IPooledObjectPolicy<JsonSerializer>
     {
         private readonly JsonSerializerSettings _serializerSettings;

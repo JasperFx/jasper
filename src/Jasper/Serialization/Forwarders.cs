@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Baseline;
 
@@ -11,6 +12,9 @@ namespace Jasper.Serialization
 
         public void Add(Type type)
         {
+            var stream = new MemoryStream();
+
+
             var forwardedType = type
                 .FindInterfaceThatCloses(typeof(IForwardsTo<>))
                 .GetGenericArguments()

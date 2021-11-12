@@ -6,7 +6,6 @@ using System.Reflection;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Configuration;
-using Jasper.Serialization;
 using Jasper.Util;
 
 namespace Jasper.Transports
