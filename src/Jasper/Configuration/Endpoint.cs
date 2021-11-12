@@ -76,7 +76,17 @@ namespace Jasper.Configuration
         {
             get
             {
-                return _defaultSerializer ??= TryFindSerializer(EnvelopeConstants.JsonContentType) ?? Root?.Options.Serializers.FirstOrDefault();
+                if (_defaultSerializer == null)
+                {
+                    var parent = Root?.Options.DefaultSerializer;
+                    if (parent != null)
+                    {
+                        // Gives you a chance to use per-endpoint JSON settings for example
+                        _defaultSerializer = TryFindSerializer(parent.ContentType);
+                    }
+                }
+
+                return _defaultSerializer ??= Root?.Options.DefaultSerializer;
             }
             set => _defaultSerializer = value;
         }

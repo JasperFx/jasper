@@ -76,7 +76,9 @@ namespace Jasper.Configuration
 
         public TSelf CustomNewtonsoftJsonSerialization(JsonSerializerSettings customSettings)
         {
-            endpoint.RegisterSerializer(new NewtonsoftSerializer(customSettings));
+            var serializer = new NewtonsoftSerializer(customSettings);
+            endpoint.RegisterSerializer(serializer);
+
             return this.As<TSelf>();
         }
 

@@ -171,5 +171,26 @@ namespace Jasper.Testing.Serialization
                 .DefaultSerializer.ShouldBeSameAs(fooSerializer);
 
         }
+
+        [Fact]
+        public async Task can_override_the_default_app_wide()
+        {
+            var fooSerializer = new FooSerializer();
+
+            using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
+            {
+                opts.DefaultSerializer = fooSerializer;
+                opts.Endpoints.PublishAllMessages().To("stub://one");
+
+                opts.Endpoints.ListenForMessagesFrom("stub://two");
+            }).StartAsync();
+            
+            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            root.Runtime.EndpointFor("stub://one".ToUri())
+                .DefaultSerializer.ShouldBe(fooSerializer);
+
+            root.Runtime.EndpointFor("stub://two".ToUri())
+                .DefaultSerializer.ShouldBe(fooSerializer);
+        }
     }
 }

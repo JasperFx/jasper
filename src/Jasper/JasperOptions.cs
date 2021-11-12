@@ -98,10 +98,7 @@ namespace Jasper
         ///     Read only view of the extensions that have been applied to this
         ///     JasperOptions
         /// </summary>
-        public IReadOnlyList<IJasperExtension> AppliedExtensions
-        {
-            get { return _appliedExtensions; }
-        }
+        public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
 
         /// <summary>
         ///     Get or set the logical Jasper service name. By default, this is
@@ -117,6 +114,21 @@ namespace Jasper
         /// Default message serializers for the application
         /// </summary>
         public IList<IMessageSerializer> Serializers { get; } = new List<IMessageSerializer>{EnvelopeReaderWriter.Instance};
+
+        private IMessageSerializer? _defaultSerializer;
+        public IMessageSerializer? DefaultSerializer
+        {
+            get
+            {
+                return _defaultSerializer ??= Serializers.FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType) ?? Serializers.FirstOrDefault();
+            }
+            set
+            {
+                Serializers.Fill(value);
+                _defaultSerializer = value;
+            }
+        }
+
 
         /// <summary>
         ///     Applies the extension to this application
