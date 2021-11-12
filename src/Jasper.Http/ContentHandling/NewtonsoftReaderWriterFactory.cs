@@ -46,7 +46,7 @@ namespace Jasper.Http.ContentHandling
             _bytePool = ArrayPool<byte>.Shared;
         }
 
-        public string ContentType => "application/json";
+        public string ContentType => EnvelopeConstants.JsonContentType;
 
         public object Deserialize(Stream message)
         {
@@ -92,7 +92,7 @@ namespace Jasper.Http.ContentHandling
             ArrayPool<byte> bytePool,
             ObjectPool<JsonSerializer> serializerPool
         )
-            : this(messageType, charPool, bytePool, serializerPool, "application/json")
+            : this(messageType, charPool, bytePool, serializerPool, EnvelopeConstants.JsonContentType)
         {
         }
 
@@ -174,7 +174,7 @@ namespace Jasper.Http.ContentHandling
 
         public NewtonsoftJsonWriter(Type messageType, ArrayPool<char> charPool, ArrayPool<byte> bytePool,
             ObjectPool<JsonSerializer> serializerPool)
-            : this(messageType, "application/json", charPool, bytePool, serializerPool)
+            : this(messageType, EnvelopeConstants.JsonContentType, charPool, bytePool, serializerPool)
         {
         }
 

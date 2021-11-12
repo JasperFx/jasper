@@ -10,7 +10,7 @@ namespace Jasper.Runtime.Routing
 {
     public class Subscription
     {
-        private string[] _contentTypes = {"application/json"};
+        private string[] _contentTypes = {EnvelopeConstants.JsonContentType};
 
         public Subscription()
         {
@@ -30,12 +30,12 @@ namespace Jasper.Runtime.Routing
 
 
         /// <summary>
-        /// The legal, accepted content types for the receivers. The default is ["application/json"]
+        /// The legal, accepted content types for the receivers. The default is [EnvelopeConstants.JsonContentType]
         /// </summary>
         public string[] ContentTypes
         {
             get => _contentTypes;
-            set => _contentTypes = value?.Distinct().ToArray() ?? new[] {"application/json"};
+            set => _contentTypes = value?.Distinct().ToArray() ?? new[] {EnvelopeConstants.JsonContentType};
         }
 
         /// <summary>

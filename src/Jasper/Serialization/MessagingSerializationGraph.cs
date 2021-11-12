@@ -42,7 +42,7 @@ namespace Jasper.Serialization
 
         public object Deserialize(Envelope envelope)
         {
-            var contentType = envelope.ContentType ?? "application/json";
+            var contentType = envelope.ContentType ?? EnvelopeConstants.JsonContentType;
 
             if (contentType.IsEmpty())
                 throw new EnvelopeDeserializationException($"No content type can be determined for {envelope}");
@@ -68,7 +68,7 @@ namespace Jasper.Serialization
                     }
             }
 
-            var messageType = envelope.MessageType ?? "application/json";
+            var messageType = envelope.MessageType ?? EnvelopeConstants.JsonContentType;
             if (_serializers.ContainsKey(messageType))
                 using (var stream = new MemoryStream(envelope.Data))
                 {

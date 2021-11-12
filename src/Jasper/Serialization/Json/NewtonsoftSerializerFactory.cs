@@ -40,7 +40,7 @@ namespace Jasper.Serialization.Json
             }
         }
 
-        public string ContentType => "application/json";
+        public string ContentType => EnvelopeConstants.JsonContentType;
 
         public IMessageDeserializer ReaderFor(Type messageType)
         {

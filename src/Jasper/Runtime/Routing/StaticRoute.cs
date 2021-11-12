@@ -26,7 +26,7 @@ namespace Jasper.Runtime.Routing
             // TODO -- select the right serializer for the endpoint
             // hard-coding to JSON for now
 
-            _writer = writers.ChooseWriter("application/json");
+            _writer = writers.ChooseWriter(EnvelopeConstants.JsonContentType);
 
 
         }

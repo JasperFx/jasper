@@ -88,7 +88,7 @@ namespace Jasper.Testing.Serialization
         [Fact]
         public void content_type()
         {
-            outgoing.ContentType = "application/json";
+            outgoing.ContentType = EnvelopeConstants.JsonContentType;
             incoming.ContentType.ShouldBe(outgoing.ContentType);
         }
 

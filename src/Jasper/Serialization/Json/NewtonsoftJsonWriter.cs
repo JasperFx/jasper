@@ -17,7 +17,7 @@ namespace Jasper.Serialization.Json
 
         public NewtonsoftJsonWriter(Type messageType, ArrayPool<char> charPool, ArrayPool<byte> bytePool,
             ObjectPool<JsonSerializer> serializerPool)
-            : this(messageType, "application/json", charPool, bytePool, serializerPool)
+            : this(messageType, EnvelopeConstants.JsonContentType, charPool, bytePool, serializerPool)
         {
         }
 
@@ -42,20 +42,19 @@ namespace Jasper.Serialization.Json
 
             try
             {
-                using (var textWriter = new StreamWriter(stream) {AutoFlush = true})
-                using (var jsonWriter = new JsonTextWriter(textWriter)
+                using var textWriter = new StreamWriter(stream) {AutoFlush = true};
+                using var jsonWriter = new JsonTextWriter(textWriter)
                 {
                     ArrayPool = _jsonCharPool,
                     CloseOutput = false,
                     AutoCompleteOnClose = false
 
-                })
-                {
-                    serializer.Serialize(jsonWriter, model);
-                    if (stream.Position < _bufferSize) return bytes.Take((int) stream.Position).ToArray();
+                };
 
-                    return stream.ToArray();
-                }
+                serializer.Serialize(jsonWriter, model);
+                if (stream.Position < _bufferSize) return bytes.Take((int) stream.Position).ToArray();
+
+                return stream.ToArray();
             }
 
             catch (NotSupportedException e)

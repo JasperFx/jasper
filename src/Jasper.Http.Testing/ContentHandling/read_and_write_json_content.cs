@@ -23,7 +23,7 @@ namespace Jasper.Http.Testing.ContentHandling
             {
                 _.Post.Json(numbers).ToUrl("/sum");
                 _.StatusCodeShouldBeOk();
-                _.ContentTypeShouldBe("application/json");
+                _.ContentTypeShouldBe(EnvelopeConstants.JsonContentType);
             });
 
             var sum = result.ResponseBody.ReadAsJson<SumValue>();

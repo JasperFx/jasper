@@ -98,7 +98,7 @@ namespace StorytellerSpecs.Fixtures
             var envelope = new Envelope {Data = bytes};
             envelope.Message = new Garbled();
 
-            envelope.ContentType = "application/json";
+            envelope.ContentType = EnvelopeConstants.JsonContentType;
 
             envelope.Destination = address;
 

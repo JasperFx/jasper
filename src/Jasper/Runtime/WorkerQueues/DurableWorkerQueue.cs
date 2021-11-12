@@ -34,7 +34,7 @@ namespace Jasper.Runtime.WorkerQueues
             {
                 try
                 {
-                    envelope.ContentType = envelope.ContentType ?? "application/json";
+                    envelope.ContentType = envelope.ContentType ?? EnvelopeConstants.JsonContentType;
 
                     await pipeline.Invoke(envelope, this);
                 }

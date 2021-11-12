@@ -23,7 +23,7 @@ namespace Jasper.Testing.Serialization
             {
                 Data = Encoding.UTF8.GetBytes(json),
                 MessageType = null,
-                ContentType = "application/json"
+                ContentType = EnvelopeConstants.JsonContentType
             };
 
             serialization.Deserialize(envelope)

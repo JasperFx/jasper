@@ -100,7 +100,7 @@ namespace Jasper.Http.Testing.ContentHandling
                     .ContentType("text/special")
                     .Accepts("application/json, text/special");
 
-                _.ContentTypeShouldBe("application/json");
+                _.ContentTypeShouldBe(EnvelopeConstants.JsonContentType);
                 _.StatusCodeShouldBeOk();
             });
 

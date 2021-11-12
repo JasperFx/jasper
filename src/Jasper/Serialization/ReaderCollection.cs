@@ -18,11 +18,11 @@ namespace Jasper.Serialization
 
             // Need to prefer any kind of custom reader
             var allContentTypes = _readers.Keys.ToList();
-            var index = allContentTypes.IndexOf("application/json");
+            var index = allContentTypes.IndexOf(EnvelopeConstants.JsonContentType);
             if (index >= 0)
             {
-                allContentTypes.Remove("application/json");
-                allContentTypes.Add("application/json");
+                allContentTypes.Remove(EnvelopeConstants.JsonContentType);
+                allContentTypes.Add(EnvelopeConstants.JsonContentType);
             }
 
             ContentTypes = allContentTypes.ToArray();

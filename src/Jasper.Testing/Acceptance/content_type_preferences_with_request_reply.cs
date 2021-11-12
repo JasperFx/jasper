@@ -24,7 +24,7 @@ namespace Jasper.Testing.Acceptance
             envelope.AcceptedContentTypes.ShouldContain("text/message1");
             envelope.AcceptedContentTypes.ShouldContain("text/oddball");
 
-            envelope.AcceptedContentTypes.Last().ShouldBe("application/json");
+            envelope.AcceptedContentTypes.Last().ShouldBe(EnvelopeConstants.JsonContentType);
         }
     }
 

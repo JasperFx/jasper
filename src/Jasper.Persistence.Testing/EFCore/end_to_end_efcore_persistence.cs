@@ -58,7 +58,7 @@ namespace Jasper.Persistence.Testing.EFCore
                 Destination = TransportConstants.RetryUri,
                 DeliverBy = new DateTimeOffset(DateTime.Today),
                 MessageType = "foo",
-                ContentType = "application/json"
+                ContentType = EnvelopeConstants.JsonContentType
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
@@ -99,7 +99,7 @@ namespace Jasper.Persistence.Testing.EFCore
                 Status = EnvelopeStatus.Scheduled,
                 Attempts = 2,
                 MessageType = "foo",
-                ContentType = "application/json"
+                ContentType = EnvelopeConstants.JsonContentType
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();

@@ -101,13 +101,13 @@ namespace Jasper.Serialization
 
         public TReader JsonReaderFor(Type inputType)
         {
-            return _serializers["application/json"]
+            return _serializers[EnvelopeConstants.JsonContentType]
                 .ReaderFor(inputType);
         }
 
         public TWriter JsonWriterFor(Type resourceType)
         {
-            return _serializers["application/json"]
+            return _serializers[EnvelopeConstants.JsonContentType]
                 .WriterFor(resourceType);
         }
 

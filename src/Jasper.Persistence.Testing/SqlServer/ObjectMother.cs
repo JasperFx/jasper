@@ -13,7 +13,7 @@ namespace Jasper.Persistence.Testing.SqlServer
                 Data = new byte[] {1, 2, 3, 4},
                 MessageType = "Something",
                 Destination = TransportConstants.ScheduledUri,
-                ContentType = "application/json",
+                ContentType = EnvelopeConstants.JsonContentType,
                 Source = "SomeApp",
                 DeliverBy = new DateTimeOffset(DateTime.Today.AddHours(4)),
                 OwnerId = 567

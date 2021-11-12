@@ -29,11 +29,11 @@ namespace Jasper.Testing.Serialization
         public void can_override_json_serialization_for_a_mesage()
         {
             // Not overridden, so it should be the default
-            theSerialization.WriterFor(typeof(Message1))["application/json"]
+            theSerialization.WriterFor(typeof(Message1))[EnvelopeConstants.JsonContentType]
                 .ShouldBeOfType<NewtonsoftJsonWriter>();
 
             // Overridden
-            theSerialization.WriterFor(typeof(OverriddenJsonMessage))["application/json"]
+            theSerialization.WriterFor(typeof(OverriddenJsonMessage))[EnvelopeConstants.JsonContentType]
                 .ShouldBeOfType<OverrideJsonWriter>();
         }
 
@@ -41,11 +41,11 @@ namespace Jasper.Testing.Serialization
         public void can_override_json_serialization_reader_for_a_message_type()
         {
             // Not overridden, so it should be the default
-            theSerialization.ReaderFor(typeof(Message4).ToMessageTypeName())["application/json"]
+            theSerialization.ReaderFor(typeof(Message4).ToMessageTypeName())[EnvelopeConstants.JsonContentType]
                 .ShouldBeOfType<NewtonsoftJsonReader>();
 
             // Overridden
-            theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToMessageTypeName())["application/json"]
+            theSerialization.ReaderFor(typeof(OverriddenJsonMessage).ToMessageTypeName())[EnvelopeConstants.JsonContentType]
                 .ShouldBeOfType<OverrideJsonReader>();
         }
 
@@ -60,7 +60,7 @@ namespace Jasper.Testing.Serialization
         public void scans_for_custom_writers_in_the_app_assembly()
         {
             theSerialization.WriterFor(typeof(Message5)).ContentTypes
-                .ShouldHaveTheSameElementsAs("application/json", "green", "blue");
+                .ShouldHaveTheSameElementsAs(EnvelopeConstants.JsonContentType, "green", "blue");
         }
     }
 
@@ -78,7 +78,7 @@ namespace Jasper.Testing.Serialization
     public class OverrideJsonWriter : IMessageSerializer
     {
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
-        public string ContentType { get; } = "application/json";
+        public string ContentType { get; } = EnvelopeConstants.JsonContentType;
 
         public byte[] Write(object model)
         {
@@ -91,7 +91,7 @@ namespace Jasper.Testing.Serialization
     {
         public string MessageType { get; } = typeof(OverriddenJsonMessage).ToMessageTypeName();
         public Type DotNetType { get; } = typeof(OverriddenJsonMessage);
-        public string ContentType { get; } = "application/json";
+        public string ContentType { get; } = EnvelopeConstants.JsonContentType;
 
         public object ReadFromData(byte[] data)
         {

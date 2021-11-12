@@ -107,7 +107,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             {
                 Data = new byte[] {1, 2, 3, 4},
                 MessageType = "foo",
-                ContentType = "application/json"
+                ContentType = EnvelopeConstants.JsonContentType
             };
 
             theEnvelopes.Add(env);
@@ -122,7 +122,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 Data = new byte[] {1, 2, 3, 4},
                 ExecutionTime = DateTime.UtcNow.Add(1.Hours()),
                 MessageType = "foo",
-                ContentType = "application/json"
+                ContentType = EnvelopeConstants.JsonContentType
             };
 
             theEnvelopes.Add(env);
@@ -136,7 +136,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             {
                 Data = new byte[] {1, 2, 3, 4},
                 ExecutionTime = DateTime.UtcNow.Add(-1.Hours()),
-                ContentType = "application/json",
+                ContentType = EnvelopeConstants.JsonContentType,
                 MessageType = "foo"
             };
 

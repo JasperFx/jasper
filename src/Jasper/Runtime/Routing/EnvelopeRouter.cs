@@ -114,7 +114,7 @@ namespace Jasper.Runtime.Routing
             return new Envelope(message)
             {
                 Destination = agent.Destination,
-                ContentType = "application/json",
+                ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
                 Writer = _root.Serialization.JsonWriterFor(typeof(T))
             };
@@ -129,7 +129,7 @@ namespace Jasper.Runtime.Routing
             return new Envelope(message)
             {
                 Destination = agent.Destination,
-                ContentType = "application/json",
+                ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
                 Writer = _root.Serialization.JsonWriterFor(typeof(T))
             };

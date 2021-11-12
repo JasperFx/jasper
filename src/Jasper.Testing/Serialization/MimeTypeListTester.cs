@@ -41,7 +41,7 @@ namespace Jasper.Testing.Serialization
         public void build_with_multiple_mimetypes()
         {
             var list = new MimeTypeList("text/json,application/json");
-            list.ShouldHaveTheSameElementsAs("text/json", "application/json");
+            list.ShouldHaveTheSameElementsAs("text/json", EnvelopeConstants.JsonContentType);
         }
 
         [Fact]
@@ -57,8 +57,8 @@ namespace Jasper.Testing.Serialization
         {
             var list = new MimeTypeList("text/json,application/json");
             list.Matches("text/json").ShouldBeTrue();
-            list.Matches("application/json").ShouldBeTrue();
-            list.Matches("text/json", "application/json").ShouldBeTrue();
+            list.Matches(EnvelopeConstants.JsonContentType).ShouldBeTrue();
+            list.Matches("text/json", EnvelopeConstants.JsonContentType).ShouldBeTrue();
         }
 
         [Fact]

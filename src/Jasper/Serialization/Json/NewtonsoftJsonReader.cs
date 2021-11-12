@@ -22,7 +22,7 @@ namespace Jasper.Serialization.Json
             ArrayPool<byte> bytePool,
             ObjectPool<JsonSerializer> serializerPool
         )
-            : this(messageType, charPool, bytePool, serializerPool, "application/json")
+            : this(messageType, charPool, bytePool, serializerPool, EnvelopeConstants.JsonContentType)
         {
         }
 

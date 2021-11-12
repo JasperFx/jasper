@@ -37,7 +37,7 @@ namespace Jasper.Tcp.Tests
                 var envelope = new Envelope(originalMessage)
                 {
                     Destination = "tcp://localhost:2345".ToUri(),
-                    ContentType = "application/json"
+                    ContentType = EnvelopeConstants.JsonContentType
                 };
 
                 var session = await host

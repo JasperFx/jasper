@@ -87,7 +87,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void content_type()
         {
-            theOriginal.ContentType = "application/json";
+            theOriginal.ContentType = EnvelopeConstants.JsonContentType;
             theEnvelope.ContentType.ShouldBe(theOriginal.ContentType);
         }
 

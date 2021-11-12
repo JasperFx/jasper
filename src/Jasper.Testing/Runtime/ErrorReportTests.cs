@@ -10,7 +10,7 @@ namespace Jasper.Testing.Runtime
         public ErrorReportTests()
         {
             theEnvelope = new Envelope();
-            theEnvelope.ContentType = "application/json";
+            theEnvelope.ContentType = EnvelopeConstants.JsonContentType;
             theEnvelope.Data = new byte[] {1, 2, 3, 4};
             theEnvelope.Source = "OtherApp";
             theEnvelope.Destination = TransportConstants.RepliesUri;
