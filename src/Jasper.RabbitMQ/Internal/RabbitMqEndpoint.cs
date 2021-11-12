@@ -14,9 +14,9 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqEndpoint : TransportEndpoint<IBasicProperties>, IDisposable
     {
-        public const string Queue = "queue";
-        public const string Exchange = "exchange";
-        public const string Routing = "routing";
+        public const string QueueSegment = "queue";
+        public const string ExchangeSegment = "exchange";
+        public const string RoutingSegment = "routing";
 
         private IListener _listener;
 
@@ -72,20 +72,20 @@ namespace Jasper.RabbitMQ.Internal
 
                 if (QueueName.IsNotEmpty())
                 {
-                    list.Add(Queue);
+                    list.Add(QueueSegment);
                     list.Add(QueueName.ToLowerInvariant());
                 }
                 else
                 {
                     if (ExchangeName.IsNotEmpty())
                     {
-                        list.Add(Exchange);
+                        list.Add(ExchangeSegment);
                         list.Add(ExchangeName.ToLowerInvariant());
                     }
 
                     if (RoutingKey.IsNotEmpty())
                     {
-                        list.Add(Routing);
+                        list.Add(RoutingSegment);
                         list.Add(RoutingKey.ToLowerInvariant());
                     }
                 }
@@ -122,17 +122,17 @@ namespace Jasper.RabbitMQ.Internal
 
             while (segments.Any())
             {
-                if (segments.Peek().EqualsIgnoreCase(Exchange))
+                if (segments.Peek().EqualsIgnoreCase(ExchangeSegment))
                 {
                     segments.Dequeue();
                     ExchangeName = segments.Dequeue();
                 }
-                else if (segments.Peek().EqualsIgnoreCase(Queue))
+                else if (segments.Peek().EqualsIgnoreCase(QueueSegment))
                 {
                     segments.Dequeue();
                     QueueName = segments.Dequeue();
                 }
-                else if (segments.Peek().EqualsIgnoreCase(Routing))
+                else if (segments.Peek().EqualsIgnoreCase(RoutingSegment))
                 {
                     segments.Dequeue();
                     RoutingKey = segments.Dequeue();
