@@ -20,12 +20,11 @@ namespace MassTransitService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHostedService<Worker>();
-
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
+                    cfg.UseRawJsonSerializer();
                     cfg.ReceiveEndpoint("masstransit", e =>
                     {
                         e.Consumer<InitialMessageResponder>();

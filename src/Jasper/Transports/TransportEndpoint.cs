@@ -79,6 +79,13 @@ namespace Jasper.Transports
             _envelopeToOutgoing[prop] = writeToOutgoing;
         }
 
+        public void MapOutgoingProperty(Expression<Func<Envelope, object>> property,
+            Action<Envelope, TOutgoing> writeToOutgoing)
+        {
+            var prop = ReflectionHelper.GetProperty(property);
+            _envelopeToOutgoing[prop] = writeToOutgoing;
+        }
+
         public void MapPropertyToHeader(Expression<Func<Envelope, object>> property, string headerKey)
         {
             var prop = ReflectionHelper.GetProperty(property);

@@ -7,6 +7,7 @@ using InteropMessages;
 using Jasper;
 using Jasper.Tracking;
 using MassTransit;
+using MassTransit.RabbitMqTransport.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -65,8 +66,29 @@ namespace InteroperabilityTests
             });
 
             var envelope = ResponseHandler.Received.FirstOrDefault();
+            envelope.Message.ShouldBeOfType<ResponseMessage>().Id.ShouldBe(id);
             envelope.ShouldNotBeNull();
         }
+
+        [Fact]
+        public async Task jasper_sends_message_to_masstransit_that_then_responds()
+        {
+            ResponseHandler.Received.Clear();
+
+            var id = Guid.NewGuid();
+
+            var session = await theFixture.Jasper.TrackActivity()
+                .WaitForMessageToBeReceivedAt<ResponseMessage>(theFixture.Jasper)
+                .SendMessageAndWait(new InitialMessage {Id = id});
+
+            ResponseHandler.Received
+                .Select(x => x.Message)
+                .OfType<ResponseMessage>()
+                .Any(x => x.Id == id)
+                .ShouldBeTrue();
+      }
+
+
     }
 
 

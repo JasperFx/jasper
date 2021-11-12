@@ -22,7 +22,8 @@ namespace Jasper.RabbitMQ.Internal
 
         public RabbitMqEndpoint()
         {
-            MapProperty(x => x.CorrelationId, (e, p) => e.CorrelationId = p.MessageId, (e,p) => p.MessageId = e.CorrelationId);
+            MapProperty(x => x.CorrelationId, (e, p) => e.CorrelationId = p.CorrelationId, (e,p) => p.CorrelationId = e.CorrelationId);
+            MapProperty(x => x.ContentType, (e, p) => e.ContentType = p.ContentType, (e,p) => p.ContentType = e.ContentType);
         }
 
         public string ExchangeName { get; set; } = string.Empty;
