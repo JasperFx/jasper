@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.ImTools;
@@ -163,6 +164,7 @@ namespace Jasper.Transports
             {
                 var local = (LocalTransport)transport;
                 var agent = local.AddSenderForDestination(uri, _root, this);
+                agent.Endpoint.Root = _root; // This is important for serialization
 
                 AddSendingAgent(agent);
 
@@ -171,6 +173,7 @@ namespace Jasper.Transports
             else
             {
                 var endpoint = transport.GetOrCreateEndpoint(uri);
+                endpoint.Root ??= _root; // This is important for serialization
                 return endpoint.StartSending(_root, _root.Runtime, transport.ReplyEndpoint()?.ReplyUri());
             }
 

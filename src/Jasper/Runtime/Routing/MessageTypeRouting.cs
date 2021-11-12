@@ -45,7 +45,7 @@ namespace Jasper.Runtime.Routing
 
         public void AddStaticRoute(ISendingAgent agent)
         {
-            var route = new StaticRoute(agent, Writers, this);
+            var route = new StaticRoute(agent, this);
             _routes.Add(route);
         }
 
@@ -127,7 +127,7 @@ namespace Jasper.Runtime.Routing
         {
             var agent = _root.Runtime.GetOrBuildSendingAgent(destination);
 
-            return new StaticRoute(agent, Writers, this);
+            return new StaticRoute(agent, this);
         }
 
         public Envelope[] RouteToTopic(Type messageType, Envelope envelope)
@@ -149,7 +149,7 @@ namespace Jasper.Runtime.Routing
                 {
                     var uri = x.BuildUriForTopic(envelope.TopicName);
                     var agent = _root.Runtime.GetOrBuildSendingAgent(uri);
-                    return new StaticRoute(agent, Writers, this);
+                    return new StaticRoute(agent, this);
                 }).ToArray();
 
                 _topicRoutes = _topicRoutes.AddOrUpdate(envelope.TopicName, routes);
@@ -170,7 +170,7 @@ namespace Jasper.Runtime.Routing
 
         public void UseLocalQueueAsRoute()
         {
-            var route = new StaticRoute(LocalQueue, Writers, this);
+            var route = new StaticRoute(LocalQueue, this);
             _routes.Add(route);
         }
     }

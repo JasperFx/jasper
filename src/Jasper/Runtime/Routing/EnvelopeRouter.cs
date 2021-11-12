@@ -109,14 +109,12 @@ namespace Jasper.Runtime.Routing
         {
             var agent = routingFor(typeof(T)).LocalQueue;
 
-            // TODO -- attach the Json serializer or later MessagePack
-            // top avoid an extra lookup
             return new Envelope(message)
             {
                 Destination = agent.Destination,
                 ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
-                Writer = _root.Serialization.JsonWriterFor(typeof(T))
+                Writer = agent.Endpoint.DefaultSerializer
             };
         }
 
@@ -124,14 +122,12 @@ namespace Jasper.Runtime.Routing
         {
             var agent = _root.Runtime.AgentForLocalQueue(workerQueue);
 
-            // TODO -- attach the Json serializer or later MessagePack
-            // top avoid an extra lookup
             return new Envelope(message)
             {
                 Destination = agent.Destination,
                 ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
-                Writer = _root.Serialization.JsonWriterFor(typeof(T))
+                Writer = agent.Endpoint.DefaultSerializer
             };
         }
 

@@ -24,6 +24,11 @@ namespace Jasper.Testing.Runtime
 
     public class MockMessagingRoot : IMessagingRoot
     {
+        public MockMessagingRoot()
+        {
+            Options.Serializers.Add(new NewtonsoftSerializer(Options.Advanced.JsonSerialization));
+        }
+
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();

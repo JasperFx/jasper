@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.ImTools;
 using Jasper.Serialization;
+using Jasper.Serialization.New;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
@@ -38,7 +39,7 @@ namespace Jasper
 
 
         [Obsolete("Want to eliminate this if at all possible")]
-        public IMessageSerializer Writer { get; set; }
+        public INewSerializer Writer { get; set; }
 
 
 
@@ -96,19 +97,20 @@ namespace Jasper
             };
         }
 
-        internal Envelope CloneForWriter(IMessageSerializer writer)
+        internal Envelope CloneForWriter(INewSerializer writer)
         {
             var envelope = (Envelope)MemberwiseClone();
             envelope.Headers = new Dictionary<string, string>(Headers);
             envelope.Writer = writer;
+            envelope.ContentType = writer.ContentType;
 
             return envelope;
         }
 
-        internal Envelope(object message, IMessageSerializer writer)
+        internal Envelope(object message, INewSerializer writer)
         {
             Message = message;
-            this.Writer = writer;
+            Writer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         private bool _enqueued;

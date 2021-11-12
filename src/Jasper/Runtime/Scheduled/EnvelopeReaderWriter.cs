@@ -1,16 +1,22 @@
 using System;
 using Baseline;
 using Jasper.Serialization;
+using Jasper.Serialization.New;
 using Jasper.Transports;
 
 namespace Jasper.Runtime.Scheduled
 {
-    public class EnvelopeReaderWriter : IMessageSerializer, IMessageDeserializer
+    public class EnvelopeReaderWriter : INewSerializer
     {
-        public string MessageType { get; } = TransportConstants.ScheduledEnvelope;
-        public Type DotNetType { get; } = typeof(Envelope);
         public string ContentType { get; } = TransportConstants.SerializedEnvelope;
-        public static IMessageSerializer Instance { get; } = new EnvelopeReaderWriter();
+        public static INewSerializer Instance { get; } = new EnvelopeReaderWriter();
+
+        public object ReadFromData(Type messageType, byte[] data)
+        {
+            if (messageType != typeof(Envelope))
+                throw new ArgumentOutOfRangeException("This serializer only supports envelopes");
+            return ReadFromData(data);
+        }
 
         public object ReadFromData(byte[] data)
         {

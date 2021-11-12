@@ -136,12 +136,6 @@ namespace Jasper.Testing.Configuration
                 .ShouldNotBeNull();
         }
 
-        [Fact]
-        public void reader_writer_is_registered()
-        {
-            Host.Get<IContainer>().ShouldHaveRegistration<IMessageSerializer, EnvelopeReaderWriter>();
-            Host.Get<IContainer>().ShouldHaveRegistration<IMessageDeserializer, EnvelopeReaderWriter>();
-        }
 
         [Fact]
         public void handler_graph_already_has_the_scheduled_send_handler()

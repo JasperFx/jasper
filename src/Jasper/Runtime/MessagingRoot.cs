@@ -38,11 +38,12 @@ namespace Jasper.Runtime
             ITransportLogger transportLogger
         )
         {
+            Settings = options.Advanced;
             Options = options;
+            Options.Serializers.Add(new NewtonsoftSerializer(Settings.JsonSerialization));
             Handlers = options.HandlerGraph;
             TransportLogger = transportLogger;
 
-            Settings = options.Advanced;
             Serialization = serialization;
 
             MessageLogger = messageLogger;
@@ -61,13 +62,13 @@ namespace Jasper.Runtime
 
             Router = new EnvelopeRouter(this);
 
-            Acknowledgements = new AcknowledgementSender(Router, Serialization);
+            Acknowledgements = new AcknowledgementSender(Router, this);
 
             _container = container;
 
             Cancellation = Settings.Cancellation;
 
-            Options.Serializers.Add(new NewtonsoftSerializer(Settings.JsonSerialization));
+
         }
 
         public override ExecutionContext Create()

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Runtime;
+using Jasper.Serialization.New;
 using Jasper.Transports.Sending;
 using Jasper.Util;
+using Newtonsoft.Json;
 
 namespace Jasper.Transports.Stub
 {
@@ -26,6 +28,7 @@ namespace Jasper.Transports.Stub
             _stubTransport = stubTransport;
             Destination = destination;
             Agent = this;
+
         }
 
         public Endpoint Endpoint => this;

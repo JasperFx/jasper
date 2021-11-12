@@ -110,7 +110,7 @@ namespace Jasper.Testing.Runtime
 
             theEnvelope.AckRequested = true;
 
-            theAcknowledgement = new AcknowledgementSender(null, MessagingSerializationGraph.Basic()).BuildAcknowledgement(theEnvelope);
+            theAcknowledgement = new AcknowledgementSender(null, new MockMessagingRoot()).BuildAcknowledgement(theEnvelope);
         }
 
         private readonly Envelope theEnvelope;

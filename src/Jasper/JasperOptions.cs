@@ -6,6 +6,7 @@ using Baseline;
 using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
+using Jasper.Runtime.Scheduled;
 using Jasper.Serialization.New;
 using Lamar;
 using LamarCodeGeneration;
@@ -33,6 +34,7 @@ namespace Jasper
 
         public JasperOptions() : this(null)
         {
+
         }
 
         public JasperOptions(string assemblyName)
@@ -62,8 +64,6 @@ namespace Jasper
         ///     job scheduling, validation, and resiliency features
         /// </summary>
         public AdvancedSettings Advanced { get; }
-
-
 
 
         /// <summary>
@@ -98,7 +98,10 @@ namespace Jasper
         ///     Read only view of the extensions that have been applied to this
         ///     JasperOptions
         /// </summary>
-        public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
+        public IReadOnlyList<IJasperExtension> AppliedExtensions
+        {
+            get { return _appliedExtensions; }
+        }
 
         /// <summary>
         ///     Get or set the logical Jasper service name. By default, this is
@@ -113,7 +116,7 @@ namespace Jasper
         /// <summary>
         /// Default message serializers for the application
         /// </summary>
-        public IList<INewSerializer> Serializers { get; } = new List<INewSerializer>();
+        public IList<INewSerializer> Serializers { get; } = new List<INewSerializer>{EnvelopeReaderWriter.Instance};
 
         /// <summary>
         ///     Applies the extension to this application

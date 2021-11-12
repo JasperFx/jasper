@@ -1,25 +1,29 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization;
+using Jasper.Serialization.New;
 
 namespace Jasper.Runtime
 {
     public class AcknowledgementSender : IAcknowledgementSender
     {
         private readonly IEnvelopeRouter _router;
-        private readonly MessagingSerializationGraph _serialization;
+        private readonly INewSerializer? _writer;
 
-        public AcknowledgementSender(IEnvelopeRouter router, MessagingSerializationGraph serialization)
+        public AcknowledgementSender(IEnvelopeRouter router, IMessagingRoot root)
         {
             _router = router;
-            _serialization = serialization;
+            _writer = root.Options.Serializers.FirstOrDefault(x =>
+                          x.ContentType.EqualsIgnoreCase(EnvelopeConstants.JsonContentType)) ??
+                      throw new InvalidOperationException("No registered serializer for JSON");
         }
 
         public Envelope BuildAcknowledgement(Envelope envelope)
         {
-            var writer = _serialization.JsonWriterFor(typeof(Acknowledgement));
-            var ack = new Envelope(new Acknowledgement {CorrelationId = envelope.Id}, writer)
+            var ack = new Envelope(new Acknowledgement {CorrelationId = envelope.Id}, _writer)
             {
                 CausationId = envelope.Id.ToString(),
                 Destination = envelope.ReplyUri,

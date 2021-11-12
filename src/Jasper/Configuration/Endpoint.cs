@@ -51,7 +51,7 @@ namespace Jasper.Configuration
             Parse(uri);
         }
 
-        internal IMessagingRoot Root { get; set; }
+        internal IMessagingRoot? Root { get; set; }
 
         internal INewSerializer? TryFindSerializer(string contentType)
         {
@@ -80,6 +80,8 @@ namespace Jasper.Configuration
             }
             set => _defaultSerializer = value;
         }
+
+
 
         /// <summary>
         ///     Descriptive Name for this listener. Optional.

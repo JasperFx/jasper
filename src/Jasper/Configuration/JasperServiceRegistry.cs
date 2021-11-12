@@ -32,9 +32,6 @@ namespace Jasper.Configuration
             For<IMessageLogger>().Use<MessageLogger>().Singleton();
             For<ITransportLogger>().Use<TransportLogger>().Singleton();
 
-            For<IMessageSerializer>().Use<EnvelopeReaderWriter>();
-            For<IMessageDeserializer>().Use<EnvelopeReaderWriter>();
-
             For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Use<NewtonsoftSerializerFactory>();
 
             this.AddSingleton(parent.Advanced);
