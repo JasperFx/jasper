@@ -104,7 +104,7 @@ namespace Jasper.Transports.Local
 
                 case EndpointMode.Durable:
                     return new DurableLocalSendingAgent(queue, root.Pipeline, root.Settings, root.Persistence,
-                        root.TransportLogger, root.Serialization, root.MessageLogger);
+                        root.TransportLogger, root.MessageLogger);
 
                 case EndpointMode.Inline:
                     throw new NotImplementedException();

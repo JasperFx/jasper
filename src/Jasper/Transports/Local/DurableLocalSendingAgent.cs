@@ -14,17 +14,17 @@ namespace Jasper.Transports.Local
     {
         private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
-        private readonly MessagingSerializationGraph _serializers;
         private readonly IMessageLogger _messageLogger;
+        private readonly IMessageSerializer? _serializer;
 
         public DurableLocalSendingAgent(Endpoint endpoint, IHandlerPipeline pipeline,
             AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger,
-            MessagingSerializationGraph serializers, IMessageLogger messageLogger) : base(endpoint, pipeline, settings, persistence, logger)
+            IMessageLogger messageLogger) : base(endpoint, pipeline, settings, persistence, logger)
         {
             _settings = settings;
             _persistence = persistence;
-            _serializers = serializers;
             _messageLogger = messageLogger;
+            _serializer = endpoint.DefaultSerializer;
             Destination = endpoint.Uri;
 
             Endpoint = endpoint;
@@ -79,9 +79,8 @@ namespace Jasper.Transports.Local
         {
             if (envelope.Data == null || envelope.Data.Length == 0)
             {
-                var writer = _serializers.JsonWriterFor(envelope.Message.GetType());
-                envelope.Data = writer.Write(envelope.Message);
-                envelope.ContentType = writer.ContentType;
+                envelope.Data = _serializer.Write(envelope.Message);
+                envelope.ContentType = _serializer.ContentType;
             }
         }
     }

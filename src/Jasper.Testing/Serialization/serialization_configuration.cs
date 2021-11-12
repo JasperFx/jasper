@@ -1,7 +1,8 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Runtime;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,13 +25,14 @@ namespace Jasper.Testing.Serialization
             }).StartAsync();
 
             var root = host.Services.GetRequiredService<IMessagingRoot>();
-            var endpoints = root.Runtime.AllEndpoints();
-            foreach (var endpoint in endpoints)
-            {
-                endpoint.DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
-                    .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
 
-            }
+            root.Runtime.EndpointFor("stub://one".ToUri())
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
+                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+            root.Runtime.EndpointFor("stub://two".ToUri())
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
+                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+
         }
 
         [Fact]
@@ -57,7 +59,7 @@ namespace Jasper.Testing.Serialization
 
         }
 
-        public class FooSerializer : INewSerializer
+        public class FooSerializer : IMessageSerializer
         {
             public string ContentType { get; } = "text/foo";
             public byte[] Write(object message)

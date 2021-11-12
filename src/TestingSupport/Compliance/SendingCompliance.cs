@@ -67,6 +67,8 @@ namespace TestingSupport.Compliance
             options.Handlers
                 .DisableConventionalDiscovery()
                 .IncludeType<PongHandler>();
+
+            options.Serializers.Add(new GreenTextWriter());
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
             options.Endpoints.PublishAllMessages().To(OutboundAddress);
@@ -100,7 +102,7 @@ namespace TestingSupport.Compliance
                 .IncludeType<BlueHandler>()
                 .IncludeType<PingHandler>();
 
-            options.Services.AddSingleton<IMessageDeserializer, BlueTextReader>();
+            options.Serializers.Add(new BlueTextReader());
 
             options.Handlers.OnException<DivideByZeroException>()
                 .MoveToErrorQueue();
@@ -471,36 +473,56 @@ namespace TestingSupport.Compliance
 
 
     // SAMPLE: BlueTextReader
-    public class BlueTextReader : MessageDeserializerBase<BlueMessage>
+    public class BlueTextReader : IMessageSerializer
     {
-        public BlueTextReader() : base("text/plain")
+        public BlueTextReader()
         {
         }
 
-        public override BlueMessage ReadData(byte[] data)
+        public object ReadData(byte[] data)
         {
             var name = Encoding.UTF8.GetString(data);
             return new BlueMessage {Name = name};
         }
 
-        protected override async Task<BlueMessage> ReadData(Stream stream)
+        public string ContentType { get; } = "text/plain";
+        public byte[] Write(object message)
         {
-            var name = await stream.ReadAllTextAsync();
-            return new BlueMessage {Name = name};
+            throw new NotImplementedException();
+        }
+
+        public object ReadFromData(Type messageType, byte[] data)
+        {
+            return ReadFromData(data);
+        }
+
+        public object ReadFromData(byte[] data)
+        {
+            throw new NotImplementedException();
         }
     }
     // ENDSAMPLE
 
         // SAMPLE: GreenTextWriter
-        public class GreenTextWriter : MessageSerializerBase<GreenMessage>
+        public class GreenTextWriter : IMessageSerializer
         {
-            public GreenTextWriter() : base("text/plain")
+            public string ContentType { get; } = "text/plain";
+
+            public object ReadFromData(Type messageType, byte[] data)
             {
+                throw new NotImplementedException();
             }
 
-            public override byte[] Write(GreenMessage model)
+            public object ReadFromData(byte[] data)
             {
-                return Encoding.UTF8.GetBytes(model.Name);
+                throw new NotImplementedException();
+            }
+
+            public byte[] Write(object model)
+            {
+                if (model is GreenMessage green) return Encoding.UTF8.GetBytes(green.Name);
+
+                throw new NotSupportedException("This serializer only writes GreenMessage");
             }
         }
         // ENDSAMPLE

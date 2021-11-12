@@ -7,7 +7,7 @@ using Baseline.Dates;
 using Baseline.ImTools;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using Jasper.Transports.Sending;
 using Spectre.Console;
 
@@ -39,7 +39,7 @@ namespace Jasper.Configuration
     /// </summary>
     public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesProperties
     {
-        private ImHashMap<string, INewSerializer?> _serializers = ImHashMap<string, INewSerializer?>.Empty;
+        private ImHashMap<string, IMessageSerializer?> _serializers = ImHashMap<string, IMessageSerializer?>.Empty;
         private string _name;
 
         protected Endpoint()
@@ -53,7 +53,7 @@ namespace Jasper.Configuration
 
         internal IMessagingRoot? Root { get; set; }
 
-        internal INewSerializer? TryFindSerializer(string contentType)
+        internal IMessageSerializer? TryFindSerializer(string contentType)
         {
             if (_serializers.TryFind(contentType, out var serializer))
             {
@@ -66,13 +66,13 @@ namespace Jasper.Configuration
             return serializer;
         }
 
-        public void RegisterSerializer(INewSerializer serializer)
+        public void RegisterSerializer(IMessageSerializer serializer)
         {
             _serializers = _serializers.AddOrUpdate(serializer.ContentType, serializer);
         }
 
-        private INewSerializer? _defaultSerializer;
-        public INewSerializer? DefaultSerializer
+        private IMessageSerializer? _defaultSerializer;
+        public IMessageSerializer? DefaultSerializer
         {
             get
             {

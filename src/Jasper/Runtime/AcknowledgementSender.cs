@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization;
-using Jasper.Serialization.New;
 
 namespace Jasper.Runtime
 {
     public class AcknowledgementSender : IAcknowledgementSender
     {
         private readonly IEnvelopeRouter _router;
-        private readonly INewSerializer? _writer;
+        private readonly IMessageSerializer? _writer;
 
         public AcknowledgementSender(IEnvelopeRouter router, IMessagingRoot root)
         {

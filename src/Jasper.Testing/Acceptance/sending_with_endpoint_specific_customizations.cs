@@ -61,7 +61,7 @@ namespace Jasper.Testing.Acceptance
                 var session = await host.TrackActivity().IncludeExternalTransports()
                     .SendMessageAndWait(new DifferentMessage());
 
-                var envelopes = session.FindEnvelopesWithMessageType<DifferentMessage>(EventType.Received);
+                var envelopes = session.FindEnvelopesWithMessageType<DifferentMessage>(EventType.Sent);
 
                 var env1 = envelopes.Single(x => x.Envelope.Destination == "stub://one".ToUri()).Envelope;
                 env1.Headers["a"].ShouldBe("one");

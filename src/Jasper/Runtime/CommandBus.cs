@@ -90,7 +90,9 @@ namespace Jasper.Runtime
                 Destination = TransportConstants.DurableLocalUri
             };
 
-            var writer = Root.Serialization.JsonWriterFor(message.GetType());
+            var endpoint = Root.Runtime.EndpointFor(TransportConstants.DurableLocalUri);
+
+            var writer = endpoint.DefaultSerializer;
             envelope.Data = writer.Write(message);
             envelope.ContentType = writer.ContentType;
 

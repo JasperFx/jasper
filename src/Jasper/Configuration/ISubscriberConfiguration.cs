@@ -1,5 +1,5 @@
 using System;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using Newtonsoft.Json;
 
 namespace Jasper.Configuration
@@ -81,7 +81,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="serializer"></param>
         /// <returns></returns>
-        ISubscriberConfiguration<T> DefaultSerializer(INewSerializer serializer);
+        ISubscriberConfiguration<T> DefaultSerializer(IMessageSerializer serializer);
     }
 
     public interface ISubscriberConfiguration : ISubscriberConfiguration<ISubscriberConfiguration>

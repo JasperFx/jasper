@@ -8,16 +8,14 @@ namespace Jasper.Runtime.Routing
     public class TopicRoute : IMessageRoute
     {
         private readonly ITopicRule _rule;
-        private readonly WriterCollection<IMessageSerializer> _writers;
         private readonly ITopicRouter _router;
         private readonly IMessagingRoot _root;
         private readonly MessageTypeRouting _messageTypeRouting;
 
-        public TopicRoute(ITopicRule rule, WriterCollection<IMessageSerializer> writers, ITopicRouter router,
+        public TopicRoute(ITopicRule rule, ITopicRouter router,
             IMessagingRoot root, MessageTypeRouting messageTypeRouting)
         {
             _rule = rule;
-            _writers = writers;
             _router = router;
             _root = root;
             _messageTypeRouting = messageTypeRouting;

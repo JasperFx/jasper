@@ -12,7 +12,6 @@ using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
-using Jasper.Serialization.New;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Lamar;
@@ -31,12 +30,10 @@ namespace Jasper.Runtime
         private bool _hasStopped;
 
 
-        public MessagingRoot(MessagingSerializationGraph serialization,
-            JasperOptions options,
+        public MessagingRoot(JasperOptions options,
             IMessageLogger messageLogger,
             IContainer container,
-            ITransportLogger transportLogger
-        )
+            ITransportLogger transportLogger)
         {
             Settings = options.Advanced;
             Options = options;
@@ -44,15 +41,13 @@ namespace Jasper.Runtime
             Handlers = options.HandlerGraph;
             TransportLogger = transportLogger;
 
-            Serialization = serialization;
-
             MessageLogger = messageLogger;
 
             var provider = container.GetInstance<ObjectPoolProvider>();
             var pool = provider.Create(this);
 
             // TODO -- might make NoHandlerContinuation lazy!
-            Pipeline = new HandlerPipeline(Serialization, Handlers, MessageLogger,
+            Pipeline = new HandlerPipeline(Handlers, MessageLogger,
                 new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
                 this, pool);
 
@@ -149,7 +144,6 @@ namespace Jasper.Runtime
 
         public IMessageLogger MessageLogger { get; }
 
-        public MessagingSerializationGraph Serialization { get; }
 
         public IEnvelopePersistence Persistence => _persistence.Value;
 

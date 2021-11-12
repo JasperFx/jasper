@@ -11,7 +11,6 @@ using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
-using Jasper.Serialization.New;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
@@ -33,7 +32,6 @@ namespace Jasper.Testing.Runtime
         public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();
-        public MessagingSerializationGraph Serialization { get; } = MessagingSerializationGraph.Basic();
         public JasperOptions Options { get; } = new JasperOptions();
 
         public ITransport[] Transports { get; } =

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Serialization;
-using Jasper.Serialization.New;
 using Jasper.Transports.Sending;
 using Jasper.Util;
 
@@ -12,10 +11,9 @@ namespace Jasper.Runtime.Routing
     public class StaticRoute : IMessageRoute
     {
         private readonly ISendingAgent _agent;
-        private readonly WriterCollection<IMessageSerializer> _writers;
         private readonly MessageTypeRouting _routing;
         private readonly Endpoint _endpoint;
-        private readonly INewSerializer? _writer;
+        private readonly IMessageSerializer? _writer;
 
         public StaticRoute(ISendingAgent agent,
             MessageTypeRouting routing)

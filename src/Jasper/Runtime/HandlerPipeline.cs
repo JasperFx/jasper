@@ -21,7 +21,6 @@ namespace Jasper.Runtime
         private readonly NoHandlerContinuation _noHandlers;
 
         private readonly IMessagingRoot _root;
-        private readonly MessagingSerializationGraph _serializer;
 
         private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
             ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
@@ -29,10 +28,9 @@ namespace Jasper.Runtime
         private readonly AdvancedSettings _settings;
 
 
-        public HandlerPipeline(MessagingSerializationGraph serializers, HandlerGraph graph, IMessageLogger logger,
+        public HandlerPipeline(HandlerGraph graph, IMessageLogger logger,
             NoHandlerContinuation noHandlers, IMessagingRoot root, ObjectPool<ExecutionContext> contextPool)
         {
-            _serializer = serializers;
             _graph = graph;
             _noHandlers = noHandlers;
             _root = root;
@@ -131,18 +129,9 @@ namespace Jasper.Runtime
                 return DiscardExpiredEnvelope.Instance;
             }
 
-            // Try to deserialize
-            try
+            if (envelope.Message == null)
             {
-                envelope.Message ??= _serializer.Deserialize(envelope);
-            }
-            catch (Exception e)
-            {
-                return new MoveToErrorQueue(e);
-            }
-            finally
-            {
-                Logger.Received(envelope);
+                throw new ArgumentNullException("envelope.Message");
             }
 
             Logger.ExecutionStarted(envelope);

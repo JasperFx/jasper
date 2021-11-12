@@ -119,16 +119,7 @@ namespace Samples
     }
 
 
-    // SAMPLE: RegisteringCustomReadersAndWriters
-    public class RegisteringCustomReadersAndWriters : JasperOptions
-    {
-        public RegisteringCustomReadersAndWriters()
-        {
-            Services.AddTransient<IMessageSerializer, MyCustomWriter>();
-            Services.AddTransient<IMessageDeserializer, MyCustomReader>();
-        }
-    }
-    // ENDSAMPLE
+
 
     public class MyCustomWriter : IMessageSerializer
     {
@@ -140,21 +131,17 @@ namespace Samples
             throw new NotImplementedException();
         }
 
-    }
-
-
-    public class MyCustomReader : IMessageDeserializer
-    {
-        public string MessageType { get; }
-        public Type DotNetType { get; }
-        public string ContentType { get; }
+        public object ReadFromData(Type messageType, byte[] data)
+        {
+            throw new NotImplementedException();
+        }
 
         public object ReadFromData(byte[] data)
         {
             throw new NotImplementedException();
         }
-
     }
+
 
     // SAMPLE: CustomizingJsonSerialization
     public class CustomizingJsonSerialization : JasperOptions

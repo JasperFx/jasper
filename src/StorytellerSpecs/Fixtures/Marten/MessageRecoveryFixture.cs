@@ -36,7 +36,6 @@ namespace StorytellerSpecs.Fixtures.Marten
         private int _currentNodeId;
 
         private IHost _host;
-        private MessagingSerializationGraph _serializers;
         private PostgresqlSettings _settings;
         private RecordingWorkerQueue _workers;
         private IDocumentStore theStore;
@@ -99,7 +98,6 @@ namespace StorytellerSpecs.Fixtures.Marten
             _admin.RebuildSchemaObjects().GetAwaiter().GetResult();
 
             _settings = _host.Services.GetService<PostgresqlSettings>();
-            _serializers = _host.Services.GetService<MessagingSerializationGraph>();
 
             theStore = _host.Services.GetService<IDocumentStore>();
             theStore.Advanced.Clean.DeleteAllDocuments();
@@ -142,7 +140,8 @@ namespace StorytellerSpecs.Fixtures.Marten
                 Message = new Message1()
             };
 
-            var writer = _serializers.JsonWriterFor(envelope.Message.GetType());
+            var writer = _host.Services.GetRequiredService<IMessagingRoot>().Options.Serializers
+                .FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType);
             envelope.Data = writer.Write(envelope.Message);
             envelope.ContentType = writer.ContentType;
 

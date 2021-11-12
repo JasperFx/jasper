@@ -31,7 +31,6 @@ namespace Jasper.Runtime.Routing
 
         public MessageTypeRouting(Type messageType, IMessagingRoot root)
         {
-            Writers = root.Serialization.WriterFor(messageType);
             MessageType = messageType;
             MessageTypeName = messageType.ToMessageTypeName();
             _customizations = _customizations.AddRange(findMessageTypeCustomizations(messageType));
@@ -51,7 +50,7 @@ namespace Jasper.Runtime.Routing
 
         public void AddTopicRoute(ITopicRule rule, ITopicRouter router)
         {
-            var route = new TopicRoute(rule, Writers, router, _root, this);
+            var route = new TopicRoute(rule, router, _root, this);
             _routes.Add(route);
         }
 
@@ -68,8 +67,6 @@ namespace Jasper.Runtime.Routing
             var subscribers = root.Runtime.FindLocalSubscribers(messageType);
             return subscribers.FirstOrDefault() ?? root.Runtime.GetOrBuildSendingAgent(TransportConstants.LocalUri);
         }
-
-        public WriterCollection<IMessageSerializer> Writers { get; }
 
         public string MessageTypeName { get; }
 

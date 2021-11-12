@@ -8,7 +8,6 @@ using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
-using Jasper.Serialization.Json;
 using Lamar;
 using Lamar.IoC.Instances;
 using LamarCodeGeneration;
@@ -32,8 +31,6 @@ namespace Jasper.Configuration
             For<IMessageLogger>().Use<MessageLogger>().Singleton();
             For<ITransportLogger>().Use<TransportLogger>().Singleton();
 
-            For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Use<NewtonsoftSerializerFactory>();
-
             this.AddSingleton(parent.Advanced);
 
             this.AddOptions();
@@ -44,27 +41,15 @@ namespace Jasper.Configuration
             Scan(_ =>
             {
                 _.Assembly(parent.ApplicationAssembly);
-                _.AddAllTypesOf<IMessageSerializer>();
-                _.AddAllTypesOf<IMessageDeserializer>();
                 _.With(new ForwardingRegistration(forwarding));
             });
 
             Policies.Add(new HandlerScopingPolicy(parent.HandlerGraph));
 
-            ForSingletonOf<MessagingSerializationGraph>().Use<MessagingSerializationGraph>();
-
-
             For<IEnvelopePersistence>().Use<NulloEnvelopePersistence>();
             this.AddSingleton<InMemorySagaPersistor>();
 
             this.AddSingleton(parent.HandlerGraph);
-
-            Scan(x =>
-            {
-                x.AssemblyContainingType<JasperServiceRegistry>();
-                x.ConnectImplementationsToTypesClosing(typeof(ISerializerFactory<,>));
-            });
-
 
             ForSingletonOf<IMessagingRoot>().Use<MessagingRoot>();
 

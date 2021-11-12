@@ -1,15 +1,14 @@
 using System;
 using Baseline;
 using Jasper.Serialization;
-using Jasper.Serialization.New;
 using Jasper.Transports;
 
 namespace Jasper.Runtime.Scheduled
 {
-    public class EnvelopeReaderWriter : INewSerializer
+    public class EnvelopeReaderWriter : IMessageSerializer
     {
         public string ContentType { get; } = TransportConstants.SerializedEnvelope;
-        public static INewSerializer Instance { get; } = new EnvelopeReaderWriter();
+        public static IMessageSerializer Instance { get; } = new EnvelopeReaderWriter();
 
         public object ReadFromData(Type messageType, byte[] data)
         {

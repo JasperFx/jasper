@@ -6,7 +6,6 @@ using Jasper.Persistence.Durability;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
-using Jasper.Serialization.New;
 
 namespace Jasper.Runtime
 {
@@ -16,7 +15,6 @@ namespace Jasper.Runtime
         IEnvelopeRouter Router { get; }
         IHandlerPipeline Pipeline { get; }
         IMessageLogger MessageLogger { get; }
-        MessagingSerializationGraph Serialization { get; }
         JasperOptions Options { get; }
 
         IExecutionContext NewContext();

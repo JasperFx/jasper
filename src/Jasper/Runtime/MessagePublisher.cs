@@ -86,16 +86,11 @@ namespace Jasper.Runtime
 
         public Envelope EnvelopeForRequestResponse<TResponse>(object request)
         {
-            var messageType = typeof(TResponse).ToMessageTypeName();
-            Root.Serialization.RegisterType(typeof(TResponse));
-
-            var reader = Root.Serialization.ReaderFor(messageType);
-
             return new Envelope
             {
                 Message = request,
-                ReplyRequested = messageType,
-                AcceptedContentTypes = reader.ContentTypes
+                ReplyRequested = typeof(TResponse).ToMessageTypeName(), // memoize this maybe?
+                AcceptedContentTypes = new []{EnvelopeConstants.JsonContentType} // TODO -- might want a default serializer option for here
             };
         }
 

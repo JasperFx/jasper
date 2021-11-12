@@ -80,8 +80,7 @@ namespace Jasper.Runtime.Routing
 
         private Type determineMessageType(Envelope original)
         {
-            return original.Message?.GetType()
-                   ?? _root.Serialization.ReaderFor(original.MessageType)?.MessageType;
+            return original.Message?.GetType();
         }
 
         public void RouteToDestination(Uri destination, Envelope envelope)

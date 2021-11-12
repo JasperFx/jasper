@@ -21,36 +21,8 @@ namespace Jasper.Testing.Acceptance
         {
             var envelope = Publisher.As<ExecutionContext>().EnvelopeForRequestResponse<Message1>(new Message2());
 
-            envelope.AcceptedContentTypes.ShouldContain("text/message1");
-            envelope.AcceptedContentTypes.ShouldContain("text/oddball");
-
             envelope.AcceptedContentTypes.Last().ShouldBe(EnvelopeConstants.JsonContentType);
         }
     }
 
-    public class Message1TextReader : IMessageDeserializer
-    {
-        public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
-        public Type DotNetType { get; } = typeof(Message1);
-        public string ContentType { get; } = "text/message1";
-
-        public object ReadFromData(byte[] data)
-        {
-            throw new NotSupportedException();
-        }
-
-    }
-
-    public class Message1OddballReader : IMessageDeserializer
-    {
-        public string MessageType { get; } = typeof(Message1).ToMessageTypeName();
-        public Type DotNetType { get; } = typeof(Message3);
-        public string ContentType { get; } = "text/oddball";
-
-        public object ReadFromData(byte[] data)
-        {
-            throw new NotSupportedException();
-        }
-
-    }
 }

@@ -75,15 +75,6 @@ namespace StorytellerSpecs.Fixtures
             _options.Endpoints.ListenForMessagesFrom(channel);
         }
 
-        [FormatAs("Additional serializers have content types {contentTypes}")]
-        public void SerializersAre(string[] contentTypes)
-        {
-            contentTypes.Each(contentType =>
-            {
-                var serializer = new FakeSerializerFactory(contentType);
-                _options.Services.For<ISerializerFactory<IMessageDeserializer, IMessageSerializer>>().Add(serializer);
-            });
-        }
 
         [ExposeAsTable("The available custom media writers are")]
         public void CustomWritersAre([SelectionList("MessageTypes")] string MessageType, string ContentType)
@@ -151,6 +142,16 @@ namespace StorytellerSpecs.Fixtures
         public string ContentType { get; }
 
         public byte[] Write(object model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ReadFromData(Type messageType, byte[] data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ReadFromData(byte[] data)
         {
             throw new NotImplementedException();
         }

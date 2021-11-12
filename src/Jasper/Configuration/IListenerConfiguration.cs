@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using Newtonsoft.Json;
 
 namespace Jasper.Configuration
@@ -76,7 +76,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="serializer"></param>
         /// <returns></returns>
-        T DefaultSerializer(INewSerializer serializer);
+        T DefaultSerializer(IMessageSerializer serializer);
     }
 
     public interface IListenerConfiguration : IListenerConfiguration<IListenerConfiguration>

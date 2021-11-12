@@ -35,7 +35,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         private IHost _host;
         private RecordingSchedulingAgent _schedulerAgent;
-        private MessagingSerializationGraph _serializers;
         private RecordingWorkerQueue _workers;
 
         public SqlServerMessageRecoveryFixture()
@@ -90,8 +89,6 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 })
                 .Start();
 
-            _serializers = _host.Services.GetService<MessagingSerializationGraph>();
-
             _host.RebuildMessageStorage().GetAwaiter().GetResult();
 
             _currentNodeId = _host.Services.GetService<AdvancedSettings>().UniqueNodeId;
@@ -132,7 +129,8 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 Message = new Message1()
             };
 
-            var writer = _serializers.JsonWriterFor(envelope.Message.GetType());
+            var writer = _host.Services.GetRequiredService<IMessagingRoot>().Options.Serializers
+                .FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType);
             envelope.Data = writer.Write(envelope.Message);
             envelope.ContentType = writer.ContentType;
 

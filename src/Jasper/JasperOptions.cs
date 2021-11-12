@@ -7,7 +7,7 @@ using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Scheduled;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Model;
@@ -116,7 +116,7 @@ namespace Jasper
         /// <summary>
         /// Default message serializers for the application
         /// </summary>
-        public IList<INewSerializer> Serializers { get; } = new List<INewSerializer>{EnvelopeReaderWriter.Instance};
+        public IList<IMessageSerializer> Serializers { get; } = new List<IMessageSerializer>{EnvelopeReaderWriter.Instance};
 
         /// <summary>
         ///     Applies the extension to this application

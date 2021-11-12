@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Runtime;
-using Jasper.Serialization.New;
 using Jasper.Transports.Sending;
 using Jasper.Util;
 using Newtonsoft.Json;

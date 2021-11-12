@@ -3,24 +3,11 @@ using System.Buffers;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Jasper.Serialization.Json;
 using Newtonsoft.Json;
 
-namespace Jasper.Serialization.New
+namespace Jasper.Serialization
 {
-    public interface INewSerializer
-    {
-        string ContentType { get; }
-
-        // TODO -- use read only memory later, and let it go back to the pool later.
-        // "rent memory"
-        byte[] Write(object message);
-
-        object ReadFromData(Type messageType, byte[] data);
-        object ReadFromData(byte[] data);
-    }
-
-    public class NewtonsoftSerializer : INewSerializer
+    public class NewtonsoftSerializer : IMessageSerializer
     {
         private int _bufferSize = 1024;
 

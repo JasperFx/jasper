@@ -1,6 +1,6 @@
 using System;
 using Baseline;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using Newtonsoft.Json;
 using TypeExtensions = LamarCodeGeneration.Util.TypeExtensions;
 
@@ -49,7 +49,7 @@ namespace Jasper.Configuration
             return this;
         }
 
-        public ISubscriberConfiguration<T> DefaultSerializer(INewSerializer serializer)
+        public ISubscriberConfiguration<T> DefaultSerializer(IMessageSerializer serializer)
         {
             _endpoint.RegisterSerializer(serializer);
             _endpoint.DefaultSerializer = serializer;

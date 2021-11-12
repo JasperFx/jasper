@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Serialization.New;
+using Jasper.Serialization;
 using LamarCodeGeneration.Util;
 using Newtonsoft.Json;
 
@@ -80,7 +80,7 @@ namespace Jasper.Configuration
             return this.As<TSelf>();
         }
 
-        public TSelf DefaultSerializer(INewSerializer serializer)
+        public TSelf DefaultSerializer(IMessageSerializer serializer)
         {
             endpoint.RegisterSerializer(serializer);
             endpoint.DefaultSerializer = serializer;

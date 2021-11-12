@@ -2,7 +2,7 @@
 using System.Buffers;
 using Newtonsoft.Json;
 
-namespace Jasper.Serialization.Json
+namespace Jasper.Serialization
 {
     internal class JsonArrayPool<T> : IArrayPool<T>
     {
