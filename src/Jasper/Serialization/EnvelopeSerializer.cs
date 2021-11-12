@@ -11,22 +11,6 @@ namespace Jasper.Serialization
 {
     public class EnvelopeSerializer
     {
-        public const string CorrelationIdKey = "correlation-id";
-        public const string SagaIdKey = "saga-id";
-        public const string IdKey = "id";
-        public const string CausationIdKey = "parent-id";
-        public const string ContentTypeKey = "content-type";
-        public const string SourceKey = "source";
-        public const string ReplyRequestedKey = "reply-requested";
-        public const string DestinationKey = "destination";
-        public const string ReplyUriKey = "reply-uri";
-        public const string ExecutionTimeKey = "time-to-send";
-        public const string AttemptsKey = "attempts";
-        public const string AckRequestedKey = "ack-requested";
-        public const string MessageTypeKey = "message-type";
-        public const string AcceptedContentTypesKey = "accepted-content-types";
-        public const string DeliverByHeader = "deliver-by";
-
         /// <summary>
         /// Read properties and header values from a dictionary into this envelope object
         /// </summary>
@@ -67,63 +51,63 @@ namespace Jasper.Serialization
             {
                 switch (key)
                 {
-                    case SourceKey:
+                    case EnvelopeConstants.SourceKey:
                         env.Source = value;
                         break;
 
-                    case MessageTypeKey:
+                    case EnvelopeConstants.MessageTypeKey:
                         env.MessageType = value;
                         break;
 
-                    case ReplyUriKey:
+                    case EnvelopeConstants.ReplyUriKey:
                         env.ReplyUri = new Uri(value);
                         break;
 
-                    case ContentTypeKey:
+                    case EnvelopeConstants.ContentTypeKey:
                         env.ContentType = value;
                         break;
 
-                    case CorrelationIdKey:
+                    case EnvelopeConstants.CorrelationIdKey:
                         env.CorrelationId = value;
                         break;
 
-                    case SagaIdKey:
+                    case EnvelopeConstants.SagaIdKey:
                         env.SagaId = value;
                         break;
 
-                    case CausationIdKey:
+                    case EnvelopeConstants.CausationIdKey:
                         env.CausationId = value;
                         break;
 
-                    case DestinationKey:
+                    case EnvelopeConstants.DestinationKey:
                         env.Destination = new Uri(value);
                         break;
 
-                    case AcceptedContentTypesKey:
+                    case EnvelopeConstants.AcceptedContentTypesKey:
                         env.AcceptedContentTypes = value.Split(',');
                         break;
 
-                    case IdKey:
+                    case EnvelopeConstants.IdKey:
                         if (Guid.TryParse(value, out var id)) env.Id = id;
                         break;
 
-                    case ReplyRequestedKey:
+                    case EnvelopeConstants.ReplyRequestedKey:
                         env.ReplyRequested = value;
                         break;
 
-                    case AckRequestedKey:
+                    case EnvelopeConstants.AckRequestedKey:
                         env.AckRequested = value.Equals("true", StringComparison.OrdinalIgnoreCase);
                         break;
 
-                    case ExecutionTimeKey:
+                    case EnvelopeConstants.ExecutionTimeKey:
                         env.ExecutionTime = XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.Utc);
                         break;
 
-                    case AttemptsKey:
+                    case EnvelopeConstants.AttemptsKey:
                         env.Attempts = Int32.Parse(value);
                         break;
 
-                    case DeliverByHeader:
+                    case EnvelopeConstants.DeliverByHeader:
                         env.DeliverBy = DateTime.Parse(value);
                         break;
 
@@ -227,34 +211,34 @@ namespace Jasper.Serialization
         /// <param name="dictionary"></param>
         public static void WriteToDictionary(IDictionary<string, object> dictionary, Envelope env)
         {
-            dictionary.WriteProp(SourceKey, env.Source);
-            dictionary.WriteProp(MessageTypeKey, env.MessageType);
-            dictionary.WriteProp(ReplyUriKey, env.ReplyUri);
-            dictionary.WriteProp(ContentTypeKey, env.ContentType);
-            dictionary.WriteProp(CorrelationIdKey, env.CorrelationId);
-            dictionary.WriteProp(CausationIdKey, env.CausationId);
-            dictionary.WriteProp(DestinationKey, env.Destination);
-            dictionary.WriteProp(SagaIdKey, env.SagaId);
+            dictionary.WriteProp(EnvelopeConstants.SourceKey, env.Source);
+            dictionary.WriteProp(EnvelopeConstants.MessageTypeKey, env.MessageType);
+            dictionary.WriteProp(EnvelopeConstants.ReplyUriKey, env.ReplyUri);
+            dictionary.WriteProp(EnvelopeConstants.ContentTypeKey, env.ContentType);
+            dictionary.WriteProp(EnvelopeConstants.CorrelationIdKey, env.CorrelationId);
+            dictionary.WriteProp(EnvelopeConstants.CausationIdKey, env.CausationId);
+            dictionary.WriteProp(EnvelopeConstants.DestinationKey, env.Destination);
+            dictionary.WriteProp(EnvelopeConstants.SagaIdKey, env.SagaId);
 
             if (env.AcceptedContentTypes != null && env.AcceptedContentTypes.Any())
             {
-                dictionary.WriteProp(AcceptedContentTypesKey, string.Join(",", env.AcceptedContentTypes));
+                dictionary.WriteProp(EnvelopeConstants.AcceptedContentTypesKey, string.Join(",", env.AcceptedContentTypes));
             }
 
-            dictionary.WriteProp(IdKey, env.Id);
-            dictionary.WriteProp(ReplyRequestedKey, env.ReplyRequested);
-            dictionary.WriteProp(AckRequestedKey, env.AckRequested);
+            dictionary.WriteProp(EnvelopeConstants.IdKey, env.Id);
+            dictionary.WriteProp(EnvelopeConstants.ReplyRequestedKey, env.ReplyRequested);
+            dictionary.WriteProp(EnvelopeConstants.AckRequestedKey, env.AckRequested);
 
             if (env.ExecutionTime.HasValue)
             {
                 var dateString = env.ExecutionTime.Value.ToUniversalTime()
                     .ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
-                dictionary.Add(ExecutionTimeKey, dateString);
+                dictionary.Add(EnvelopeConstants.ExecutionTimeKey, dateString);
             }
 
 
-            dictionary.WriteProp(AttemptsKey, env.Attempts);
-            dictionary.WriteProp(DeliverByHeader, env.DeliverBy);
+            dictionary.WriteProp(EnvelopeConstants.AttemptsKey, env.Attempts);
+            dictionary.WriteProp(EnvelopeConstants.DeliverByHeader, env.DeliverBy);
 
             foreach (var pair in env.Headers)
             {
@@ -266,36 +250,36 @@ namespace Jasper.Serialization
         {
             var count = 0;
 
-            writer.WriteProp(ref count, SourceKey, env.Source);
-            writer.WriteProp(ref count, MessageTypeKey, env.MessageType);
-            writer.WriteProp(ref count, ReplyUriKey, env.ReplyUri);
-            writer.WriteProp(ref count, ContentTypeKey, env.ContentType);
-            writer.WriteProp(ref count, CorrelationIdKey, env.CorrelationId);
-            writer.WriteProp(ref count, CausationIdKey, env.CausationId);
-            writer.WriteProp(ref count, DestinationKey, env.Destination);
-            writer.WriteProp(ref count, SagaIdKey, env.SagaId);
+            writer.WriteProp(ref count, EnvelopeConstants.SourceKey, env.Source);
+            writer.WriteProp(ref count, EnvelopeConstants.MessageTypeKey, env.MessageType);
+            writer.WriteProp(ref count, EnvelopeConstants.ReplyUriKey, env.ReplyUri);
+            writer.WriteProp(ref count, EnvelopeConstants.ContentTypeKey, env.ContentType);
+            writer.WriteProp(ref count, EnvelopeConstants.CorrelationIdKey, env.CorrelationId);
+            writer.WriteProp(ref count, EnvelopeConstants.CausationIdKey, env.CausationId);
+            writer.WriteProp(ref count, EnvelopeConstants.DestinationKey, env.Destination);
+            writer.WriteProp(ref count, EnvelopeConstants.SagaIdKey, env.SagaId);
 
             if (env.AcceptedContentTypes != null && env.AcceptedContentTypes.Any())
             {
-                writer.WriteProp(ref count, AcceptedContentTypesKey, string.Join(",", env.AcceptedContentTypes));
+                writer.WriteProp(ref count, EnvelopeConstants.AcceptedContentTypesKey, string.Join(",", env.AcceptedContentTypes));
             }
 
-            writer.WriteProp(ref count, IdKey, env.Id);
-            writer.WriteProp(ref count, ReplyRequestedKey, env.ReplyRequested);
-            writer.WriteProp(ref count, AckRequestedKey, env.AckRequested);
+            writer.WriteProp(ref count, EnvelopeConstants.IdKey, env.Id);
+            writer.WriteProp(ref count, EnvelopeConstants.ReplyRequestedKey, env.ReplyRequested);
+            writer.WriteProp(ref count, EnvelopeConstants.AckRequestedKey, env.AckRequested);
 
             if (env.ExecutionTime.HasValue)
             {
                 var dateString = env.ExecutionTime.Value.ToUniversalTime()
                     .ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
                 count++;
-                writer.Write(ExecutionTimeKey);
+                writer.Write(EnvelopeConstants.ExecutionTimeKey);
                 writer.Write(dateString);
             }
 
 
-            writer.WriteProp(ref count, AttemptsKey, env.Attempts);
-            writer.WriteProp(ref count, DeliverByHeader, env.DeliverBy);
+            writer.WriteProp(ref count, EnvelopeConstants.AttemptsKey, env.Attempts);
+            writer.WriteProp(ref count, EnvelopeConstants.DeliverByHeader, env.DeliverBy);
 
             foreach (var pair in env.Headers)
             {

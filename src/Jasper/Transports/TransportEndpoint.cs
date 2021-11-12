@@ -39,24 +39,24 @@ namespace Jasper.Transports
             _mapIncoming = new Lazy<Action<Envelope, TIncoming>>(compileIncoming);
             _mapOutgoing = new Lazy<Action<Envelope, TOutgoing>>(compileOutgoing);
 
-            MapPropertyToHeader(x => x.CorrelationId, EnvelopeSerializer.CorrelationIdKey);
-            MapPropertyToHeader(x => x.SagaId, EnvelopeSerializer.SagaIdKey);
-            MapPropertyToHeader(x => x.Id, EnvelopeSerializer.IdKey);
-            MapPropertyToHeader(x => x.CausationId, EnvelopeSerializer.CausationIdKey);
-            MapPropertyToHeader(x => x.ContentType, EnvelopeSerializer.ContentTypeKey);
-            MapPropertyToHeader(x => x.Source, EnvelopeSerializer.SourceKey);
-            MapPropertyToHeader(x => x.ReplyRequested, EnvelopeSerializer.ReplyRequestedKey);
-            MapPropertyToHeader(x => x.ReplyUri, EnvelopeSerializer.ReplyUriKey);
-            MapPropertyToHeader(x => x.ExecutionTime, EnvelopeSerializer.ExecutionTimeKey);
+            MapPropertyToHeader(x => x.CorrelationId, EnvelopeConstants.CorrelationIdKey);
+            MapPropertyToHeader(x => x.SagaId, EnvelopeConstants.SagaIdKey);
+            MapPropertyToHeader(x => x.Id, EnvelopeConstants.IdKey);
+            MapPropertyToHeader(x => x.CausationId, EnvelopeConstants.CausationIdKey);
+            MapPropertyToHeader(x => x.ContentType, EnvelopeConstants.ContentTypeKey);
+            MapPropertyToHeader(x => x.Source, EnvelopeConstants.SourceKey);
+            MapPropertyToHeader(x => x.ReplyRequested, EnvelopeConstants.ReplyRequestedKey);
+            MapPropertyToHeader(x => x.ReplyUri, EnvelopeConstants.ReplyUriKey);
+            MapPropertyToHeader(x => x.ExecutionTime, EnvelopeConstants.ExecutionTimeKey);
 
-            MapPropertyToHeader(x => x.AckRequested, EnvelopeSerializer.AckRequestedKey);
-            MapPropertyToHeader(x => x.MessageType, EnvelopeSerializer.MessageTypeKey);
-            MapPropertyToHeader(x => x.AcceptedContentTypes, EnvelopeSerializer.AcceptedContentTypesKey);
+            MapPropertyToHeader(x => x.AckRequested, EnvelopeConstants.AckRequestedKey);
+            MapPropertyToHeader(x => x.MessageType, EnvelopeConstants.MessageTypeKey);
+            MapPropertyToHeader(x => x.AcceptedContentTypes, EnvelopeConstants.AcceptedContentTypesKey);
 
             // TODO -- could check it here, then delete it on the spot instead of mapping it!!
-            MapPropertyToHeader(x => x.DeliverBy, EnvelopeSerializer.DeliverByHeader);
+            MapPropertyToHeader(x => x.DeliverBy, EnvelopeConstants.DeliverByHeader);
 
-            MapPropertyToHeader(x => x.Attempts, EnvelopeSerializer.AttemptsKey);
+            MapPropertyToHeader(x => x.Attempts, EnvelopeConstants.AttemptsKey);
         }
 
         /// <summary>
