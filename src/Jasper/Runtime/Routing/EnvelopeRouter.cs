@@ -113,7 +113,7 @@ namespace Jasper.Runtime.Routing
                 Destination = agent.Destination,
                 ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
-                Writer = agent.Endpoint.DefaultSerializer
+                Serializer = agent.Endpoint.DefaultSerializer
             };
         }
 
@@ -126,7 +126,7 @@ namespace Jasper.Runtime.Routing
                 Destination = agent.Destination,
                 ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
-                Writer = agent.Endpoint.DefaultSerializer
+                Serializer = agent.Endpoint.DefaultSerializer
             };
         }
 

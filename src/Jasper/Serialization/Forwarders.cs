@@ -12,9 +12,6 @@ namespace Jasper.Serialization
 
         public void Add(Type type)
         {
-            var stream = new MemoryStream();
-
-
             var forwardedType = type
                 .FindInterfaceThatCloses(typeof(IForwardsTo<>))
                 .GetGenericArguments()

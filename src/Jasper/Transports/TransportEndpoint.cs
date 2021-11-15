@@ -258,6 +258,10 @@ namespace Jasper.Transports
         public void MapIncomingToEnvelope(Envelope envelope, TIncoming incoming)
         {
             _mapIncoming.Value(envelope, incoming);
+
+            var contentType = envelope.ContentType;
+            var serializer = TryFindSerializer(contentType) ?? DefaultSerializer;
+            envelope.Serializer = serializer;
         }
 
         public void MapEnvelopeToOutgoing(Envelope envelope, TOutgoing outgoing)

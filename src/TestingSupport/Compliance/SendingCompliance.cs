@@ -479,12 +479,6 @@ namespace TestingSupport.Compliance
         {
         }
 
-        public object ReadData(byte[] data)
-        {
-            var name = Encoding.UTF8.GetString(data);
-            return new BlueMessage {Name = name};
-        }
-
         public string ContentType { get; } = "text/plain";
         public byte[] Write(object message)
         {
@@ -498,7 +492,8 @@ namespace TestingSupport.Compliance
 
         public object ReadFromData(byte[] data)
         {
-            throw new NotImplementedException();
+            var name = Encoding.UTF8.GetString(data);
+            return new BlueMessage {Name = name};
         }
     }
     // ENDSAMPLE

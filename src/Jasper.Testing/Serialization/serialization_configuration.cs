@@ -184,7 +184,7 @@ namespace Jasper.Testing.Serialization
 
                 opts.Endpoints.ListenForMessagesFrom("stub://two");
             }).StartAsync();
-            
+
             var root = host.Services.GetRequiredService<IMessagingRoot>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBe(fooSerializer);

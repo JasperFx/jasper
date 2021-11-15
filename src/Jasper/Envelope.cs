@@ -47,9 +47,9 @@ namespace Jasper
                     if (_message == null)
                         throw new InvalidOperationException("Cannot ensure data is present when there is no message");
 
-                    if (Writer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+                    if (Serializer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
 
-                    _data = Writer.Write(_message);
+                    _data = Serializer.Write(_message);
                 }
 
                 return _data;

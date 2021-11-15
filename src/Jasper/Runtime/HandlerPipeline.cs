@@ -6,8 +6,8 @@ using Baseline.ImTools;
 using Jasper.ErrorHandling;
 using Jasper.Logging;
 using Jasper.Runtime.Handlers;
-using Jasper.Serialization;
 using Jasper.Transports;
+using Jasper.Util;
 using Microsoft.Extensions.ObjectPool;
 using Polly;
 
@@ -25,6 +25,8 @@ namespace Jasper.Runtime
         private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
             ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
 
+        private ImHashMap<string, Type> _messageTypes = ImHashMap<string, Type>.Empty;
+
         private readonly AdvancedSettings _settings;
 
 
@@ -37,9 +39,16 @@ namespace Jasper.Runtime
             _contextPool = contextPool;
             _cancellation = root.Cancellation;
 
+            RegisterMessageType(typeof(Acknowledgement).ToMessageTypeName(), typeof(Acknowledgement));
+
             Logger = logger;
 
             _settings = root.Settings;
+        }
+
+        public void RegisterMessageType(string messageTypeName, Type messageType)
+        {
+            _messageTypes = _messageTypes.AddOrUpdate(messageTypeName, messageType);
         }
 
 
@@ -130,6 +139,32 @@ namespace Jasper.Runtime
             }
 
             if (envelope.Message == null)
+            {
+                // Try to deserialize
+                try
+                {
+                    var serializer = envelope.Serializer ?? _root.Options.DetermineSerializer(envelope);
+                    envelope.Message = _messageTypes.TryFind(envelope.MessageType, out var messageType)
+                        ? serializer.ReadFromData(messageType, envelope.Data)
+                        : serializer.ReadFromData(envelope.Data);
+
+                    if (envelope.Message == null)
+                    {
+                        return new MoveToErrorQueue(new InvalidOperationException(
+                            "No message body could be de-serialized from the raw data in this envelope"));
+                    }
+                }
+                catch (Exception e)
+                {
+                    return new MoveToErrorQueue(e);
+                }
+                finally
+                {
+                    Logger.Received(envelope);
+                }
+        }
+
+        if (envelope.Message == null)
             {
                 throw new ArgumentNullException("envelope.Message");
             }

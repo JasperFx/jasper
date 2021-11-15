@@ -31,11 +31,11 @@ namespace Jasper.Runtime.Routing
         {
             if (envelope.ContentType.IsNotEmpty())
             {
-                envelope.Writer = _endpoint.TryFindSerializer(envelope.ContentType);
+                envelope.Serializer = _endpoint.TryFindSerializer(envelope.ContentType);
             }
             else
             {
-                envelope.Writer = _writer;
+                envelope.Serializer = _writer;
                 envelope.ContentType = _writer?.ContentType;
             }
 
@@ -91,7 +91,7 @@ namespace Jasper.Runtime.Routing
         {
             var envelope = new Envelope(message)
             {
-                Writer = _writer,
+                Serializer = _writer,
                 ContentType = _writer.ContentType,
                 Sender = _agent,
                 Destination = _agent.Destination

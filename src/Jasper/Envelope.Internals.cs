@@ -37,8 +37,7 @@ namespace Jasper
         }
 
 
-        [Obsolete("Want to eliminate this if at all possible")]
-        public IMessageSerializer Writer { get; set; }
+        public IMessageSerializer Serializer { get; set; }
 
 
 
@@ -100,7 +99,7 @@ namespace Jasper
         {
             var envelope = (Envelope)MemberwiseClone();
             envelope.Headers = new Dictionary<string, string>(Headers);
-            envelope.Writer = writer;
+            envelope.Serializer = writer;
             envelope.ContentType = writer.ContentType;
 
             return envelope;
@@ -109,7 +108,7 @@ namespace Jasper
         internal Envelope(object message, IMessageSerializer writer)
         {
             Message = message;
-            Writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            Serializer = writer ?? throw new ArgumentNullException(nameof(writer));
         }
 
         private bool _enqueued;

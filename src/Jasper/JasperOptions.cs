@@ -116,7 +116,7 @@ namespace Jasper
         public IList<IMessageSerializer> Serializers { get; } = new List<IMessageSerializer>{EnvelopeReaderWriter.Instance};
 
         private IMessageSerializer? _defaultSerializer;
-        public IMessageSerializer? DefaultSerializer
+        public IMessageSerializer DefaultSerializer
         {
             get
             {
@@ -230,5 +230,11 @@ namespace Jasper
             // Nothing
         }
 
+        internal IMessageSerializer DetermineSerializer(Envelope envelope)
+        {
+            // TODO -- make this a dictionary for the serializers
+            return Serializers.FirstOrDefault(x => x.ContentType.EqualsIgnoreCase(envelope.ContentType)) ??
+                   DefaultSerializer;
+        }
     }
 }

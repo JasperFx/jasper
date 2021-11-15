@@ -14,6 +14,7 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Local;
+using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
 using Microsoft.Extensions.Hosting;
@@ -168,6 +169,10 @@ namespace Jasper.Runtime
             // Build up the message handlers
             await Handlers.Compiling;
             Handlers.Compile(Options.Advanced.CodeGeneration, _container);
+            foreach (var chain in Handlers.Chains)
+            {
+                Pipeline.RegisterMessageType(chain.MessageType.ToMessageTypeName(), chain.MessageType);
+            }
 
             // If set, use pre-generated message handlers for quicker starts
             if (Options.Advanced.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)
