@@ -19,7 +19,9 @@ namespace Jasper.Runtime.Scheduled
 
         public object ReadFromData(byte[] data)
         {
-            return EnvelopeSerializer.Deserialize(data);
+            var envelope = EnvelopeSerializer.Deserialize(data);
+
+            return envelope;
         }
 
         public byte[] Write(object model)

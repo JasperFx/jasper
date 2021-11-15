@@ -24,7 +24,7 @@ namespace Jasper.Transports
         public static readonly Uri RepliesUri = "local://replies".ToUri();
         public static readonly Uri ScheduledUri = "local://delayed".ToUri();
 
-        public static readonly Uri DurableLocalUri = "local://durable/durable".ToUri();
+        public static readonly Uri DurableLocalUri = "local://durable".ToUri();
         public static readonly Uri LocalUri = "local://".ToUri();
 
         public static readonly int AnyNode = 0;

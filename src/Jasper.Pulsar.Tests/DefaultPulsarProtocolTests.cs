@@ -55,6 +55,7 @@ namespace Jasper.Pulsar.Tests
         {
             Id = Guid.NewGuid(),
 
+
         };
 
         private readonly Lazy<Envelope> _mapped;

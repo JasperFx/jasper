@@ -34,7 +34,7 @@ namespace Jasper.Pulsar
         {
             if (envelope is PulsarEnvelope e)
             {
-                return _consumer.Acknowledge(e.Message, _cancellation).AsTask();
+                return _consumer.Acknowledge(e.MessageData, _cancellation).AsTask();
             }
 
             return Task.CompletedTask;
@@ -44,7 +44,7 @@ namespace Jasper.Pulsar
         {
             if (envelope is PulsarEnvelope e)
             {
-                await _consumer.Acknowledge(e.Message, _cancellation);
+                await _consumer.Acknowledge(e.MessageData, _cancellation);
                 await _sender.Send(envelope);
             }
         }

@@ -27,5 +27,11 @@ namespace Jasper.Runtime
         CancellationToken Cancellation { get; }
 
         IAcknowledgementSender Acknowledgements { get; }
+
+        bool TryFindMessageType(string messageTypeName, out Type messageType);
+
+        Type DetermineMessageType(Envelope envelope);
+
+        void RegisterMessageType(Type messageType);
     }
 }

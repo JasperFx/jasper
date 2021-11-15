@@ -30,6 +30,7 @@ namespace Jasper.Runtime.Routing
 
         public MessageTypeRouting RouteByType(Type messageType)
         {
+            _root.RegisterMessageType(messageType);
             var routing = new MessageTypeRouting(messageType, _root);
 
             var subscribers = _root.Runtime
@@ -65,7 +66,7 @@ namespace Jasper.Runtime.Routing
 
         public Envelope[] RouteOutgoingByEnvelope(Envelope original)
         {
-            var messageType = determineMessageType(original);
+            var messageType = _root.DetermineMessageType(original);
 
             var messageTypeRouting = routingFor(messageType);
 
@@ -78,10 +79,6 @@ namespace Jasper.Runtime.Routing
             return envelopes;
         }
 
-        private Type determineMessageType(Envelope original)
-        {
-            return original.Message?.GetType();
-        }
 
         public void RouteToDestination(Uri destination, Envelope envelope)
         {
@@ -90,7 +87,7 @@ namespace Jasper.Runtime.Routing
 
         private MessageTypeRouting routingFor(Envelope envelope)
         {
-            return routingFor(determineMessageType(envelope));
+            return routingFor(_root.DetermineMessageType(envelope));
         }
 
         public Envelope[] RouteToTopic(string topicName, Envelope envelope)
@@ -132,6 +129,8 @@ namespace Jasper.Runtime.Routing
 
         private MessageTypeRouting routingFor(Type messageType)
         {
+            if (messageType == null) throw new ArgumentNullException(nameof(messageType));
+
             if (_routes.TryFind(messageType, out var routing))
             {
                 return routing;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
@@ -13,6 +14,7 @@ using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
+using Jasper.Util;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NSubstitute;
@@ -38,6 +40,31 @@ namespace Jasper.Testing.Runtime
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 
         public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
+        public bool TryFindMessageType(string messageTypeName, out Type messageType)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Type DetermineMessageType(Envelope envelope)
+        {
+            if (envelope.Message == null)
+            {
+                if (TryFindMessageType(envelope.MessageType, out var messageType))
+                {
+                    return messageType;
+                }
+
+                throw new InvalidOperationException($"Unable to determine a message type for `{envelope.MessageType}`, the known types are: {Handlers.Chains.Select(x => x.MessageType.ToMessageTypeName()).Join(", ")}");
+            }
+
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(Envelope.Message));
+            return envelope.Message.GetType();
+        }
+
+        public void RegisterMessageType(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
 
         public IExecutionContext NewContext()
         {

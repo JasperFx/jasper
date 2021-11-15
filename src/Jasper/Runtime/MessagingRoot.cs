@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -127,6 +126,31 @@ namespace Jasper.Runtime
         }
 
         public IAcknowledgementSender Acknowledgements { get; }
+        public bool TryFindMessageType(string messageTypeName, out Type messageType)
+        {
+            return Handlers.TryFindMessageType(messageTypeName, out messageType);
+        }
+
+        public Type DetermineMessageType(Envelope envelope)
+        {
+            if (envelope.Message == null)
+            {
+                if (TryFindMessageType(envelope.MessageType, out var messageType))
+                {
+                    return messageType;
+                }
+
+                throw new InvalidOperationException($"Unable to determine a message type for `{envelope.MessageType}`, the known types are: {Handlers.Chains.Select(x => x.MessageType.ToMessageTypeName()).Join(", ")}");
+            }
+
+            if (envelope.Message == null) throw new ArgumentNullException(nameof(Envelope.Message));
+            return envelope.Message.GetType();
+        }
+
+        public void RegisterMessageType(Type messageType)
+        {
+            Handlers.RegisterMessageType(messageType);
+        }
 
         public ITransportRuntime Runtime { get; }
         public CancellationToken Cancellation { get; }
@@ -169,10 +193,6 @@ namespace Jasper.Runtime
             // Build up the message handlers
             await Handlers.Compiling;
             Handlers.Compile(Options.Advanced.CodeGeneration, _container);
-            foreach (var chain in Handlers.Chains)
-            {
-                Pipeline.RegisterMessageType(chain.MessageType.ToMessageTypeName(), chain.MessageType);
-            }
 
             // If set, use pre-generated message handlers for quicker starts
             if (Options.Advanced.CodeGeneration.TypeLoadMode == TypeLoadMode.LoadFromPreBuiltAssembly)

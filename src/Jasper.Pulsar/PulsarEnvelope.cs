@@ -5,11 +5,11 @@ namespace Jasper.Pulsar
 {
     public class PulsarEnvelope : Envelope
     {
-        public IMessage<ReadOnlySequence<byte>> Message { get; }
+        public IMessage<ReadOnlySequence<byte>> MessageData { get; }
 
-        public PulsarEnvelope(IMessage<ReadOnlySequence<byte>> message)
+        public PulsarEnvelope(IMessage<ReadOnlySequence<byte>> messageData)
         {
-            Message = message;
+            MessageData = messageData;
         }
     }
 }

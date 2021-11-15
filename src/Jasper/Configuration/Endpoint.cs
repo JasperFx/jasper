@@ -55,6 +55,7 @@ namespace Jasper.Configuration
 
         internal IMessageSerializer? TryFindSerializer(string contentType)
         {
+            if (contentType.IsEmpty()) return null;
             if (_serializers.TryFind(contentType, out var serializer))
             {
                 return serializer;

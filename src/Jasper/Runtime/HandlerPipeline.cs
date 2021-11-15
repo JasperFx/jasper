@@ -25,7 +25,6 @@ namespace Jasper.Runtime
         private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
             ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
 
-        private ImHashMap<string, Type> _messageTypes = ImHashMap<string, Type>.Empty;
 
         private readonly AdvancedSettings _settings;
 
@@ -39,18 +38,10 @@ namespace Jasper.Runtime
             _contextPool = contextPool;
             _cancellation = root.Cancellation;
 
-            RegisterMessageType(typeof(Acknowledgement).ToMessageTypeName(), typeof(Acknowledgement));
-
             Logger = logger;
 
             _settings = root.Settings;
         }
-
-        public void RegisterMessageType(string messageTypeName, Type messageType)
-        {
-            _messageTypes = _messageTypes.AddOrUpdate(messageTypeName, messageType);
-        }
-
 
         public IMessageLogger Logger { get; }
 
@@ -144,7 +135,7 @@ namespace Jasper.Runtime
                 try
                 {
                     var serializer = envelope.Serializer ?? _root.Options.DetermineSerializer(envelope);
-                    envelope.Message = _messageTypes.TryFind(envelope.MessageType, out var messageType)
+                    envelope.Message = _graph.TryFindMessageType(envelope.MessageType, out var messageType)
                         ? serializer.ReadFromData(messageType, envelope.Data)
                         : serializer.ReadFromData(envelope.Data);
 

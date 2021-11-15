@@ -11,9 +11,9 @@ using Jasper.ErrorHandling;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
+using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;
-using LamarCodeGeneration.Model;
 using LamarCompiler;
 
 namespace Jasper.Runtime.Handlers
@@ -36,6 +36,9 @@ namespace Jasper.Runtime.Handlers
         private ImHashMap<Type, MessageHandler> _handlers = ImHashMap<Type, MessageHandler>.Empty;
 
         private bool _hasGrouped;
+
+        private ImHashMap<string, Type> _messageTypes = ImHashMap<string, Type>.Empty;
+
 
         public HandlerGraph()
         {
@@ -199,6 +202,19 @@ namespace Jasper.Runtime.Handlers
             AddForwarders(forwarders);
 
             foreach (var configuration in _configurations) configuration();
+
+            _messageTypes =
+                _messageTypes.AddOrUpdate(typeof(Acknowledgement).ToMessageTypeName(), typeof(Acknowledgement));
+
+            foreach (var chain in Chains)
+            {
+                _messageTypes = _messageTypes.AddOrUpdate(chain.MessageType.ToMessageTypeName(), chain.MessageType);
+            }
+        }
+
+        public bool TryFindMessageType(string messageTypeName, out Type messageType)
+        {
+            return _messageTypes.TryFind(messageTypeName, out messageType);
         }
 
         public void Group()
@@ -248,6 +264,11 @@ namespace Jasper.Runtime.Handlers
         public bool CanHandle(Type messageType)
         {
             return _chains.TryFind(messageType, out var chain);
+        }
+
+        public void RegisterMessageType(Type messageType)
+        {
+            _messageTypes = _messageTypes.AddOrUpdate(messageType.ToMessageTypeName(), messageType);
         }
     }
 }
