@@ -200,7 +200,6 @@ FakesAssemblies/
 *.opt
 
 artifacts
-src/CommonAssemblyInfo.cs
 paket.lock
 
 *.DotSettings
@@ -231,3 +230,4 @@ src/Jasper.AzureServiceBus.Tests/appsettings.json
 
 src/ConsoleApp/Internal
 src/ConsoleApp/Generated/
+
