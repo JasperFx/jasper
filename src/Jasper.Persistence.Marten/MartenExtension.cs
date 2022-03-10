@@ -41,11 +41,13 @@ namespace Jasper.Persistence.Marten
 
             options.Services.AddSingleton(s =>
             {
+                var store = s.GetRequiredService<IDocumentStore>();
+
                 return new PostgresqlSettings
                 {
                     // Super hacky, look away!!!
-                    ConnectionString = Options.Tenancy?.Default.Database.CreateConnection().ConnectionString,
-                    SchemaName = Options.DatabaseSchemaName
+                    ConnectionString = store.Storage.Database.CreateConnection().ConnectionString,
+                    SchemaName = store.Options.DatabaseSchemaName
                 };
             });
 
