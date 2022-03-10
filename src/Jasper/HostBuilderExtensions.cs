@@ -71,10 +71,10 @@ namespace Jasper
 
             ExtensionLoader.ApplyExtensions(options);
 
+            builder.UseLamar();
+
             builder.ConfigureServices((context, services) =>
             {
-                services.AddLamar();
-
                 options.Configure(context.HostingEnvironment, context.Configuration);
 
                 customization?.Invoke(context, options);

@@ -20,6 +20,6 @@
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
   </ItemGroup>
 </Project>

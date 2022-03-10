@@ -9,7 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="DotPulsar" Version="1.1.2" />
+      <PackageReference Include="DotPulsar" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
