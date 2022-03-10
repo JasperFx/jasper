@@ -16,8 +16,8 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Marten" Version="4.0.0" />
-    <PackageReference Include="Npgsql" Version="5.0.7" />
+    <PackageReference Include="Marten" Version="5.0.0-alpha.6" />
+    <PackageReference Include="Npgsql" Version="6.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj" />

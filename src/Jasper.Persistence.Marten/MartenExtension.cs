@@ -44,7 +44,7 @@ namespace Jasper.Persistence.Marten
                 return new PostgresqlSettings
                 {
                     // Super hacky, look away!!!
-                    ConnectionString = Options.Tenancy?.Default.CreateConnection().ConnectionString,
+                    ConnectionString = Options.Tenancy?.Default.Database.CreateConnection().ConnectionString,
                     SchemaName = Options.DatabaseSchemaName
                 };
             });

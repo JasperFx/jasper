@@ -35,7 +35,7 @@ namespace Benchmarks
                 {
                     configure(opts);
                     opts.Advanced.CodeGeneration.ApplicationAssembly = GetType().Assembly;
-                    opts.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.LoadFromPreBuiltAssembly;
+                    opts.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Static;
                 })
                 .ConfigureLogging(logging =>
                 {

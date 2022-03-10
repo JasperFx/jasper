@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Oakton;
 using Shouldly;
 using TestingSupport;
+using Weasel.Core;
 using Weasel.Postgresql;
 using Xunit;
 using ConsoleWriter = Oakton.ConsoleWriter;

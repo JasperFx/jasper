@@ -30,8 +30,8 @@ namespace Jasper.Persistence.SqlServer
 
             options.Services.For<SqlConnection>().Use<SqlConnection>();
 
-            options.Services.Add(new SqlConnectionInstance(typeof(SqlConnection)));
-            options.Services.Add(new SqlConnectionInstance(typeof(DbConnection)));
+            options.Services.Add(new ServiceDescriptor(typeof(SqlConnection), new SqlConnectionInstance(typeof(SqlConnection)))   );
+            options.Services.Add(new ServiceDescriptor(typeof(DbConnection), new SqlConnectionInstance(typeof(DbConnection)))   );
 
             // Don't overwrite the EF Core transaction support if it's there
             options.Advanced.CodeGeneration.SetTransactionsIfNone(new SqlServerTransactionFrameProvider());

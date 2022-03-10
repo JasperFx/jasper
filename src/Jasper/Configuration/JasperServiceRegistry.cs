@@ -68,7 +68,7 @@ namespace Jasper.Configuration
 
             // I'm not proud of this code, but you need a non-null
             // Container property to use the codegen
-            For<IGeneratesCode>().Use(c =>
+            For<ICodeFileCollection>().Use(c =>
             {
                 var handlers = c.GetInstance<HandlerGraph>();
                 handlers.Container = (IContainer) c;

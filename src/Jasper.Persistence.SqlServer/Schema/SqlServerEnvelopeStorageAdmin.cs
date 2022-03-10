@@ -109,9 +109,9 @@ namespace Jasper.Persistence.SqlServer.Schema
             await using var conn = new SqlConnection(_settings.ConnectionString);
             await conn.OpenAsync();
 
-            var patch = await SchemaMigration.Determine(conn, _schemaObjects);
+            var migration = await SchemaMigration.Determine(conn, _schemaObjects);
 
-            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+            await new SqlServerMigrator().ApplyAll(conn, migration, AutoCreate.CreateOrUpdate);
         }
 
 
@@ -121,20 +121,20 @@ namespace Jasper.Persistence.SqlServer.Schema
             await using var conn = new SqlConnection(_settings.ConnectionString);
             await conn.OpenAsync();
 
-            SchemaMigration patch = null;
+            SchemaMigration migration = null;
             try
             {
-                patch = await SchemaMigration.Determine(conn, _schemaObjects);
+                migration = await SchemaMigration.Determine(conn, _schemaObjects);
             }
             catch (Exception)
             {
                 await Task.Delay(250);
-                patch = await SchemaMigration.Determine(conn, _schemaObjects);
+                migration = await SchemaMigration.Determine(conn, _schemaObjects);
             }
 
-            if (patch.Difference != SchemaPatchDifference.None)
+            if (migration.Difference != SchemaPatchDifference.None)
             {
-                await patch.ApplyAll(conn, new DdlRules(), AutoCreate.All);
+                await new SqlServerMigrator().ApplyAll(conn, migration, AutoCreate.All);
             }
         }
 
@@ -155,11 +155,11 @@ namespace Jasper.Persistence.SqlServer.Schema
             await using var conn = new SqlConnection(_settings.ConnectionString);
             await conn.OpenAsync();
 
-            var patch = await SchemaMigration.Determine(conn, _schemaObjects);
+            var migration = await SchemaMigration.Determine(conn, _schemaObjects);
 
-            if (patch.Difference != SchemaPatchDifference.None)
+            if (migration.Difference != SchemaPatchDifference.None)
             {
-                await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+                await new SqlServerMigrator().ApplyAll(conn, migration, AutoCreate.CreateOrUpdate);
             }
 
             await truncateEnvelopeData(conn);
@@ -202,7 +202,7 @@ GO
 
 ");
 
-            var rules = new DdlRules();
+            var rules = new SqlServerMigrator();
             foreach (var table in _schemaObjects)
             {
                 table.WriteCreateStatement(rules, writer);

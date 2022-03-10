@@ -25,8 +25,8 @@ namespace Jasper.Persistence.Postgresql
 
             options.Services.For<NpgsqlConnection>().Use<NpgsqlConnection>();
 
-            options.Services.Add(new NpgsqlConnectionInstance(typeof(NpgsqlConnection)));
-            options.Services.Add(new NpgsqlConnectionInstance(typeof(DbConnection)));
+            options.Services.Add(new ServiceDescriptor(typeof(NpgsqlConnection),new NpgsqlConnectionInstance(typeof(NpgsqlConnection))));
+            options.Services.Add(new ServiceDescriptor(typeof(DbConnection), new NpgsqlConnectionInstance(typeof(DbConnection))));
 
             options.Advanced.CodeGeneration.SetTransactionsIfNone(new PostgresqlTransactionFrameProvider());
         }

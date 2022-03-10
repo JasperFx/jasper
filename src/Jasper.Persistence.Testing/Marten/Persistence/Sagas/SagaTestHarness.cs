@@ -7,6 +7,7 @@ using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
+using Weasel.Core;
 using Weasel.Postgresql;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas

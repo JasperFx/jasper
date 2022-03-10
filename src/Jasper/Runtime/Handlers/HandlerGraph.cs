@@ -18,7 +18,7 @@ using LamarCompiler;
 
 namespace Jasper.Runtime.Handlers
 {
-    public partial class HandlerGraph : IGeneratesCode, IHandlerConfiguration
+    public partial class HandlerGraph : ICodeFileCollection, IHandlerConfiguration
     {
         public static readonly string Context = "context";
         private readonly List<HandlerCall> _calls = new List<HandlerCall>();

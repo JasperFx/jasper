@@ -204,7 +204,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("There should be {count} persisted, incoming messages in the receiver storage")]
         public long PersistedIncomingCount()
         {
-            using (var conn = _receiverStore.Tenancy.Default.CreateConnection())
+            using (var conn = _receiverStore.Tenancy.Default.Database.CreateConnection())
             {
                 conn.Open();
 
@@ -217,7 +217,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         [FormatAs("There should be {count} persisted, outgoing messages in the sender storage")]
         public long PersistedOutgoingCount()
         {
-            using (var conn = _sendingStore.Tenancy.Default.CreateConnection())
+            using (var conn = _sendingStore.Tenancy.Default.Database.CreateConnection())
             {
                 conn.Open();
 

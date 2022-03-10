@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime;
 using Lamar;
+using Lamar.Microsoft.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Oakton;
@@ -68,13 +69,12 @@ namespace Jasper
 
             builder.Properties.Add(appliedKey, "true");
 
-            builder.UseServiceProviderFactory<IServiceCollection>(new LamarServiceProviderFactory());
-            builder.UseServiceProviderFactory<ServiceRegistry>(new LamarServiceProviderFactory());
-
             ExtensionLoader.ApplyExtensions(options);
 
             builder.ConfigureServices((context, services) =>
             {
+                services.AddLamar();
+
                 options.Configure(context.HostingEnvironment, context.Configuration);
 
                 customization?.Invoke(context, options);

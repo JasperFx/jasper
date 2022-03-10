@@ -54,9 +54,9 @@ namespace Jasper.Persistence.Postgresql.Schema
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            var patch = await SchemaMigration.Determine(conn, _tables);
+            var migration = await SchemaMigration.Determine(conn, _tables);
 
-            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+            await new PostgresqlMigrator().ApplyAll(conn, migration, AutoCreate.CreateOrUpdate);
         }
 
         public async Task RecreateAll()
@@ -69,9 +69,9 @@ namespace Jasper.Persistence.Postgresql.Schema
                 await table.Drop(conn);
             }
 
-            var patch = await SchemaMigration.Determine(conn, _tables);
+            var migration = await SchemaMigration.Determine(conn, _tables);
 
-            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+            await new PostgresqlMigrator().ApplyAll(conn, migration, AutoCreate.CreateOrUpdate);
         }
 
         public async Task ClearAllPersistedEnvelopes()
@@ -115,9 +115,9 @@ namespace Jasper.Persistence.Postgresql.Schema
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            var patch = await SchemaMigration.Determine(conn, _tables);
+            var migration = await SchemaMigration.Determine(conn, _tables);
 
-            await patch.ApplyAll(conn, new DdlRules(), AutoCreate.CreateOrUpdate);
+            await new PostgresqlMigrator().ApplyAll(conn, migration, AutoCreate.CreateOrUpdate);
 
             await truncateEnvelopeData(conn);
         }
@@ -128,7 +128,7 @@ namespace Jasper.Persistence.Postgresql.Schema
             writer.WriteLine($"CREATE SCHEMA IF NOT EXISTS {SchemaName};");
             writer.WriteLine();
 
-            var rules = new DdlRules();
+            var rules = new PostgresqlMigrator();
             foreach (var table in _tables)
             {
                 table.WriteCreateStatement(rules, writer);

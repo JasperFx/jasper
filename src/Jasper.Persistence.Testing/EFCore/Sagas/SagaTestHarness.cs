@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             await conn.OpenAsync();
 
             var migration = await SchemaMigration.Determine(conn, tables);
-            await migration.ApplyAll(conn, new DdlRules(), AutoCreate.All, sql => _output.WriteLine(sql));
+            await new SqlServerMigrator().ApplyAll(conn, migration, AutoCreate.All);
 
             await _host.RebuildMessageStorage();
         }
