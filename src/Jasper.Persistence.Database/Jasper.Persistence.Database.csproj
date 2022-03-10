@@ -3,7 +3,7 @@
     <PropertyGroup>
       <Description>Core ADO.Net related functionality for using database backed persistence with Jasper</Description>
       <Authors>Jeremy D. Miller</Authors>
-      <TargetFramework>net5.0</TargetFramework>
+      <TargetFramework>net6.0</TargetFramework>
       <DebugType>portable</DebugType>
       <AssemblyName>Jasper.Persistence.Database</AssemblyName>
       <PackageId>Jasper.Persistence.Database</PackageId>

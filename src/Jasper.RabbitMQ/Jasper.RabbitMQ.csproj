@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>RabbitMQ Transport for Jasper Messaging Systems</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.RabbitMQ</AssemblyName>
     <PackageId>Jasper.RabbitMQ</PackageId>

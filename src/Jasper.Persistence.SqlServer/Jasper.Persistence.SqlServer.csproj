@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Description>Sql Server-backed Persistence for JasperFx Applications</Description>
     <Authors>Jeremy D. Miller, Mike Schenk, Mark Wuhrich</Authors>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>Jasper.Persistence.SqlServer</AssemblyName>
     <PackageId>Jasper.Persistence.SqlServer</PackageId>
