@@ -221,6 +221,7 @@ namespace Jasper.Configuration
         }
 
         // TODO -- this should be in Oakton
+        [Obsolete]
         public static Table BuildTableForProperties(IDictionary<string, object> props)
         {
             var table = new Table();

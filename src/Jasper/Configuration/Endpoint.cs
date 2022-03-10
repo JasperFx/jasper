@@ -23,12 +23,14 @@ namespace Jasper.Configuration
     }
 
     // TODO -- move this into Oakton
+    [Obsolete]
     public interface IDescribesProperties
     {
         IDictionary<string, object> DescribeProperties();
     }
 
     // TODO -- move this into Oakton itself
+    [Obsolete]
     public interface ITreeDescriber
     {
         void Describe(TreeNode parentNode);
