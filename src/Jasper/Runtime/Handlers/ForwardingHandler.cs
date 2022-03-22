@@ -11,7 +11,7 @@ namespace Jasper.Runtime.Handlers
         public ForwardingHandler(HandlerGraph graph)
         {
             _graph = graph;
-            Chain = new HandlerChain(typeof(T));
+            Chain = new HandlerChain(typeof(T), graph);
         }
 
         public override Task Handle(IExecutionContext context, CancellationToken cancellation)

@@ -48,7 +48,7 @@ namespace Jasper.Testing.Runtime.Handlers
 
         });
 
-        private HandlerChain theChain = HandlerChain.For<FakeDudeWithAction>(x => x.Handle(null, null, null));
+        private HandlerChain theChain = HandlerChain.For<FakeDudeWithAction>(x => x.Handle(null, null, null), null);
 
         [Fact]
         public void find_dependencies_in_parameter_list()

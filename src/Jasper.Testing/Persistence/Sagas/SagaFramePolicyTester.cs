@@ -35,7 +35,7 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public void determine_the_saga_state_type()
         {
-            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null));
+            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null), null);
             SagaFramePolicy.DetermineSagaStateType(chain)
                 .ShouldBe(typeof(FooState));
         }
@@ -43,7 +43,7 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public void determine_the_saga_state_type_with_multiple_levels_of_abstraction()
         {
-            var chain = HandlerChain.For<DoubleInherited>(x => x.Handle(null));
+            var chain = HandlerChain.For<DoubleInherited>(x => x.Handle(null), null);
             SagaFramePolicy.DetermineSagaStateType(chain)
                 .ShouldBe(typeof(FooState));
         }
@@ -51,14 +51,14 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public void is_saga_related_false()
         {
-            var chain = HandlerChain.For<FooHandler>(x => x.Handle(null));
+            var chain = HandlerChain.For<FooHandler>(x => x.Handle(null), null);
             SagaFramePolicy.IsSagaRelated(chain).ShouldBeFalse();
         }
 
         [Fact]
         public void is_saga_related_true()
         {
-            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null));
+            var chain = HandlerChain.For<FooSaga>(x => x.Handle(null), null);
             SagaFramePolicy.IsSagaRelated(chain).ShouldBeTrue();
         }
     }

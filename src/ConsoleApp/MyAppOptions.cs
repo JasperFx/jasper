@@ -15,7 +15,7 @@ namespace MyApp
 
             Endpoints.PublishAllMessages().ToPort(2224);
 
-            Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Static;
+            Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 
             Endpoints.ConfigureRabbitMq(x =>
             {

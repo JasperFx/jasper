@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.Reflection;
 using Jasper.Attributes;
@@ -16,32 +17,36 @@ using GenericEnumerableExtensions = Baseline.GenericEnumerableExtensions;
 
 namespace Jasper.Runtime.Handlers
 {
-    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasRetryPolicies
+    public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasRetryPolicies, ICodeFile
     {
+        private readonly HandlerGraph _parent;
         public const string NotCascading = "NotCascading";
 
         public readonly List<MethodCall> Handlers = new List<MethodCall>();
-        private GeneratedType _generatedType;
 
         private bool hasConfiguredFrames;
+        private string _fileName;
+        private Type _handlerType;
+        private GeneratedType? _generatedType;
 
-        public HandlerChain(Type messageType)
+        public HandlerChain(Type messageType, HandlerGraph parent)
         {
+            _parent = parent;
             MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
 
-            TypeName = messageType.FullName.Replace(".", "_").Replace("+", "_");
+            TypeName = messageType.ToSuffixedTypeName("Handler");
 
             Description = "Message Handler for " + MessageType.FullNameInCode();
         }
 
 
 
-        private HandlerChain(MethodCall call) : this(call.Method.MessageType())
+        private HandlerChain(MethodCall call, HandlerGraph parent) : this(call.Method.MessageType(), parent)
         {
             Handlers.Add(call);
         }
 
-        public HandlerChain(IGrouping<Type, HandlerCall> grouping) : this(grouping.Key)
+        public HandlerChain(IGrouping<Type, HandlerCall> grouping, HandlerGraph parent) : this(grouping.Key, parent)
         {
             Handlers.AddRange(grouping);
         }
@@ -61,25 +66,19 @@ namespace Jasper.Runtime.Handlers
         internal MessageHandler Handler { get; set; }
 
         /// <summary>
-        /// After the MessageHandler for this chain is generated & compiled, this property will
-        /// hold the generated source code
-        /// </summary>
-        public string SourceCode => _generatedType?.SourceCode;
-
-        /// <summary>
         /// Configure the retry policies and error handling for this chain
         /// </summary>
         public RetryPolicyCollection Retries { get; set; } = new RetryPolicyCollection();
 
-        public static HandlerChain For<T>(Expression<Action<T>> expression)
+        public static HandlerChain For<T>(Expression<Action<T>> expression, HandlerGraph parent)
         {
             var method = ReflectionHelper.GetMethod(expression);
             var call = new MethodCall(typeof(T), method);
 
-            return new HandlerChain(call);
+            return new HandlerChain(call, parent);
         }
 
-        public static HandlerChain For<T>(string methodName)
+        public static HandlerChain For<T>(string methodName, HandlerGraph parent)
         {
             var handlerType = typeof(T);
             var method = handlerType.GetMethod(methodName,
@@ -89,27 +88,19 @@ namespace Jasper.Runtime.Handlers
                 throw new ArgumentOutOfRangeException(nameof(methodName),
                     $"Cannot find method named '{methodName}' in type {handlerType.FullName}");
 
-            var call = new MethodCall(handlerType, method);
-            call.CommentText = "Core message handling method";
+            var call = new MethodCall(handlerType, method)
+            {
+                CommentText = "Core message handling method"
+            };
 
-            return new HandlerChain(call);
-        }
-
-        internal void AssembleType(GenerationRules rules, GeneratedAssembly generatedAssembly, IContainer container)
-        {
-            _generatedType = generatedAssembly.AddType(TypeName, typeof(MessageHandler));
-            var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
-            handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
-            handleMethod.Frames.AddRange(DetermineFrames(rules, container));
-
-            handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
-                $"context.{nameof(IExecutionContext.Envelope)}"));
-
+            return new HandlerChain(call, parent);
         }
 
         internal MessageHandler CreateHandler(IContainer container)
         {
-            var handler = container.QuickBuild(_generatedType.CompiledType).As<MessageHandler>();
+            if (_handlerType == null) throw new InvalidOperationException("The handler type has not been built yet");
+
+            var handler = container.QuickBuild(_handlerType).As<MessageHandler>();
             handler.Chain = this;
             Handler = handler;
 
@@ -124,7 +115,7 @@ namespace Jasper.Runtime.Handlers
         /// <param name="container"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public List<Frame> DetermineFrames(GenerationRules rules, IContainer container)
+        internal List<Frame> DetermineFrames(GenerationRules rules, IContainer container)
         {
             if (!Handlers.Any())
                 throw new InvalidOperationException("No method handlers configured for message type " +
@@ -198,17 +189,45 @@ namespace Jasper.Runtime.Handlers
             return false;
         }
 
-        public MessageHandler AttachPreBuiltHandler(GenerationRules rules, IContainer container, Type[] handlerTypes)
+        void ICodeFile.AssembleTypes(GeneratedAssembly assembly)
         {
-            var fullName = $"{rules.ApplicationNamespace}.{TypeName}";
-            var handlerType = handlerTypes.FirstOrDefault(x => x.FullName == fullName);
+            _generatedType = assembly.AddType(TypeName, typeof(MessageHandler));
 
-            if (handlerType == null) return null;
+            foreach (var handler in Handlers)
+            {
+                assembly.ReferenceAssembly(handler.HandlerType.Assembly);
+            }
 
-            Handler = (MessageHandler) container.QuickBuild(handlerType);
+            var handleMethod = _generatedType.MethodFor(nameof(MessageHandler.Handle));
+            handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
+            handleMethod.Frames.AddRange(DetermineFrames(assembly.Rules, _parent.Container));
+
+            handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
+                $"context.{nameof(IExecutionContext.Envelope)}"));
+
+        }
+
+        internal string SourceCode => _generatedType.SourceCode;
+
+        Task<bool> ICodeFile.AttachTypes(GenerationRules rules, Assembly assembly, IServiceProvider services, string containingNamespace)
+        {
+            var found = this.As<ICodeFile>().AttachTypesSynchronously(rules, assembly, services, containingNamespace);
+            return Task.FromResult(found);
+        }
+
+        bool ICodeFile.AttachTypesSynchronously(GenerationRules rules, Assembly assembly, IServiceProvider services,
+            string containingNamespace)
+        {
+            _handlerType = assembly.ExportedTypes.FirstOrDefault(x => x.Name == TypeName);
+
+            if (_handlerType == null) return false;
+
+            Handler = (MessageHandler) services.As<IContainer>().QuickBuild(_handlerType);
             Handler.Chain = this;
 
-            return Handler;
+            return true;
         }
+
+        string ICodeFile.FileName => TypeName + ".cs";
     }
 }

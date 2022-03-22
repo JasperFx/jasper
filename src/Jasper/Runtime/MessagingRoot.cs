@@ -90,9 +90,10 @@ namespace Jasper.Runtime
 
             Runtime.Dispose();
 
-            ScheduledJobs.Dispose();
-
-
+            if (ScheduledJobs != null)
+            {
+                ScheduledJobs.Dispose();
+            }
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

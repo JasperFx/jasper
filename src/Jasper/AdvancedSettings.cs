@@ -41,7 +41,7 @@ namespace Jasper
         public AdvancedSettings(Assembly applicationAssembly)
         {
             var name = applicationAssembly?.GetName().Name ?? "JasperApplication";
-            CodeGeneration = new GenerationRules($"{name.Replace(".", "_")}_Generated");
+            CodeGeneration = new GenerationRules("Internal.Generated");
             CodeGeneration.Sources.Add(new NowTimeVariableSource());
 
             CodeGeneration.Assemblies.Add(GetType().GetTypeInfo().Assembly);

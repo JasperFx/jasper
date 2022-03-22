@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Baseline;
 using Jasper.Logging;
 using Jasper.Persistence;
 using Jasper.Persistence.Durability;
@@ -11,9 +12,10 @@ using Jasper.Serialization;
 using Lamar;
 using Lamar.IoC.Instances;
 using LamarCodeGeneration;
-using LamarCodeGeneration.Util;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
+using TypeExtensions = LamarCodeGeneration.Util.TypeExtensions;
 
 namespace Jasper.Configuration
 {
@@ -23,8 +25,6 @@ namespace Jasper.Configuration
         {
             For<IMetrics>().Use<NulloMetrics>();
             //For<IHostedService>().Use<MetricsCollector>();
-
-            this.AddSingleton<IServiceProviderFactory<IServiceCollection>>(new DefaultServiceProviderFactory());
 
             this.AddLogging();
 
@@ -65,13 +65,28 @@ namespace Jasper.Configuration
             For<ICommandBus>().Use<CommandBus>().Scoped();
             For<IMessagePublisher>().Use<MessagePublisher>().Scoped();
 
-
             // I'm not proud of this code, but you need a non-null
             // Container property to use the codegen
             For<ICodeFileCollection>().Use(c =>
             {
                 var handlers = c.GetInstance<HandlerGraph>();
                 handlers.Container = (IContainer) c;
+
+                var environment = c.TryGetInstance<IHostEnvironment>();
+                var directory = environment?.ContentRootPath ?? AppContext.BaseDirectory;
+
+                #if DEBUG
+                if (directory.EndsWith("Debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    directory = directory.ParentDirectory().ParentDirectory();
+                }
+                else if (directory.ParentDirectory().EndsWith("Debug", StringComparison.OrdinalIgnoreCase))
+                {
+                    directory = directory.ParentDirectory().ParentDirectory().ParentDirectory();
+                }
+                #endif
+
+                handlers.Rules.GeneratedCodeOutputPath = directory.AppendPath("Internal", "Generated");
 
                 return handlers;
             });
@@ -95,7 +110,7 @@ namespace Jasper.Configuration
 
         public ServiceFamily Build(Type type, ServiceGraph serviceGraph)
         {
-            if (type.IsConcrete() && matches(type))
+            if (TypeExtensions.IsConcrete(type) && matches(type))
             {
                 var instance = new ConstructorInstance(type, type, ServiceLifetime.Scoped);
                 return new ServiceFamily(type, new IDecoratorPolicy[0], instance);

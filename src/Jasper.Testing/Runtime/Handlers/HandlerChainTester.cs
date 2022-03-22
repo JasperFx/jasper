@@ -49,7 +49,7 @@ namespace Jasper.Testing.Runtime.Handlers
         [Fact]
         public void apply_generic_middleware()
         {
-            var chain = HandlerChain.For<Target>(x => x.Go(null));
+            var chain = HandlerChain.For<Target>(x => x.Go(null), null);
             var frames = chain.DetermineFrames(new GenerationRules(), Container.Empty());
 
             chain.Middleware.Any(x => x is FakeMiddleware1).ShouldBeTrue();
@@ -59,7 +59,7 @@ namespace Jasper.Testing.Runtime.Handlers
         [Fact]
         public void create_by_method()
         {
-            var chain = HandlerChain.For<Target>(x => x.Go(null));
+            var chain = HandlerChain.For<Target>(x => x.Go(null), null);
             chain.MessageType.ShouldBe(typeof(Message1));
 
             var methodCall = chain.Handlers.Single();
@@ -70,7 +70,7 @@ namespace Jasper.Testing.Runtime.Handlers
         [Fact]
         public void create_by_static_method()
         {
-            var chain = HandlerChain.For<Target>(nameof(Target.GoStatic));
+            var chain = HandlerChain.For<Target>(nameof(Target.GoStatic), null);
 
             chain.MessageType.ShouldBe(typeof(Message2));
 
@@ -82,7 +82,7 @@ namespace Jasper.Testing.Runtime.Handlers
         [Fact]
         public void default_number_of_max_attempts_is_null()
         {
-            var chain = HandlerChain.For<Target>(nameof(Target.GoStatic));
+            var chain = HandlerChain.For<Target>(nameof(Target.GoStatic), null);
             chain.Retries.MaximumAttempts.HasValue.ShouldBeFalse();
         }
 

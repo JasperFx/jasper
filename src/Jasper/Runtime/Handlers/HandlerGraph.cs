@@ -44,7 +44,7 @@ namespace Jasper.Runtime.Handlers
         {
             // All of this is to seed the handler and its associated retry policies
             // for scheduling outgoing messages
-            _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler());
+            _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler(this));
 
             GlobalPolicy<SagaFramePolicy>();
         }
@@ -101,6 +101,7 @@ namespace Jasper.Runtime.Handlers
 
         internal void StartCompiling(JasperOptions options)
         {
+            _generation = options.Advanced.CodeGeneration;
             Compiling = Source.FindCalls(options).ContinueWith(t =>
             {
                 var calls = t.Result;
@@ -165,12 +166,7 @@ namespace Jasper.Runtime.Handlers
                     {
                         if (chain.Handler == null)
                         {
-                            var generatedAssembly = new GeneratedAssembly(_generation);
-
-                            chain.AssembleType(_generation, generatedAssembly, Container);
-
-                            new AssemblyGenerator().Compile(generatedAssembly, Container.CreateServiceVariableSource());
-
+                            chain.InitializeSynchronously(_generation, this, Container);
                             handler = chain.CreateHandler(Container);
                         }
                         else
@@ -201,7 +197,10 @@ namespace Jasper.Runtime.Handlers
             var forwarders = container.GetInstance<Forwarders>();
             AddForwarders(forwarders);
 
-            foreach (var configuration in _configurations) configuration();
+            foreach (var configuration in _configurations)
+            {
+                configuration();
+            }
 
             _messageTypes =
                 _messageTypes.AddOrUpdate(typeof(Acknowledgement).ToMessageTypeName(), typeof(Acknowledgement));
@@ -228,7 +227,7 @@ namespace Jasper.Runtime.Handlers
 
                 _calls.Where(x => x.MessageType.IsConcrete())
                     .GroupBy(x => x.MessageType)
-                    .Select(group => new HandlerChain(group))
+                    .Select(group => new HandlerChain(group, this))
                     .Each(chain => { _chains = _chains.AddOrUpdate(chain.MessageType, chain); });
 
                 _calls.Where(x => !x.MessageType.IsConcrete())

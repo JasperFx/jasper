@@ -9,7 +9,7 @@ using Spectre.Console;
 
 namespace Jasper.Runtime.Handlers
 {
-    public partial class HandlerGraph : IDescribedSystemPart,IWriteToConsole
+    public partial class HandlerGraph : IDescribedSystemPart, IWriteToConsole
     {
 
         async Task IDescribedSystemPart.Write(TextWriter writer)

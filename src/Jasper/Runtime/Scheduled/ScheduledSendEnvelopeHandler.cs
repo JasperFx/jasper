@@ -9,9 +9,9 @@ namespace Jasper.Runtime.Scheduled
     public class ScheduledSendEnvelopeHandler : MessageHandler
     {
 
-        public ScheduledSendEnvelopeHandler()
+        public ScheduledSendEnvelopeHandler(HandlerGraph parent)
         {
-            Chain = new HandlerChain(typeof(Envelope));
+            Chain = new HandlerChain(typeof(Envelope), parent);
         }
 
         public override Task Handle(IExecutionContext context, CancellationToken cancellation)

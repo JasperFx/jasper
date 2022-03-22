@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime;
 using Lamar;
+using Lamar.IoC.Frames;
 using Lamar.Microsoft.DependencyInjection;
+using LamarCodeGeneration;
+using LamarCodeGeneration.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Oakton;
@@ -75,6 +78,7 @@ namespace Jasper
 
             builder.ConfigureServices((context, services) =>
             {
+                services.AddSingleton(s => s.GetRequiredService<IContainer>().CreateServiceVariableSource());
                 options.Configure(context.HostingEnvironment, context.Configuration);
 
                 customization?.Invoke(context, options);
@@ -87,7 +91,7 @@ namespace Jasper
                 services.AddSingleton(options);
 
                 // The messaging root is also a hosted service
-                services.AddSingleton(s => (IHostedService)s.GetService<IMessagingRoot>());
+                services.AddSingleton(s => (IHostedService)s.GetRequiredService<IMessagingRoot>());
 
                 services.AddRange(options.CombineServices());
             });
