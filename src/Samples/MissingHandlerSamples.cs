@@ -8,7 +8,7 @@ namespace Samples
     // SAMPLE: MyMissingHandler
     public class MyMissingHandler : IMissingHandler
     {
-        public Task Handle(Envelope envelope, IMessagingRoot root)
+        public Task Handle(Envelope? envelope, IMessagingRoot root)
         {
             return root.Acknowledgements
                 .SendFailureAcknowledgement(envelope,"I don't know how to process this message");

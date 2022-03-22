@@ -15,11 +15,11 @@ namespace Jasper.Runtime
         {
         }
 
-        public MessagePublisher(IMessagingRoot root, string correlationId) : base(root, correlationId)
+        public MessagePublisher(IMessagingRoot root, string? correlationId) : base(root, correlationId)
         {
         }
 
-        public Task Send<T>(T message)
+        public Task SendAsync<T>(T? message)
         {
             var outgoing = Root.Router.RouteOutgoingByMessage(message);
             trackEnvelopeCorrelation(outgoing);
@@ -32,7 +32,7 @@ namespace Jasper.Runtime
             return persistOrSend(outgoing);
         }
 
-        public Task PublishEnvelope(Envelope envelope)
+        public Task PublishEnvelopeAsync(Envelope? envelope)
         {
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message));
@@ -49,13 +49,13 @@ namespace Jasper.Runtime
             return persistOrSend(outgoing);
         }
 
-        public Task Publish<T>(T message)
+        public Task PublishAsync<T>(T? message)
         {
             var envelope = new Envelope(message);
-            return PublishEnvelope(envelope);
+            return PublishEnvelopeAsync(envelope);
         }
 
-        public async Task<Guid> SendEnvelope(Envelope envelope)
+        public async Task<Guid> SendEnvelopeAsync(Envelope? envelope)
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
 
@@ -75,16 +75,16 @@ namespace Jasper.Runtime
             return envelope.Id;
         }
 
-        public Task SendAndExpectResponseFor<TResponse>(object message, Action<Envelope> customization = null)
+        public Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope?>? customization = null)
         {
             var envelope = EnvelopeForRequestResponse<TResponse>(message);
 
             customization?.Invoke(envelope);
 
-            return SendEnvelope(envelope);
+            return SendEnvelopeAsync(envelope);
         }
 
-        public Envelope EnvelopeForRequestResponse<TResponse>(object request)
+        public Envelope? EnvelopeForRequestResponse<TResponse>(object request)
         {
             return new Envelope
             {
@@ -94,7 +94,7 @@ namespace Jasper.Runtime
             };
         }
 
-        public Task SendToTopic(object message, string topicName)
+        public Task SendToTopicAsync(object? message, string? topicName)
         {
             var envelope = new Envelope(message)
             {
@@ -111,7 +111,7 @@ namespace Jasper.Runtime
         /// <typeparam name="T"></typeparam>
         /// <param name="destination">The destination to send to</param>
         /// <param name="message"></param>
-        public Task SendToDestination<T>(Uri destination, T message)
+        public Task SendToDestinationAsync<T>(Uri? destination, T? message)
         {
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
@@ -129,9 +129,9 @@ namespace Jasper.Runtime
         /// <param name="message"></param>
         /// <param name="time"></param>
         /// <typeparam name="T"></typeparam>
-        public Task ScheduleSend<T>(T message, DateTime time)
+        public Task ScheduleSendAsync<T>(T message, DateTime time)
         {
-            return SendEnvelope(new Envelope
+            return SendEnvelopeAsync(new Envelope
             {
                 Message = message,
                 ExecutionTime = time.ToUniversalTime(),
@@ -145,12 +145,12 @@ namespace Jasper.Runtime
         /// <param name="message"></param>
         /// <param name="delay"></param>
         /// <typeparam name="T"></typeparam>
-        public Task ScheduleSend<T>(T message, TimeSpan delay)
+        public Task ScheduleSendAsync<T>(T message, TimeSpan delay)
         {
-            return ScheduleSend(message, DateTime.UtcNow.Add(delay));
+            return ScheduleSendAsync(message, DateTime.UtcNow.Add(delay));
         }
 
-        private void trackEnvelopeCorrelation(Envelope[] outgoing)
+        private void trackEnvelopeCorrelation(Envelope?[] outgoing)
         {
             foreach (var outbound in outgoing)
             {
@@ -158,7 +158,7 @@ namespace Jasper.Runtime
             }
         }
 
-        protected virtual void trackEnvelopeCorrelation(Envelope outbound)
+        protected virtual void trackEnvelopeCorrelation(Envelope? outbound)
         {
             outbound.Source = Root.Settings.ServiceName;
             outbound.CorrelationId = CorrelationId;

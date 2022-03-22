@@ -35,7 +35,7 @@ namespace Jasper
 
 
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
-        private string _serviceName;
+        private string? _serviceName;
 
 
         public AdvancedSettings(Assembly applicationAssembly)
@@ -133,7 +133,7 @@ namespace Jasper
         ///     derived from the name of a custom JasperOptions
         /// </summary>
 
-        public string ServiceName
+        public string? ServiceName
         {
             get => _serviceName;
             set
@@ -146,9 +146,9 @@ namespace Jasper
 
         }
 
-        public string OpenTelemetryProcessSpanName { get; private set; }
-        public string OpenTelemetrySendSpanName { get; private set; }
-        public string OpenTelemetryReceiveSpanName { get; private set; }
+        public string? OpenTelemetryProcessSpanName { get; private set; }
+        public string? OpenTelemetrySendSpanName { get; private set; }
+        public string? OpenTelemetryReceiveSpanName { get; private set; }
 
         /// <summary>
         /// This should probably *only* be used in development or testing

@@ -10,16 +10,16 @@ namespace Jasper.Attributes
     [AttributeUsage(AttributeTargets.Class)]
     public class MessageIdentityAttribute : Attribute
     {
-        public MessageIdentityAttribute(string alias)
+        public MessageIdentityAttribute(string? alias)
         {
             Alias = alias;
         }
 
-        public string Alias { get; }
+        public string? Alias { get; }
 
         public int Version { get; set; }
 
-        public string GetName()
+        public string? GetName()
         {
             return Version == 0 ? Alias : $"{Alias}.V{Version}";
         }

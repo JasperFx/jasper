@@ -33,7 +33,7 @@ namespace Samples
             envelope.DeliverWithin(20.Seconds());
 
             // Send the envelope and its contained message
-            return bus.SendEnvelope(envelope);
+            return bus.SendEnvelopeAsync(envelope);
             // ENDSAMPLE
         }
 
@@ -94,10 +94,10 @@ namespace Samples
 
             // Schedule the message to be processed in a certain amount
             // of time
-            await bus.ScheduleSend(message, 30.Days());
+            await bus.ScheduleSendAsync(message, 30.Days());
 
             // Schedule the message to be processed at a certain time
-            await bus.ScheduleSend(message, DateTime.UtcNow.AddDays(30));
+            await bus.ScheduleSendAsync(message, DateTime.UtcNow.AddDays(30));
         }
         // ENDSAMPLE
 
@@ -131,7 +131,7 @@ namespace Samples
                 Item = "Cookbook"
             };
 
-            return bus.Send(@event);
+            return bus.SendAsync(@event);
         }
         // ENDSAMPLE
 
@@ -149,7 +149,7 @@ namespace Samples
                 Item = "Cookbook"
             };
 
-            return bus.Publish(@event);
+            return bus.PublishAsync(@event);
         }
         // ENDSAMPLE
 
@@ -165,7 +165,7 @@ namespace Samples
                 Item = "Cookbook"
             };
 
-            await bus.SendToDestination(new Uri("tcp://server1:2222"), @event);
+            await bus.SendToDestinationAsync(new Uri("tcp://server1:2222"), @event);
 
             // or
 
@@ -174,7 +174,7 @@ namespace Samples
                 Destination = new Uri("tcp://server1:2222")
             };
 
-            await bus.SendEnvelope(envelope);
+            await bus.SendEnvelopeAsync(envelope);
         }
 
 

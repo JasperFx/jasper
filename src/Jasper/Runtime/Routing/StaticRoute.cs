@@ -10,12 +10,12 @@ namespace Jasper.Runtime.Routing
 {
     public class StaticRoute : IMessageRoute
     {
-        private readonly ISendingAgent _agent;
+        private readonly ISendingAgent? _agent;
         private readonly MessageTypeRouting _routing;
         private readonly Endpoint _endpoint;
         private readonly IMessageSerializer? _writer;
 
-        public StaticRoute(ISendingAgent agent,
+        public StaticRoute(ISendingAgent? agent,
             MessageTypeRouting routing)
         {
             _agent = agent;
@@ -27,7 +27,7 @@ namespace Jasper.Runtime.Routing
         }
 
 
-        public void Configure(Envelope envelope)
+        public void Configure(Envelope? envelope)
         {
             if (envelope.ContentType.IsNotEmpty())
             {
@@ -45,7 +45,7 @@ namespace Jasper.Runtime.Routing
             applyEnvelopeRules(envelope);
         }
 
-        private void applyEnvelopeRules(Envelope envelope)
+        private void applyEnvelopeRules(Envelope? envelope)
         {
             _endpoint.Customize(envelope);
             foreach (var customization in _routing.Customizations)
@@ -54,7 +54,7 @@ namespace Jasper.Runtime.Routing
             }
         }
 
-        public Envelope CloneForSending(Envelope envelope)
+        public Envelope? CloneForSending(Envelope? envelope)
         {
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message), "Envelope.Message cannot be null");
@@ -87,7 +87,7 @@ namespace Jasper.Runtime.Routing
 
 
 
-        public Envelope BuildForSending(object message)
+        public Envelope? BuildForSending(object? message)
         {
             var envelope = new Envelope(message)
             {
@@ -102,7 +102,7 @@ namespace Jasper.Runtime.Routing
             return envelope;
         }
 
-        public Uri Destination => _agent.Destination;
-        public string ContentType => _writer.ContentType;
+        public Uri? Destination => _agent.Destination;
+        public string? ContentType => _writer.ContentType;
     }
 }

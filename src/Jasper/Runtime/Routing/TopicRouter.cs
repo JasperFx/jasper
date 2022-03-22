@@ -5,6 +5,7 @@ using Baseline.ImTools;
 using Baseline.Reflection;
 using Jasper.Attributes;
 using Jasper.Configuration;
+using Jasper.Transports.Sending;
 using Jasper.Util;
 
 namespace Jasper.Runtime.Routing
@@ -15,9 +16,9 @@ namespace Jasper.Runtime.Routing
 
         public readonly IList<ITopicRule> TopicRules = new List<ITopicRule>();
 
-        public abstract Uri BuildUriForTopic(string topicName);
+        public abstract Uri? BuildUriForTopic(string? topicName);
 
-        public static string DetermineTopicName(Type messageType)
+        public static string? DetermineTopicName(Type messageType)
         {
             if (_topics.TryFind(messageType, out var topic)) return topic;
 

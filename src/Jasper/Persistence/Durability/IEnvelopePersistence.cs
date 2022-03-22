@@ -10,64 +10,64 @@ namespace Jasper.Persistence.Durability
         IEnvelopeStorageAdmin Admin { get; }
 
         // Used by IRetries and DurableCallback
-        Task ScheduleExecution(Envelope[] envelopes);
+        Task ScheduleExecutionAsync(Envelope?[] envelopes);
 
 
         // Used by DurableCallback
-        Task MoveToDeadLetterStorage(ErrorReport[] errors);
+        Task MoveToDeadLetterStorageAsync(ErrorReport[] errors);
 
-        Task MoveToDeadLetterStorage(Envelope envelope, Exception ex);
+        Task MoveToDeadLetterStorageAsync(Envelope? envelope, Exception? ex);
 
         // Used by DurableCallback
-        Task IncrementIncomingEnvelopeAttempts(Envelope envelope);
+        Task IncrementIncomingEnvelopeAttemptsAsync(Envelope? envelope);
 
         // Used by LoopbackSendingAgent
-        Task StoreIncoming(Envelope envelope);
+        Task StoreIncomingAsync(Envelope? envelope);
 
         // Used by DurableListener and LoopbackSendingAgent
-        Task StoreIncoming(Envelope[] envelopes);
+        Task StoreIncomingAsync(Envelope?[] envelopes);
 
         // DurableListener and DurableRetryAgent
-        Task DeleteIncomingEnvelopes(Envelope[] envelopes);
+        Task DeleteIncomingEnvelopesAsync(Envelope?[] envelopes);
 
         // Used by DurableCallback
-        Task DeleteIncomingEnvelope(Envelope envelope);
+        Task DeleteIncomingEnvelopeAsync(Envelope? envelope);
 
         void Describe(TextWriter writer);
-        Task ScheduleJob(Envelope envelope);
+        Task ScheduleJobAsync(Envelope? envelope);
 
         IDurableStorageSession Session { get; }
 
-        Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow);
+        Task<IReadOnlyList<Envelope?>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow);
 
-        Task ReassignDormantNodeToAnyNode(int nodeId);
-        Task<int[]> FindUniqueOwners(int currentNodeId);
-
-
+        Task ReassignDormantNodeToAnyNodeAsync(int nodeId);
+        Task<int[]> FindUniqueOwnersAsync(int currentNodeId);
 
 
-        Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination);
-        Task ReassignOutgoing(int ownerId, Envelope[] outgoing);
-        Task DeleteByDestination(Uri destination);
-        Task<Uri[]> FindAllDestinations();
+
+
+        Task<IReadOnlyList<Envelope?>> LoadOutgoingAsync(Uri? destination);
+        Task ReassignOutgoingAsync(int ownerId, Envelope?[] outgoing);
+        Task DeleteByDestinationAsync(Uri? destination);
+        Task<Uri?[]> FindAllDestinationsAsync();
 
         // Used by DurableRetryAgent, could go to IDurabilityAgent
-        Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId);
+        Task DiscardAndReassignOutgoingAsync(Envelope?[] discards, Envelope?[] reassigned, int nodeId);
 
         // Used by DurableSendingAgent, could go to durability agent
-        Task StoreOutgoing(Envelope envelope, int ownerId);
+        Task StoreOutgoingAsync(Envelope? envelope, int ownerId);
 
         // Used by DurableSendingAgent
-        Task StoreOutgoing(Envelope[] envelopes, int ownerId);
+        Task StoreOutgoingAsync(Envelope[] envelopes, int ownerId);
 
         // Used by DurableSendingAgent
-        Task DeleteOutgoing(Envelope[] envelopes);
+        Task DeleteOutgoingAsync(Envelope?[] envelopes);
 
         // Used by DurableSendingAgent
-        Task DeleteOutgoing(Envelope envelope);
+        Task DeleteOutgoingAsync(Envelope? envelope);
 
-        Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming();
-        Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming);
-        Task<ErrorReport> LoadDeadLetterEnvelope(Guid id);
+        Task<IReadOnlyList<Envelope?>> LoadPageOfGloballyOwnedIncomingAsync();
+        Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope?> incoming);
+        Task<ErrorReport> LoadDeadLetterEnvelopeAsync(Guid id);
     }
 }

@@ -29,7 +29,7 @@ namespace Samples
         {
             // do whatever work you need to for MyMessage,
             // then send out a new MyResponse
-            _bus.Send(new MyResponse());
+            _bus.SendAsync(new MyResponse());
         }
     }
     // ENDSAMPLE
@@ -58,7 +58,7 @@ namespace Samples
 
         public Task GatherResponse()
         {
-            return _bus.SendAndExpectResponseFor<MyResponse>(new MyMessage());
+            return _bus.SendAndExpectResponseForAsync<MyResponse>(new MyMessage());
         }
     }
     // ENDSAMPLE

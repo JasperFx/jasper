@@ -11,13 +11,13 @@ namespace Jasper.Transports
 
         Endpoint ReplyEndpoint();
 
-        Endpoint ListenTo(Uri uri);
+        Endpoint ListenTo(Uri? uri);
 
         void StartSenders(IMessagingRoot root, ITransportRuntime runtime);
         void StartListeners(IMessagingRoot root, ITransportRuntime runtime);
 
-        Endpoint GetOrCreateEndpoint(Uri uri);
-        Endpoint TryGetEndpoint(Uri uri);
+        Endpoint GetOrCreateEndpoint(Uri? uri);
+        Endpoint TryGetEndpoint(Uri? uri);
 
         IEnumerable<Endpoint> Endpoints();
         void Initialize(IMessagingRoot root);

@@ -17,12 +17,12 @@ namespace Jasper.Transports.Stub
         private readonly StubTransport _stubTransport;
         public readonly IList<StubChannelCallback> Callbacks = new List<StubChannelCallback>();
 
-        public readonly IList<Envelope> Sent = new List<Envelope>();
+        public readonly IList<Envelope?> Sent = new List<Envelope?>();
         private IMessageLogger _logger;
         private IHandlerPipeline _pipeline;
 
 
-        public StubEndpoint(Uri destination, StubTransport stubTransport) : base(destination)
+        public StubEndpoint(Uri? destination, StubTransport stubTransport) : base(destination)
         {
             _stubTransport = stubTransport;
             Destination = destination;
@@ -34,9 +34,9 @@ namespace Jasper.Transports.Stub
         public bool Latched { get; set; }
         public bool IsDurable => Mode == EndpointMode.Durable;
 
-        public override Uri Uri => $"stub://{Name}".ToUri();
+        public override Uri? Uri => $"stub://{Name}".ToUri();
 
-        public Task Send(Envelope envelope)
+        public Task Send(Envelope? envelope)
         {
             Sent.Add(envelope);
             return _pipeline?.Invoke(envelope, new StubChannelCallback(this, envelope)) ?? Task.CompletedTask;
@@ -48,22 +48,20 @@ namespace Jasper.Transports.Stub
         {
         }
 
-        public Uri Destination { get; }
+        public Uri? Destination { get; }
 
-        Uri ISendingAgent.ReplyUri
+        Uri? ISendingAgent.ReplyUri
         {
             get => _stubTransport.ReplyEndpoint().Uri;
             set => Debug.WriteLine(value);
         }
 
-        public Task EnqueueOutgoing(Envelope envelope)
+        public Task EnqueueOutgoing(Envelope? envelope)
         {
             envelope.ReplyUri ??= ReplyUri();
 
             var callback = new StubChannelCallback(this, envelope);
             Callbacks.Add(callback);
-
-            _stubTransport.Callbacks.Add(callback);
 
             Sent.Add(envelope);
 
@@ -74,7 +72,7 @@ namespace Jasper.Transports.Stub
             return Task.CompletedTask;
         }
 
-        public Task StoreAndForward(Envelope envelope)
+        public Task StoreAndForward(Envelope? envelope)
         {
             return EnqueueOutgoing(envelope);
         }
@@ -89,12 +87,12 @@ namespace Jasper.Transports.Stub
             _logger = logger;
         }
 
-        public override Uri ReplyUri()
+        public override Uri? ReplyUri()
         {
             return _stubTransport.ReplyEndpoint()?.Uri;
         }
 
-        public override void Parse(Uri uri)
+        public override void Parse(Uri? uri)
         {
             Name = uri.Host;
         }

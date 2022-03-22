@@ -7,16 +7,16 @@ namespace Jasper.Persistence.Durability
 {
     public class NodeReassignment : IMessagingAction
     {
-        private readonly AdvancedSettings _settings;
+        private readonly AdvancedSettings? _settings;
 
-        public NodeReassignment(AdvancedSettings settings)
+        public NodeReassignment(AdvancedSettings? settings)
         {
             _settings = settings;
         }
 
         public string Description { get; } = "Dormant node reassignment";
 
-        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
         {
             await storage.Session.Begin();
 
@@ -29,7 +29,7 @@ namespace Jasper.Persistence.Durability
 
             try
             {
-                var owners = await storage.FindUniqueOwners(_settings.UniqueNodeId);
+                var owners = await storage.FindUniqueOwnersAsync(_settings.UniqueNodeId);
 
                 foreach (var owner in owners.Where(x => x != TransportConstants.AnyNode))
                 {
@@ -37,7 +37,7 @@ namespace Jasper.Persistence.Durability
 
                     if (await storage.Session.TryGetGlobalTxLock(owner))
                     {
-                        await storage.ReassignDormantNodeToAnyNode(owner);
+                        await storage.ReassignDormantNodeToAnyNodeAsync(owner);
                     }
                 }
             }

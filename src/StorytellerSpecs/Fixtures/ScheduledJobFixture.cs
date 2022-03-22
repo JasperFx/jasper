@@ -41,7 +41,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Schedule send message {id} for {seconds} seconds from now")]
         public Task ScheduleSendMessage(int id, int seconds)
         {
-            return theHost.Get<IMessagePublisher>().ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+            return theHost.Get<IMessagePublisher>().ScheduleSendAsync(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]

@@ -25,7 +25,7 @@ namespace Jasper.Configuration
             Add(new LocalTransport());
         }
 
-        public ITransport TransportForScheme(string scheme)
+        public ITransport? TransportForScheme(string scheme)
         {
             return _transports.TryGetValue(scheme.ToLowerInvariant(), out var transport)
                 ? transport
@@ -70,12 +70,12 @@ namespace Jasper.Configuration
             return LocalQueue(queueName);
         }
 
-        public Endpoint TryGetEndpoint(Uri uri)
+        public Endpoint TryGetEndpoint(Uri? uri)
         {
             return findTransport(uri).TryGetEndpoint(uri);
         }
 
-        private ITransport findTransport(Uri uri)
+        private ITransport findTransport(Uri? uri)
         {
             var transport = TransportForScheme(uri.Scheme);
             if (transport == null)
@@ -86,7 +86,7 @@ namespace Jasper.Configuration
             return transport;
         }
 
-        public Endpoint GetOrCreateEndpoint(Uri uri)
+        public Endpoint GetOrCreateEndpoint(Uri? uri)
         {
             return findTransport(uri).GetOrCreateEndpoint(uri);
         }
@@ -96,7 +96,7 @@ namespace Jasper.Configuration
         ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
         /// <param name="uri"></param>
-        public IListenerConfiguration ListenForMessagesFrom(Uri uri)
+        public IListenerConfiguration ListenForMessagesFrom(Uri? uri)
         {
             var settings = findTransport(uri).ListenTo(uri);
             return new ListenerConfiguration(settings);

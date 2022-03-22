@@ -19,26 +19,26 @@ namespace Jasper
         private DateTimeOffset? _executionTime;
 
 
-        private object _message;
-        private byte[] _data;
+        private object? _message;
+        private byte[]? _data;
 
         public Envelope()
         {
         }
 
-        public Envelope(object message)
+        public Envelope(object? message)
         {
             Message = message;
         }
 
 
-        public Dictionary<string, string> Headers { get; internal set; } = new Dictionary<string, string>();
+        public Dictionary<string, string?> Headers { get; internal set; } = new Dictionary<string, string?>();
 
         /// <summary>
         ///     The raw, serialized message data
         /// </summary>
         [Obsolete("Deleting this soon")]
-        public byte[] Data
+        public byte[]? Data
         {
             get
             {
@@ -61,7 +61,7 @@ namespace Jasper
         /// <summary>
         ///     The actual message to be sent or being received
         /// </summary>
-        public object Message
+        public object? Message
         {
             get => _message;
             set
@@ -93,49 +93,49 @@ namespace Jasper
         /// <summary>
         ///     The name of the service that sent this envelope
         /// </summary>
-        public string Source { get; internal set; }
+        public string? Source { get; internal set; }
 
 
         /// <summary>
         ///     Message type alias for the contents of this Envelope
         /// </summary>
-        public string MessageType { get; set; }
+        public string? MessageType { get; set; }
 
         /// <summary>
         ///     Location where any replies should be sent
         /// </summary>
-        public Uri ReplyUri { get; internal set; }
+        public Uri? ReplyUri { get; internal set; }
 
         /// <summary>
         ///     Mimetype of the serialized data
         /// </summary>
-        public string ContentType { get; set; }
+        public string? ContentType { get; set; }
 
         /// <summary>
         ///     Correlating identifier for the logical workflow or system action
         /// </summary>
-        public string CorrelationId { get; internal set; }
+        public string? CorrelationId { get; internal set; }
 
         /// <summary>
         ///     If this message is part of a stateful saga, this property identifies
         ///     the underlying saga state object
         /// </summary>
-        public string SagaId { get; internal set; }
+        public string? SagaId { get; internal set; }
 
         /// <summary>
         ///     Id of the immediate message or workflow that caused this envelope to be sent
         /// </summary>
-        public string CausationId { get; internal set; }
+        public string? CausationId { get; internal set; }
 
         /// <summary>
         ///     Location that this message should be sent
         /// </summary>
-        public Uri Destination { get; set; }
+        public Uri? Destination { get; set; }
 
         /// <summary>
         ///     Specifies the accepted content types for the requested reply
         /// </summary>
-        public string[] AcceptedContentTypes { get; set; } = new string[0];
+        public string?[] AcceptedContentTypes { get; set; } = new string?[0];
 
         /// <summary>
         ///     Specific message id for this envelope
@@ -145,7 +145,7 @@ namespace Jasper
         /// <summary>
         ///     If specified, the message type alias for the reply message that is requested for this message
         /// </summary>
-        public string ReplyRequested { get; internal set; }
+        public string? ReplyRequested { get; internal set; }
 
         /// <summary>
         ///     Is an acknowledgement requested
@@ -193,7 +193,7 @@ namespace Jasper
             return Id.Equals(other.Id);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -272,6 +272,6 @@ namespace Jasper
         /// Designates the topic name for outgoing messages to topic-based publish/subscribe
         /// routing. This property is only used for routing
         /// </summary>
-        public string TopicName { get; set; }
+        public string? TopicName { get; set; }
     }
 }

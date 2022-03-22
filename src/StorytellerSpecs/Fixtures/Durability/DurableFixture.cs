@@ -231,7 +231,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 Id = Guid.NewGuid()
             };
 
-            await send(c => c.Send(item));
+            await send(c => c.SendAsync(item));
 
             var outgoing = loadAllOutgoingEnvelopes(theSender).SingleOrDefault();
 
@@ -256,9 +256,9 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             await send(async c =>
             {
-                await c.ScheduleSend(message1, 2.Hours());
-                await c.ScheduleSend(message2, 5.Seconds());
-                await c.ScheduleSend(message3, 2.Hours());
+                await c.ScheduleSendAsync(message1, 2.Hours());
+                await c.ScheduleSendAsync(message2, 5.Seconds());
+                await c.ScheduleSendAsync(message3, 2.Hours());
             });
 
             ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);

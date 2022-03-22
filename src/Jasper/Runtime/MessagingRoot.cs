@@ -26,14 +26,14 @@ namespace Jasper.Runtime
     {
         private readonly IContainer _container;
 
-        private readonly Lazy<IEnvelopePersistence> _persistence;
+        private readonly Lazy<IEnvelopePersistence?> _persistence;
         private bool _hasStopped;
 
 
         public MessagingRoot(JasperOptions options,
             IMessageLogger messageLogger,
             IContainer container,
-            ITransportLogger transportLogger)
+            ITransportLogger? transportLogger)
         {
             Settings = options.Advanced;
             Options = options;
@@ -53,7 +53,7 @@ namespace Jasper.Runtime
 
             Runtime = new TransportRuntime(this);
 
-            _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
+            _persistence = new Lazy<IEnvelopePersistence?>(container.GetInstance<IEnvelopePersistence>);
 
             Router = new EnvelopeRouter(this);
 
@@ -101,7 +101,7 @@ namespace Jasper.Runtime
             {
                 await bootstrap();
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 MessageLogger.LogException(e, message: "Failed to start the Jasper messaging");
                 throw;
@@ -126,12 +126,12 @@ namespace Jasper.Runtime
         }
 
         public IAcknowledgementSender Acknowledgements { get; }
-        public bool TryFindMessageType(string messageTypeName, out Type messageType)
+        public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
             return Handlers.TryFindMessageType(messageTypeName, out messageType);
         }
 
-        public Type DetermineMessageType(Envelope envelope)
+        public Type DetermineMessageType(Envelope? envelope)
         {
             if (envelope.Message == null)
             {
@@ -155,9 +155,9 @@ namespace Jasper.Runtime
         public ITransportRuntime Runtime { get; }
         public CancellationToken Cancellation { get; }
 
-        public AdvancedSettings Settings { get; }
+        public AdvancedSettings? Settings { get; }
 
-        public ITransportLogger TransportLogger { get; }
+        public ITransportLogger? TransportLogger { get; }
 
         public IScheduledJobProcessor ScheduledJobs { get; set; }
 
@@ -170,14 +170,14 @@ namespace Jasper.Runtime
         public IMessageLogger MessageLogger { get; }
 
 
-        public IEnvelopePersistence Persistence => _persistence.Value;
+        public IEnvelopePersistence? Persistence => _persistence.Value;
 
         public IExecutionContext NewContext()
         {
             return new ExecutionContext(this);
         }
 
-        public IExecutionContext ContextFor(Envelope envelope)
+        public IExecutionContext ContextFor(Envelope? envelope)
         {
             var context =  new ExecutionContext(this);
             context.ReadEnvelope(envelope, InvocationCallback.Instance);

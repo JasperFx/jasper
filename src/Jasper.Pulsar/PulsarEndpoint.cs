@@ -51,8 +51,8 @@ namespace Jasper.Pulsar
             return dict;
         }
 
-        public override Uri Uri { get; }
-        public override Uri ReplyUri()
+        public override Uri? Uri { get; }
+        public override Uri? ReplyUri()
         {
             return Uri;
         }
@@ -80,7 +80,7 @@ namespace Jasper.Pulsar
             }
         }
 
-        public override void Parse(Uri uri)
+        public override void Parse(Uri? uri)
         {
             if (uri.Segments.Length != 4)
             {

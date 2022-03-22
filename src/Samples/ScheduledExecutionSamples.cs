@@ -16,7 +16,7 @@ namespace Samples
             };
 
             // Process the issue timeout logic 3 days from now
-            await context.ScheduleSend(timeout, 3.Days());
+            await context.ScheduleSendAsync(timeout, 3.Days());
         }
         // ENDSAMPLE
 
@@ -34,7 +34,7 @@ namespace Samples
             // Process the issue timeout at 5PM tomorrow
             // Do note that Jasper quietly converts this
             // to universal time in storage
-            await context.ScheduleSend(timeout, time);
+            await context.ScheduleSendAsync(timeout, time);
         }
         // ENDSAMPLE
 
@@ -52,7 +52,7 @@ namespace Samples
             // Process the issue timeout at 5PM tomorrow
             // Do note that Jasper quietly converts this
             // to universal time in storage
-            await context.SendEnvelope(new Envelope(timeout)
+            await context.SendEnvelopeAsync(new Envelope(timeout)
             {
                 ExecutionTime = time
             });
@@ -90,7 +90,7 @@ namespace Samples
             // in *this* system
             // Do note that Jasper quietly converts this
             // to universal time in storage
-            await context.ScheduleSend(timeout, time);
+            await context.ScheduleSendAsync(timeout, time);
         }
 
         // ENDSAMPLE

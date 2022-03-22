@@ -26,7 +26,7 @@ namespace Jasper.ErrorHandling
                 {
                     await handler.Handle(execution.Envelope, _root);
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     execution.Logger.LogException(e);
                 }

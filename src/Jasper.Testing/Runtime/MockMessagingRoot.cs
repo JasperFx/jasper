@@ -40,12 +40,12 @@ namespace Jasper.Testing.Runtime
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 
         public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
-        public bool TryFindMessageType(string messageTypeName, out Type messageType)
+        public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
             throw new NotSupportedException();
         }
 
-        public Type DetermineMessageType(Envelope envelope)
+        public Type DetermineMessageType(Envelope? envelope)
         {
             if (envelope.Message == null)
             {
@@ -71,7 +71,7 @@ namespace Jasper.Testing.Runtime
             return new ExecutionContext(this);
         }
 
-        public AdvancedSettings Settings { get; } = new AdvancedSettings(null);
+        public AdvancedSettings? Settings { get; } = new AdvancedSettings(null);
         public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
         public CancellationToken Cancellation { get; } = default(CancellationToken);
 
@@ -91,7 +91,7 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IExecutionContext ContextFor(Envelope envelope)
+        public IExecutionContext ContextFor(Envelope? envelope)
         {
             var context = new ExecutionContext(this);
             context.ReadEnvelope(envelope, InvocationCallback.Instance);
@@ -99,8 +99,8 @@ namespace Jasper.Testing.Runtime
             return context;
         }
 
-        public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
-        public ITransportLogger TransportLogger { get; } = Substitute.For<ITransportLogger>();
+        public IEnvelopePersistence? Persistence { get; } = Substitute.For<IEnvelopePersistence>();
+        public ITransportLogger? TransportLogger { get; } = Substitute.For<ITransportLogger>();
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 

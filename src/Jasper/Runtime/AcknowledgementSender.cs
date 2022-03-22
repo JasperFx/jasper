@@ -20,7 +20,7 @@ namespace Jasper.Runtime
                       throw new InvalidOperationException("No registered serializer for JSON");
         }
 
-        public Envelope BuildAcknowledgement(Envelope envelope)
+        public Envelope? BuildAcknowledgement(Envelope? envelope)
         {
             var ack = new Envelope(new Acknowledgement {CorrelationId = envelope.Id}, _writer)
             {
@@ -36,7 +36,7 @@ namespace Jasper.Runtime
         ///     Sends an acknowledgement back to the original sender
         /// </summary>
         /// <returns></returns>
-        public Task SendAcknowledgement(Envelope original)
+        public Task SendAcknowledgement(Envelope? original)
         {
             if (!original.AckRequested && !original.ReplyRequested.IsNotEmpty()) return Task.CompletedTask;
 
@@ -60,7 +60,7 @@ namespace Jasper.Runtime
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task SendFailureAcknowledgement(Envelope original, string message)
+        public Task SendFailureAcknowledgement(Envelope? original, string message)
         {
             if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
             {

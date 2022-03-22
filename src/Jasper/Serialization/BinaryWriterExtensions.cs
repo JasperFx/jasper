@@ -5,7 +5,7 @@ namespace Jasper.Serialization
 {
     internal static class BinaryWriterExtensions
     {
-        public static void WriteProp(this BinaryWriter writer, ref int count, string key, string value)
+        public static void WriteProp(this BinaryWriter writer, ref int count, string key, string? value)
         {
             if (value == null) return;
 
@@ -71,7 +71,7 @@ namespace Jasper.Serialization
             }
         }
 
-        public static void WriteProp(this BinaryWriter writer, ref int count, string key, Uri value)
+        public static void WriteProp(this BinaryWriter writer, ref int count, string key, Uri? value)
         {
             if (value == null) return;
 

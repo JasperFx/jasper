@@ -52,7 +52,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await thePersistor.StoreIncomingAsync(list.ToArray());
 
 
             // 7 scheduled
@@ -65,7 +65,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreIncoming(list.ToArray());
+            await thePersistor.StoreIncomingAsync(list.ToArray());
 
 
             // 3 outgoing
@@ -78,7 +78,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 list.Add(envelope);
             }
 
-            await thePersistor.StoreOutgoing(list.ToArray(), 0);
+            await thePersistor.StoreOutgoingAsync(list.ToArray(), 0);
 
             var counts = await thePersistor.Admin.GetPersistedCounts();
 

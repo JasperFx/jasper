@@ -24,7 +24,7 @@ namespace Jasper.Tcp.Tests
             // The session can be interrogated to see
             // what activity happened while the tracking was
             // ongoing
-            var session = await host.SendMessageAndWait(message);
+            var session = await host.SendMessageAndWaitAsync(message);
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.Sent)
                 .ShouldBeSameAs(message);

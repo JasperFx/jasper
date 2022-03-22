@@ -61,7 +61,7 @@ namespace StorytellerSpecs.Fixtures
             message.Name = name;
 
             _session = await _host.TrackActivity().IncludeExternalTransports()
-                .ExecuteAndWait(x => x.SendToDestination(address, message));
+                .ExecuteAndWait(x => x.SendToDestinationAsync(address, message));
         }
 
         public IGrammar TheMessagesSentShouldBe()
@@ -88,7 +88,7 @@ namespace StorytellerSpecs.Fixtures
             envelope.Destination = address;
 
             var sender = _host.Get<IExecutionContext>();
-            await sender.Send(envelope);
+            await sender.SendAsync(envelope);
         }
 
         [FormatAs("Send a garbled message to {address}")]
@@ -103,7 +103,7 @@ namespace StorytellerSpecs.Fixtures
             envelope.Destination = address;
 
             _session = await _host.TrackActivity().DoNotAssertOnExceptionsDetected().IncludeExternalTransports()
-                .ExecuteAndWait(x => x.SendEnvelope(envelope));
+                .ExecuteAndWait(x => x.SendEnvelopeAsync(envelope));
         }
 
         public override void TearDown()

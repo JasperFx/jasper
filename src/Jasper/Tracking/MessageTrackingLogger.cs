@@ -10,7 +10,7 @@ namespace Jasper.Tracking
     /// </summary>
     public class MessageTrackingLogger : MessageLogger
     {
-        private string _serviceName;
+        private string? _serviceName;
         private int _uniqueNodeId;
 
 
@@ -43,7 +43,7 @@ namespace Jasper.Tracking
             base.NoHandlerFor(envelope);
         }
 
-        public override void LogException(Exception ex, object correlationId = null,
+        public override void LogException(Exception ex, object? correlationId = null,
             string message = "Exception detected:")
         {
             ActiveSession?.LogException(ex, _serviceName);

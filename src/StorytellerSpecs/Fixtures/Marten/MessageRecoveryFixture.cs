@@ -295,7 +295,7 @@ namespace StorytellerSpecs.Fixtures.Marten
     {
         public readonly IList<Envelope> Enqueued = new List<Envelope>();
 
-        public Task Enqueue(Envelope envelope)
+        public Task EnqueueAsync(Envelope envelope)
         {
             Enqueued.Add(envelope);
             return Task.CompletedTask;
@@ -303,7 +303,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
         public int QueuedCount => 5;
 
-        public Task ScheduleExecution(Envelope envelope)
+        public Task ScheduleExecutionAsync(Envelope envelope)
         {
             throw new NotImplementedException();
         }

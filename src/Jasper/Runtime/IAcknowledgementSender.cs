@@ -4,14 +4,14 @@ namespace Jasper.Runtime
 {
     public interface IAcknowledgementSender
     {
-        Envelope BuildAcknowledgement(Envelope envelope);
+        Envelope? BuildAcknowledgement(Envelope? envelope);
 
 
         /// <summary>
         ///     Sends an acknowledgement back to the original sender
         /// </summary>
         /// <returns></returns>
-        Task SendAcknowledgement(Envelope envelope);
+        Task SendAcknowledgement(Envelope? envelope);
 
         /// <summary>
         ///     Send a failure acknowledgement back to the original
@@ -19,7 +19,7 @@ namespace Jasper.Runtime
         /// </summary>
         /// <param name="original"></param>
         /// <returns></returns>
-        Task SendFailureAcknowledgement(Envelope original, string message);
+        Task SendFailureAcknowledgement(Envelope? original, string message);
 
     }
 }

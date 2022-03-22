@@ -66,7 +66,7 @@ namespace Jasper.Testing.Acceptance
             Exceptions.Add(ex);
         }
 
-        void IMessageLogger.LogException(Exception ex, object correlationId, string message = "Exception detected:")
+        void IMessageLogger.LogException(Exception ex, object? correlationId, string message = "Exception detected:")
         {
             Exceptions.Add(ex);
         }
@@ -95,7 +95,7 @@ namespace Jasper.Testing.Acceptance
                 Id = Guid.NewGuid()
             };
 
-            var session = await Host.ExecuteAndWait(c => c.Enqueue(message));
+            var session = await Host.ExecuteAndWaitAsync(c => c.Enqueue(message));
 
             var tracked = session.FindSingleTrackedMessageOfType<Message1>();
 
@@ -168,7 +168,7 @@ namespace Jasper.Testing.Acceptance
         {
             // Send a question to another application, and request that the handling
             // service send back an answer
-            await messaging.SendAndExpectResponseFor<Answer>(new Question());
+            await messaging.SendAndExpectResponseForAsync<Answer>(new Question());
         }
         // ENDSAMPLE
 

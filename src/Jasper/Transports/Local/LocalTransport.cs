@@ -15,7 +15,7 @@ namespace Jasper.Transports.Local
         private readonly Cache<string, LocalQueueSettings> _queues = new Cache<string, LocalQueueSettings>(name =>
             new LocalQueueSettings(name));
 
-        private ImHashMap<string, ISendingAgent> _agents = ImHashMap<string, ISendingAgent>.Empty;
+        private ImHashMap<string, ISendingAgent?> _agents = ImHashMap<string, ISendingAgent>.Empty;
 
         public LocalTransport()
         {
@@ -66,24 +66,24 @@ namespace Jasper.Transports.Local
         }
 
 
-        public Endpoint GetOrCreateEndpoint(Uri uri)
+        public Endpoint GetOrCreateEndpoint(Uri? uri)
         {
             return findByUri(uri);
         }
 
-        public Endpoint TryGetEndpoint(Uri uri)
+        public Endpoint TryGetEndpoint(Uri? uri)
         {
             var queueName = QueueName(uri);
             return _queues.TryFind(queueName, out var settings) ? settings : null;
         }
 
 
-        Endpoint ITransport.ListenTo(Uri uri)
+        Endpoint ITransport.ListenTo(Uri? uri)
         {
             return findByUri(uri);
         }
 
-        private ISendingAgent addQueue(IMessagingRoot root, ITransportRuntime runtime, LocalQueueSettings queue)
+        private ISendingAgent? addQueue(IMessagingRoot root, ITransportRuntime runtime, LocalQueueSettings queue)
         {
             queue.Agent = buildAgent(queue, root);
             _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, root));
@@ -94,7 +94,7 @@ namespace Jasper.Transports.Local
             return queue.Agent;
         }
 
-        private ISendingAgent buildAgent(LocalQueueSettings queue, IMessagingRoot root)
+        private ISendingAgent? buildAgent(LocalQueueSettings queue, IMessagingRoot root)
         {
             switch (queue.Mode)
             {
@@ -114,7 +114,7 @@ namespace Jasper.Transports.Local
             }
         }
 
-        private LocalQueueSettings findByUri(Uri uri)
+        private LocalQueueSettings findByUri(Uri? uri)
         {
             var queueName = QueueName(uri);
             var settings = _queues[queueName];
@@ -134,7 +134,7 @@ namespace Jasper.Transports.Local
             return _queues[queueName.ToLowerInvariant()];
         }
 
-        public static string QueueName(Uri uri)
+        public static string QueueName(Uri? uri)
         {
             if (uri == null) return null;
 
@@ -150,7 +150,7 @@ namespace Jasper.Transports.Local
             return lastSegment ?? TransportConstants.Default;
         }
 
-        public static Uri AtQueue(Uri uri, string queueName)
+        public static Uri? AtQueue(Uri? uri, string queueName)
         {
             if (queueName.IsEmpty()) return uri;
 
@@ -160,7 +160,7 @@ namespace Jasper.Transports.Local
             return new Uri(uri, queueName);
         }
 
-        internal ISendingAgent AddSenderForDestination(Uri uri, IMessagingRoot root, TransportRuntime runtime)
+        internal ISendingAgent? AddSenderForDestination(Uri? uri, IMessagingRoot root, TransportRuntime runtime)
         {
             var queueName = QueueName(uri);
             var queue = _queues[queueName];

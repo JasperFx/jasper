@@ -29,7 +29,7 @@ namespace OtelWebApi.Controllers
         [HttpPost("/subscriber1/inline")]
         public Task PublishInline()
         {
-            return _publisher.Publish(new InlineMessage());
+            return _publisher.PublishAsync(new InlineMessage());
         }
     }
 }

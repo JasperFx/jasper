@@ -61,18 +61,18 @@ namespace Jasper.Testing.Serialization
 
         public class FooSerializer : IMessageSerializer
         {
-            public string ContentType { get; } = "text/foo";
-            public byte[] Write(object message)
+            public string? ContentType { get; } = "text/foo";
+            public byte[]? Write(object? message)
             {
                 throw new NotImplementedException();
             }
 
-            public object ReadFromData(Type messageType, byte[] data)
+            public object? ReadFromData(Type messageType, byte[]? data)
             {
                 throw new NotImplementedException();
             }
 
-            public object ReadFromData(byte[] data)
+            public object? ReadFromData(byte[]? data)
             {
                 throw new NotImplementedException();
             }

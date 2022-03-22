@@ -5,14 +5,14 @@ namespace Jasper.Runtime.Routing
     public interface ITopicRule
     {
         bool Matches(Type messageType);
-        string DetermineTopicName(object message);
+        string? DetermineTopicName(object? message);
     }
 
     public class ConstantTopicRule : ITopicRule
     {
-        private readonly string _topicName;
+        private readonly string? _topicName;
 
-        public ConstantTopicRule(string topicName)
+        public ConstantTopicRule(string? topicName)
         {
             _topicName = topicName;
         }
@@ -22,7 +22,7 @@ namespace Jasper.Runtime.Routing
             return true;
         }
 
-        public string DetermineTopicName(object message)
+        public string? DetermineTopicName(object? message)
         {
             return _topicName;
         }

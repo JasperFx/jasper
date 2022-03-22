@@ -27,7 +27,7 @@ namespace Jasper.Testing.Acceptance
                 var message = new MessageWithNoHandler();
 
 
-                await host.ExecuteAndWait(x => x.Enqueue(message));
+                await host.ExecuteAndWaitAsync(x => x.Enqueue(message));
 
                 for (int i = 0; i < 4; i++)
                 {
@@ -49,7 +49,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope envelope, IMessagingRoot root)
+            public Task Handle(Envelope? envelope, IMessagingRoot root)
             {
                 Recorded.Add(envelope);
 
@@ -63,7 +63,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope envelope, IMessagingRoot root)
+            public Task Handle(Envelope? envelope, IMessagingRoot root)
             {
                 Recorded.Add(envelope);
 
@@ -77,7 +77,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope envelope, IMessagingRoot root)
+            public Task Handle(Envelope? envelope, IMessagingRoot root)
             {
                 Recorded.Add(envelope);
 

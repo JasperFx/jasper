@@ -19,7 +19,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
             var @event = new UserCreated {UserName = user.Name};
 
-            await context.Publish(@event);
+            await context.PublishAsync(@event);
 
             await session.SaveChangesAsync();
 

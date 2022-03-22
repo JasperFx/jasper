@@ -24,7 +24,7 @@ namespace Jasper.Runtime
 
                 execution.Logger.MessageSucceeded(execution.Envelope);
             }
-            catch (Exception ex)
+            catch (Exception? ex)
             {
                 await execution.SendFailureAcknowledgement(execution.Envelope,"Sending cascading message failed: " + ex.Message);
 

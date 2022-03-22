@@ -112,7 +112,7 @@ namespace Jasper.Tracking
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task<ITrackedSession> InvokeMessageAndWait(object message)
+        public Task<ITrackedSession> InvokeMessageAndWait(object? message)
         {
             return ExecuteAndWait(c => c.Invoke(message));
         }
@@ -123,9 +123,9 @@ namespace Jasper.Tracking
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task<ITrackedSession> SendMessageAndWait(object message)
+        public Task<ITrackedSession> SendMessageAndWait(object? message)
         {
-            return ExecuteAndWait(c => c.Send(message));
+            return ExecuteAndWait(c => c.SendAsync(message));
         }
 
 

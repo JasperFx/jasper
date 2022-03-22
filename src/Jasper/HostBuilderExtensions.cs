@@ -24,7 +24,7 @@ namespace Jasper
         /// <param name="overrides"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IHostBuilder UseJasper<T>(this IHostBuilder builder, Action<HostBuilderContext, JasperOptions> overrides = null)
+        public static IHostBuilder UseJasper<T>(this IHostBuilder builder, Action<HostBuilderContext, JasperOptions>? overrides = null)
             where T : JasperOptions, new()
         {
             return builder.UseJasper(new T(), overrides);
@@ -36,7 +36,7 @@ namespace Jasper
         /// <param name="builder"></param>
         /// <param name="overrides">Programmatically configure Jasper options</param>
         /// <returns></returns>
-        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<HostBuilderContext, JasperOptions> overrides = null)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, Action<HostBuilderContext, JasperOptions>? overrides = null)
         {
 
             var registry = new JasperOptions();
@@ -61,7 +61,7 @@ namespace Jasper
         /// <param name="builder"></param>
         /// <param name="optionsy"></param>
         /// <returns></returns>
-        public static IHostBuilder UseJasper(this IHostBuilder builder, JasperOptions options, Action<HostBuilderContext, JasperOptions> customization = null)
+        public static IHostBuilder UseJasper(this IHostBuilder builder, JasperOptions options, Action<HostBuilderContext, JasperOptions>? customization = null)
         {
             var appliedKey = "JASPER_HAS_BEEN_APPLIED";
             if (builder.Properties.ContainsKey(appliedKey))
@@ -124,12 +124,12 @@ namespace Jasper
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Task Send<T>(this IHost host, T message)
+        public static Task Send<T>(this IHost host, T? message)
         {
-            return host.Get<IMessagePublisher>().Send(message);
+            return host.Get<IMessagePublisher>().SendAsync(message);
         }
 
-        public static Task Invoke<T>(this IHost host, T command)
+        public static Task Invoke<T>(this IHost host, T? command)
         {
             return host.Get<ICommandBus>().Invoke(command);
         }

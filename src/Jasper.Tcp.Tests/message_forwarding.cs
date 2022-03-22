@@ -43,7 +43,7 @@ namespace Jasper.Tcp.Tests
                 var session = await host
                     .TrackActivity()
                     .IncludeExternalTransports()
-                    .ExecuteAndWait(c => c.SendEnvelope(envelope));
+                    .ExecuteAndWait(c => c.SendEnvelopeAsync(envelope));
 
 
                 session.FindSingleTrackedMessageOfType<NewMessage>(EventType.MessageSucceeded)

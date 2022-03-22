@@ -42,7 +42,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             await persistence.Admin.RebuildSchemaObjects();
 
 
-            persistence.ScheduleJob(theEnvelope).Wait(3.Seconds());
+            persistence.ScheduleJobAsync(theEnvelope).Wait(3.Seconds());
 
             persisted = (await persistence.Admin
                 .AllIncomingEnvelopes())

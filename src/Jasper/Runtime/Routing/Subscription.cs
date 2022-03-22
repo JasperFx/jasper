@@ -10,7 +10,7 @@ namespace Jasper.Runtime.Routing
 {
     public class Subscription
     {
-        private string[] _contentTypes = {EnvelopeConstants.JsonContentType};
+        private string?[] _contentTypes = {EnvelopeConstants.JsonContentType};
 
         public Subscription()
         {
@@ -32,7 +32,7 @@ namespace Jasper.Runtime.Routing
         /// <summary>
         /// The legal, accepted content types for the receivers. The default is [EnvelopeConstants.JsonContentType]
         /// </summary>
-        public string[] ContentTypes
+        public string?[] ContentTypes
         {
             get => _contentTypes;
             set => _contentTypes = value?.Distinct().ToArray() ?? new[] {EnvelopeConstants.JsonContentType};
@@ -41,7 +41,7 @@ namespace Jasper.Runtime.Routing
         /// <summary>
         /// A type name or namespace name if matching on type or namespace
         /// </summary>
-        public string Match { get; set; } = string.Empty;
+        public string? Match { get; set; } = string.Empty;
 
 
 
@@ -91,7 +91,7 @@ namespace Jasper.Runtime.Routing
                    string.Equals(Match, other.Match);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

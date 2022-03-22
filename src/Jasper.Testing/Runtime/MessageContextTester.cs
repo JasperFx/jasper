@@ -74,7 +74,7 @@ namespace Jasper.Testing.Runtime
         public async Task publish_with_original_response()
         {
             routedTo(null, "tcp://server1:2222");
-            await theContext.Publish(new Message1());
+            await theContext.PublishAsync(new Message1());
 
             var outgoing = theContext.Outstanding.Single();
 
@@ -90,7 +90,7 @@ namespace Jasper.Testing.Runtime
 
             routedTo(envelope, "tcp://server1:2222");
 
-            await theContext.SendEnvelope(envelope);
+            await theContext.SendEnvelopeAsync(envelope);
 
             var outgoing = theContext.Outstanding.Single();
 

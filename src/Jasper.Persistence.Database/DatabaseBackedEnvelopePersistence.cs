@@ -43,7 +43,7 @@ namespace Jasper.Persistence.Database
 
         public abstract void Describe(TextWriter writer);
 
-        public Task ReassignDormantNodeToAnyNode(int nodeId)
+        public Task ReassignDormantNodeToAnyNodeAsync(int nodeId)
         {
             var sql = $@"
 update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable}
@@ -62,7 +62,7 @@ where
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
-        public async Task<int[]> FindUniqueOwners(int currentNodeId)
+        public async Task<int[]> FindUniqueOwnersAsync(int currentNodeId)
         {
             var sql = $@"
 select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id != 0 and owner_id != @owner

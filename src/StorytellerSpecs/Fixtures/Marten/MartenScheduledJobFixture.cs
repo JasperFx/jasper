@@ -62,7 +62,7 @@ namespace StorytellerSpecs.Fixtures.Marten
         public Task ScheduleSendMessage(int id, int seconds)
         {
             return theHost.Services.GetService<IExecutionContext>()
-                .ScheduleSend(new ScheduledMessage {Id = id}, seconds.Seconds());
+                .ScheduleSendAsync(new ScheduledMessage {Id = id}, seconds.Seconds());
         }
 
         [FormatAs("The received message count should be {count}")]

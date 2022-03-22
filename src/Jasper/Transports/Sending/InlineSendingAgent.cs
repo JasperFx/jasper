@@ -9,9 +9,9 @@ namespace Jasper.Transports.Sending
     {
         private readonly ISender _sender;
         private readonly IMessageLogger _logger;
-        private readonly AdvancedSettings _settings;
+        private readonly AdvancedSettings? _settings;
 
-        public InlineSendingAgent(ISender sender, Endpoint endpoint, IMessageLogger logger, AdvancedSettings settings)
+        public InlineSendingAgent(ISender sender, Endpoint endpoint, IMessageLogger logger, AdvancedSettings? settings)
         {
             _sender = sender;
             _logger = logger;
@@ -24,24 +24,24 @@ namespace Jasper.Transports.Sending
             // nothing
         }
 
-        public Uri Destination => _sender.Destination;
-        public Uri ReplyUri { get; set; }
+        public Uri? Destination => _sender.Destination;
+        public Uri? ReplyUri { get; set; }
         public bool Latched { get; } = false;
         public bool IsDurable { get; } = false;
         public bool SupportsNativeScheduledSend => _sender.SupportsNativeScheduledSend;
-        public async Task EnqueueOutgoing(Envelope envelope)
+        public async Task EnqueueOutgoing(Envelope? envelope)
         {
             setDefaults(envelope);
             await _sender.Send(envelope);
             _logger.Sent(envelope);
         }
 
-        public Task StoreAndForward(Envelope envelope)
+        public Task StoreAndForward(Envelope? envelope)
         {
             return EnqueueOutgoing(envelope);
         }
 
-        private void setDefaults(Envelope envelope)
+        private void setDefaults(Envelope? envelope)
         {
             envelope.Status = EnvelopeStatus.Outgoing;
             envelope.OwnerId = _settings.UniqueNodeId;

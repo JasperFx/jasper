@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ.Internal
         private readonly string _key;
         private readonly bool _isDurable;
         public bool SupportsNativeScheduledSend { get; } = false;
-        public Uri Destination { get; }
+        public Uri? Destination { get; }
 
         public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
@@ -30,7 +30,7 @@ namespace Jasper.RabbitMQ.Internal
         }
 
 #pragma warning disable 1998
-        public async Task Send(Envelope envelope)
+        public async Task Send(Envelope? envelope)
 #pragma warning restore 1998
         {
             EnsureConnected();

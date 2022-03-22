@@ -11,10 +11,10 @@ namespace Jasper.Persistence.Durability
     public class RecoverOutgoingMessages : IMessagingAction
     {
         private readonly ITransportRuntime _runtime;
-        private readonly AdvancedSettings _settings;
-        private readonly ITransportLogger _logger;
+        private readonly AdvancedSettings? _settings;
+        private readonly ITransportLogger? _logger;
 
-        public RecoverOutgoingMessages(ITransportRuntime runtime, AdvancedSettings settings, ITransportLogger logger)
+        public RecoverOutgoingMessages(ITransportRuntime runtime, AdvancedSettings? settings, ITransportLogger? logger)
         {
             _runtime = runtime;
             _settings = settings;
@@ -22,14 +22,14 @@ namespace Jasper.Persistence.Durability
         }
 
         public string Description { get; } = "Recover persisted outgoing messages";
-        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.OutgoingMessageLockId);
             if (!hasLock) return;
 
             try
             {
-                var destinations = await storage.FindAllDestinations();
+                var destinations = await storage.FindAllDestinationsAsync();
 
                 var count = 0;
                 foreach (var destination in destinations)
@@ -51,12 +51,12 @@ namespace Jasper.Persistence.Durability
 
 
 
-        private async Task<int> recoverFrom(Uri destination, IEnvelopePersistence storage)
+        private async Task<int> recoverFrom(Uri? destination, IEnvelopePersistence? storage)
         {
             try
             {
-                Envelope[] filtered = null;
-                IReadOnlyList<Envelope> outgoing = null;
+                Envelope?[] filtered = null;
+                IReadOnlyList<Envelope?> outgoing = null;
 
                 if (_runtime.GetOrBuildSendingAgent(destination).Latched) return 0;
 
@@ -64,13 +64,13 @@ namespace Jasper.Persistence.Durability
 
                 try
                 {
-                    outgoing = await storage.LoadOutgoing(destination: destination);
+                    outgoing = await storage.LoadOutgoingAsync(destination: destination);
 
                     var expiredMessages = outgoing.Where(x => x.IsExpired()).ToArray();
                     _logger.DiscardedExpired(expiredMessages);
 
 
-                    await storage.DeleteOutgoing(expiredMessages.ToArray());
+                    await storage.DeleteOutgoingAsync(expiredMessages.ToArray());
                     filtered = outgoing.Where(x => !expiredMessages.Contains(x)).ToArray();
 
                     // Might easily try to do this in the time between starting
@@ -82,7 +82,7 @@ namespace Jasper.Persistence.Durability
                         return 0;
                     }
 
-                    await storage.ReassignOutgoing(_settings.UniqueNodeId, filtered);
+                    await storage.ReassignOutgoingAsync(_settings.UniqueNodeId, filtered);
 
 
                     await storage.Session.Commit();
@@ -100,20 +100,20 @@ namespace Jasper.Persistence.Durability
                     {
                         await _runtime.GetOrBuildSendingAgent(destination).EnqueueOutgoing(envelope);
                     }
-                    catch (Exception e)
+                    catch (Exception? e)
                     {
                         _logger.LogException(e, message: $"Unable to enqueue {envelope} for sending");
                     }
 
                 return outgoing.Count();
             }
-            catch (UnknownTransportException e)
+            catch (UnknownTransportException? e)
             {
                 _logger.LogException(e, message: $"Could not resolve a channel for {destination}");
 
                 await storage.Session.Begin();
 
-                await storage.DeleteByDestination(destination);
+                await storage.DeleteByDestinationAsync(destination);
                 await storage.Session.Commit();
 
                 return 0;

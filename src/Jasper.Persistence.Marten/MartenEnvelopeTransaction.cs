@@ -34,20 +34,20 @@ namespace Jasper.Persistence.Marten
 
         }
 
-        public Task Persist(Envelope envelope)
+        public Task Persist(Envelope? envelope)
         {
             _session.StoreOutgoing(_settings, envelope, _nodeId);
             return Task.CompletedTask;
         }
 
-        public Task Persist(Envelope[] envelopes)
+        public Task Persist(Envelope?[] envelopes)
         {
             foreach (var envelope in envelopes) _session.StoreOutgoing(_settings, envelope, _nodeId);
 
             return Task.CompletedTask;
         }
 
-        public Task ScheduleJob(Envelope envelope)
+        public Task ScheduleJob(Envelope? envelope)
         {
             _session.StoreIncoming(_settings, envelope);
             return Task.CompletedTask;

@@ -9,22 +9,22 @@ namespace Jasper.Persistence.Durability
 {
     internal class RunScheduledJobs : IMessagingAction
     {
-        private readonly AdvancedSettings _settings;
-        private readonly ITransportLogger _logger;
+        private readonly AdvancedSettings? _settings;
+        private readonly ITransportLogger? _logger;
 
-        public RunScheduledJobs(AdvancedSettings settings, ITransportLogger logger)
+        public RunScheduledJobs(AdvancedSettings? settings, ITransportLogger? logger)
         {
             _settings = settings;
             _logger = logger;
         }
 
-        public Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
+        public Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
         {
             var utcNow = DateTimeOffset.UtcNow;
             return ExecuteAtTime(storage, agent, utcNow);
         }
 
-        public async Task<IReadOnlyList<Envelope>> ExecuteAtTime(IEnvelopePersistence storage, IDurabilityAgent agent, DateTimeOffset utcNow)
+        public async Task<IReadOnlyList<Envelope?>> ExecuteAtTime(IEnvelopePersistence? storage, IDurabilityAgent agent, DateTimeOffset utcNow)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.ScheduledJobLockId);
             if (!hasLock) return null;
@@ -33,11 +33,11 @@ namespace Jasper.Persistence.Durability
 
             try
             {
-                IReadOnlyList<Envelope> readyToExecute = null;
+                IReadOnlyList<Envelope?> readyToExecute = null;
 
                 try
                 {
-                    readyToExecute = await storage.LoadScheduledToExecute(utcNow);
+                    readyToExecute = await storage.LoadScheduledToExecuteAsync(utcNow);
 
                     if (!readyToExecute.Any())
                     {
@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Durability
                         return readyToExecute;
                     }
 
-                    await storage.ReassignIncoming(_settings.UniqueNodeId, readyToExecute);
+                    await storage.ReassignIncomingAsync(_settings.UniqueNodeId, readyToExecute);
 
                     await storage.Session.Commit();
                 }

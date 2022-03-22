@@ -32,7 +32,7 @@ namespace StorytellerSpecs.Fixtures
         public Uri Destination { get; } = "local://delayed".ToUri();
         public Uri Alias { get; }
 
-        Task IWorkerQueue.Enqueue(Envelope envelope)
+        Task IWorkerQueue.EnqueueAsync(Envelope envelope)
         {
             sent.Add(envelope);
             if (_callbacks.ContainsKey(envelope.Id)) _callbacks[envelope.Id].SetResult(envelope);
@@ -42,7 +42,7 @@ namespace StorytellerSpecs.Fixtures
 
         int IWorkerQueue.QueuedCount => 5;
 
-        public Task ScheduleExecution(Envelope envelope)
+        public Task ScheduleExecutionAsync(Envelope envelope)
         {
             theScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
             return Task.CompletedTask;

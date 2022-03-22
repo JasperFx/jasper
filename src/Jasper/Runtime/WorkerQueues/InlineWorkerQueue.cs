@@ -9,11 +9,11 @@ namespace Jasper.Runtime.WorkerQueues
     public class InlineWorkerQueue : IListeningWorkerQueue
     {
         private readonly IHandlerPipeline _pipeline;
-        private readonly ITransportLogger _logger;
-        private readonly AdvancedSettings _settings;
+        private readonly ITransportLogger? _logger;
+        private readonly AdvancedSettings? _settings;
 
-        public InlineWorkerQueue(IHandlerPipeline pipeline, ITransportLogger logger, IListener listener,
-            AdvancedSettings settings)
+        public InlineWorkerQueue(IHandlerPipeline pipeline, ITransportLogger? logger, IListener listener,
+            AdvancedSettings? settings)
         {
             Listener = listener;
             _pipeline = pipeline;
@@ -30,7 +30,7 @@ namespace Jasper.Runtime.WorkerQueues
 
         public IListener Listener { get; private set; }
 
-        public async Task Received(Uri uri, Envelope[] messages)
+        public async Task Received(Uri? uri, Envelope?[] messages)
         {
             foreach (var envelope in messages)
             {
@@ -38,7 +38,7 @@ namespace Jasper.Runtime.WorkerQueues
             }
         }
 
-        public async Task Received(Uri uri, Envelope envelope)
+        public async Task Received(Uri? uri, Envelope? envelope)
         {
             using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName, envelope,
                 ActivityKind.Consumer);
@@ -51,16 +51,16 @@ namespace Jasper.Runtime.WorkerQueues
 
                 // TODO -- mark success on the activity?
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 // TODO -- Mark failures onto the activity?
                 _logger.LogException(e, envelope.Id, "Failure to receive an incoming message");
 
                 try
                 {
-                    await Listener.Defer(envelope);
+                    await Listener.DeferAsync(envelope);
                 }
-                catch (Exception ex)
+                catch (Exception? ex)
                 {
                     _logger.LogException(ex, envelope.CorrelationId,"Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline");
                 }

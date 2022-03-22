@@ -33,7 +33,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task publish_message_with_no_known_subscribers()
         {
-            var session = await Host.ExecuteAndWait(x => x.Publish(new Message3()));
+            var session = await Host.ExecuteAndWaitAsync(x => x.PublishAsync(new Message3()));
 
             session.AllRecordsInOrder().Any(x => x.EventType != EventType.NoRoutes).ShouldBeFalse();
         }
@@ -41,10 +41,10 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task publish_with_known_subscribers()
         {
-            var session = await Host.ExecuteAndWait(async c =>
+            var session = await Host.ExecuteAndWaitAsync(async c =>
             {
-                await c.Publish(new Message1());
-                await c.Publish(new Message2());
+                await c.PublishAsync(new Message1());
+                await c.PublishAsync(new Message2());
 
             });
 
@@ -65,17 +65,17 @@ namespace Jasper.Testing.Acceptance
         public async Task send_message_with_no_known_subscribers()
         {
             await Should.ThrowAsync<NoRoutesException>(async () =>
-                await Publisher.Send(new Message3()));
+                await Publisher.SendAsync(new Message3()));
         }
 
 
         [Fact]
         public async Task send_with_known_subscribers()
         {
-            var session = await Host.ExecuteAndWait(async c =>
+            var session = await Host.ExecuteAndWaitAsync(async c =>
             {
-                await c.Send(new Message1());
-                await c.Send(new Message2());
+                await c.SendAsync(new Message1());
+                await c.SendAsync(new Message2());
 
             });
 

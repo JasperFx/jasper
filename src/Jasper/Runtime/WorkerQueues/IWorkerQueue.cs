@@ -7,9 +7,9 @@ namespace Jasper.Runtime.WorkerQueues
     {
         int QueuedCount { get; }
 
-        Task Enqueue(Envelope envelope);
+        Task EnqueueAsync(Envelope envelope);
 
-        Task ScheduleExecution(Envelope envelope);
+        Task ScheduleExecutionAsync(Envelope envelope);
 
         void StartListening(IListener listener);
     }

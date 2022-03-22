@@ -18,19 +18,19 @@ namespace Jasper.Runtime
         JasperOptions Options { get; }
 
         IExecutionContext NewContext();
-        IExecutionContext ContextFor(Envelope envelope);
+        IExecutionContext ContextFor(Envelope? envelope);
 
-        IEnvelopePersistence Persistence { get; }
-        ITransportLogger TransportLogger { get; }
+        IEnvelopePersistence? Persistence { get; }
+        ITransportLogger? TransportLogger { get; }
         AdvancedSettings Settings { get; }
         ITransportRuntime Runtime { get; }
         CancellationToken Cancellation { get; }
 
         IAcknowledgementSender Acknowledgements { get; }
 
-        bool TryFindMessageType(string messageTypeName, out Type messageType);
+        bool TryFindMessageType(string? messageTypeName, out Type messageType);
 
-        Type DetermineMessageType(Envelope envelope);
+        Type DetermineMessageType(Envelope? envelope);
 
         void RegisterMessageType(Type messageType);
     }

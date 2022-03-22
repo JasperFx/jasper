@@ -10,9 +10,9 @@ namespace Jasper.Runtime
 {
     public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTransaction
     {
-        private object _sagaId;
+        private object? _sagaId;
         private IChannelCallback _channel;
-        private readonly IList<Envelope> _scheduled = new List<Envelope>();
+        private readonly IList<Envelope?> _scheduled = new List<Envelope?>();
 
         public ExecutionContext(IMessagingRoot root) : base(root, Guid.NewGuid().ToString())
         {
@@ -27,7 +27,7 @@ namespace Jasper.Runtime
             _sagaId = null;
         }
 
-        internal void ReadEnvelope(Envelope originalEnvelope, IChannelCallback channel)
+        internal void ReadEnvelope(Envelope? originalEnvelope, IChannelCallback channel)
         {
             Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));
             CorrelationId = originalEnvelope.CorrelationId;
@@ -44,19 +44,19 @@ namespace Jasper.Runtime
             }
         }
 
-        Task IEnvelopeTransaction.Persist(Envelope envelope)
+        Task IEnvelopeTransaction.Persist(Envelope? envelope)
         {
             _outstanding.Fill(envelope);
             return Task.CompletedTask;
         }
 
-        Task IEnvelopeTransaction.Persist(Envelope[] envelopes)
+        Task IEnvelopeTransaction.Persist(Envelope?[] envelopes)
         {
             _outstanding.Fill(envelopes);
             return Task.CompletedTask;
         }
 
-        Task IEnvelopeTransaction.ScheduleJob(Envelope envelope)
+        Task IEnvelopeTransaction.ScheduleJob(Envelope? envelope)
         {
             _scheduled.Fill(envelope);
             return Task.CompletedTask;
@@ -80,7 +80,7 @@ namespace Jasper.Runtime
         /// <param name="response"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <returns></returns>
-        public Task RespondToSender(object response)
+        public Task RespondToSender(object? response)
         {
             if (Envelope == null)
             {
@@ -93,11 +93,11 @@ namespace Jasper.Runtime
                 throw new ArgumentOutOfRangeException(nameof(Envelope), $"There is no {nameof(Envelope.ReplyUri)}");
             }
 
-            return SendToDestination(Envelope.ReplyUri, response);
+            return SendToDestinationAsync(Envelope.ReplyUri, response);
         }
 
 
-        public async Task EnqueueCascading(object message)
+        public async Task EnqueueCascading(object? message)
         {
             if (Envelope.ResponseType != null && (message?.GetType() == Envelope.ResponseType ||
                                                   Envelope.ResponseType.IsAssignableFrom(message?.GetType())))
@@ -112,7 +112,7 @@ namespace Jasper.Runtime
                     return;
 
                 case Envelope env:
-                    await SendEnvelope(env);
+                    await SendEnvelopeAsync(env);
                     return;
 
                 case IEnumerable<object> enumerable:
@@ -123,12 +123,12 @@ namespace Jasper.Runtime
 
             if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)
             {
-                await SendToDestination(Envelope.ReplyUri, message);
+                await SendToDestinationAsync(Envelope.ReplyUri, message);
                 return;
             }
 
 
-            await Publish(message);
+            await PublishAsync(message);
         }
 
 
@@ -148,7 +148,7 @@ namespace Jasper.Runtime
                 {
                     await envelope.QuickSend();
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     Logger.LogException(e, envelope.CorrelationId,
                         "Unable to send an outgoing message, most likely due to serialization issues");
@@ -177,7 +177,7 @@ namespace Jasper.Runtime
             {
                 foreach (var envelope in _scheduled)
                 {
-                    await Persistence.ScheduleJob(envelope);
+                    await Persistence.ScheduleJobAsync(envelope);
                 }
             }
 
@@ -192,35 +192,35 @@ namespace Jasper.Runtime
             }
         }
 
-        public void EnlistInSaga(object sagaId)
+        public void EnlistInSaga(object? sagaId)
         {
             _sagaId = sagaId ?? throw new ArgumentNullException(nameof(sagaId));
             foreach (var envelope in _outstanding) envelope.SagaId = sagaId.ToString();
         }
 
-        Envelope IAcknowledgementSender.BuildAcknowledgement(Envelope envelope)
+        Envelope? IAcknowledgementSender.BuildAcknowledgement(Envelope? envelope)
         {
             return Root.Acknowledgements.BuildAcknowledgement(envelope);
         }
 
-        Task IAcknowledgementSender.SendAcknowledgement(Envelope envelope)
+        Task IAcknowledgementSender.SendAcknowledgement(Envelope? envelope)
         {
             return Root.Acknowledgements.SendAcknowledgement(envelope);
         }
 
-        Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope original, string message)
+        Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope? original, string message)
         {
             return Root.Acknowledgements.SendFailureAcknowledgement(original, message);
         }
 
         public Task Complete()
         {
-            return _channel.Complete(Envelope);
+            return _channel.CompleteAsync(Envelope);
         }
 
         public Task Defer()
         {
-            return _channel.Defer(Envelope);
+            return _channel.DeferAsync(Envelope);
         }
 
         public async Task ReSchedule(DateTime scheduledTime)
@@ -228,24 +228,24 @@ namespace Jasper.Runtime
             Envelope.ExecutionTime = scheduledTime;
             if (_channel is IHasNativeScheduling c)
             {
-                await c.MoveToScheduledUntil(Envelope, Envelope.ExecutionTime.Value);
+                await c.MoveToScheduledUntilAsync(Envelope, Envelope.ExecutionTime.Value);
             }
             else
             {
-                await Persistence.ScheduleJob(Envelope);
+                await Persistence.ScheduleJobAsync(Envelope);
             }
         }
 
-        public async Task MoveToDeadLetterQueue(Exception exception)
+        public async Task MoveToDeadLetterQueue(Exception? exception)
         {
             if (_channel is IHasDeadLetterQueue c)
             {
-                await c.MoveToErrors(Envelope, exception);
+                await c.MoveToErrorsAsync(Envelope, exception);
             }
             else
             {
                 // If persistable, persist
-                await Persistence.MoveToDeadLetterStorage(Envelope, exception);
+                await Persistence.MoveToDeadLetterStorageAsync(Envelope, exception);
             }
         }
 
@@ -254,7 +254,7 @@ namespace Jasper.Runtime
             return Root.Pipeline.Invoke(Envelope, _channel);
         }
 
-        protected override void trackEnvelopeCorrelation(Envelope outbound)
+        protected override void trackEnvelopeCorrelation(Envelope? outbound)
         {
             base.trackEnvelopeCorrelation(outbound);
             outbound.SagaId = _sagaId?.ToString() ?? Envelope?.SagaId ?? outbound.SagaId;

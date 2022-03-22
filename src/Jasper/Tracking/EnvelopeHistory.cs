@@ -17,7 +17,7 @@ namespace Jasper.Tracking
         public Guid EnvelopeId { get; }
 
 
-        public object Message
+        public object? Message
         {
             get
             {
@@ -188,7 +188,7 @@ namespace Jasper.Tracking
             return _records.ToArray().Any(x => x.EventType == eventType);
         }
 
-        public object MessageFor(EventType eventType)
+        public object? MessageFor(EventType eventType)
         {
             return _records.Where(x => x.EventType == eventType)
                 .LastOrDefault(x => x.Envelope.Message != null)?.Envelope.Message;

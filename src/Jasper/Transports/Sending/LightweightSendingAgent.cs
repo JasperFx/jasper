@@ -9,12 +9,12 @@ namespace Jasper.Transports.Sending
 {
     public class LightweightSendingAgent : SendingAgent
     {
-        public LightweightSendingAgent(ITransportLogger logger, IMessageLogger messageLogger, ISender sender,
-            AdvancedSettings settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
+        public LightweightSendingAgent(ITransportLogger? logger, IMessageLogger messageLogger, ISender sender,
+            AdvancedSettings? settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
         {
         }
 
-        public IList<Envelope> Queued { get; private set; } = new List<Envelope>();
+        public IList<Envelope?> Queued { get; private set; } = new List<Envelope?>();
 
         public override Task EnqueueForRetry(OutgoingMessageBatch batch)
         {
@@ -49,12 +49,12 @@ namespace Jasper.Transports.Sending
             return MarkSuccess();
         }
 
-        public override Task Successful(Envelope outgoing)
+        public override Task Successful(Envelope? outgoing)
         {
             return MarkSuccess();
         }
 
-        protected override Task storeAndForward(Envelope envelope)
+        protected override Task storeAndForward(Envelope? envelope)
         {
             return _senderDelegate(envelope);
         }

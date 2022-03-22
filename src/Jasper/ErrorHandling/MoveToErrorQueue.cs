@@ -9,12 +9,12 @@ namespace Jasper.ErrorHandling
 {
     public class MoveToErrorQueue : IContinuation
     {
-        public MoveToErrorQueue(Exception exception)
+        public MoveToErrorQueue(Exception? exception)
         {
             Exception = exception;
         }
 
-        public Exception Exception { get; }
+        public Exception? Exception { get; }
 
         public async Task Execute(IExecutionContext execution,
             DateTime utcNow)
@@ -40,7 +40,7 @@ namespace Jasper.ErrorHandling
             return Equals(Exception, other.Exception);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

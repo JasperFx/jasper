@@ -15,7 +15,7 @@ namespace Jasper.RabbitMQ.Internal
         public string ExchangeName { get; }
 
 
-        public override Uri BuildUriForTopic(string topicName)
+        public override Uri? BuildUriForTopic(string? topicName)
         {
             var endpoint = new RabbitMqEndpoint
             {

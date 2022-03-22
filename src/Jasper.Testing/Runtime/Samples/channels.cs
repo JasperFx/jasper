@@ -15,7 +15,7 @@ namespace Jasper.Testing.Runtime.Samples
         public async Task SendPingsAndPongs(IExecutionContext bus)
         {
             // Publish a message
-            await bus.Send(new PingMessage());
+            await bus.SendAsync(new PingMessage());
         }
     }
     // ENDSAMPLE

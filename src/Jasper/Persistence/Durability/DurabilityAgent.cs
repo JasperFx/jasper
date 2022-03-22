@@ -24,33 +24,33 @@ namespace Jasper.Persistence.Durability
         /// <returns></returns>
         public static DurabilityAgent ForHost(IHost host)
         {
-            return host.Services.GetService<IMessagingRoot>().As<MessagingRoot>().Durability;
+            return host.Services.GetRequiredService<IMessagingRoot>().As<MessagingRoot>().Durability;
         }
 
-        private readonly IMessagingAction IncomingMessages;
-        private readonly IMessagingAction OutgoingMessages;
-        private readonly IMessagingAction ScheduledJobs;
-        private readonly IMessagingAction NodeReassignment;
+        private readonly IMessagingAction? IncomingMessages;
+        private readonly IMessagingAction? OutgoingMessages;
+        private readonly IMessagingAction? ScheduledJobs;
+        private readonly IMessagingAction? NodeReassignment;
 
-        private readonly IEnvelopePersistence _storage;
-        private readonly AdvancedSettings _settings;
-        private readonly ILogger<DurabilityAgent> _trace;
-        private readonly IWorkerQueue _workers;
+        private readonly IEnvelopePersistence? _storage;
+        private readonly AdvancedSettings? _settings;
+        private readonly ILogger<DurabilityAgent>? _trace;
+        private readonly IWorkerQueue? _workers;
 
-        private readonly ActionBlock<IMessagingAction> _worker;
+        private readonly ActionBlock<IMessagingAction?>? _worker;
 
-        private Timer _nodeReassignmentTimer;
-        private Timer _scheduledJobTimer;
+        private Timer? _nodeReassignmentTimer;
+        private Timer? _scheduledJobTimer;
         private readonly bool _disabled;
         private bool _hasStarted;
 
 
-        public DurabilityAgent(ITransportLogger logger,
-            ILogger<DurabilityAgent> trace,
-            IWorkerQueue workers,
-            IEnvelopePersistence storage,
+        public DurabilityAgent(ITransportLogger? logger,
+            ILogger<DurabilityAgent>? trace,
+            IWorkerQueue? workers,
+            IEnvelopePersistence? storage,
             ITransportRuntime runtime,
-            AdvancedSettings settings)
+            AdvancedSettings? settings)
         {
             if (storage is NulloEnvelopePersistence)
             {
@@ -65,7 +65,7 @@ namespace Jasper.Persistence.Durability
             _settings = settings;
 
 
-            _worker = new ActionBlock<IMessagingAction>(processAction, new ExecutionDataflowBlockOptions
+            _worker = new ActionBlock<IMessagingAction?>(processAction, new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = 1,
                 CancellationToken = _settings.Cancellation
@@ -79,7 +79,7 @@ namespace Jasper.Persistence.Durability
             ScheduledJobs = new RunScheduledJobs(settings, logger);
         }
 
-        public ITransportLogger Logger { get; }
+        public ITransportLogger? Logger { get; }
 
         public int NodeId { get; }
 
@@ -117,7 +117,7 @@ namespace Jasper.Persistence.Durability
 
             public Task Completion => _completion.Task;
 
-            public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
+            public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
             {
                 try
                 {
@@ -131,9 +131,9 @@ namespace Jasper.Persistence.Durability
             }
         }
 
-        public Task EnqueueLocally(Envelope envelope)
+        public Task EnqueueLocally(Envelope? envelope)
         {
-            return _workers.Enqueue(envelope);
+            return _workers.EnqueueAsync(envelope);
         }
 
         public void RescheduleIncomingRecovery()
@@ -187,12 +187,12 @@ namespace Jasper.Persistence.Durability
                     }
                     await action.Execute(_storage, this);
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     Logger.LogException(e, message: "Running " + action.Description);
                 }
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 Logger.LogException(e, message: "Error trying to run " + action);
                 await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
@@ -209,7 +209,7 @@ namespace Jasper.Persistence.Durability
             {
                 await _storage.Session.ConnectAndLockCurrentNode(Logger, _settings.UniqueNodeId);
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 Logger.LogException(e, message: "Failure trying to restart the connection in DurabilityAgent");
             }
@@ -232,9 +232,9 @@ namespace Jasper.Persistence.Durability
                 await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
 
                 // Release all envelopes tagged to this node in message persistence to any node
-                await _storage.ReassignDormantNodeToAnyNode(_settings.UniqueNodeId);
+                await _storage.ReassignDormantNodeToAnyNodeAsync(_settings.UniqueNodeId);
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 Logger.LogException(e);
             }

@@ -219,7 +219,7 @@ namespace Jasper.Testing.Runtime.Samples
             // Raise a separate "alert" event message
             var session = execution.NewPublisher();
             await session.Schedule(execution.Envelope.Message, utcNow.AddHours(1));
-            await session.Send(new RescheduledAlert()
+            await session.SendAsync(new RescheduledAlert()
             {
                 Id = execution.Envelope.Id,
                 ExceptionText = _ex.ToString()

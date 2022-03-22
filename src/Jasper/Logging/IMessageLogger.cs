@@ -11,7 +11,7 @@ namespace Jasper.Logging
         /// <param name="ex"></param>
         /// <param name="correlationId"></param>
         /// <param name="message"></param>
-        void LogException(Exception ex, object correlationId = null, string message = "Exception detected:");
+        void LogException(Exception ex, object? correlationId = null, string message = "Exception detected:");
 
         /// <summary>
         ///     Called when an envelope is successfully sent through a transport
@@ -67,6 +67,7 @@ namespace Jasper.Logging
         ///     Called when Jasper moves an envelope into the dead letter queue
         /// </summary>
         /// <param name="envelope"></param>
+        /// <param name="ex"></param>
         void MovedToErrorQueue(Envelope envelope, Exception ex);
 
         /// <summary>

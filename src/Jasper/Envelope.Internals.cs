@@ -22,7 +22,7 @@ namespace Jasper
     // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
-        internal void MarkReceived(Uri uri, DateTime now, int currentNodeId)
+        internal void MarkReceived(Uri? uri, DateTime now, int currentNodeId)
         {
             if (IsDelayed(now))
             {
@@ -37,19 +37,19 @@ namespace Jasper
         }
 
 
-        public IMessageSerializer Serializer { get; set; }
+        public IMessageSerializer? Serializer { get; set; }
 
 
 
         /// <summary>
         ///     Used by IMessageContext.Invoke<T> to denote the response type
         /// </summary>
-        internal Type ResponseType { get; set; }
+        internal Type? ResponseType { get; set; }
 
         /// <summary>
         ///     Also used by IMessageContext.Invoke<T> to catch the response
         /// </summary>
-        internal object Response { get; set; }
+        internal object? Response { get; set; }
 
 
         /// <summary>
@@ -95,17 +95,17 @@ namespace Jasper
             };
         }
 
-        internal Envelope CloneForWriter(IMessageSerializer writer)
+        internal Envelope? CloneForWriter(IMessageSerializer? writer)
         {
             var envelope = (Envelope)MemberwiseClone();
-            envelope.Headers = new Dictionary<string, string>(Headers);
+            envelope.Headers = new Dictionary<string, string?>(Headers);
             envelope.Serializer = writer;
             envelope.ContentType = writer.ContentType;
 
             return envelope;
         }
 
-        internal Envelope(object message, IMessageSerializer writer)
+        internal Envelope(object? message, IMessageSerializer? writer)
         {
             Message = message;
             Serializer = writer ?? throw new ArgumentNullException(nameof(writer));
@@ -113,7 +113,7 @@ namespace Jasper
 
         private bool _enqueued;
 
-        internal ISendingAgent Sender { get; set; }
+        internal ISendingAgent? Sender { get; set; }
 
         internal Task Send()
         {
@@ -151,7 +151,7 @@ namespace Jasper
 
 
 
-        internal static Envelope ForPing(Uri destination)
+        internal static Envelope? ForPing(Uri? destination)
         {
             return new Envelope
             {

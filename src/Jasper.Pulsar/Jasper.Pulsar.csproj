@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,4 +13,5 @@
       <PackageReference Include="DotPulsar" Version="2.2.0" />
     </ItemGroup>
 
+  <Import Project="../../Analysis.Build.props" />
 </Project>

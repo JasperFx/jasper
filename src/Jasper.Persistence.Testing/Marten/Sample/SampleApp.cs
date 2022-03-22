@@ -49,7 +49,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_ExecuteAndWaitSync()
         {
-            await theHost.ExecuteAndWait(x => x.Invoke(new CreateUser {Name = "Tom"}));
+            await theHost.ExecuteAndWaitAsync(x => x.Invoke(new CreateUser {Name = "Tom"}));
 
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
@@ -65,7 +65,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_InvokeMessageAndWait()
         {
-            await theHost.ExecuteAndWait(x => x.Invoke(new CreateUser {Name = "Bill"}));
+            await theHost.ExecuteAndWaitAsync(x => x.Invoke(new CreateUser {Name = "Bill"}));
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
             {
@@ -100,7 +100,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         {
             using (var host = JasperHost.For<AppUsingMessageTracking>())
             {
-                await host.ExecuteAndWait(x => x.Invoke(new Message1()));
+                await host.ExecuteAndWaitAsync(x => x.Invoke(new Message1()));
 
                 // check the change in system state after the original
                 // message and all of its cascading messages
@@ -115,24 +115,24 @@ namespace Jasper.Persistence.Testing.Marten.Sample
             using (var runtime = JasperHost.For<AppUsingMessageTracking>())
             {
                 // Call IMessageContext.Invoke() and wait for all activity to finish
-                await runtime.InvokeMessageAndWait(new Message1());
+                await runtime.InvokeMessageAndWaitAsync(new Message1());
 
                 // Configurable timeouts
-                await runtime.InvokeMessageAndWait(new Message1(),
+                await runtime.InvokeMessageAndWaitAsync(new Message1(),
                     10000);
 
                 // More general usage to send a single message and wait
                 // for all activity to complete
-                await runtime.ExecuteAndWait(() => runtime.Send(new Message1()));
+                await runtime.ExecuteAndWaitAsync(() => runtime.Send(new Message1()));
 
 
                 // Using an isolated message context
-                await runtime.ExecuteAndWait(c => c.Send(new Message1()));
+                await runtime.ExecuteAndWaitAsync(c => c.SendAsync(new Message1()));
 
                 // Assert that there were no exceptions during the processing
                 // If there are, this will throw an AggregateException of
                 // all encountered exceptions in the message processing
-                var session = await runtime.ExecuteAndWait(c => c.Send(new Message1()));
+                var session = await runtime.ExecuteAndWaitAsync(c => c.SendAsync(new Message1()));
             }
         }
 

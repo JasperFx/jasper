@@ -38,7 +38,7 @@ namespace Jasper.Testing.Acceptance
 
 
 #pragma warning disable 4014
-                channel.Received().Complete(envelope);
+                channel.Received().CompleteAsync(envelope);
 #pragma warning restore 4014
             }
 

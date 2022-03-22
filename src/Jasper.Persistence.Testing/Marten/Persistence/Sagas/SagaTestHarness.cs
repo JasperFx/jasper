@@ -63,19 +63,19 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 
         protected Task send<T>(T message)
         {
-            return _host.ExecuteAndWait(x => x.Send(message), 10000);
+            return _host.ExecuteAndWaitAsync(x => x.SendAsync(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)
         {
-            return _host.ExecuteAndWait(x =>
+            return _host.ExecuteAndWaitAsync(x =>
             {
                 var envelope = new Envelope(message)
                 {
                     SagaId = sagaId.ToString()
                 };
 
-                return x.SendEnvelope(envelope);
+                return x.SendEnvelopeAsync(envelope);
             }, 10000);
         }
 

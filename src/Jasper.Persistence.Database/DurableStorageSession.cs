@@ -91,7 +91,7 @@ namespace Jasper.Persistence.Database
             return Connection?.State == ConnectionState.Open;
         }
 
-        public async Task ConnectAndLockCurrentNode(ITransportLogger logger, int nodeId)
+        public async Task ConnectAndLockCurrentNode(ITransportLogger? logger, int nodeId)
         {
             if (Connection != null)
             {

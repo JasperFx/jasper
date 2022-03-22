@@ -73,7 +73,7 @@ namespace Jasper.Transports
             foreach (var endpoint in endpoints()) endpoint.StartListening(root, runtime);
         }
 
-        public Endpoint ListenTo(Uri uri)
+        public Endpoint ListenTo(Uri? uri)
         {
             uri = canonicizeUri(uri);
             var endpoint = findEndpointByUri(uri);
@@ -93,7 +93,7 @@ namespace Jasper.Transports
             }
         }
 
-        public Endpoint GetOrCreateEndpoint(Uri uri)
+        public Endpoint GetOrCreateEndpoint(Uri? uri)
         {
             var shouldBeDurable = uri.IsDurable();
 
@@ -106,7 +106,7 @@ namespace Jasper.Transports
             return endpoint;
         }
 
-        public Endpoint TryGetEndpoint(Uri uri)
+        public Endpoint TryGetEndpoint(Uri? uri)
         {
             return findEndpointByUri(canonicizeUri(uri));
         }
@@ -119,7 +119,7 @@ namespace Jasper.Transports
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        protected virtual Uri canonicizeUri(Uri uri)
+        protected virtual Uri? canonicizeUri(Uri? uri)
         {
             return uri;
         }

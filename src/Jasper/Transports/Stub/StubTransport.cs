@@ -39,8 +39,6 @@ namespace Jasper.Transports.Stub
                 new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
         }
 
-        public IList<StubChannelCallback> Callbacks { get; } = new List<StubChannelCallback>();
-
         protected override IEnumerable<StubEndpoint> endpoints()
         {
             return Endpoints.GetAll();

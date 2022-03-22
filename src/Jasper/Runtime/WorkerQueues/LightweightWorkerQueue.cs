@@ -11,14 +11,14 @@ namespace Jasper.Runtime.WorkerQueues
 {
     public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling
     {
-        private readonly ITransportLogger _logger;
-        private readonly AdvancedSettings _settings;
+        private readonly ITransportLogger? _logger;
+        private readonly AdvancedSettings? _settings;
         private readonly ActionBlock<Envelope> _receiver;
         private readonly InMemoryScheduledJobProcessor _scheduler;
         private IListener _listener;
 
-        public LightweightWorkerQueue(Endpoint endpoint, ITransportLogger logger,
-            IHandlerPipeline pipeline, AdvancedSettings settings)
+        public LightweightWorkerQueue(Endpoint endpoint, ITransportLogger? logger,
+            IHandlerPipeline pipeline, AdvancedSettings? settings)
         {
             _logger = logger;
             _settings = settings;
@@ -39,7 +39,7 @@ namespace Jasper.Runtime.WorkerQueues
 
                     await Pipeline.Invoke(envelope, this);
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     // This *should* never happen, but of course it will
                     logger.LogException(e);
@@ -50,7 +50,7 @@ namespace Jasper.Runtime.WorkerQueues
         public IHandlerPipeline Pipeline { get; }
 
         public int QueuedCount => _receiver.InputCount;
-        public Task Enqueue(Envelope envelope)
+        public Task EnqueueAsync(Envelope envelope)
         {
             if (envelope.IsPing()) return Task.CompletedTask;
 
@@ -59,7 +59,7 @@ namespace Jasper.Runtime.WorkerQueues
             return Task.CompletedTask;
         }
 
-        public Task ScheduleExecution(Envelope envelope)
+        public Task ScheduleExecutionAsync(Envelope envelope)
         {
             if (!envelope.ExecutionTime.HasValue) throw new ArgumentOutOfRangeException(nameof(envelope), $"There is no {nameof(Envelope.ExecutionTime)} value");
 
@@ -76,7 +76,7 @@ namespace Jasper.Runtime.WorkerQueues
             Address = _listener.Address;
         }
 
-        public Uri Address { get; set; }
+        public Uri? Address { get; set; }
 
 
         public ListeningStatus Status
@@ -85,14 +85,14 @@ namespace Jasper.Runtime.WorkerQueues
             set => _listener.Status = value;
         }
 
-        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri? uri, Envelope?[] messages)
         {
             var now = DateTime.UtcNow;
 
             return ProcessReceivedMessages(now, uri, messages);
         }
 
-        public async Task Received(Uri uri, Envelope envelope)
+        public async Task Received(Uri? uri, Envelope? envelope)
         {
             var now = DateTime.UtcNow;
             envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
@@ -105,10 +105,10 @@ namespace Jasper.Runtime.WorkerQueues
             }
             else
             {
-                await Enqueue(envelope);
+                await EnqueueAsync(envelope);
             }
 
-            await _listener.Complete(envelope);
+            await _listener.CompleteAsync(envelope);
 
             _logger.IncomingReceived(envelope);
         }
@@ -119,45 +119,45 @@ namespace Jasper.Runtime.WorkerQueues
         }
 
         // Separated for testing here.
-        public async Task ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
+        public async Task ProcessReceivedMessages(DateTime now, Uri? uri, Envelope?[] envelopes)
         {
             if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
             foreach (var envelope in envelopes)
             {
                 envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
-                await Enqueue(envelope);
-                await _listener.Complete(envelope);
+                await EnqueueAsync(envelope);
+                await _listener.CompleteAsync(envelope);
             }
 
             _logger.IncomingBatchReceived(envelopes);
 
         }
 
-        Task IChannelCallback.Complete(Envelope envelope)
+        Task IChannelCallback.CompleteAsync(Envelope envelope)
         {
             return Task.CompletedTask;
         }
 
-        async Task IChannelCallback.Defer(Envelope envelope)
+        async Task IChannelCallback.DeferAsync(Envelope envelope)
         {
             if (_listener == null)
             {
-                await Enqueue(envelope);
+                await EnqueueAsync(envelope);
                 return;
             }
 
             var nativelyRequeued = await _listener.TryRequeue(envelope);
             if (!nativelyRequeued)
             {
-                await Enqueue(envelope);
+                await EnqueueAsync(envelope);
             }
         }
 
-        Task IHasNativeScheduling.MoveToScheduledUntil(Envelope envelope, DateTimeOffset time)
+        Task IHasNativeScheduling.MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
         {
             envelope.ExecutionTime = time;
-            return ScheduleExecution(envelope);
+            return ScheduleExecutionAsync(envelope);
         }
     }
 }

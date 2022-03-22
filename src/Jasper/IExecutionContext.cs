@@ -13,7 +13,7 @@ namespace Jasper
         /// through this context will be tracked with this identifier. If this context is the
         /// result of a received message, this will be the original Envelope.CorrelationId
         /// </summary>
-        string CorrelationId { get; }
+        string? CorrelationId { get; }
 
         /// <summary>
         ///     The envelope being currently handled. This will only be non-null during
@@ -56,7 +56,7 @@ namespace Jasper
         ///     of a stateful saga
         /// </summary>
         /// <param name="sagaId"></param>
-        void EnlistInSaga(object sagaId);
+        void EnlistInSaga(object? sagaId);
 
         /// <summary>
         /// Send a response message back to the original sender of the message being handled.
@@ -65,13 +65,13 @@ namespace Jasper
         /// <param name="context"></param>
         /// <param name="response"></param>
         /// <returns></returns>
-        Task RespondToSender(object response);
+        Task RespondToSender(object? response);
 
         /// <summary>
         /// The active envelope persistence for the application. This is used
         /// by the "outbox" support in Jasper
         /// </summary>
-        IEnvelopePersistence Persistence { get; }
+        IEnvelopePersistence? Persistence { get; }
 
         /// <summary>
         ///     Enqueue a cascading message to the outstanding context transaction
@@ -80,7 +80,7 @@ namespace Jasper
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task EnqueueCascading(object message);
+        Task EnqueueCascading(object? message);
 
 
         IMessageLogger Logger { get; }
@@ -104,7 +104,7 @@ namespace Jasper
 
         Task ReSchedule(DateTime scheduledTime);
 
-        Task MoveToDeadLetterQueue(Exception exception);
+        Task MoveToDeadLetterQueue(Exception? exception);
 
         /// <summary>
         /// Immediately execute the message again

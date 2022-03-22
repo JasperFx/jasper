@@ -121,7 +121,7 @@ namespace Samples
                 Id = ++_orderIdSequence
             };
 
-            if (order.Drink == "Soda") await context.Send(new SodaRequested {OrderId = state.Id});
+            if (order.Drink == "Soda") await context.SendAsync(new SodaRequested {OrderId = state.Id});
 
             // And other outgoing messages to coordinate gathering up the happy meal
 
@@ -192,7 +192,7 @@ namespace Samples
 
 
             // You can explicitly call the IMessageContext if you prefer
-            if (order.Drink == "Soda") await context.Send(new SodaRequested {OrderId = state.Id});
+            if (order.Drink == "Soda") await context.SendAsync(new SodaRequested {OrderId = state.Id});
 
 
             return state;

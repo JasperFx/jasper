@@ -21,7 +21,7 @@ namespace Jasper.Tcp
         {
         }
 
-        protected override Uri canonicizeUri(Uri uri)
+        protected override Uri? canonicizeUri(Uri? uri)
         {
             return new Uri($"tcp://{uri.Host}:{uri.Port}");
         }

@@ -5,7 +5,7 @@ namespace Jasper.Runtime.Scheduled
 {
     public interface IScheduledJobProcessor : IDisposable
     {
-        void Enqueue(DateTimeOffset executionTime, Envelope envelope);
+        void Enqueue(DateTimeOffset executionTime, Envelope? envelope);
 
         Task PlayAll();
 

@@ -6,7 +6,7 @@ namespace Jasper.Runtime.Scheduled
 {
     public static class EnvelopeScheduleExtensions
     {
-        public static Envelope ForScheduledSend(this Envelope envelope, ISendingAgent sender)
+        public static Envelope? ForScheduledSend(this Envelope? envelope, ISendingAgent? sender)
         {
             return new Envelope(envelope, EnvelopeReaderWriter.Instance)
             {

@@ -91,7 +91,7 @@ namespace StorytellerSpecs.Fixtures.Subscriptions
             var message = Activator.CreateInstance(type).As<Message>();
             message.Name = name;
 
-            await _publisher.SendMessageAndWait(message);
+            await _publisher.SendMessageAndWaitAsync(message);
         }
     }
 

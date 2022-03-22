@@ -31,14 +31,14 @@ namespace Jasper.Tcp
             return mode != EndpointMode.Inline;
         }
 
-        public override Uri Uri => ToUri(Port, HostName);
+        public override Uri? Uri => ToUri(Port, HostName);
 
         public static Uri ToUri(int port, string hostName = "localhost")
         {
             return $"tcp://{hostName}:{port}".ToUri();
         }
 
-        public override Uri ReplyUri()
+        public override Uri? ReplyUri()
         {
             var uri = ToUri(Port, HostName);
             if (Mode != EndpointMode.Durable)
@@ -53,7 +53,7 @@ namespace Jasper.Tcp
 
         public int Port { get; private set; }
 
-        public override void Parse(Uri uri)
+        public override void Parse(Uri? uri)
         {
             if (uri.Scheme != "tcp")
             {

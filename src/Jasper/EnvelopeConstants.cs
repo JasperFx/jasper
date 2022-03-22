@@ -2,7 +2,7 @@ namespace Jasper
 {
     public class EnvelopeConstants
     {
-        public const string JsonContentType = "application/json";
+        public const string? JsonContentType = "application/json";
         public const string CorrelationIdKey = "correlation-id";
         public const string SagaIdKey = "saga-id";
         public const string IdKey = "id";

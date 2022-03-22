@@ -45,14 +45,14 @@ namespace Jasper.Runtime
 
         public IMessageLogger Logger { get; }
 
-        public Task Invoke(Envelope envelope, IChannelCallback channel)
+        public Task Invoke(Envelope? envelope, IChannelCallback channel)
         {
             using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryProcessSpanName, envelope, ActivityKind.Internal);
 
             return Invoke(envelope, channel, activity);
         }
 
-        public async Task Invoke(Envelope envelope, IChannelCallback channel, Activity activity)
+        public async Task Invoke(Envelope? envelope, IChannelCallback channel, Activity activity)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Jasper.Runtime
                     var continuation = await execute(context, envelope);
                     await continuation.Execute(context, DateTime.UtcNow);
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     // TODO -- gotta do something on the envelope to get it out of the transport
 
@@ -85,7 +85,7 @@ namespace Jasper.Runtime
         }
 
 
-        public async Task InvokeNow(Envelope envelope)
+        public async Task InvokeNow(Envelope? envelope)
         {
             if (envelope.Message == null)
             {
@@ -111,7 +111,7 @@ namespace Jasper.Runtime
 
                 await context.SendAllQueuedOutgoingMessages();
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 Logger.LogException(e, message: $"Invocation of {envelope} failed!");
                 throw;
@@ -122,7 +122,7 @@ namespace Jasper.Runtime
             }
         }
 
-        private async Task<IContinuation> execute(IExecutionContext context, Envelope envelope)
+        private async Task<IContinuation> execute(IExecutionContext context, Envelope? envelope)
         {
             if (envelope.IsExpired())
             {
@@ -145,7 +145,7 @@ namespace Jasper.Runtime
                             "No message body could be de-serialized from the raw data in this envelope"));
                     }
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     return new MoveToErrorQueue(e);
                 }
@@ -204,7 +204,7 @@ namespace Jasper.Runtime
                         {
                             await handler.Handle(messageContext, _cancellation);
                         }
-                        catch (Exception e)
+                        catch (Exception? e)
                         {
                             MarkFailure(messageContext, e);
                             return new MoveToErrorQueue(e);
@@ -212,7 +212,7 @@ namespace Jasper.Runtime
 
                         return MessageSucceededContinuation.Instance;
                     }
-                    catch (Exception e)
+                    catch (Exception? e)
                     {
                         MarkFailure(messageContext, e);
                         return new MoveToErrorQueue(e);
@@ -238,7 +238,7 @@ namespace Jasper.Runtime
                             {
                                 await handler.Handle(context, _cancellation);
                             }
-                            catch (Exception e)
+                            catch (Exception? e)
                             {
                                 MarkFailure(messageContext, e);
                                 throw;
@@ -247,7 +247,7 @@ namespace Jasper.Runtime
                             return MessageSucceededContinuation.Instance;
                         }, pollyContext);
                     }
-                    catch (Exception e)
+                    catch (Exception? e)
                     {
                         MarkFailure(messageContext, e);
                         return new MoveToErrorQueue(e);
@@ -261,7 +261,7 @@ namespace Jasper.Runtime
             return executor;
         }
 
-        internal void MarkFailure(IExecutionContext context, Exception ex)
+        internal void MarkFailure(IExecutionContext context, Exception? ex)
         {
             _root.MessageLogger.LogException(ex, context.Envelope.Id, "Failure during message processing execution");
             _root.MessageLogger

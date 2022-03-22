@@ -15,7 +15,7 @@ namespace Jasper.Serialization
         /// Read properties and header values from a dictionary into this envelope object
         /// </summary>
         /// <param name="dictionary"></param>
-        public static void ReadPropertiesFromDictionary(IDictionary<string, object> dictionary, Envelope env)
+        public static void ReadPropertiesFromDictionary(IDictionary<string, object?> dictionary, Envelope? env)
         {
             foreach (var pair in dictionary)
             {
@@ -36,7 +36,7 @@ namespace Jasper.Serialization
         /// Read properties and header values from a dictionary into this envelope object
         /// </summary>
         /// <param name="dictionary"></param>
-        public static void ReadPropertiesFromDictionary(IReadOnlyDictionary<string, string> dictionary, Envelope env)
+        public static void ReadPropertiesFromDictionary(IReadOnlyDictionary<string, string?> dictionary, Envelope? env)
         {
             foreach (var pair in dictionary)
             {
@@ -122,24 +122,24 @@ namespace Jasper.Serialization
             }
         }
 
-        public static Envelope[] ReadMany(byte[] buffer)
+        public static Envelope?[] ReadMany(byte[] buffer)
         {
             using var ms = new MemoryStream(buffer);
             using var br = new BinaryReader(ms);
             var numberOfMessages = br.ReadInt32();
-            var msgs = new Envelope[numberOfMessages];
+            var msgs = new Envelope?[numberOfMessages];
             for (var i = 0; i < numberOfMessages; i++) msgs[i] = readSingle(br);
             return msgs;
         }
 
-        internal static Envelope Deserialize(byte[] buffer)
+        internal static Envelope? Deserialize(byte[]? buffer)
         {
             using var ms = new MemoryStream(buffer);
             using var br = new BinaryReader(ms);
             return readSingle(br);
         }
 
-        private static Envelope readSingle(BinaryReader br)
+        private static Envelope? readSingle(BinaryReader br)
         {
             var msg = new Envelope
             {
@@ -158,7 +158,7 @@ namespace Jasper.Serialization
             return msg;
         }
 
-        public static byte[] Serialize(IList<Envelope> messages)
+        public static byte[] Serialize(IList<Envelope?> messages)
         {
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
@@ -171,7 +171,7 @@ namespace Jasper.Serialization
             return stream.ToArray();
         }
 
-        public static byte[] Serialize(Envelope env)
+        public static byte[]? Serialize(Envelope? env)
         {
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
@@ -180,7 +180,7 @@ namespace Jasper.Serialization
             return stream.ToArray();
         }
 
-        private static void writeSingle(BinaryWriter writer, Envelope env)
+        private static void writeSingle(BinaryWriter writer, Envelope? env)
         {
             writer.Write(env.SentAt.ToBinary());
 
@@ -246,7 +246,7 @@ namespace Jasper.Serialization
             }
         }
 
-        private static int writeHeaders(BinaryWriter writer, Envelope env)
+        private static int writeHeaders(BinaryWriter writer, Envelope? env)
         {
             var count = 0;
 

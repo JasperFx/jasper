@@ -10,17 +10,17 @@ namespace Jasper.Transports.Sending
     public class BatchedSender : ISender, ISenderRequiresCallback
     {
         private readonly CancellationToken _cancellation;
-        private readonly ITransportLogger _logger;
+        private readonly ITransportLogger? _logger;
 
         private readonly ISenderProtocol _protocol;
         private BatchingBlock<Envelope> _batching;
-        private TransformBlock<Envelope[], OutgoingMessageBatch> _batchWriting;
+        private TransformBlock<Envelope?[], OutgoingMessageBatch> _batchWriting;
         private ISenderCallback _callback;
         private int _queued;
         private ActionBlock<OutgoingMessageBatch> _sender;
-        private ActionBlock<Envelope> _serializing;
+        private ActionBlock<Envelope?> _serializing;
 
-        public BatchedSender(Uri destination, ISenderProtocol protocol, CancellationToken cancellation, ITransportLogger logger)
+        public BatchedSender(Uri? destination, ISenderProtocol protocol, CancellationToken cancellation, ITransportLogger? logger)
         {
             Destination = destination;
             _protocol = protocol;
@@ -39,13 +39,13 @@ namespace Jasper.Transports.Sending
                 if (x.IsFaulted) _logger.LogException(x.Exception);
             }, _cancellation);
 
-            _serializing = new ActionBlock<Envelope>(async e =>
+            _serializing = new ActionBlock<Envelope?>(async e =>
             {
                 try
                 {
                     await _batching.SendAsync(e);
                 }
-                catch (Exception ex)
+                catch (Exception? ex)
                 {
                     _logger.LogException(ex, message: $"Error while trying to serialize envelope {e}");
                 }
@@ -63,7 +63,7 @@ namespace Jasper.Transports.Sending
             }, _cancellation);
 
 
-            _batchWriting = new TransformBlock<Envelope[], OutgoingMessageBatch>(
+            _batchWriting = new TransformBlock<Envelope?[], OutgoingMessageBatch>(
                 envelopes =>
                 {
                     var batch = new OutgoingMessageBatch(Destination, envelopes);
@@ -87,7 +87,7 @@ namespace Jasper.Transports.Sending
             }, _cancellation);
         }
 
-        public Uri Destination { get; }
+        public Uri? Destination { get; }
 
         public int QueuedCount => _queued + _batching.ItemCount + _serializing.InputCount;
 
@@ -124,7 +124,7 @@ namespace Jasper.Transports.Sending
 
         public bool SupportsNativeScheduledSend { get; } = false;
 
-        public Task Send(Envelope message)
+        public Task Send(Envelope? message)
         {
             if (_batching == null) throw new InvalidOperationException("This agent has not been started");
 
@@ -160,7 +160,7 @@ namespace Jasper.Transports.Sending
                     _logger.OutgoingBatchSucceeded(batch);
                 }
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 batchSendFailed(batch, e);
             }
@@ -171,13 +171,13 @@ namespace Jasper.Transports.Sending
             }
         }
 
-        private void batchSendFailed(OutgoingMessageBatch batch, Exception exception)
+        private void batchSendFailed(OutgoingMessageBatch batch, Exception? exception)
         {
             try
             {
                 _callback.ProcessingFailure(batch, exception);
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 _logger.LogException(e);
             }

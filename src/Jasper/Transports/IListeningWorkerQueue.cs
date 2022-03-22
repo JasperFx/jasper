@@ -5,7 +5,7 @@ namespace Jasper.Transports
 {
     public interface IListeningWorkerQueue : IDisposable
     {
-        Task Received(Uri uri, Envelope[] messages);
-        Task Received(Uri uri, Envelope envelope);
+        Task Received(Uri? uri, Envelope?[] messages);
+        Task Received(Uri? uri, Envelope? envelope);
     }
 }

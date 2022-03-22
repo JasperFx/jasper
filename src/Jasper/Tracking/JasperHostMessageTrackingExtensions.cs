@@ -48,10 +48,10 @@ namespace Jasper.Tracking
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Task<ITrackedSession> SendMessageAndWait<T>(this IHost host, T message,
+        public static Task<ITrackedSession> SendMessageAndWaitAsync<T>(this IHost host, T? message,
             int timeoutInMilliseconds = 5000)
         {
-            return host.ExecuteAndWait(c => c.Send(message), timeoutInMilliseconds);
+            return host.ExecuteAndWaitAsync(c => c.SendAsync(message), timeoutInMilliseconds);
         }
 
         /// <summary>
@@ -61,10 +61,10 @@ namespace Jasper.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static Task<ITrackedSession> InvokeMessageAndWait(this IHost host, object message,
+        public static Task<ITrackedSession> InvokeMessageAndWaitAsync(this IHost host, object? message,
             int timeoutInMilliseconds = 5000)
         {
-            return host.ExecuteAndWait(c => c.Invoke(message), timeoutInMilliseconds);
+            return host.ExecuteAndWaitAsync(c => c.Invoke(message), timeoutInMilliseconds);
         }
 
 
@@ -75,10 +75,10 @@ namespace Jasper.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static Task<ITrackedSession> ExecuteAndWait(this IHost host, Func<Task> action,
+        public static Task<ITrackedSession> ExecuteAndWaitAsync(this IHost host, Func<Task> action,
             int timeoutInMilliseconds = 5000)
         {
-            return host.ExecuteAndWait(c => action(), timeoutInMilliseconds);
+            return host.ExecuteAndWaitAsync(c => action(), timeoutInMilliseconds);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Jasper.Tracking
         /// <param name="runtime"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static async Task<ITrackedSession> ExecuteAndWait(this IHost host,
+        public static async Task<ITrackedSession> ExecuteAndWaitAsync(this IHost host,
             Func<IExecutionContext, Task> action,
             int timeoutInMilliseconds = 5000)
             {

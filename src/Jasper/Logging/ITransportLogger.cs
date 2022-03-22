@@ -13,7 +13,7 @@ namespace Jasper.Logging
         /// <param name="ex"></param>
         /// <param name="correlationId"></param>
         /// <param name="message"></param>
-        void LogException(Exception ex, object correlationId = null, string message = "Exception detected:");
+        void LogException(Exception? ex, object? correlationId = null, string message = "Exception detected:");
 
         /// <summary>
         ///     An outgoing batch of messages were sent successfully
@@ -26,49 +26,49 @@ namespace Jasper.Logging
         /// </summary>
         /// <param name="batch"></param>
         /// <param name="ex"></param>
-        void OutgoingBatchFailed(OutgoingMessageBatch batch, Exception ex = null);
+        void OutgoingBatchFailed(OutgoingMessageBatch batch, Exception? ex = null);
 
         /// <summary>
         ///     An incoming batch of messages was received successfully
         /// </summary>
         /// <param name="envelopes"></param>
-        void IncomingBatchReceived(IEnumerable<Envelope> envelopes);
+        void IncomingBatchReceived(IEnumerable<Envelope?> envelopes);
 
         /// <summary>
         ///     The sending agent for this destination experienced too many failures and has been latched
         /// </summary>
         /// <param name="destination"></param>
-        void CircuitBroken(Uri destination);
+        void CircuitBroken(Uri? destination);
 
         /// <summary>
         ///     The sending agent for this destination has been successfully pinged and un-latched
         /// </summary>
         /// <param name="destination"></param>
-        void CircuitResumed(Uri destination);
+        void CircuitResumed(Uri? destination);
 
         /// <summary>
         ///     Scheduled jobs were queued for execution
         /// </summary>
         /// <param name="envelopes"></param>
-        void ScheduledJobsQueuedForExecution(IEnumerable<Envelope> envelopes);
+        void ScheduledJobsQueuedForExecution(IEnumerable<Envelope?> envelopes);
 
         /// <summary>
         ///     Incoming messages were recovered from storage
         /// </summary>
         /// <param name="envelopes"></param>
-        void RecoveredIncoming(IEnumerable<Envelope> envelopes);
+        void RecoveredIncoming(IEnumerable<Envelope?> envelopes);
 
         /// <summary>
         ///     Outgoing messages were recovered from storage
         /// </summary>
         /// <param name="envelopes"></param>
-        void RecoveredOutgoing(IEnumerable<Envelope> envelopes);
+        void RecoveredOutgoing(IEnumerable<Envelope?> envelopes);
 
         /// <summary>
         ///     Outgoing envelopes are discarded because their DeliverBy has expired
         /// </summary>
         /// <param name="envelopes"></param>
-        void DiscardedExpired(IEnumerable<Envelope> envelopes);
+        void DiscardedExpired(IEnumerable<Envelope?> envelopes);
 
         /// <summary>
         ///     Logged when the outgoing message recovery finds envelopes with a Destination
@@ -85,7 +85,7 @@ namespace Jasper.Logging
         /// <param name="status"></param>
         void ListeningStatusChange(ListeningStatus status);
 
-        void IncomingReceived(Envelope envelope);
+        void IncomingReceived(Envelope? envelope);
     }
 
     // ENDSAMPLE

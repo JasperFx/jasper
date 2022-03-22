@@ -86,37 +86,37 @@ namespace Jasper.Logging
             _outgoingBatchSucceeded(_logger, batch.Messages.Count, batch.Destination, null);
         }
 
-        public virtual void OutgoingBatchFailed(OutgoingMessageBatch batch, Exception ex = null)
+        public virtual void OutgoingBatchFailed(OutgoingMessageBatch batch, Exception? ex = null)
         {
             _outgoingBatchFailed(_logger, batch.Destination, ex);
         }
 
-        public virtual void IncomingBatchReceived(IEnumerable<Envelope> envelopes)
+        public virtual void IncomingBatchReceived(IEnumerable<Envelope?> envelopes)
         {
             _metrics.MessagesReceived(envelopes);
 
             _incomingBatchReceived(_logger, envelopes.Count(), envelopes.FirstOrDefault()?.ReplyUri, null);
         }
 
-        public void IncomingReceived(Envelope envelope)
+        public void IncomingReceived(Envelope? envelope)
         {
             _metrics.MessageReceived(envelope);
             _incomingReceived(_logger, envelope.ReplyUri, null);
         }
 
-        public virtual void CircuitBroken(Uri destination)
+        public virtual void CircuitBroken(Uri? destination)
         {
             _metrics.CircuitBroken(destination);
             _circuitBroken(_logger, destination, null);
         }
 
-        public virtual void CircuitResumed(Uri destination)
+        public virtual void CircuitResumed(Uri? destination)
         {
             _metrics.CircuitResumed(destination);
             _circuitResumed(_logger, destination, null);
         }
 
-        public virtual void ScheduledJobsQueuedForExecution(IEnumerable<Envelope> envelopes)
+        public virtual void ScheduledJobsQueuedForExecution(IEnumerable<Envelope?> envelopes)
         {
             foreach (var envelope in envelopes)
             {
@@ -124,17 +124,17 @@ namespace Jasper.Logging
             }
         }
 
-        public virtual void RecoveredIncoming(IEnumerable<Envelope> envelopes)
+        public virtual void RecoveredIncoming(IEnumerable<Envelope?> envelopes)
         {
             _recoveredIncoming(_logger, envelopes.Count(), null);
         }
 
-        public virtual void RecoveredOutgoing(IEnumerable<Envelope> envelopes)
+        public virtual void RecoveredOutgoing(IEnumerable<Envelope?> envelopes)
         {
             _recoveredOutgoing(_logger, envelopes.Count(), null);
         }
 
-        public virtual void DiscardedExpired(IEnumerable<Envelope> envelopes)
+        public virtual void DiscardedExpired(IEnumerable<Envelope?> envelopes)
         {
             foreach (var envelope in envelopes) _discardedExpired(_logger, envelope, null);
         }
@@ -151,7 +151,7 @@ namespace Jasper.Logging
 
 
 
-        public virtual void LogException(Exception ex, object correlationId = null,
+        public virtual void LogException(Exception? ex, object? correlationId = null,
             string message = "Exception detected:")
         {
             _metrics.LogException(ex);
@@ -159,7 +159,7 @@ namespace Jasper.Logging
             _logger.LogError(ex, exMessage);
         }
 
-        public static ITransportLogger Empty()
+        public static ITransportLogger? Empty()
         {
             return new TransportLogger(new LoggerFactory(), new NulloMetrics());
         }

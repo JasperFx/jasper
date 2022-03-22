@@ -11,7 +11,7 @@ namespace Jasper
             return Equals(CorrelationId, other.CorrelationId);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -21,7 +21,7 @@ namespace Jasper
 
         public override int GetHashCode()
         {
-            return CorrelationId != null ? CorrelationId.GetHashCode() : 0;
+            return CorrelationId.GetHashCode();
         }
     }
 }

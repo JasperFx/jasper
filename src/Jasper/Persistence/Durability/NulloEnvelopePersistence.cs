@@ -14,22 +14,22 @@ namespace Jasper.Persistence.Durability
         public IEnvelopeStorageAdmin Admin => this;
         public IScheduledJobProcessor ScheduledJobs { get; set; }
 
-        public Task DeleteIncomingEnvelopes(Envelope[] envelopes)
+        public Task DeleteIncomingEnvelopesAsync(Envelope?[] envelopes)
         {
             return Task.CompletedTask;
         }
 
-        public Task DeleteIncomingEnvelope(Envelope envelope)
+        public Task DeleteIncomingEnvelopeAsync(Envelope? envelope)
         {
             return Task.CompletedTask;
         }
 
-        public Task DeleteOutgoing(Envelope[] envelopes)
+        public Task DeleteOutgoingAsync(Envelope?[] envelopes)
         {
             return Task.CompletedTask;
         }
 
-        public Task DeleteOutgoing(Envelope envelope)
+        public Task DeleteOutgoingAsync(Envelope? envelope)
         {
             return Task.CompletedTask;
         }
@@ -39,22 +39,22 @@ namespace Jasper.Persistence.Durability
             throw new NotSupportedException();
         }
 
-        public Task MoveToDeadLetterStorage(ErrorReport[] errors)
+        public Task MoveToDeadLetterStorageAsync(ErrorReport[] errors)
         {
             return Task.CompletedTask;
         }
 
-        public Task MoveToDeadLetterStorage(Envelope envelope, Exception ex)
+        public Task MoveToDeadLetterStorageAsync(Envelope? envelope, Exception? ex)
         {
             return Task.CompletedTask;
         }
 
-        public Task ScheduleExecution(Envelope[] envelopes)
+        public Task ScheduleExecutionAsync(Envelope?[] envelopes)
         {
             return Task.CompletedTask;
         }
 
-        public Task<ErrorReport> LoadDeadLetterEnvelope(Guid id)
+        public Task<ErrorReport> LoadDeadLetterEnvelopeAsync(Guid id)
         {
             return Task.FromResult<ErrorReport>(null);
         }
@@ -74,12 +74,12 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
-        public Task IncrementIncomingEnvelopeAttempts(Envelope envelope)
+        public Task IncrementIncomingEnvelopeAttemptsAsync(Envelope? envelope)
         {
             return Task.CompletedTask;
         }
 
-        public Task StoreIncoming(Envelope envelope)
+        public Task StoreIncomingAsync(Envelope? envelope)
         {
             if (envelope.Status == EnvelopeStatus.Scheduled)
             {
@@ -89,7 +89,7 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
-        public Task StoreIncoming(Envelope[] envelopes)
+        public Task StoreIncomingAsync(Envelope?[] envelopes)
         {
             foreach (var envelope in envelopes.Where(x => x.Status == EnvelopeStatus.Scheduled))
             {
@@ -99,22 +99,22 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
-        public Task<Uri[]> FindAllDestinations()
+        public Task<Uri?[]> FindAllDestinationsAsync()
         {
             throw new NotSupportedException();
         }
 
-        public Task DiscardAndReassignOutgoing(Envelope[] discards, Envelope[] reassigned, int nodeId)
+        public Task DiscardAndReassignOutgoingAsync(Envelope?[] discards, Envelope?[] reassigned, int nodeId)
         {
             return Task.CompletedTask;
         }
 
-        public Task StoreOutgoing(Envelope envelope, int ownerId)
+        public Task StoreOutgoingAsync(Envelope? envelope, int ownerId)
         {
             return Task.CompletedTask;
         }
 
-        public Task StoreOutgoing(Envelope[] envelopes, int ownerId)
+        public Task StoreOutgoingAsync(Envelope[] envelopes, int ownerId)
         {
             return Task.CompletedTask;
         }
@@ -145,7 +145,7 @@ namespace Jasper.Persistence.Durability
             return string.Empty;
         }
 
-        public Task ScheduleJob(Envelope envelope)
+        public Task ScheduleJobAsync(Envelope? envelope)
         {
             ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
 
@@ -159,42 +159,42 @@ namespace Jasper.Persistence.Durability
         }
 
         public IDurableStorageSession Session { get; } = null;
-        public Task<IReadOnlyList<Envelope>> LoadScheduledToExecute(DateTimeOffset utcNow)
+        public Task<IReadOnlyList<Envelope?>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow)
         {
             throw new NotSupportedException();
         }
 
-        public Task ReassignDormantNodeToAnyNode(int nodeId)
+        public Task ReassignDormantNodeToAnyNodeAsync(int nodeId)
         {
             throw new NotSupportedException();
         }
 
-        public Task<int[]> FindUniqueOwners(int currentNodeId)
+        public Task<int[]> FindUniqueOwnersAsync(int currentNodeId)
         {
             throw new NotSupportedException();
         }
 
-        public Task<IReadOnlyList<Envelope>> LoadOutgoing(Uri destination)
+        public Task<IReadOnlyList<Envelope?>> LoadOutgoingAsync(Uri? destination)
         {
             throw new NotSupportedException();
         }
 
-        public Task ReassignOutgoing(int ownerId, Envelope[] outgoing)
+        public Task ReassignOutgoingAsync(int ownerId, Envelope?[] outgoing)
         {
             throw new NotSupportedException();
         }
 
-        public Task DeleteByDestination(Uri destination)
+        public Task DeleteByDestinationAsync(Uri? destination)
         {
             throw new NotSupportedException();
         }
 
-        public Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncoming()
+        public Task<IReadOnlyList<Envelope?>> LoadPageOfGloballyOwnedIncomingAsync()
         {
             throw new NotSupportedException();
         }
 
-        public Task ReassignIncoming(int ownerId, IReadOnlyList<Envelope> incoming)
+        public Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope?> incoming)
         {
             throw new NotSupportedException();
         }

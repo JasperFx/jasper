@@ -58,7 +58,7 @@ namespace InteroperabilityTests
 
             // TODO -- set up a missing handler
 
-            var session = await theFixture.Jasper.ExecuteAndWait(async () =>
+            var session = await theFixture.Jasper.ExecuteAndWaitAsync(async () =>
             {
                 var sender = theFixture.MassTransit.Services.GetRequiredService<ISendEndpointProvider>();
                 var endpoint = await sender.GetSendEndpoint(new Uri("rabbitmq://localhost/jasper"));

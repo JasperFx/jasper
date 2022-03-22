@@ -15,7 +15,7 @@ namespace Jasper.Util
     {
         private static readonly Regex _aliasSanitizer = new Regex("<|>", RegexOptions.Compiled);
 
-        private static ImHashMap<Type, string> _typeNames = ImHashMap<Type, string>.Empty;
+        private static ImHashMap<Type, string?> _typeNames = ImHashMap<Type, string>.Empty;
 
 
         private static readonly Type[] _tupleTypes =
@@ -60,7 +60,7 @@ namespace Jasper.Util
             return sb.ToString();
         }
 
-        public static string ToMessageTypeName(this Type type)
+        public static string? ToMessageTypeName(this Type type)
         {
             if (_typeNames.TryFind(type, out var alias)) return alias;
 
@@ -70,7 +70,7 @@ namespace Jasper.Util
             return name;
         }
 
-        private static string toMessageTypeName(Type type)
+        private static string? toMessageTypeName(Type type)
         {
             if (type.HasAttribute<MessageIdentityAttribute>())
                 return type.GetAttribute<MessageIdentityAttribute>().GetName();
@@ -91,9 +91,9 @@ namespace Jasper.Util
             return string.Join("_", parts);
         }
 
-        public static bool IsValueTuple(this Type type)
+        public static bool IsValueTuple(this Type? type)
         {
-            return type != null && type.IsGenericType && _tupleTypes.Contains(type.GetGenericTypeDefinition());
+            return type is { IsGenericType: true } && _tupleTypes.Contains(type.GetGenericTypeDefinition());
         }
     }
 }

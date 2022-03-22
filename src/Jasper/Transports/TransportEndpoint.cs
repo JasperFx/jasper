@@ -23,7 +23,7 @@ namespace Jasper.Transports
 
         private readonly Dictionary<PropertyInfo, string> _envelopeToHeader = new Dictionary<PropertyInfo, string>();
 
-        public TransportEndpoint(Uri uri) : base(uri)
+        public TransportEndpoint(Uri? uri) : base(uri)
         {
             initialize();
         }
@@ -264,7 +264,7 @@ namespace Jasper.Transports
             envelope.Serializer = serializer;
         }
 
-        public void MapEnvelopeToOutgoing(Envelope envelope, TOutgoing outgoing)
+        public void MapEnvelopeToOutgoing(Envelope? envelope, TOutgoing outgoing)
         {
             _mapOutgoing.Value(envelope, outgoing);
         }

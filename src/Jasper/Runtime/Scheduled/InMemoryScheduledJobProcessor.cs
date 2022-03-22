@@ -20,7 +20,7 @@ namespace Jasper.Runtime.Scheduled
             _queue = queue;
         }
 
-        public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
+        public void Enqueue(DateTimeOffset executionTime, Envelope? envelope)
         {
             _outstandingJobs[envelope.Id] = new InMemoryScheduledJob(this, envelope, executionTime);
         }
@@ -79,7 +79,7 @@ namespace Jasper.Runtime.Scheduled
             private readonly InMemoryScheduledJobProcessor _parent;
             private Task _task;
 
-            public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope envelope,
+            public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope? envelope,
                 DateTimeOffset executionTime)
             {
                 _parent = parent;
@@ -99,7 +99,7 @@ namespace Jasper.Runtime.Scheduled
 
             public DateTime ReceivedAt { get; }
 
-            public Envelope Envelope { get; }
+            public Envelope? Envelope { get; }
 
             private Task publish(Task obj)
             {
@@ -126,7 +126,7 @@ namespace Jasper.Runtime.Scheduled
 
             public async Task Enqueue()
             {
-                await _parent._queue.Enqueue(Envelope);
+                await _parent._queue.EnqueueAsync(Envelope);
                 Cancel();
             }
         }

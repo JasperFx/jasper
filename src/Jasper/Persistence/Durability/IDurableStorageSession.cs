@@ -18,7 +18,7 @@ namespace Jasper.Persistence.Durability
         Task ReleaseGlobalLock(int lockId);
 
         bool IsConnected();
-        Task ConnectAndLockCurrentNode(ITransportLogger logger, int nodeId);
+        Task ConnectAndLockCurrentNode(ITransportLogger? logger, int nodeId);
         DbTransaction Transaction { get; }
         DbCommand CallFunction(string functionName);
         DbCommand CreateCommand(string sql);

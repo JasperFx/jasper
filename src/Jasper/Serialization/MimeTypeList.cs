@@ -7,7 +7,7 @@ namespace Jasper.Serialization
 {
     internal class MimeTypeList : IEnumerable<string>
     {
-        private readonly IList<string> _mimeTypes = new List<string>();
+        private readonly IList<string?> _mimeTypes = new List<string?>();
 
         // put stuff after ';' over to the side
         // look for ',' separated values
@@ -16,8 +16,8 @@ namespace Jasper.Serialization
             Raw = mimeType;
 
 
-            var types = mimeType?.ToDelimitedArray().Select(x => x.Split(';')[0]).Where(x => x.IsNotEmpty())
-                        ?? new string[0];
+            IEnumerable<string?> types = mimeType?.ToDelimitedArray().Select(x => x.Split(';')[0]).Where(x => x.IsNotEmpty())
+                                         ?? new string?[0];
 
             _mimeTypes.AddRange(types);
         }
@@ -45,7 +45,7 @@ namespace Jasper.Serialization
             _mimeTypes.Add(mimeType);
         }
 
-        public bool Matches(params string[] mimeTypes)
+        public bool Matches(params string?[] mimeTypes)
         {
             return _mimeTypes.Intersect(mimeTypes).Any();
         }

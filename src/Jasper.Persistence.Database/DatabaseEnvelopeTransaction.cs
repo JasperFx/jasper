@@ -25,19 +25,19 @@ namespace Jasper.Persistence.Database
             _tx?.Dispose();
         }
 
-        public Task Persist(Envelope envelope)
+        public Task Persist(Envelope? envelope)
         {
             return Persist(new[] {envelope});
         }
 
-        public Task Persist(Envelope[] envelopes)
+        public Task Persist(Envelope?[] envelopes)
         {
             if (!envelopes.Any()) return Task.CompletedTask;
 
             return _persistence.StoreOutgoing(_tx, envelopes);
         }
 
-        public Task ScheduleJob(Envelope envelope)
+        public Task ScheduleJob(Envelope? envelope)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.Status = EnvelopeStatus.Scheduled;

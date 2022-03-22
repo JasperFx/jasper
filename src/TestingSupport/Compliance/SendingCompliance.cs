@@ -183,7 +183,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(15.Seconds())
-                .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message2()));
+                .ExecuteAndWait(c => c.SendToDestinationAsync(theOutboundAddress, new Message2()));
 
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
@@ -196,7 +196,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
+                .ExecuteAndWait(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
@@ -225,7 +225,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestination(theOutboundAddress, new Message1()));
+                .ExecuteAndWait(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
 
 
             var record = session.FindEnvelopesWithMessageType<Message1>(EventType.MessageSucceeded).Single();
@@ -248,8 +248,8 @@ namespace TestingSupport.Compliance
                 {
                     id2 = context.CorrelationId;
 
-                    await context.Send(new ExecutedMessage());
-                    await context.Publish(new ExecutedMessage());
+                    await context.SendAsync(new ExecutedMessage());
+                    await context.PublishAsync(new ExecutedMessage());
                     //await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
                 });
 
@@ -270,7 +270,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver ?? theSender)
-                .ExecuteAndWait(c => c.ScheduleSend(new ColorChosen {Name = "Orange"}, 5.Seconds()));
+                .ExecuteAndWait(c => c.ScheduleSendAsync(new ColorChosen {Name = "Orange"}, 5.Seconds()));
 
             var message = session.FindSingleTrackedMessageOfType<ColorChosen>(EventType.MessageSucceeded);
             message.Name.ShouldBe("Orange");
@@ -427,7 +427,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
-                .ExecuteAndWait(x => x.SendAndExpectResponseFor<ImplicitPong>(ping));
+                .ExecuteAndWait(x => x.SendAndExpectResponseForAsync<ImplicitPong>(ping));
 
             session.FindSingleTrackedMessageOfType<ImplicitPong>(EventType.MessageSucceeded)
                 .Id.ShouldBe(ping.Id);
@@ -447,7 +447,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .ExecuteAndWait(c => c.SendEnvelope(envelope));
+                .ExecuteAndWait(c => c.SendEnvelopeAsync(envelope));
 
             session.FindSingleTrackedMessageOfType<BlueMessage>()
                 .Name.ShouldBe("Magic Johnson");
@@ -462,7 +462,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .ExecuteAndWait(c =>
-                    c.Send(new GreenMessage {Name = "Kareem Abdul-Jabbar"}));
+                    c.SendAsync(new GreenMessage {Name = "Kareem Abdul-Jabbar"}));
 
 
             session.FindSingleTrackedMessageOfType<BlueMessage>()
@@ -479,18 +479,18 @@ namespace TestingSupport.Compliance
         {
         }
 
-        public string ContentType { get; } = "text/plain";
-        public byte[] Write(object message)
+        public string? ContentType { get; } = "text/plain";
+        public byte[]? Write(object? message)
         {
             throw new NotImplementedException();
         }
 
-        public object ReadFromData(Type messageType, byte[] data)
+        public object? ReadFromData(Type messageType, byte[]? data)
         {
             return ReadFromData(data);
         }
 
-        public object ReadFromData(byte[] data)
+        public object? ReadFromData(byte[]? data)
         {
             var name = Encoding.UTF8.GetString(data);
             return new BlueMessage {Name = name};
@@ -501,19 +501,19 @@ namespace TestingSupport.Compliance
         // SAMPLE: GreenTextWriter
         public class GreenTextWriter : IMessageSerializer
         {
-            public string ContentType { get; } = "text/plain";
+            public string? ContentType { get; } = "text/plain";
 
-            public object ReadFromData(Type messageType, byte[] data)
+            public object? ReadFromData(Type messageType, byte[]? data)
             {
                 throw new NotImplementedException();
             }
 
-            public object ReadFromData(byte[] data)
+            public object? ReadFromData(byte[]? data)
             {
                 throw new NotImplementedException();
             }
 
-            public byte[] Write(object model)
+            public byte[]? Write(object? model)
             {
                 if (model is GreenMessage green) return Encoding.UTF8.GetBytes(green.Name);
 

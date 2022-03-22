@@ -5,7 +5,7 @@ namespace Jasper.Util
 {
     internal static class DictionaryWriterExtensions
     {
-        public static void WriteProp(this IDictionary<string, object> writer, string key, string value)
+        public static void WriteProp(this IDictionary<string, object> writer, string key, string? value)
         {
             if (value == null) return;
 
@@ -38,7 +38,7 @@ namespace Jasper.Util
             if (value.HasValue) writer.Add(key, value.Value.ToString("o"));
         }
 
-        public static void WriteProp(this IDictionary<string, object> writer, string key, Uri value)
+        public static void WriteProp(this IDictionary<string, object> writer, string key, Uri? value)
         {
             if (value == null) return;
 

@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Jasper.Transports.Sending
 {
-    public class NulloSender : ISender  
+    public class NulloSender : ISender
     {
-        public NulloSender(Uri destination)
+        public NulloSender(Uri? destination)
         {
             Destination = destination;
         }
@@ -16,8 +16,8 @@ namespace Jasper.Transports.Sending
         }
 
         public bool SupportsNativeScheduledSend { get; } = false;
-        public Uri Destination { get; }
-        public Task Send(Envelope envelope) => Task.CompletedTask;
+        public Uri? Destination { get; }
+        public Task Send(Envelope? envelope) => Task.CompletedTask;
         public Task<bool> Ping(CancellationToken cancellationToken) => Task.FromResult(true);
     }
 }

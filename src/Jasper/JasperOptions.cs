@@ -104,7 +104,7 @@ namespace Jasper
         ///     Get or set the logical Jasper service name. By default, this is
         ///     derived from the name of a custom JasperOptions
         /// </summary>
-        public string ServiceName
+        public string? ServiceName
         {
             get => Advanced.ServiceName;
             set => Advanced.ServiceName = value;
@@ -113,10 +113,10 @@ namespace Jasper
         /// <summary>
         /// Default message serializers for the application
         /// </summary>
-        public IList<IMessageSerializer> Serializers { get; } = new List<IMessageSerializer>{EnvelopeReaderWriter.Instance};
+        public IList<IMessageSerializer?> Serializers { get; } = new List<IMessageSerializer?> {EnvelopeReaderWriter.Instance};
 
         private IMessageSerializer? _defaultSerializer;
-        public IMessageSerializer DefaultSerializer
+        public IMessageSerializer? DefaultSerializer
         {
             get
             {
@@ -144,7 +144,7 @@ namespace Jasper
         /// </summary>
         /// <param name="configure">Optional configuration of the extension</param>
         /// <typeparam name="T"></typeparam>
-        void IExtensions.Include<T>(Action<T> configure = null)
+        void IExtensions.Include<T>(Action<T>? configure)
         {
             var extension = new T();
             configure?.Invoke(extension);
@@ -230,7 +230,7 @@ namespace Jasper
             // Nothing
         }
 
-        internal IMessageSerializer DetermineSerializer(Envelope envelope)
+        internal IMessageSerializer DetermineSerializer(Envelope? envelope)
         {
             // TODO -- make this a dictionary for the serializers
             return Serializers.FirstOrDefault(x => x.ContentType.EqualsIgnoreCase(envelope.ContentType)) ??

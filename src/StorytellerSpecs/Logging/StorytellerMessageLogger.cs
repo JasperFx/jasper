@@ -93,7 +93,7 @@ namespace StorytellerSpecs.Logging
             base.MessageFailed(envelope, ex);
         }
 
-        public override void LogException(Exception ex, object correlationId = null,
+        public override void LogException(Exception ex, object? correlationId = null,
             string message = "Exception detected:")
         {
             Errors.Exceptions.Add(ex);

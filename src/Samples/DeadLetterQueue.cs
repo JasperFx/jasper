@@ -9,7 +9,7 @@ namespace Samples
         // SAMPLE: FetchErrorReport
         public async Task load_error_report(IEnvelopePersistence persistence, Guid envelopeId)
         {
-            var report = await persistence.LoadDeadLetterEnvelope(envelopeId);
+            var report = await persistence.LoadDeadLetterEnvelopeAsync(envelopeId);
 
             // The Id
             Console.WriteLine(report.Id);

@@ -76,7 +76,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="serializer"></param>
         /// <returns></returns>
-        T DefaultSerializer(IMessageSerializer serializer);
+        T DefaultSerializer(IMessageSerializer? serializer);
     }
 
     public interface IListenerConfiguration : IListenerConfiguration<IListenerConfiguration>

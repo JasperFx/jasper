@@ -12,7 +12,7 @@ namespace Jasper.RabbitMQ.Internal
 
         }
 
-        public Task Complete(Envelope envelope)
+        public Task CompleteAsync(Envelope envelope)
         {
             if (envelope is RabbitMqEnvelope e)
             {
@@ -23,7 +23,7 @@ namespace Jasper.RabbitMQ.Internal
             return Task.CompletedTask;
         }
 
-        public Task Defer(Envelope envelope)
+        public Task DeferAsync(Envelope envelope)
         {
             if (envelope is RabbitMqEnvelope e)
             {

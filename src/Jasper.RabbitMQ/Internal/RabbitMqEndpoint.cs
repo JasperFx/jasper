@@ -64,7 +64,7 @@ namespace Jasper.RabbitMQ.Internal
 
         internal RabbitMqTransport Parent { get; set; }
 
-        public override Uri Uri
+        public override Uri? Uri
         {
             get
             {
@@ -99,12 +99,12 @@ namespace Jasper.RabbitMQ.Internal
         }
 
 
-        public override Uri ReplyUri()
+        public override Uri? ReplyUri()
         {
             return Mode == EndpointMode.Durable ? $"{Uri}/durable".ToUri() : Uri;
         }
 
-        public override void Parse(Uri uri)
+        public override void Parse(Uri? uri)
         {
             if (uri.Scheme != RabbitMqTransport.ProtocolName)
             {

@@ -43,10 +43,10 @@ namespace Jasper.ErrorHandling
 
     public class ContinuationFactory : IContinuationFactory
     {
-        private readonly IList<Func<Envelope, Exception, IContinuation>> _sources
-            = new List<Func<Envelope,Exception,IContinuation>>();
+        private readonly IList<Func<Envelope, Exception?, IContinuation>> _sources
+            = new List<Func<Envelope, Exception?, IContinuation>>();
 
-        public IContinuation Build(Envelope envelope, Exception ex)
+        public IContinuation Build(Envelope envelope, Exception? ex)
         {
             // Shouldn't be necessary, but still
             if (envelope.Attempts == 0)
@@ -65,7 +65,7 @@ namespace Jasper.ErrorHandling
         /// <param name="continuationSource"></param>
         public void ContinueWith(Func<Envelope, Exception, IContinuation> continuationSource)
         {
-            _sources.Add(continuationSource);
+            _sources.Add(continuationSource!);
         }
 
         /// <summary>

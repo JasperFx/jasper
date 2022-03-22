@@ -25,4 +25,5 @@
     <PackageReference Include="Weasel.SqlServer" Version="5.2.0" />
   </ItemGroup>
 
+  <Import Project="../../Analysis.Build.props" />
 </Project>

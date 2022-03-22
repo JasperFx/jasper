@@ -35,7 +35,7 @@ namespace Jasper.Pulsar
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;
-        public Uri Destination { get; }
+        public Uri? Destination { get; }
         public async Task<bool> Ping(CancellationToken cancellationToken)
         {
             Envelope envelope = Envelope.ForPing(Destination);
@@ -52,7 +52,7 @@ namespace Jasper.Pulsar
         }
 
         // TODO -- use a ValueTask here
-        public Task Send(Envelope envelope)
+        public Task Send(Envelope? envelope)
         {
             var message = new MessageMetadata();
 

@@ -11,17 +11,17 @@ namespace Jasper.Transports.Sending
 {
     public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit
     {
-        private readonly ITransportLogger _logger;
+        private readonly ITransportLogger? _logger;
         private readonly IMessageLogger _messageLogger;
         protected readonly ISender _sender;
-        protected readonly AdvancedSettings _settings;
+        protected readonly AdvancedSettings? _settings;
         private int _failureCount;
         private CircuitWatcher _circuitWatcher;
 
         protected Func<Envelope, Task> _senderDelegate;
 
 
-        public SendingAgent(ITransportLogger logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings settings, Endpoint endpoint)
+        public SendingAgent(ITransportLogger? logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings? settings, Endpoint endpoint)
         {
             _logger = logger;
             _messageLogger = messageLogger;
@@ -36,7 +36,7 @@ namespace Jasper.Transports.Sending
             }
 
 
-            _sending = new ActionBlock<Envelope>(_senderDelegate, Endpoint.ExecutionOptions);
+            _sending = new ActionBlock<Envelope?>(_senderDelegate, Endpoint.ExecutionOptions);
 
             _sending.Completion.ContinueWith(t =>
             {
@@ -46,9 +46,9 @@ namespace Jasper.Transports.Sending
 
         public Endpoint Endpoint { get; }
 
-        public Uri ReplyUri { get; set; }
+        public Uri? ReplyUri { get; set; }
 
-        public Uri Destination => _sender.Destination;
+        public Uri? Destination => _sender.Destination;
 
         public void Dispose()
         {
@@ -58,14 +58,14 @@ namespace Jasper.Transports.Sending
         public bool Latched { get; private set; }
         public abstract bool IsDurable { get; }
 
-        private void setDefaults(Envelope envelope)
+        private void setDefaults(Envelope? envelope)
         {
             envelope.Status = EnvelopeStatus.Outgoing;
             envelope.OwnerId = _settings.UniqueNodeId;
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
         }
 
-        public Task EnqueueOutgoing(Envelope envelope)
+        public Task EnqueueOutgoing(Envelope? envelope)
         {
             setDefaults(envelope);
            _sending.Post(envelope);
@@ -74,7 +74,7 @@ namespace Jasper.Transports.Sending
            return Task.CompletedTask;
         }
 
-        public async Task StoreAndForward(Envelope envelope)
+        public async Task StoreAndForward(Envelope? envelope)
         {
             setDefaults(envelope);
 
@@ -83,7 +83,7 @@ namespace Jasper.Transports.Sending
             _messageLogger.Sent(envelope);
         }
 
-        protected abstract Task storeAndForward(Envelope envelope);
+        protected abstract Task storeAndForward(Envelope? envelope);
 
         public Task<bool> TryToResume(CancellationToken cancellationToken)
         {
@@ -102,9 +102,9 @@ namespace Jasper.Transports.Sending
 
         protected abstract Task afterRestarting(ISender sender);
 
-        public abstract Task Successful(Envelope outgoing);
+        public abstract Task Successful(Envelope? outgoing);
 
-        private ActionBlock<Envelope> _sending;
+        private ActionBlock<Envelope?> _sending;
         public virtual Task LatchAndDrain()
         {
             Latched = true;
@@ -123,26 +123,26 @@ namespace Jasper.Transports.Sending
             Latched = false;
         }
 
-        private async Task sendWithCallbackHandling(Envelope envelope)
+        private async Task sendWithCallbackHandling(Envelope? envelope)
         {
             try
             {
                 await _sender.Send(envelope);
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 try
                 {
                     await ProcessingFailure(envelope, e);
                 }
-                catch (Exception exception)
+                catch (Exception? exception)
                 {
                     _logger.LogException(exception);
                 }
             }
         }
 
-        private async Task sendWithExplicitHandling(Envelope envelope)
+        private async Task sendWithExplicitHandling(Envelope? envelope)
         {
             try
             {
@@ -150,13 +150,13 @@ namespace Jasper.Transports.Sending
 
                 await Successful(envelope);
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 try
                 {
                     await ProcessingFailure(envelope, e);
                 }
-                catch (Exception exception)
+                catch (Exception? exception)
                 {
                     _logger.LogException(exception);
                 }
@@ -235,14 +235,14 @@ namespace Jasper.Transports.Sending
             return MarkFailed(outgoing);
         }
 
-        public Task ProcessingFailure(Envelope outgoing, Exception exception)
+        public Task ProcessingFailure(Envelope? outgoing, Exception? exception)
         {
             var batch = new OutgoingMessageBatch(outgoing.Destination, new[] { outgoing });
             _logger.OutgoingBatchFailed(batch, exception);
             return MarkFailed(batch);
         }
 
-        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception? exception)
         {
             _logger.LogException(exception,
                 message: $"Failure trying to send a message batch to {outgoing.Destination}");

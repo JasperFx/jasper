@@ -125,7 +125,7 @@ namespace Jasper.Logging
             _undeliverable(_logger, envelope, null);
         }
 
-        public virtual void LogException(Exception ex, object correlationId = null,
+        public virtual void LogException(Exception ex, object? correlationId = null,
             string message = "Exception detected:")
         {
             _metrics.LogException(ex);

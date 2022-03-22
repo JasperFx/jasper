@@ -18,7 +18,9 @@ namespace Jasper.Serialization
             return _inner.Rent(minimumLength);
         }
 
+#pragma warning disable CS8767
         public void Return(T[] array)
+#pragma warning restore CS8767
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 

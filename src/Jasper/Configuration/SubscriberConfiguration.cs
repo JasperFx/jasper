@@ -49,7 +49,7 @@ namespace Jasper.Configuration
             return this;
         }
 
-        public ISubscriberConfiguration<T> DefaultSerializer(IMessageSerializer serializer)
+        public ISubscriberConfiguration<T> DefaultSerializer(IMessageSerializer? serializer)
         {
             _endpoint.RegisterSerializer(serializer);
             _endpoint.DefaultSerializer = serializer;

@@ -19,7 +19,7 @@ namespace Jasper.Tracking
 
         private readonly IList<ITrackedCondition> _conditions = new List<ITrackedCondition>();
 
-        private readonly IList<Exception> _exceptions = new List<Exception>();
+        private readonly IList<Exception?> _exceptions = new List<Exception?>();
 
         private readonly TaskCompletionSource<TrackingStatus> _source;
 
@@ -259,8 +259,8 @@ namespace Jasper.Tracking
             });
         }
 
-        public void Record(EventType eventType, Envelope envelope, string serviceName, int uniqueNodeId,
-            Exception ex = null)
+        public void Record(EventType eventType, Envelope? envelope, string? serviceName, int uniqueNodeId,
+            Exception? ex = null)
         {
             var history = _envelopes[envelope.Id];
 
@@ -297,7 +297,7 @@ namespace Jasper.Tracking
             return !_conditions.Any() || _conditions.All(x => x.IsCompleted());
         }
 
-        public void LogException(Exception exception, string serviceName)
+        public void LogException(Exception? exception, string? serviceName)
         {
             Debug.WriteLine($"Exception Occurred in {serviceName}: {exception}");
             _exceptions.Add(exception);

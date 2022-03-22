@@ -30,7 +30,7 @@ namespace Jasper.Pulsar
             _sender = new PulsarSender(endpoint, transport, _cancellation);
         }
 
-        public Task Complete(Envelope envelope)
+        public Task CompleteAsync(Envelope envelope)
         {
             if (envelope is PulsarEnvelope e)
             {
@@ -40,7 +40,7 @@ namespace Jasper.Pulsar
             return Task.CompletedTask;
         }
 
-        public async Task Defer(Envelope envelope)
+        public async Task DeferAsync(Envelope envelope)
         {
             if (envelope is PulsarEnvelope e)
             {
@@ -57,7 +57,7 @@ namespace Jasper.Pulsar
             _receivingLoop.Dispose();
         }
 
-        public Uri Address { get; }
+        public Uri? Address { get; }
 
         // TODO -- make the transitions happen with methods
         public ListeningStatus Status
@@ -108,7 +108,7 @@ namespace Jasper.Pulsar
             }, cancellation);
         }
 
-        public async Task<bool> TryRequeue(Envelope envelope)
+        public async Task<bool> TryRequeue(Envelope? envelope)
         {
             if (envelope is PulsarEnvelope e)
             {

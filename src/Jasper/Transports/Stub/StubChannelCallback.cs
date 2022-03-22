@@ -7,10 +7,10 @@ namespace Jasper.Transports.Stub
     public class StubChannelCallback : IChannelCallback
     {
         private readonly StubEndpoint _endpoint;
-        private readonly Envelope _envelope;
+        private readonly Envelope? _envelope;
         public readonly IList<Envelope> Sent = new List<Envelope>();
 
-        public StubChannelCallback(StubEndpoint endpoint, Envelope envelope)
+        public StubChannelCallback(StubEndpoint endpoint, Envelope? envelope)
         {
             _endpoint = endpoint;
             _envelope = envelope;
@@ -28,7 +28,7 @@ namespace Jasper.Transports.Stub
 
         public bool Requeued { get; set; }
 
-        public Task Complete(Envelope envelope)
+        public Task CompleteAsync(Envelope envelope)
         {
             MarkedSucessful = true;
             return Task.CompletedTask;
@@ -40,7 +40,7 @@ namespace Jasper.Transports.Stub
             return Task.CompletedTask;
         }
 
-        public Task Defer(Envelope envelope)
+        public Task DeferAsync(Envelope envelope)
         {
             Requeued = true;
 

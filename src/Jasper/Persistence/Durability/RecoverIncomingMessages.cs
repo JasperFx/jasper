@@ -10,13 +10,13 @@ namespace Jasper.Persistence.Durability
 {
     public class RecoverIncomingMessages : IMessagingAction
     {
-        private readonly IEnvelopePersistence _persistence;
-        private readonly IWorkerQueue _workers;
-        private readonly AdvancedSettings _settings;
-        private readonly ITransportLogger _logger;
+        private readonly IEnvelopePersistence? _persistence;
+        private readonly IWorkerQueue? _workers;
+        private readonly AdvancedSettings? _settings;
+        private readonly ITransportLogger? _logger;
 
-        public RecoverIncomingMessages(IEnvelopePersistence persistence, IWorkerQueue workers, AdvancedSettings settings,
-            ITransportLogger logger)
+        public RecoverIncomingMessages(IEnvelopePersistence? persistence, IWorkerQueue? workers, AdvancedSettings? settings,
+            ITransportLogger? logger)
         {
             _persistence = persistence;
             _workers = workers;
@@ -24,14 +24,14 @@ namespace Jasper.Persistence.Durability
             _logger = logger;
         }
 
-        public async Task Execute(IEnvelopePersistence storage, IDurabilityAgent agent)
+        public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
         {
             // TODO -- enforce back pressure here on the retries listener!
 
             await storage.Session.Begin();
 
 
-            IReadOnlyList<Envelope> incoming = null;
+            IReadOnlyList<Envelope?> incoming = null;
             try
             {
                 var gotLock = await storage.Session.TryGetGlobalLock(TransportConstants.IncomingMessageLockId);
@@ -42,7 +42,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                incoming = await storage.LoadPageOfGloballyOwnedIncoming();
+                incoming = await storage.LoadPageOfGloballyOwnedIncomingAsync();
 
                 if (!incoming.Any())
                 {
@@ -50,7 +50,7 @@ namespace Jasper.Persistence.Durability
                     return;
                 }
 
-                await storage.ReassignIncoming(_settings.UniqueNodeId, incoming);
+                await storage.ReassignIncomingAsync(_settings.UniqueNodeId, incoming);
 
                 await storage.Session.Commit();
             }
@@ -69,7 +69,7 @@ namespace Jasper.Persistence.Durability
             foreach (var envelope in incoming)
             {
                 envelope.OwnerId = _settings.UniqueNodeId;
-                await _workers.Enqueue(envelope);
+                await _workers.EnqueueAsync(envelope);
             }
 
             // TODO -- this should be smart enough later to check for back pressure before rescheduling

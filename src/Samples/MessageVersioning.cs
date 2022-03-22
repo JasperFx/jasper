@@ -124,19 +124,19 @@ namespace Samples
     public class MyCustomWriter : IMessageSerializer
     {
         public Type DotNetType { get; }
-        public string ContentType { get; }
+        public string? ContentType { get; }
 
-        public byte[] Write(object model)
+        public byte[]? Write(object? model)
         {
             throw new NotImplementedException();
         }
 
-        public object ReadFromData(Type messageType, byte[] data)
+        public object? ReadFromData(Type messageType, byte[]? data)
         {
             throw new NotImplementedException();
         }
 
-        public object ReadFromData(byte[] data)
+        public object? ReadFromData(byte[]? data)
         {
             throw new NotImplementedException();
         }

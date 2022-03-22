@@ -82,7 +82,7 @@ namespace Benchmarks
         {
             for (var i = 0; i < 10; i++)
             {
-                await theDriver.Persistence.StoreIncoming(theEnvelopes.Skip(i * 100).Take(100).ToArray());
+                await theDriver.Persistence.StoreIncomingAsync(theEnvelopes.Skip(i * 100).Take(100).ToArray());
             }
         }
 
@@ -91,7 +91,7 @@ namespace Benchmarks
         {
             for (var i = 0; i < 10; i++)
             {
-                await theDriver.Persistence.StoreOutgoing(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
+                await theDriver.Persistence.StoreOutgoingAsync(theEnvelopes.Skip(i * 100).Take(100).ToArray(), 5);
             }
         }
 

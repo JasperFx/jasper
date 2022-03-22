@@ -19,7 +19,7 @@ namespace Jasper.Runtime.Scheduled
             if (cancellation.IsCancellationRequested) return Task.CompletedTask;
             var scheduled = (Envelope)context.Envelope.Message;
 
-            return context.SendEnvelope(scheduled);
+            return context.SendEnvelopeAsync(scheduled);
         }
     }
 }

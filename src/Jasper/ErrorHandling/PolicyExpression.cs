@@ -99,7 +99,7 @@ namespace Jasper.ErrorHandling
         /// Use a custom IContinuation factory for matching exceptions
         /// </summary>
         /// <param name="continuationSource"></param>
-        public void With(Func<Envelope, Exception, IContinuation> continuationSource)
+        public void With(Func<Envelope, Exception?, IContinuation> continuationSource)
         {
             var policy = _builder.FallbackAsync((result, context, token) =>
             {

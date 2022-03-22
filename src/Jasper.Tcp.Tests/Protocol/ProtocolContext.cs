@@ -98,7 +98,7 @@ namespace Jasper.Tcp.Tests.Protocol
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
+        Task IListeningWorkerQueue.Received(Uri? uri, Envelope?[] messages)
         {
             if (ThrowErrorOnReceived) throw new DivideByZeroException();
 
@@ -107,7 +107,7 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task Received(Uri uri, Envelope envelope)
+        public Task Received(Uri? uri, Envelope? envelope)
         {
             throw new NotImplementedException();
         }
@@ -137,7 +137,7 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task Successful(Envelope outgoing)
+        public Task Successful(Envelope? outgoing)
         {
             Succeeded = true;
             return Task.CompletedTask;
@@ -167,13 +167,13 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task ProcessingFailure(Envelope outgoing, Exception exception)
+        public Task ProcessingFailure(Envelope? outgoing, Exception? exception)
         {
             ProcessingFailed = true;
             return Task.CompletedTask;
         }
 
-        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception exception)
+        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception? exception)
         {
             throw new NotImplementedException();
         }

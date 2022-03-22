@@ -21,7 +21,7 @@ namespace Jasper.Attributes
                 .ToArray();
             if (notMatching.Any())
                 throw new ArgumentOutOfRangeException(
-                    $"Invalid Frame types: {notMatching.Select(x => x.FullName).Join(", ")}");
+                    $"Invalid Frame types: {notMatching.Select(x => x.FullName)!.Join(", ")}");
 
             _frameTypes = frameTypes;
         }

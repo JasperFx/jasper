@@ -56,12 +56,12 @@ namespace Jasper.Tcp
             }, _cancellationToken);
         }
 
-        public Task<bool> TryRequeue(Envelope envelope)
+        public Task<bool> TryRequeue(Envelope? envelope)
         {
             return Task.FromResult(false);
         }
 
-        public Uri Address { get; }
+        public Uri? Address { get; }
 
         public void Dispose()
         {
@@ -79,12 +79,12 @@ namespace Jasper.Tcp
                 : WireProtocol.Receive(_logger, stream, callback, Address);
         }
 
-        public Task Complete(Envelope envelope)
+        public Task CompleteAsync(Envelope envelope)
         {
             return Task.CompletedTask;
         }
 
-        public Task Defer(Envelope envelope)
+        public Task DeferAsync(Envelope envelope)
         {
             return Task.CompletedTask;
         }

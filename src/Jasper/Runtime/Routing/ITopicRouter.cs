@@ -4,6 +4,6 @@ namespace Jasper.Runtime.Routing
 {
     public interface ITopicRouter
     {
-        Uri BuildUriForTopic(string topicName);
+        Uri? BuildUriForTopic(string? topicName);
     }
 }

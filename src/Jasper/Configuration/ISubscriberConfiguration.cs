@@ -81,7 +81,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="serializer"></param>
         /// <returns></returns>
-        ISubscriberConfiguration<T> DefaultSerializer(IMessageSerializer serializer);
+        ISubscriberConfiguration<T> DefaultSerializer(IMessageSerializer? serializer);
     }
 
     public interface ISubscriberConfiguration : ISubscriberConfiguration<ISubscriberConfiguration>

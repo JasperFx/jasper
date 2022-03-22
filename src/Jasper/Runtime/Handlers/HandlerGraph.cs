@@ -37,7 +37,7 @@ namespace Jasper.Runtime.Handlers
 
         private bool _hasGrouped;
 
-        private ImHashMap<string, Type> _messageTypes = ImHashMap<string, Type>.Empty;
+        private ImHashMap<string?, Type> _messageTypes = ImHashMap<string, Type>.Empty;
 
 
         public HandlerGraph()
@@ -212,7 +212,7 @@ namespace Jasper.Runtime.Handlers
             }
         }
 
-        public bool TryFindMessageType(string messageTypeName, out Type messageType)
+        public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
             return _messageTypes.TryFind(messageTypeName, out messageType);
         }

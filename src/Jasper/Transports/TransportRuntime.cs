@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.ImTools;
@@ -24,7 +23,7 @@ namespace Jasper.Transports
 
         private readonly object _channelLock = new object();
 
-        private ImHashMap<Uri, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty;
+        private ImHashMap<Uri?, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty;
 
 
         private readonly IMessagingRoot _root;
@@ -63,7 +62,7 @@ namespace Jasper.Transports
             }
         }
 
-        public ISendingAgent AddSubscriber(Uri replyUri, ISender sender, Endpoint endpoint)
+        public ISendingAgent? AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
         {
             try
             {
@@ -89,7 +88,7 @@ namespace Jasper.Transports
             }
         }
 
-        private ISendingAgent buildSendingAgent(ISender sender, Endpoint endpoint)
+        private ISendingAgent? buildSendingAgent(ISender sender, Endpoint endpoint)
         {
             // This is for the stub transport in the Storyteller specs
             if (sender is ISendingAgent a) return a;
@@ -110,7 +109,7 @@ namespace Jasper.Transports
             throw new InvalidOperationException();
         }
 
-        public void AddSendingAgent(ISendingAgent sendingAgent)
+        public void AddSendingAgent(ISendingAgent? sendingAgent)
         {
             _senders = _senders.AddOrUpdate(sendingAgent.Destination, sendingAgent);
         }
@@ -122,7 +121,7 @@ namespace Jasper.Transports
 
         private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
-        public ISendingAgent AgentForLocalQueue(string queueName)
+        public ISendingAgent? AgentForLocalQueue(string queueName)
         {
             queueName = queueName ?? TransportConstants.Default;
             if (_localSenders.TryFind(queueName, out var agent))
@@ -138,7 +137,7 @@ namespace Jasper.Transports
 
 
 
-        public ISendingAgent GetOrBuildSendingAgent(Uri address)
+        public ISendingAgent? GetOrBuildSendingAgent(Uri? address)
         {
             if (address == null) throw new ArgumentNullException(nameof(address));
 
@@ -152,7 +151,7 @@ namespace Jasper.Transports
             }
         }
 
-        private ISendingAgent buildSendingAgent(Uri uri)
+        private ISendingAgent? buildSendingAgent(Uri? uri)
         {
             var transport = _transports.TransportForScheme(uri.Scheme);
             if (transport == null)
@@ -239,7 +238,7 @@ namespace Jasper.Transports
             return _transports.SelectMany(x => x.Endpoints());
         }
 
-        public Endpoint EndpointFor(Uri uri)
+        public Endpoint EndpointFor(Uri? uri)
         {
             return AllEndpoints().FirstOrDefault(x => x.Uri == uri);
         }

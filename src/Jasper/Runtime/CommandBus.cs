@@ -13,32 +13,32 @@ namespace Jasper.Runtime
     public class CommandBus : ICommandBus
     {
         // TODO -- smelly that this is protected, stop that!
-        protected readonly List<Envelope> _outstanding = new List<Envelope>();
+        protected readonly List<Envelope?> _outstanding = new List<Envelope?>();
 
         [DefaultConstructor]
         public CommandBus(IMessagingRoot root) : this(root, Guid.NewGuid().ToString())
         {
         }
 
-        public CommandBus(IMessagingRoot root, string correlationId)
+        public CommandBus(IMessagingRoot root, string? correlationId)
         {
             Root = root;
             Persistence = root.Persistence;
             CorrelationId = correlationId;
         }
 
-        public string CorrelationId { get; protected set; }
+        public string? CorrelationId { get; protected set; }
 
         public IMessagingRoot Root { get; }
-        public IEnvelopePersistence Persistence { get; }
+        public IEnvelopePersistence? Persistence { get; }
 
 
         public IMessageLogger Logger => Root.MessageLogger;
 
-        public IEnumerable<Envelope> Outstanding => _outstanding;
+        public IEnumerable<Envelope?> Outstanding => _outstanding;
 
 
-        public Task Invoke(object message)
+        public Task Invoke(object? message)
         {
             return Root.Pipeline.InvokeNow(new Envelope(message)
             {
@@ -47,7 +47,7 @@ namespace Jasper.Runtime
             });
         }
 
-        public async Task<T> Invoke<T>(object message)
+        public async Task<T> Invoke<T>(object? message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -69,20 +69,20 @@ namespace Jasper.Runtime
             return (T)envelope.Response;
         }
 
-        public Task Enqueue<T>(T message)
+        public Task Enqueue<T>(T? message)
         {
             var envelope = Root.Router.RouteLocally(message);
             return persistOrSend(envelope);
         }
 
-        public Task Enqueue<T>(T message, string workerQueue)
+        public Task Enqueue<T>(T? message, string workerQueue)
         {
             var envelope = Root.Router.RouteLocally(message, workerQueue);
 
             return persistOrSend(envelope);
         }
 
-        public async Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)
+        public async Task<Guid> Schedule<T>(T? message, DateTimeOffset executionTime)
         {
             var envelope = new Envelope(message)
             {
@@ -104,12 +104,12 @@ namespace Jasper.Runtime
             return envelope.Id;
         }
 
-        public Task<Guid> Schedule<T>(T message, TimeSpan delay)
+        public Task<Guid> Schedule<T>(T? message, TimeSpan delay)
         {
             return Schedule(message, DateTimeOffset.UtcNow.Add(delay));
         }
 
-        internal Task ScheduleEnvelope(Envelope envelope)
+        internal Task ScheduleEnvelope(Envelope? envelope)
         {
             if (envelope.Message == null)
                 throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
@@ -132,10 +132,10 @@ namespace Jasper.Runtime
                 return Task.CompletedTask;
             }
 
-            return Persistence.ScheduleJob(envelope);
+            return Persistence.ScheduleJobAsync(envelope);
         }
 
-        private Task persistOrSend(Envelope envelope)
+        private Task persistOrSend(Envelope? envelope)
         {
             if (EnlistedInTransaction)
             {

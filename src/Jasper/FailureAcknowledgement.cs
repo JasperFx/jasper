@@ -12,7 +12,7 @@ namespace Jasper
             return Equals(CorrelationId, other.CorrelationId) && string.Equals(Message, other.Message);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -24,8 +24,8 @@ namespace Jasper
         {
             unchecked
             {
-                return ((CorrelationId != null ? CorrelationId.GetHashCode() : 0) * 397) ^
-                       (Message != null ? Message.GetHashCode() : 0);
+                return ((CorrelationId.GetHashCode()) * 397) ^
+                       (Message.GetHashCode());
             }
         }
 

@@ -17,7 +17,7 @@ namespace Jasper.Runtime.WorkerQueues
         private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
         private readonly ITransportLogger _logger;
-        private readonly ActionBlock<Envelope> _receiver;
+        private readonly ActionBlock<Envelope?> _receiver;
         private IListener _listener;
         private readonly AsyncRetryPolicy _policy;
 
@@ -30,7 +30,7 @@ namespace Jasper.Runtime.WorkerQueues
 
             endpoint.ExecutionOptions.CancellationToken = settings.Cancellation;
 
-            _receiver = new ActionBlock<Envelope>(async envelope =>
+            _receiver = new ActionBlock<Envelope?>(async envelope =>
             {
                 try
                 {
@@ -38,7 +38,7 @@ namespace Jasper.Runtime.WorkerQueues
 
                     await pipeline.Invoke(envelope, this);
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     // This *should* never happen, but of course it will
                     logger.LogException(e);
@@ -54,7 +54,7 @@ namespace Jasper.Runtime.WorkerQueues
         }
 
         public int QueuedCount => _receiver.InputCount;
-        public Task Enqueue(Envelope envelope)
+        public Task EnqueueAsync(Envelope envelope)
         {
             envelope.ReplyUri = envelope.ReplyUri ?? Address;
             _receiver.Post(envelope);
@@ -62,7 +62,7 @@ namespace Jasper.Runtime.WorkerQueues
             return Task.CompletedTask;
         }
 
-        public Task ScheduleExecution(Envelope envelope)
+        public Task ScheduleExecutionAsync(Envelope envelope)
         {
             return Task.CompletedTask;
         }
@@ -75,31 +75,31 @@ namespace Jasper.Runtime.WorkerQueues
             Address = _listener.Address;
         }
 
-        public Uri Address { get; set; }
+        public Uri? Address { get; set; }
 
 
-        public Task Received(Uri uri, Envelope[] messages)
+        public Task Received(Uri? uri, Envelope?[] messages)
         {
             var now = DateTime.UtcNow;
 
             return ProcessReceivedMessages(now, uri, messages);
         }
 
-        public async Task Received(Uri uri, Envelope envelope)
+        public async Task Received(Uri? uri, Envelope? envelope)
         {
             using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName, envelope,
                 ActivityKind.Consumer);
             var now = DateTime.UtcNow;
             envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
 
-            await _persistence.StoreIncoming(envelope);
+            await _persistence.StoreIncomingAsync(envelope);
 
             if (envelope.Status == EnvelopeStatus.Incoming)
             {
-                await Enqueue(envelope);
+                await EnqueueAsync(envelope);
             }
 
-            await _listener.Complete(envelope);
+            await _listener.CompleteAsync(envelope);
 
             _logger.IncomingReceived(envelope);
         }
@@ -112,7 +112,7 @@ namespace Jasper.Runtime.WorkerQueues
         }
 
         // Separated for testing here.
-        public async Task ProcessReceivedMessages(DateTime now, Uri uri, Envelope[] envelopes)
+        public async Task ProcessReceivedMessages(DateTime now, Uri? uri, Envelope?[] envelopes)
         {
             if (_settings.Cancellation.IsCancellationRequested) throw new OperationCanceledException();
 
@@ -121,45 +121,45 @@ namespace Jasper.Runtime.WorkerQueues
                 envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
             }
 
-            await _persistence.StoreIncoming(envelopes);
+            await _persistence.StoreIncomingAsync(envelopes);
 
             foreach (var message in envelopes)
             {
-                await Enqueue(message);
-                await _listener.Complete(message);
+                await EnqueueAsync(message);
+                await _listener.CompleteAsync(message);
             }
 
             _logger.IncomingBatchReceived(envelopes);
         }
 
-        public Task Complete(Envelope envelope)
+        public Task CompleteAsync(Envelope envelope)
         {
-            return _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelope(envelope));
+            return _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelopeAsync(envelope));
         }
 
-        public Task MoveToErrors(Envelope envelope, Exception exception)
+        public Task MoveToErrorsAsync(Envelope envelope, Exception exception)
         {
             var errorReport = new ErrorReport(envelope, exception);
 
-            return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorage(new[] {errorReport}));
+            return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorageAsync(new[] {errorReport}));
         }
 
-        public async Task Defer(Envelope envelope)
+        public async Task DeferAsync(Envelope envelope)
         {
             envelope.Attempts++;
 
-            await Enqueue(envelope);
+            await EnqueueAsync(envelope);
 
-            await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttempts(envelope));
+            await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttemptsAsync(envelope));
         }
 
-        public Task MoveToScheduledUntil(Envelope envelope, DateTimeOffset time)
+        public Task MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.ExecutionTime = time;
             envelope.Status = EnvelopeStatus.Scheduled;
 
-            return _policy.ExecuteAsync(() => _persistence.ScheduleExecution(new[] {envelope}));
+            return _policy.ExecuteAsync(() => _persistence.ScheduleExecutionAsync(new[] {envelope}));
         }
     }
 }

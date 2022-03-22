@@ -11,7 +11,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        ISubscriberConfiguration To(Uri uri);
+        ISubscriberConfiguration To(Uri? uri);
 
         /// <summary>
         /// Send all the matching messages to the designated Uri string

@@ -12,13 +12,13 @@ namespace Jasper.Transports.Local
 {
     public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
     {
-        private readonly AdvancedSettings _settings;
-        private readonly IEnvelopePersistence _persistence;
+        private readonly AdvancedSettings? _settings;
+        private readonly IEnvelopePersistence? _persistence;
         private readonly IMessageLogger _messageLogger;
         private readonly IMessageSerializer? _serializer;
 
         public DurableLocalSendingAgent(Endpoint endpoint, IHandlerPipeline pipeline,
-            AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger,
+            AdvancedSettings? settings, IEnvelopePersistence? persistence, ITransportLogger? logger,
             IMessageLogger messageLogger) : base(endpoint, pipeline, settings, persistence, logger)
         {
             _settings = settings;
@@ -33,24 +33,24 @@ namespace Jasper.Transports.Local
             Address = Destination;
         }
 
-        public Uri Destination { get; }
+        public Uri? Destination { get; }
 
         public Endpoint Endpoint { get; }
 
-        public Uri ReplyUri { get; set; }
+        public Uri? ReplyUri { get; set; }
 
         public bool Latched => false;
 
         public bool IsDurable => true;
 
-        public Task EnqueueOutgoing(Envelope envelope)
+        public Task EnqueueOutgoing(Envelope? envelope)
         {
             _messageLogger.Sent(envelope);
 
-            return Enqueue(envelope);
+            return EnqueueAsync(envelope);
         }
 
-        public async Task StoreAndForward(Envelope envelope)
+        public async Task StoreAndForward(Envelope? envelope)
         {
             _messageLogger.Sent(envelope);
             writeMessageData(envelope);
@@ -64,18 +64,18 @@ namespace Jasper.Transports.Local
                 ? _settings.UniqueNodeId
                 : TransportConstants.AnyNode;
 
-            await _persistence.StoreIncoming(envelope);
+            await _persistence.StoreIncomingAsync(envelope);
 
             if (envelope.Status == EnvelopeStatus.Incoming)
             {
-                await Enqueue(envelope);
+                await EnqueueAsync(envelope);
             }
         }
 
         public bool SupportsNativeScheduledSend { get; } = true;
 
 
-        private void writeMessageData(Envelope envelope)
+        private void writeMessageData(Envelope? envelope)
         {
             if (envelope.Data == null || envelope.Data.Length == 0)
             {

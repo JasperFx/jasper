@@ -17,7 +17,7 @@ namespace Jasper.Runtime.Routing
             return messageType.CanBeCastTo<T>();
         }
 
-        public string DetermineTopicName(object message)
+        public string? DetermineTopicName(object? message)
         {
             return _source((T) message);
         }

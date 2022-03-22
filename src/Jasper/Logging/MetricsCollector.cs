@@ -36,7 +36,7 @@ namespace Jasper.Logging
                     var counts = await _persistence.Admin.GetPersistedCounts();
                     _metrics.LogPersistedCounts(counts);
                 }
-                catch (Exception e)
+                catch (Exception? e)
                 {
                     _logger.LogException(e);
                 }

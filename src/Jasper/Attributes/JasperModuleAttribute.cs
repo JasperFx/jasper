@@ -1,6 +1,5 @@
 ﻿using System;
 using Baseline;
-using Jasper.Configuration;
 using Oakton;
 
 namespace Jasper.Attributes
@@ -30,6 +29,6 @@ namespace Jasper.Attributes
         {
         }
 
-        public Type ExtensionType { get; }
+        public Type? ExtensionType { get; }
     }
 }

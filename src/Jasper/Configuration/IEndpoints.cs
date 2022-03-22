@@ -8,7 +8,7 @@ namespace Jasper.Configuration
         ///     Directs Jasper to set up an incoming listener fvoidor the given Uri
         /// </summary>
         /// <param name="uri"></param>
-        IListenerConfiguration ListenForMessagesFrom(Uri uri);
+        IListenerConfiguration ListenForMessagesFrom(Uri? uri);
 
         /// <summary>
         ///     Directs Jasper to set up an incoming listener for the given Uri

@@ -15,6 +15,6 @@ namespace Jasper.Runtime.Scheduled
         public DateTimeOffset ExecutionTime { get; set; }
 
         public string From { get; set; }
-        public string MessageType { get; set; }
+        public string? MessageType { get; set; }
     }
 }

@@ -2,10 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Jasper\Jasper.csproj" />
     </ItemGroup>
 
+
+  <Import Project="../../Analysis.Build.props" />
 </Project>

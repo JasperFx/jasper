@@ -21,7 +21,7 @@ namespace Jasper.ErrorHandling
                 execution.Logger.DiscardedEnvelope(execution.Envelope);
                 await execution.Complete();
             }
-            catch (Exception e)
+            catch (Exception? e)
             {
                 execution.Logger.LogException(e);
             }

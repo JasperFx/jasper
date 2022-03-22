@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Persistence.Durability;
-using Jasper.Runtime;
 
 namespace Jasper.Transports
 {
@@ -11,7 +9,7 @@ namespace Jasper.Transports
     /// </summary>
     public interface IHasDeadLetterQueue
     {
-        Task MoveToErrors(Envelope envelope, Exception exception);
+        Task MoveToErrorsAsync(Envelope envelope, Exception exception);
     }
 
     /// <summary>
@@ -26,7 +24,7 @@ namespace Jasper.Transports
         /// <param name="envelope"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        Task MoveToScheduledUntil(Envelope envelope, DateTimeOffset time);
+        Task MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time);
     }
 
 
@@ -37,7 +35,7 @@ namespace Jasper.Transports
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task Complete(Envelope envelope);
+        Task CompleteAsync(Envelope envelope);
 
 
         /// <summary>
@@ -45,7 +43,7 @@ namespace Jasper.Transports
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task Defer(Envelope envelope);
+        Task DeferAsync(Envelope envelope);
     }
 
 }

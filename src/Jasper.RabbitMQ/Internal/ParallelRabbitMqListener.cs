@@ -33,7 +33,7 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public Uri Address { get; }
+        public Uri? Address { get; }
 
 
 
@@ -57,19 +57,19 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public Task<bool> TryRequeue(Envelope envelope)
+        public Task<bool> TryRequeue(Envelope? envelope)
         {
             return _listeners.FirstOrDefault()?.TryRequeue(envelope) ?? Task.FromResult(false);
         }
 
-        public Task Complete(Envelope envelope)
+        public Task CompleteAsync(Envelope envelope)
         {
-            return RabbitMqChannelCallback.Instance.Complete(envelope);
+            return RabbitMqChannelCallback.Instance.CompleteAsync(envelope);
         }
 
-        public Task Defer(Envelope envelope)
+        public Task DeferAsync(Envelope envelope)
         {
-            return RabbitMqChannelCallback.Instance.Defer(envelope);
+            return RabbitMqChannelCallback.Instance.DeferAsync(envelope);
         }
     }
 }

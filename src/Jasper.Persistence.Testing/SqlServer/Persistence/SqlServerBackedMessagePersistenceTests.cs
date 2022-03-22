@@ -43,7 +43,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             theEnvelope.Message = new Message1();
             theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
 
-            theHost.Get<IEnvelopePersistence>().ScheduleJob(theEnvelope).Wait(3.Seconds());
+            theHost.Get<IEnvelopePersistence>().ScheduleJobAsync(theEnvelope).Wait(3.Seconds());
 
             var persistor = theHost.Get<SqlServerEnvelopePersistence>();
 

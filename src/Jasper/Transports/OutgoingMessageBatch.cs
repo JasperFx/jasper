@@ -9,7 +9,7 @@ namespace Jasper.Transports
         public OutgoingMessageBatch(Uri destination, IEnumerable<Envelope> messages)
         {
             Destination = destination;
-            var messagesList = new List<Envelope>();
+            var messagesList = new List<Envelope?>();
             messagesList.AddRange(messages);
             Messages = messagesList;
 
@@ -25,7 +25,7 @@ namespace Jasper.Transports
 
         public Uri Destination { get; }
 
-        public IList<Envelope> Messages { get; }
+        public IList<Envelope?> Messages { get; }
 
         public bool IsPing { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Jasper.Transports
             return $"Outgoing batch to {Destination} with {Messages.Count} messages";
         }
 
-        public static OutgoingMessageBatch ForPing(Uri destination)
+        public static OutgoingMessageBatch ForPing(Uri? destination)
         {
             var envelope = Envelope.ForPing(destination);
 

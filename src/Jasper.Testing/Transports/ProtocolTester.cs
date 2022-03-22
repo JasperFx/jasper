@@ -28,13 +28,13 @@ namespace Jasper.Testing.Transports
             return incoming.StringHeaders.TryGetValue(key, out value);
         }
 
-        public override Uri Uri { get; }
-        public override Uri ReplyUri()
+        public override Uri? Uri { get; }
+        public override Uri? ReplyUri()
         {
             throw new NotImplementedException();
         }
 
-        public override void Parse(Uri uri)
+        public override void Parse(Uri? uri)
         {
             throw new NotImplementedException();
         }

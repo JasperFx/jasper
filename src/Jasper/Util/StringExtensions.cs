@@ -6,7 +6,7 @@ namespace Jasper.Util
 {
     public static class StringExtensions
     {
-        public static Uri ToUri(this string uriString)
+        public static Uri? ToUri(this string uriString)
         {
             if (uriString.Contains("://*"))
             {

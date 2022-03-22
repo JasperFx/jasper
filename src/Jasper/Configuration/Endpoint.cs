@@ -41,21 +41,21 @@ namespace Jasper.Configuration
     /// </summary>
     public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesProperties
     {
-        private ImHashMap<string, IMessageSerializer?> _serializers = ImHashMap<string, IMessageSerializer?>.Empty;
+        private ImHashMap<string, IMessageSerializer>? _serializers = ImHashMap<string, IMessageSerializer>.Empty;
         private string _name;
 
         protected Endpoint()
         {
         }
 
-        protected Endpoint(Uri uri)
+        protected Endpoint(Uri? uri)
         {
             Parse(uri);
         }
 
         internal IMessagingRoot? Root { get; set; }
 
-        internal IMessageSerializer? TryFindSerializer(string contentType)
+        internal IMessageSerializer? TryFindSerializer(string? contentType)
         {
             if (contentType.IsEmpty()) return null;
             if (_serializers.TryFind(contentType, out var serializer))
@@ -69,7 +69,7 @@ namespace Jasper.Configuration
             return serializer;
         }
 
-        public void RegisterSerializer(IMessageSerializer serializer)
+        public void RegisterSerializer(IMessageSerializer? serializer)
         {
             _serializers = _serializers.AddOrUpdate(serializer.ContentType, serializer);
         }
@@ -108,7 +108,7 @@ namespace Jasper.Configuration
         /// <summary>
         ///     The actual address of the listener, including the transport scheme
         /// </summary>
-        public abstract Uri Uri { get; }
+        public abstract Uri? Uri { get; }
 
         public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
 
@@ -139,22 +139,22 @@ namespace Jasper.Configuration
         public int MaximumEnvelopeRetryStorage { get; set; } = 100;
 
 
-        public ISendingAgent Agent { get; internal set; }
+        public ISendingAgent? Agent { get; internal set; }
 
         /// <summary>
         ///     Uri as formulated for replies. Should include a notation
         ///     of "durable" as needed
         /// </summary>
-        public abstract Uri ReplyUri();
+        public abstract Uri? ReplyUri();
 
 
-        public abstract void Parse(Uri uri);
+        public abstract void Parse(Uri? uri);
 
 
         public abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
 
-        protected internal ISendingAgent StartSending(IMessagingRoot root, ITransportRuntime runtime,
-            Uri replyUri)
+        protected internal ISendingAgent? StartSending(IMessagingRoot root, ITransportRuntime runtime,
+            Uri? replyUri)
         {
             var sender = root.Settings.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(root);
             return runtime.AddSubscriber(replyUri, sender, this);
@@ -162,7 +162,7 @@ namespace Jasper.Configuration
 
         protected abstract ISender CreateSender(IMessagingRoot root);
 
-        internal void Customize(Envelope envelope)
+        internal void Customize(Envelope? envelope)
         {
             foreach (var modification in Customizations) modification(envelope);
         }

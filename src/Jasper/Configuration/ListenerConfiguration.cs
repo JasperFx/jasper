@@ -82,7 +82,7 @@ namespace Jasper.Configuration
             return this.As<TSelf>();
         }
 
-        public TSelf DefaultSerializer(IMessageSerializer serializer)
+        public TSelf DefaultSerializer(IMessageSerializer? serializer)
         {
             endpoint.RegisterSerializer(serializer);
             endpoint.DefaultSerializer = serializer;

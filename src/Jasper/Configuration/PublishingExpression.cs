@@ -71,7 +71,7 @@ namespace Jasper.Configuration
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public ISubscriberConfiguration To(Uri uri)
+        public ISubscriberConfiguration To(Uri? uri)
         {
             var endpoint = Parent.GetOrCreateEndpoint(uri);
 

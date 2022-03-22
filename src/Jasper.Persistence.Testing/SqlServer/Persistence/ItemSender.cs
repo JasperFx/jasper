@@ -8,7 +8,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         [Transactional]
         public Task post_send_item(ItemCreated created, IExecutionContext context)
         {
-            return context.Send(created);
+            return context.SendAsync(created);
         }
     }
 }

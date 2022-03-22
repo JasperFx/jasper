@@ -218,11 +218,11 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             {
                 if (envelope.Status == EnvelopeStatus.Outgoing)
                 {
-                    await persistor.StoreOutgoing(envelope, envelope.OwnerId);
+                    await persistor.StoreOutgoingAsync(envelope, envelope.OwnerId);
                 }
                 else
                 {
-                    await persistor.StoreIncoming(envelope);
+                    await persistor.StoreIncomingAsync(envelope);
                 }
             }
 
@@ -298,7 +298,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
     {
         public readonly IList<Envelope> Enqueued = new List<Envelope>();
 
-        public Task Enqueue(Envelope envelope)
+        public Task EnqueueAsync(Envelope envelope)
         {
             Enqueued.Add(envelope);
             return Task.CompletedTask;
@@ -306,7 +306,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
         public int QueuedCount => 5;
 
-        public Task ScheduleExecution(Envelope envelope)
+        public Task ScheduleExecutionAsync(Envelope envelope)
         {
             return Task.CompletedTask;
         }
