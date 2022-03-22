@@ -12,7 +12,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void create_bus_for_envelope()
         {
-            var root = new MockMessagingRoot();
+            var root = new MockJasperRuntime();
             var original = ObjectMother.Envelope();
 
             var context = root.ContextFor(original);

@@ -22,7 +22,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime
 {
-    public class MessagingRoot : PooledObjectPolicy<ExecutionContext>, IMessagingRoot, IHostedService
+    public class JasperRuntime : PooledObjectPolicy<ExecutionContext>, IJasperRuntime, IHostedService
     {
         private readonly IContainer _container;
 
@@ -30,7 +30,7 @@ namespace Jasper.Runtime
         private bool _hasStopped;
 
 
-        public MessagingRoot(JasperOptions options,
+        public JasperRuntime(JasperOptions options,
             IMessageLogger messageLogger,
             IContainer container,
             ITransportLogger? transportLogger)
@@ -192,8 +192,7 @@ namespace Jasper.Runtime
         private async Task bootstrap()
         {
             // Build up the message handlers
-            await Handlers.Compiling;
-            Handlers.Compile(Options.Advanced.CodeGeneration, _container);
+            await Handlers.CompileAsync(Options, _container);
 
             // If set, use pre-generated message handlers for quicker starts
             if (Options.Advanced.CodeGeneration.TypeLoadMode == TypeLoadMode.Static)

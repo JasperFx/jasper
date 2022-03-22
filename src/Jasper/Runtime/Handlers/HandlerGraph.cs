@@ -49,8 +49,6 @@ namespace Jasper.Runtime.Handlers
             GlobalPolicy<SagaFramePolicy>();
         }
 
-        internal Task Compiling { get; private set; }
-
         internal IContainer Container { get; set; }
 
         public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
@@ -99,22 +97,6 @@ namespace Jasper.Runtime.Handlers
             });
         }
 
-        internal void StartCompiling(JasperOptions options)
-        {
-            _generation = options.Advanced.CodeGeneration;
-            Compiling = Source.FindCalls(options).ContinueWith(t =>
-            {
-                var calls = t.Result;
-
-                if (calls != null && calls.Any())
-                {
-                    AddRange(calls);
-                }
-
-                Group();
-            });
-        }
-
         private void assertNotGrouped()
         {
             if (_hasGrouped)
@@ -153,7 +135,6 @@ namespace Jasper.Runtime.Handlers
                 return handler;
             }
 
-
             if (_chains.TryFind(messageType, out var chain))
             {
                 if (chain.Handler != null)
@@ -166,7 +147,7 @@ namespace Jasper.Runtime.Handlers
                     {
                         if (chain.Handler == null)
                         {
-                            chain.InitializeSynchronously(_generation, this, Container);
+                            chain.InitializeSynchronously(Rules, this, Container);
                             handler = chain.CreateHandler(Container);
                         }
                         else
@@ -187,14 +168,27 @@ namespace Jasper.Runtime.Handlers
         }
 
 
-        internal void Compile(GenerationRules generation, IContainer container)
+        internal async Task CompileAsync(JasperOptions options, IContainer container)
         {
-            foreach (var policy in _globals) policy.Apply(this, generation, container);
+            _generation = options.Advanced.CodeGeneration;
+            var calls = await Source.FindCalls(options);
 
-            _generation = generation;
+            if (calls != null && calls.Any())
+            {
+                AddRange(calls);
+            }
+
+            Group();
+
+            foreach (var policy in _globals)
+            {
+                policy.Apply(this, _generation, container);
+            }
+
             Container = container;
 
-            var forwarders = container.GetInstance<Forwarders>();
+            var forwarders = new Forwarders();
+            await forwarders.FindForwards(options.ApplicationAssembly);
             AddForwarders(forwarders);
 
             foreach (var configuration in _configurations)

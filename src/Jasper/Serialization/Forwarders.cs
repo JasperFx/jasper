@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Baseline;
+using BaselineTypeDiscovery;
 
 namespace Jasper.Serialization
 {
@@ -24,6 +27,15 @@ namespace Jasper.Serialization
             else
             {
                 Relationships.Add(type, forwardedType);
+            }
+        }
+
+        public async Task FindForwards(Assembly assembly)
+        {
+            var candidates = await TypeRepository.ForAssembly(assembly);
+            foreach (var type in candidates.ClosedTypes.Concretes.Where(t => t.Closes(typeof(IForwardsTo<>))))
+            {
+                Add(type);
             }
         }
     }

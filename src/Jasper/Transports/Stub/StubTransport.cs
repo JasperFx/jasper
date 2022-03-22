@@ -21,7 +21,7 @@ namespace Jasper.Transports.Stub
         {
             return host
                 .Services
-                .GetRequiredService<IMessagingRoot>()
+                .GetRequiredService<IJasperRuntime>()
                 .Options
                 .Endpoints
                 .As<TransportCollection>()
@@ -49,7 +49,7 @@ namespace Jasper.Transports.Stub
             return Endpoints[uri];
         }
 
-        public override void Initialize(IMessagingRoot root)
+        public override void Initialize(IJasperRuntime root)
         {
             foreach (var endpoint in Endpoints)
             {

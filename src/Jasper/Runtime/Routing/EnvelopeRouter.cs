@@ -10,11 +10,11 @@ namespace Jasper.Runtime.Routing
 {
     public class EnvelopeRouter : IEnvelopeRouter
     {
-        private readonly IMessagingRoot _root;
+        private readonly IJasperRuntime _root;
         private ImHashMap<Type, MessageTypeRouting> _routes = ImHashMap<Type, MessageTypeRouting>.Empty;
         private readonly ISendingAgent? _durableLocalQueue;
 
-        public EnvelopeRouter(IMessagingRoot root)
+        public EnvelopeRouter(IJasperRuntime root)
         {
             _root = root;
             _durableLocalQueue = root.Runtime.GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);

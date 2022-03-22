@@ -23,13 +23,13 @@ namespace Jasper.Runtime.Routing
     public class MessageTypeRouting : IMessageTypeRouteCollection
     {
         private readonly IList<Action<Envelope>> _customizations = new List<Action<Envelope>>();
-        private readonly IMessagingRoot _root;
+        private readonly IJasperRuntime _root;
 
         private readonly IList<IMessageRoute> _routes = new List<IMessageRoute>();
 
         public Type MessageType { get; }
 
-        public MessageTypeRouting(Type messageType, IMessagingRoot root)
+        public MessageTypeRouting(Type messageType, IJasperRuntime root)
         {
             MessageType = messageType;
             MessageTypeName = messageType.ToMessageTypeName();
@@ -56,7 +56,7 @@ namespace Jasper.Runtime.Routing
 
         public IList<Action<Envelope>> Customizations => _customizations;
 
-        private static ISendingAgent? determineLocalSendingAgent(Type messageType, IMessagingRoot root)
+        private static ISendingAgent? determineLocalSendingAgent(Type messageType, IJasperRuntime root)
         {
             if (messageType.HasAttribute<LocalQueueAttribute>())
             {

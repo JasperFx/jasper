@@ -9,6 +9,7 @@ using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Module1;
@@ -67,15 +68,6 @@ namespace Jasper.Testing.Configuration
                 .ShouldHaveHandler<SpecialServiceUsingThing>(x => x.Handle(null, null));
         }
 
-        public class AppWithOverrides : JasperOptions
-        {
-            public AppWithOverrides()
-            {
-                Handlers.DisableConventionalDiscovery();
-
-                Services.For<IModuleService>().Use<AppsModuleService>();
-            }
-        }
 
         public class AppsModuleService : IModuleService
         {
@@ -84,11 +76,15 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void application_service_registrations_win()
         {
-            using (var runtime = JasperHost.For<AppWithOverrides>())
-            {
-                runtime.Get<IContainer>().DefaultRegistrationIs<IModuleService, AppsModuleService>();
+            using var host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.Handlers.DisableConventionalDiscovery();
 
-            }
+                    opts.Services.For<IModuleService>().Use<AppsModuleService>();
+                }).Start();
+
+            host.Services.GetRequiredService<IContainer>().DefaultRegistrationIs<IModuleService, AppsModuleService>();
         }
 
         public class SomeMessage

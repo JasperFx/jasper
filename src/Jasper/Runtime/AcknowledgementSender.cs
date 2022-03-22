@@ -12,7 +12,7 @@ namespace Jasper.Runtime
         private readonly IEnvelopeRouter _router;
         private readonly IMessageSerializer? _writer;
 
-        public AcknowledgementSender(IEnvelopeRouter router, IMessagingRoot root)
+        public AcknowledgementSender(IEnvelopeRouter router, IJasperRuntime root)
         {
             _router = router;
             _writer = root.Options.Serializers.FirstOrDefault(x =>

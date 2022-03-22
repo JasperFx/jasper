@@ -53,7 +53,7 @@ namespace Jasper.Configuration
             Parse(uri);
         }
 
-        internal IMessagingRoot? Root { get; set; }
+        internal IJasperRuntime? Root { get; set; }
 
         internal IMessageSerializer? TryFindSerializer(string? contentType)
         {
@@ -151,23 +151,23 @@ namespace Jasper.Configuration
         public abstract void Parse(Uri? uri);
 
 
-        public abstract void StartListening(IMessagingRoot root, ITransportRuntime runtime);
+        public abstract void StartListening(IJasperRuntime root, ITransportRuntime runtime);
 
-        protected internal ISendingAgent? StartSending(IMessagingRoot root, ITransportRuntime runtime,
+        protected internal ISendingAgent? StartSending(IJasperRuntime root, ITransportRuntime runtime,
             Uri? replyUri)
         {
             var sender = root.Settings.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(root);
             return runtime.AddSubscriber(replyUri, sender, this);
         }
 
-        protected abstract ISender CreateSender(IMessagingRoot root);
+        protected abstract ISender CreateSender(IJasperRuntime root);
 
         internal void Customize(Envelope? envelope)
         {
             foreach (var modification in Customizations) modification(envelope);
         }
 
-        public override void AddRoute(MessageTypeRouting routing, IMessagingRoot root)
+        public override void AddRoute(MessageTypeRouting routing, IJasperRuntime root)
         {
             if (Agent == null) throw new InvalidOperationException($"The agent has not been initialized for this endpoint");
 

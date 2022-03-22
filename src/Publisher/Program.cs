@@ -12,21 +12,14 @@ namespace Publisher
         {
             return Host
                 .CreateDefaultBuilder()
-                .UseJasper<PublisherApp>()
+                .UseJasper(opts =>
+                {
+                    opts.Endpoints.ListenAtPort(2211);
+                })
                 .RunOaktonCommands(args);
         }
     }
 
-    // SAMPLE: PublisherApp
-    public class PublisherApp : JasperOptions
-    {
-        public PublisherApp()
-        {
-            Endpoints.ListenAtPort(2211);
-
-        }
-    }
-    // ENDSAMPLE
 
 
 }

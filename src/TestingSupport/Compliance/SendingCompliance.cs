@@ -35,20 +35,16 @@ namespace TestingSupport.Compliance
         }
 
 
-        protected Task SenderIs<T>() where T : JasperOptions, new()
-        {
-            Sender = JasperHost.For<T>(configureSender);
-            return Sender.RebuildMessageStorage();
-        }
-
-        protected Task TheOnlyAppIs<T>() where T : JasperOptions, new()
+        protected Task TheOnlyAppIs(Action<JasperOptions> configure)
         {
             AllLocally = true;
-            var options = new T();
-            configureReceiver(options);
-            configureSender(options);
 
-            Sender = JasperHost.For(options);
+            Sender = JasperHost.For(options =>
+            {
+                configure(options);
+                configureReceiver(options);
+                configureSender(options);
+            });
 
             return Sender.RebuildMessageStorage();
         }
@@ -74,12 +70,6 @@ namespace TestingSupport.Compliance
             options.Endpoints.PublishAllMessages().To(OutboundAddress);
 
             options.Services.AddSingleton<IMessageSerializer, GreenTextWriter>();
-        }
-
-        public Task ReceiverIs<T>() where T : JasperOptions, new()
-        {
-            Receiver = JasperHost.For<T>(configureReceiver);
-            return Receiver.RebuildMessageStorage();
         }
 
         public Task ReceiverIs(JasperOptions options)

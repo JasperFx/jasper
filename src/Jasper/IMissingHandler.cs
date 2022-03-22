@@ -16,7 +16,7 @@ namespace Jasper
         /// <param name="envelope"></param>
         /// <param name="root"></param>
         /// <returns></returns>
-        Task Handle(Envelope? envelope, IMessagingRoot root);
+        Task Handle(Envelope? envelope, IJasperRuntime root);
     }
 
     // ENDSAMPLE

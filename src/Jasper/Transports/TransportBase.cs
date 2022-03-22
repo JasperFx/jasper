@@ -34,7 +34,7 @@ namespace Jasper.Transports
             return endpoints();
         }
 
-        public virtual void Initialize(IMessagingRoot root)
+        public virtual void Initialize(IJasperRuntime root)
         {
             // Nothing
         }
@@ -58,7 +58,7 @@ namespace Jasper.Transports
 
         }
 
-        public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
+        public void StartSenders(IJasperRuntime root, ITransportRuntime runtime)
         {
             var replyUri = ReplyEndpoint()?.ReplyUri();
 
@@ -68,7 +68,7 @@ namespace Jasper.Transports
             }
         }
 
-        public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+        public void StartListeners(IJasperRuntime root, ITransportRuntime runtime)
         {
             foreach (var endpoint in endpoints()) endpoint.StartListening(root, runtime);
         }

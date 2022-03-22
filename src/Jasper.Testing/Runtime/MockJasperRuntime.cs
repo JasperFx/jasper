@@ -23,9 +23,9 @@ using ExecutionContext = Jasper.Runtime.ExecutionContext;
 namespace Jasper.Testing.Runtime
 {
 
-    public class MockMessagingRoot : IMessagingRoot
+    public class MockJasperRuntime : IJasperRuntime
     {
-        public MockMessagingRoot()
+        public MockJasperRuntime()
         {
             Options.Serializers.Add(new NewtonsoftSerializer(Options.Advanced.JsonSerialization));
         }

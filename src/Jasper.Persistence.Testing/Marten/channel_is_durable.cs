@@ -19,7 +19,7 @@ namespace Jasper.Persistence.Testing.Marten
                 _.Extensions.UseMarten(Servers.PostgresConnectionString);
             }))
             {
-                var root = runtime.Get<IMessagingRoot>();
+                var root = runtime.Get<IJasperRuntime>();
                 root.Runtime.GetOrBuildSendingAgent("local://one".ToUri()).IsDurable.ShouldBeFalse();
                 root.Runtime.GetOrBuildSendingAgent("local://durable/two".ToUri()).IsDurable.ShouldBeTrue();
 

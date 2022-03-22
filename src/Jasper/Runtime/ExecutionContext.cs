@@ -14,7 +14,7 @@ namespace Jasper.Runtime
         private IChannelCallback _channel;
         private readonly IList<Envelope?> _scheduled = new List<Envelope?>();
 
-        public ExecutionContext(IMessagingRoot root) : base(root, Guid.NewGuid().ToString())
+        public ExecutionContext(IJasperRuntime root) : base(root, Guid.NewGuid().ToString())
         {
         }
 

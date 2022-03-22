@@ -51,39 +51,5 @@ namespace Jasper.Persistence.Testing.Postgresql
         }
     }
 
-    // SAMPLE: AppUsingPostgresql
-    public class AppUsingPostgresql : JasperOptions
-    {
-        public AppUsingPostgresql()
-        {
-            // If you know the connection string
-            Extensions.PersistMessagesWithPostgresql("your connection string", "my_app_schema");
 
-
-        }
-
-        public override void Configure(IHostEnvironment hosting, IConfiguration config)
-        {
-            // Or if you need access to the application configuration and hosting
-            // But this time you may need to work directly with the PostgresqlBackedPersistence
-            Extensions.Include<PostgresqlBackedPersistence>(ext =>
-            {
-                if (hosting.IsDevelopment())
-                {
-                    // if so desired, the context argument gives you
-                    // access to both the IConfiguration and IHostingEnvironment
-                    // of the running application, so you could do
-                    // environment specific configuration here
-                }
-
-                ext.Settings.ConnectionString = config["postgresql"];
-
-                // If your application uses a schema besides "dbo"
-                ext.Settings.SchemaName = "my_app_schema";
-            });
-
-        }
-    }
-
-    // ENDSAMPLE
 }

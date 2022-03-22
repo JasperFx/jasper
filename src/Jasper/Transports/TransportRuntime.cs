@@ -26,10 +26,10 @@ namespace Jasper.Transports
         private ImHashMap<Uri?, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty;
 
 
-        private readonly IMessagingRoot _root;
+        private readonly IJasperRuntime _root;
         private TransportCollection _transports;
 
-        public TransportRuntime(IMessagingRoot root)
+        public TransportRuntime(IJasperRuntime root)
         {
             _root = root;
             _transports = root.Options.Transports;

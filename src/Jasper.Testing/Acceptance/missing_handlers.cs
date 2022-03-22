@@ -49,7 +49,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope? envelope, IMessagingRoot root)
+            public Task Handle(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
@@ -63,7 +63,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope? envelope, IMessagingRoot root)
+            public Task Handle(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
@@ -77,7 +77,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope? envelope, IMessagingRoot root)
+            public Task Handle(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 

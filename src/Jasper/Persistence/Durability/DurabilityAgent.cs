@@ -24,7 +24,7 @@ namespace Jasper.Persistence.Durability
         /// <returns></returns>
         public static DurabilityAgent ForHost(IHost host)
         {
-            return host.Services.GetRequiredService<IMessagingRoot>().As<MessagingRoot>().Durability;
+            return host.Services.GetRequiredService<IJasperRuntime>().As<JasperRuntime>().Durability;
         }
 
         private readonly IMessagingAction? IncomingMessages;

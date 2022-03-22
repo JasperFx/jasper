@@ -36,7 +36,7 @@ namespace Jasper.Pulsar
             return _endpoints[uri];
         }
 
-        public override void Initialize(IMessagingRoot root)
+        public override void Initialize(IJasperRuntime root)
         {
             Client = Builder.Build();
             base.Initialize(root);

@@ -1,8 +1,6 @@
-using IntegrationTests.Samples;
 using Jasper.Configuration;
 using Jasper.RabbitMQ.Internal;
 using Jasper.Runtime;
-using Jasper.Runtime.Routing;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
 using Shouldly;
@@ -60,7 +58,7 @@ namespace Jasper.RabbitMQ.Tests
                 .ConfigureTopicConfiguration("one", topic => { topic.SendInline(); });
 
             using var host = JasperHost.For(options);
-            var one = host.Get<IMessagingRoot>().Runtime
+            var one = host.Get<IJasperRuntime>().Runtime
                 .GetOrBuildSendingAgent("rabbitmq://exchange/numbers/routing/one".ToUri())
                 .Endpoint.As<RabbitMqEndpoint>();
 

@@ -10,11 +10,11 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void cannot_call_use_jasper_twice()
         {
-            var builder = Host.CreateDefaultBuilder();
+            var builder = Host.CreateDefaultBuilder().UseJasper(o => {});
 
-            builder.UseJasper();
+            builder.UseJasper(o => {});
 
-            Exception<InvalidOperationException>.ShouldBeThrownBy(() => builder.UseJasper());
+            Exception<InvalidOperationException>.ShouldBeThrownBy(() => builder.UseJasper().Start());
         }
     }
 }

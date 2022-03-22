@@ -103,7 +103,7 @@ namespace Jasper.Pulsar
             return $"{Persistence}://{Tenant}/{Namespace}/{TopicName}";
         }
 
-        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
 
@@ -114,7 +114,7 @@ namespace Jasper.Pulsar
             runtime.AddListener(_listener, this);
         }
 
-        protected override ISender CreateSender(IMessagingRoot root)
+        protected override ISender CreateSender(IJasperRuntime root)
         {
             return new PulsarSender(this, _parent, root.Cancellation);
         }

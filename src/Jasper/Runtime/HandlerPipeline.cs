@@ -20,7 +20,7 @@ namespace Jasper.Runtime
         private readonly HandlerGraph _graph;
         private readonly NoHandlerContinuation _noHandlers;
 
-        private readonly IMessagingRoot _root;
+        private readonly IJasperRuntime _root;
 
         private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>> _executors =
             ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>>.Empty;
@@ -30,7 +30,7 @@ namespace Jasper.Runtime
 
 
         public HandlerPipeline(HandlerGraph graph, IMessageLogger logger,
-            NoHandlerContinuation noHandlers, IMessagingRoot root, ObjectPool<ExecutionContext> contextPool)
+            NoHandlerContinuation noHandlers, IJasperRuntime root, ObjectPool<ExecutionContext> contextPool)
         {
             _graph = graph;
             _noHandlers = noHandlers;

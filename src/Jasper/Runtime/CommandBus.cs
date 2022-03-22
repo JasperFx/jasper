@@ -16,11 +16,11 @@ namespace Jasper.Runtime
         protected readonly List<Envelope?> _outstanding = new List<Envelope?>();
 
         [DefaultConstructor]
-        public CommandBus(IMessagingRoot root) : this(root, Guid.NewGuid().ToString())
+        public CommandBus(IJasperRuntime root) : this(root, Guid.NewGuid().ToString())
         {
         }
 
-        public CommandBus(IMessagingRoot root, string? correlationId)
+        public CommandBus(IJasperRuntime root, string? correlationId)
         {
             Root = root;
             Persistence = root.Persistence;
@@ -29,7 +29,7 @@ namespace Jasper.Runtime
 
         public string? CorrelationId { get; protected set; }
 
-        public IMessagingRoot Root { get; }
+        public IJasperRuntime Root { get; }
         public IEnvelopePersistence? Persistence { get; }
 
 

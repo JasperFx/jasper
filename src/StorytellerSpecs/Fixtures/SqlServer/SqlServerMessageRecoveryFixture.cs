@@ -129,7 +129,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 Message = new Message1()
             };
 
-            var writer = _host.Services.GetRequiredService<IMessagingRoot>().Options.Serializers
+            var writer = _host.Services.GetRequiredService<IJasperRuntime>().Options.Serializers
                 .FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType);
             envelope.Data = writer.Write(envelope.Message);
             envelope.ContentType = writer.ContentType;
@@ -143,7 +143,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
             getStubTransport().Endpoints[channel].Latched = true;
 
             // Gotta do this so that the query on latched channels works correctly
-            _host.Services.GetService<IMessagingRoot>().Runtime.GetOrBuildSendingAgent(channel);
+            _host.Services.GetService<IJasperRuntime>().Runtime.GetOrBuildSendingAgent(channel);
         }
 
 

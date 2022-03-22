@@ -69,7 +69,7 @@ namespace Jasper.Tcp
             }
         }
 
-        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
 
@@ -77,12 +77,12 @@ namespace Jasper.Tcp
             runtime.AddListener(listener, this);
         }
 
-        protected override ISender CreateSender(IMessagingRoot root)
+        protected override ISender CreateSender(IJasperRuntime root)
         {
             return new BatchedSender(Uri, new SocketSenderProtocol(), root.Settings.Cancellation, root.TransportLogger);
         }
 
-        private IListener createListener(IMessagingRoot root)
+        private IListener createListener(IJasperRuntime root)
         {
             // check the uri for an ip address to bind to
             var cancellation = root.Settings.Cancellation;

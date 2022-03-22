@@ -11,7 +11,7 @@ namespace Jasper.RabbitMQ
         private static RabbitMqTransport RabbitMqTransport(this IHost host)
         {
             return host
-                .Get<IMessagingRoot>()
+                .Get<IJasperRuntime>()
                 .Options
                 .Endpoints
                 .As<TransportCollection>()

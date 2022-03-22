@@ -9,15 +9,6 @@ using Xunit;
 namespace Jasper.Persistence.Testing.Postgresql
 {
 
-    public class PostgresBackedLocal : JasperOptions
-    {
-        public PostgresBackedLocal()
-        {
-            Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
-
-
-        }
-    }
 
     public class LocalPostgresqlBackedFixture : SendingComplianceFixture, IAsyncLifetime
     {
@@ -28,7 +19,10 @@ namespace Jasper.Persistence.Testing.Postgresql
 
         public Task InitializeAsync()
         {
-            return TheOnlyAppIs<PostgresBackedLocal>();
+            return TheOnlyAppIs(opts =>
+            {
+                opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
+            });
         }
 
         public Task DisposeAsync()

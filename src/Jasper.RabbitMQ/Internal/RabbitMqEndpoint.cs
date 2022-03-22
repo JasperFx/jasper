@@ -151,7 +151,7 @@ namespace Jasper.RabbitMQ.Internal
 
         }
 
-        public override void StartListening(IMessagingRoot root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
         {
             if (!IsListener) return;
 
@@ -167,7 +167,7 @@ namespace Jasper.RabbitMQ.Internal
             runtime.AddListener(_listener, this);
         }
 
-        protected override ISender CreateSender(IMessagingRoot root)
+        protected override ISender CreateSender(IJasperRuntime root)
         {
             return new RabbitMqSender(this, this.Parent);
         }

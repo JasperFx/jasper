@@ -32,19 +32,15 @@ namespace Jasper
         }
 
         /// <summary>
-        ///     Builds and initializes a IHost for the JasperOptions of
-        ///     type T
+        ///     Builds and initializes a IHost for the options
         /// </summary>
-        /// <param name="configure"></param>
-        /// <typeparam name="T">The type of your JasperOptions</typeparam>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static IHost For<T>(Action<T> configure = null) where T : JasperOptions, new()
+        public static IHost For<T>() where T : JasperOptions, new()
         {
-            var registry = new T();
-            configure?.Invoke(registry);
-
-            return bootstrap(registry);
+            return bootstrap(new T());
         }
+
 
         /// <summary>
         ///     Builds and initializes a IHost for the configured JasperOptions
@@ -58,29 +54,14 @@ namespace Jasper
             return bootstrap(registry);
         }
 
-
         private static IHost bootstrap(JasperOptions options)
         {
             return Host.CreateDefaultBuilder()
-                .UseJasper(options)
+                .UseJasper(options, (c,o) => {})
                 //.ConfigureLogging(x => x.ClearProviders())
                 .Start();
         }
 
-
-        /// <summary>
-        ///     Shortcut to create a new empty WebHostBuilder with Jasper's default
-        ///     settings, add the JasperOptions, and bootstrap the application
-        ///     from the command line
-        /// </summary>
-        /// <param name="args"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public static Task<int> Run<T>(string[] args) where T : JasperOptions, new()
-        {
-            return Host.CreateDefaultBuilder().UseJasper<T>().RunOaktonCommands(args);
-        }
 
         /// <summary>
         ///     Shortcut to create a new empty WebHostBuilder with Jasper's default

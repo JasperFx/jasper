@@ -24,7 +24,7 @@ namespace Jasper.Testing.Serialization
                 opts.Endpoints.PublishAllMessages().To("stub://two");
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
 
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
@@ -48,7 +48,7 @@ namespace Jasper.Testing.Serialization
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
                 .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
@@ -92,7 +92,7 @@ namespace Jasper.Testing.Serialization
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .TryFindSerializer("text/foo")
                 .ShouldBeOfType<FooSerializer>();
@@ -118,7 +118,7 @@ namespace Jasper.Testing.Serialization
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBeSameAs(fooSerializer);
 
@@ -138,7 +138,7 @@ namespace Jasper.Testing.Serialization
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
                 .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
@@ -162,7 +162,7 @@ namespace Jasper.Testing.Serialization
                     .DefaultSerializer(fooSerializer);
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
                 .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
@@ -185,7 +185,7 @@ namespace Jasper.Testing.Serialization
                 opts.Endpoints.ListenForMessagesFrom("stub://two");
             }).StartAsync();
 
-            var root = host.Services.GetRequiredService<IMessagingRoot>();
+            var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
                 .DefaultSerializer.ShouldBe(fooSerializer);
 

@@ -51,7 +51,7 @@ namespace Jasper.Testing.Compilation
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);
-            var context = _host.Get<IMessagingRoot>().ContextFor(theEnvelope);
+            var context = _host.Get<IJasperRuntime>().ContextFor(theEnvelope);
 
             await handler.Handle(context, default(CancellationToken));
 

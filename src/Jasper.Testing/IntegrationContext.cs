@@ -57,7 +57,7 @@ namespace Jasper.Testing
         public IExecutionContext Publisher => Host.Get<IExecutionContext>();
         public ICommandBus Bus => Host.Get<ICommandBus>();
 
-        public ITransportRuntime Runtime => Host.Get<IMessagingRoot>().Runtime;
+        public ITransportRuntime Runtime => Host.Get<IJasperRuntime>().Runtime;
 
         public HandlerGraph Handlers => Host.Get<HandlerGraph>();
 
@@ -68,31 +68,17 @@ namespace Jasper.Testing
         }
 
 
-        protected void with(JasperOptions options)
-        {
-            options.Services.Scan(_ =>
-            {
-                _.TheCallingAssembly();
-                _.WithDefaultConventions();
-            });
-
-            Host = JasperHost.For(options);
-        }
-
         protected void with(Action<JasperOptions> configuration)
         {
-            var registry = new JasperOptions();
-
-
-            configuration(registry);
-
-            with(registry);
-        }
-
-        protected void with<T>() where T : JasperOptions, new()
-        {
-            var registry = new T();
-            with(registry);
+            Host = JasperHost.For(opts =>
+            {
+                configuration(opts);
+                opts.Services.Scan(_ =>
+                {
+                    _.TheCallingAssembly();
+                    _.WithDefaultConventions();
+                });
+            });
         }
 
         protected HandlerChain chainFor<T>()

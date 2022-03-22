@@ -9,11 +9,11 @@ namespace Jasper.Runtime.Routing
     {
         private readonly ITopicRule _rule;
         private readonly ITopicRouter _router;
-        private readonly IMessagingRoot _root;
+        private readonly IJasperRuntime _root;
         private readonly MessageTypeRouting _messageTypeRouting;
 
         public TopicRoute(ITopicRule rule, ITopicRouter router,
-            IMessagingRoot root, MessageTypeRouting messageTypeRouting)
+            IJasperRuntime root, MessageTypeRouting messageTypeRouting)
         {
             _rule = rule;
             _router = router;

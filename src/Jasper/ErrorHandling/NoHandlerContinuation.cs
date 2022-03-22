@@ -8,9 +8,9 @@ namespace Jasper.ErrorHandling
     public class NoHandlerContinuation : IContinuation
     {
         private readonly IMissingHandler[] _handlers;
-        private readonly IMessagingRoot _root;
+        private readonly IJasperRuntime _root;
 
-        public NoHandlerContinuation(IMissingHandler[] handlers, IMessagingRoot root)
+        public NoHandlerContinuation(IMissingHandler[] handlers, IJasperRuntime root)
         {
             _handlers = handlers;
             _root = root;

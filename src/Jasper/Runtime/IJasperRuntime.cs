@@ -5,11 +5,10 @@ using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
-using Jasper.Serialization;
 
 namespace Jasper.Runtime
 {
-    public interface IMessagingRoot : IDisposable
+    public interface IJasperRuntime : IDisposable
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IEnvelopeRouter Router { get; }

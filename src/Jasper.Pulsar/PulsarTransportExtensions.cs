@@ -18,7 +18,7 @@ namespace Jasper.Pulsar
         private static PulsarTransport PulsarTransport(this IHost host)
         {
             return host
-                .Get<IMessagingRoot>()
+                .Get<IJasperRuntime>()
                 .Options
                 .Endpoints
                 .As<TransportCollection>()

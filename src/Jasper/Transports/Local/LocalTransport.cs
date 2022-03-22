@@ -45,7 +45,7 @@ namespace Jasper.Transports.Local
             return _queues;
         }
 
-        public void Initialize(IMessagingRoot root)
+        public void Initialize(IJasperRuntime root)
         {
             // Nothing
         }
@@ -55,12 +55,12 @@ namespace Jasper.Transports.Local
 
         public ICollection<string> Protocols { get; } = new []{ TransportConstants.Local };
 
-        void ITransport.StartSenders(IMessagingRoot root, ITransportRuntime runtime)
+        void ITransport.StartSenders(IJasperRuntime root, ITransportRuntime runtime)
         {
             foreach (var queue in _queues) addQueue(root, runtime, queue);
         }
 
-        void ITransport.StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+        void ITransport.StartListeners(IJasperRuntime root, ITransportRuntime runtime)
         {
             // Nothing
         }
@@ -83,7 +83,7 @@ namespace Jasper.Transports.Local
             return findByUri(uri);
         }
 
-        private ISendingAgent? addQueue(IMessagingRoot root, ITransportRuntime runtime, LocalQueueSettings queue)
+        private ISendingAgent? addQueue(IJasperRuntime root, ITransportRuntime runtime, LocalQueueSettings queue)
         {
             queue.Agent = buildAgent(queue, root);
             _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, root));
@@ -94,7 +94,7 @@ namespace Jasper.Transports.Local
             return queue.Agent;
         }
 
-        private ISendingAgent? buildAgent(LocalQueueSettings queue, IMessagingRoot root)
+        private ISendingAgent? buildAgent(LocalQueueSettings queue, IJasperRuntime root)
         {
             switch (queue.Mode)
             {
@@ -160,7 +160,7 @@ namespace Jasper.Transports.Local
             return new Uri(uri, queueName);
         }
 
-        internal ISendingAgent? AddSenderForDestination(Uri? uri, IMessagingRoot root, TransportRuntime runtime)
+        internal ISendingAgent? AddSenderForDestination(Uri? uri, IJasperRuntime root, TransportRuntime runtime)
         {
             var queueName = QueueName(uri);
             var queue = _queues[queueName];

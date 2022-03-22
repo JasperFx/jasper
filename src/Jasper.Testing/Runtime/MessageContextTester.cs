@@ -24,10 +24,10 @@ namespace Jasper.Testing.Runtime
             original.Id = Guid.NewGuid();
             original.CorrelationId = Guid.NewGuid().ToString();
 
-            theContext = theMessagingRoot.ContextFor(original).As<ExecutionContext>();
+            theContext = theRuntime.ContextFor(original).As<ExecutionContext>();
         }
 
-        private readonly MockMessagingRoot theMessagingRoot = new MockMessagingRoot();
+        private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
         private readonly ExecutionContext theContext;
 
         private void routedTo(Envelope envelope, params string[] destinations)
@@ -47,14 +47,14 @@ namespace Jasper.Testing.Runtime
                 var subscriber = Substitute.For<ISubscriber>();
                 subscriber.ShouldSendMessage(null).ReturnsForAnyArgs(false);
 
-                theMessagingRoot.Subscribers.Add(env.Destination, subscriber);
+                theRuntime.Subscribers.Add(env.Destination, subscriber);
 
             }
 
             if (envelope == null)
-                theMessagingRoot.Router.RouteOutgoingByEnvelope(Arg.Any<Envelope>()).Returns(outgoing);
+                theRuntime.Router.RouteOutgoingByEnvelope(Arg.Any<Envelope>()).Returns(outgoing);
             else
-                theMessagingRoot.Router.RouteOutgoingByEnvelope(envelope).Returns(outgoing);
+                theRuntime.Router.RouteOutgoingByEnvelope(envelope).Returns(outgoing);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void new_context_gets_a_non_empty_correlation_id()
         {
-            theMessagingRoot.NewContext().CorrelationId.ShouldNotBeNull();
+            theRuntime.NewContext().CorrelationId.ShouldNotBeNull();
         }
 
 
@@ -110,7 +110,7 @@ namespace Jasper.Testing.Runtime
 
             theEnvelope.AckRequested = true;
 
-            theAcknowledgement = new AcknowledgementSender(null, new MockMessagingRoot()).BuildAcknowledgement(theEnvelope);
+            theAcknowledgement = new AcknowledgementSender(null, new MockJasperRuntime()).BuildAcknowledgement(theEnvelope);
         }
 
         private readonly Envelope theEnvelope;

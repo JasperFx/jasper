@@ -11,11 +11,11 @@ namespace Jasper.Runtime
     public class MessagePublisher : CommandBus, IMessagePublisher
     {
         [DefaultConstructor]
-        public MessagePublisher(IMessagingRoot root) : base(root)
+        public MessagePublisher(IJasperRuntime root) : base(root)
         {
         }
 
-        public MessagePublisher(IMessagingRoot root, string? correlationId) : base(root, correlationId)
+        public MessagePublisher(IJasperRuntime root, string? correlationId) : base(root, correlationId)
         {
         }
 

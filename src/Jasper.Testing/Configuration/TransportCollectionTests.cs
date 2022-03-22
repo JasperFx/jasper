@@ -127,7 +127,7 @@ namespace Jasper.Testing.Configuration
             }
 
             public ICollection<string> Protocols { get; } = new []{"fake"};
-            public ISendingAgent BuildSendingAgent(Uri uri, IMessagingRoot root, CancellationToken cancellation)
+            public ISendingAgent BuildSendingAgent(Uri uri, IJasperRuntime root, CancellationToken cancellation)
             {
                 throw new NotImplementedException();
             }
@@ -143,18 +143,18 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public void StartSenders(IMessagingRoot root, ITransportRuntime runtime)
+            public void StartSenders(IJasperRuntime root, ITransportRuntime runtime)
             {
                 throw new NotImplementedException();
             }
 
-            public void StartListeners(IMessagingRoot root, ITransportRuntime runtime)
+            public void StartListeners(IJasperRuntime root, ITransportRuntime runtime)
             {
                 throw new NotImplementedException();
             }
 
 
-            public ISender CreateSender(Uri uri, CancellationToken cancellation, IMessagingRoot root)
+            public ISender CreateSender(Uri uri, CancellationToken cancellation, IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }
@@ -174,7 +174,7 @@ namespace Jasper.Testing.Configuration
                 throw new NotImplementedException();
             }
 
-            public void Initialize(IMessagingRoot root)
+            public void Initialize(IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }

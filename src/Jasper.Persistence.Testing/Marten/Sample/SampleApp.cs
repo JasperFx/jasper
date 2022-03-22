@@ -16,18 +16,6 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten.Sample
 {
-    // SAMPLE: MartenUsingApp
-    public class MartenUsingApp : JasperOptions
-    {
-        public override void Configure(IHostEnvironment hosting, IConfiguration config)
-        {
-            // This registers the message persistence as well as
-            // configuring Marten inside your application
-            Extensions.UseMarten(config.GetConnectionString("database"));
-        }
-    }
-    // ENDSAMPLE
-
 
     public class MessageInvocationTests : PostgresqlContext, IDisposable
     {
@@ -77,67 +65,6 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         }
     }
 
-    // SAMPLE: AppUsingMessageTracking
-    public class AppUsingMessageTracking : JasperOptions
-    {
-        public override void Configure(IHostEnvironment hosting, IConfiguration config)
-        {
-            if (hosting.IsDevelopment() || hosting.IsEnvironment("Testing"))
-            {
-                // This is necessary to add the message tracking
-                // to your Jasper application
-                Extensions.UseMessageTrackingTestingSupport();
-            }
-        }
-    }
-    // ENDSAMPLE
-
-
-    public class tests_against_AppUsingMessageTracking
-    {
-        // SAMPLE: invoke_a_message_with_tracking
-        public async Task invoke_a_message()
-        {
-            using (var host = JasperHost.For<AppUsingMessageTracking>())
-            {
-                await host.ExecuteAndWaitAsync(x => x.Invoke(new Message1()));
-
-                // check the change in system state after the original
-                // message and all of its cascading messages
-                // finish
-            }
-        }
-        // ENDSAMPLE
-
-        // SAMPLE: other-message-tracking-usages
-        public async Task other_usages()
-        {
-            using (var runtime = JasperHost.For<AppUsingMessageTracking>())
-            {
-                // Call IMessageContext.Invoke() and wait for all activity to finish
-                await runtime.InvokeMessageAndWaitAsync(new Message1());
-
-                // Configurable timeouts
-                await runtime.InvokeMessageAndWaitAsync(new Message1(),
-                    10000);
-
-                // More general usage to send a single message and wait
-                // for all activity to complete
-                await runtime.ExecuteAndWaitAsync(() => runtime.Send(new Message1()));
-
-
-                // Using an isolated message context
-                await runtime.ExecuteAndWaitAsync(c => c.SendAsync(new Message1()));
-
-                // Assert that there were no exceptions during the processing
-                // If there are, this will throw an AggregateException of
-                // all encountered exceptions in the message processing
-                var session = await runtime.ExecuteAndWaitAsync(c => c.SendAsync(new Message1()));
-            }
-        }
-
-        // ENDSAMPLE
-    }
 
 
     public class SampleApp : JasperOptions
