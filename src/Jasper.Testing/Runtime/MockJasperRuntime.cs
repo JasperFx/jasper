@@ -100,7 +100,7 @@ namespace Jasper.Testing.Runtime
         }
 
         public IEnvelopePersistence? Persistence { get; } = Substitute.For<IEnvelopePersistence>();
-        public ITransportLogger? TransportLogger { get; } = Substitute.For<ITransportLogger>();
+        public ILogger Logger { get; } = Substitute.For<ILogger>();
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 

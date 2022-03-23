@@ -9,6 +9,7 @@ using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Util;
 using Jasper.Util;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Tcp
 {
@@ -16,13 +17,13 @@ namespace Jasper.Tcp
     {
         private readonly CancellationToken _cancellationToken;
         private readonly IPAddress _ipaddr;
-        private readonly ITransportLogger _logger;
+        private readonly ILogger _logger;
         private readonly int _port;
         private TcpListener _listener;
         private Task _receivingLoop;
         private ActionBlock<Socket> _socketHandling;
 
-        public SocketListener(ITransportLogger logger, IPAddress ipaddr, int port,
+        public SocketListener(ILogger logger, IPAddress ipaddr, int port,
             CancellationToken cancellationToken)
         {
             _logger = logger;

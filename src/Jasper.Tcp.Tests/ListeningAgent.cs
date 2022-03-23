@@ -7,6 +7,7 @@ using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Util;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Jasper.Tcp.Tests
 {
@@ -35,7 +36,7 @@ namespace Jasper.Tcp.Tests
             _socketHandling = new ActionBlock<Socket>(async s =>
             {
                 await using var stream = new NetworkStream(s, true);
-                await WireProtocol.Receive(TransportLogger.Empty(), stream, _callback, _uri);
+                await WireProtocol.Receive(NullLogger.Instance, stream, _callback, _uri);
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _uri = $"{protocol}://{ipaddr}:{port}/".ToUri();

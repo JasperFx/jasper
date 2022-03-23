@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Durability
         private bool _hasStarted;
 
 
-        public DurabilityAgent(ITransportLogger? logger,
+        public DurabilityAgent(ILogger logger,
             ILogger<DurabilityAgent>? trace,
             IWorkerQueue? workers,
             IEnvelopePersistence? storage,
@@ -79,7 +79,7 @@ namespace Jasper.Persistence.Durability
             ScheduledJobs = new RunScheduledJobs(settings, logger);
         }
 
-        public ITransportLogger? Logger { get; }
+        public ILogger Logger { get; }
 
         public int NodeId { get; }
 
@@ -154,7 +154,7 @@ namespace Jasper.Persistence.Durability
 
             _hasStarted = true;
 
-            await tryRestartConnection();
+            await tryRestartConnectionAsync();
 
             _scheduledJobTimer = new Timer(s =>
             {
@@ -171,7 +171,7 @@ namespace Jasper.Persistence.Durability
         {
             if (_settings.Cancellation.IsCancellationRequested) return;
 
-            await tryRestartConnection();
+            await tryRestartConnectionAsync();
 
             // Something is wrong, but we'll keep trying in a bit
             if (!_storage.Session.IsConnected()) return;
@@ -189,29 +189,29 @@ namespace Jasper.Persistence.Durability
                 }
                 catch (Exception? e)
                 {
-                    Logger.LogException(e, message: "Running " + action.Description);
+                    Logger.LogError(e, "Running " + action.Description);
                 }
             }
             catch (Exception? e)
             {
-                Logger.LogException(e, message: "Error trying to run " + action);
+                Logger.LogError(e, "Error trying to run " + action);
                 await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
             }
 
             await _storage.Session.GetNodeLock(_settings.UniqueNodeId);
         }
 
-        private async Task tryRestartConnection()
+        private async Task tryRestartConnectionAsync()
         {
             if (_storage.Session.IsConnected()) return;
 
             try
             {
-                await _storage.Session.ConnectAndLockCurrentNode(Logger, _settings.UniqueNodeId);
+                await _storage.Session.ConnectAndLockCurrentNodeAsync(Logger, _settings.UniqueNodeId);
             }
             catch (Exception? e)
             {
-                Logger.LogException(e, message: "Failure trying to restart the connection in DurabilityAgent");
+                Logger.LogError(e, message: "Failure trying to restart the connection in DurabilityAgent");
             }
         }
 
@@ -234,9 +234,9 @@ namespace Jasper.Persistence.Durability
                 // Release all envelopes tagged to this node in message persistence to any node
                 await _storage.ReassignDormantNodeToAnyNodeAsync(_settings.UniqueNodeId);
             }
-            catch (Exception? e)
+            catch (Exception e)
             {
-                Logger.LogException(e);
+                Logger.LogError(e, "Error while trying to stop DurabilityAgent");
             }
         }
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Durability
 {
@@ -13,10 +14,10 @@ namespace Jasper.Persistence.Durability
         private readonly IEnvelopePersistence? _persistence;
         private readonly IWorkerQueue? _workers;
         private readonly AdvancedSettings? _settings;
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
 
         public RecoverIncomingMessages(IEnvelopePersistence? persistence, IWorkerQueue? workers, AdvancedSettings? settings,
-            ITransportLogger? logger)
+            ILogger logger)
         {
             _persistence = persistence;
             _workers = workers;

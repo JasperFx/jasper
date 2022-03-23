@@ -8,6 +8,7 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
+using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 
@@ -15,11 +16,11 @@ namespace Jasper.Persistence.Durability
 {
     public class DurableSendingAgent : SendingAgent
     {
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
         private readonly IEnvelopePersistence? _persistence;
         private readonly AsyncRetryPolicy _policy;
 
-        public DurableSendingAgent(ISender sender, AdvancedSettings? settings, ITransportLogger? logger,
+        public DurableSendingAgent(ISender sender, AdvancedSettings? settings, ILogger logger,
             IMessageLogger messageLogger,
             IEnvelopePersistence? persistence, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
         {
@@ -31,7 +32,7 @@ namespace Jasper.Persistence.Durability
                 .Handle<Exception>()
                 .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
                     , (e, timeSpan) => {
-                        _logger.LogException(e, message: "Failed while trying to enqueue a message batch for retries");
+                        _logger.LogError(e, message: "Failed while trying to enqueue a message batch for retries");
                     });
         }
 

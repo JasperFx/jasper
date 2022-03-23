@@ -3,16 +3,17 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime.WorkerQueues
 {
     public class InlineWorkerQueue : IListeningWorkerQueue
     {
         private readonly IHandlerPipeline _pipeline;
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
         private readonly AdvancedSettings? _settings;
 
-        public InlineWorkerQueue(IHandlerPipeline pipeline, ITransportLogger? logger, IListener listener,
+        public InlineWorkerQueue(IHandlerPipeline pipeline, ILogger logger, IListener listener,
             AdvancedSettings? settings)
         {
             Listener = listener;
@@ -54,7 +55,7 @@ namespace Jasper.Runtime.WorkerQueues
             catch (Exception? e)
             {
                 // TODO -- Mark failures onto the activity?
-                _logger.LogException(e, envelope.Id, "Failure to receive an incoming message");
+                _logger.LogError(e, "Failure to receive an incoming message for envelope {EnvelopeId}", envelope.Id);
 
                 try
                 {
@@ -62,7 +63,7 @@ namespace Jasper.Runtime.WorkerQueues
                 }
                 catch (Exception? ex)
                 {
-                    _logger.LogException(ex, envelope.CorrelationId,"Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline");
+                    _logger.LogError(ex, envelope.CorrelationId,"Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline");
                 }
             }
         }

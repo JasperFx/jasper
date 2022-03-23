@@ -8,6 +8,7 @@ using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Transports.Util;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Tcp
 {
@@ -69,7 +70,7 @@ namespace Jasper.Tcp
         }
 
 
-        public static async Task Receive(ITransportLogger logger, Stream stream, IListeningWorkerQueue callback,
+        public static async Task Receive(ILogger logger, Stream stream, IListeningWorkerQueue callback,
             Uri uri)
         {
             Envelope[] messages = null;
@@ -85,7 +86,7 @@ namespace Jasper.Tcp
             }
             catch (Exception e)
             {
-                logger.LogException(new MessageFailureException(messages, e));
+                logger.LogError(new MessageFailureException(messages, e), "TCP receive failure.");
                 await stream.SendBuffer(SerializationFailureBuffer);
                 return;
             }
@@ -96,12 +97,12 @@ namespace Jasper.Tcp
             }
             catch (Exception ex)
             {
-                logger.LogException(new MessageFailureException(messages, ex));
+                logger.LogError(new MessageFailureException(messages, ex), "TCP receive failure.");
                 await stream.SendBuffer(ProcessingFailureBuffer);
             }
         }
 
-        private static async Task receive(ITransportLogger logger, Stream stream, IListeningWorkerQueue callback,
+        private static async Task receive(ILogger logger, Stream stream, IListeningWorkerQueue callback,
             Envelope[] messages, Uri uri)
         {
             // Just a ping
@@ -123,7 +124,7 @@ namespace Jasper.Tcp
             }
             catch (Exception e)
             {
-                logger.LogException(e);
+                logger.LogError(e, "TCP receive failure.");
                 await stream.SendBuffer(ProcessingFailureBuffer);
             }
 

@@ -106,7 +106,6 @@ namespace Jasper
 
                 services.AddSingleton<IMetrics, NulloMetrics>();
                 services.AddSingleton<IMessageLogger, MessageLogger>();
-                services.AddSingleton<ITransportLogger, TransportLogger>();
 
                 services.AddSingleton<IDescribedSystemPart>(s => s.GetRequiredService<JasperOptions>().HandlerGraph);
                 services.AddSingleton<IDescribedSystemPart>(s=> s.GetRequiredService<JasperOptions>().Transports);

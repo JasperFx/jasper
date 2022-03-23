@@ -5,6 +5,7 @@ using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime
 {
@@ -20,7 +21,7 @@ namespace Jasper.Runtime
         IExecutionContext ContextFor(Envelope? envelope);
 
         IEnvelopePersistence? Persistence { get; }
-        ITransportLogger? TransportLogger { get; }
+        ILogger Logger { get; }
         AdvancedSettings Settings { get; }
         ITransportRuntime Runtime { get; }
         CancellationToken Cancellation { get; }

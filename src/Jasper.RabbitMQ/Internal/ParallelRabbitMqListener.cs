@@ -7,6 +7,7 @@ using Baseline;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.RabbitMQ.Internal
 {
@@ -14,7 +15,7 @@ namespace Jasper.RabbitMQ.Internal
     {
         private readonly IList<RabbitMqListener> _listeners = new List<RabbitMqListener>();
 
-        public ParallelRabbitMqListener(ITransportLogger logger,
+        public ParallelRabbitMqListener(ILogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport)
         {
             Address = endpoint.Uri;

@@ -79,7 +79,7 @@ namespace Jasper.Tcp
 
         protected override ISender CreateSender(IJasperRuntime root)
         {
-            return new BatchedSender(Uri, new SocketSenderProtocol(), root.Settings.Cancellation, root.TransportLogger);
+            return new BatchedSender(Uri, new SocketSenderProtocol(), root.Settings.Cancellation, root.Logger);
         }
 
         private IListener createListener(IJasperRuntime root)
@@ -91,11 +91,11 @@ namespace Jasper.Tcp
 
             if (hostNameType != UriHostNameType.IPv4 && hostNameType != UriHostNameType.IPv6)
                 return HostName == "localhost"
-                    ? new SocketListener(root.TransportLogger,IPAddress.Loopback, Port, cancellation)
-                    : new SocketListener(root.TransportLogger,IPAddress.Any, Port, cancellation);
+                    ? new SocketListener(root.Logger,IPAddress.Loopback, Port, cancellation)
+                    : new SocketListener(root.Logger,IPAddress.Any, Port, cancellation);
 
             var ipaddr = IPAddress.Parse(HostName);
-            return new SocketListener(root.TransportLogger, ipaddr, Port, cancellation);
+            return new SocketListener(root.Logger, ipaddr, Port, cancellation);
         }
     }
 }

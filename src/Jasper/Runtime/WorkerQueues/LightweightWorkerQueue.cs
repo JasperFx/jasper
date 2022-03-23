@@ -6,18 +6,19 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime.WorkerQueues
 {
     public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling
     {
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
         private readonly AdvancedSettings? _settings;
         private readonly ActionBlock<Envelope> _receiver;
         private readonly InMemoryScheduledJobProcessor _scheduler;
         private IListener _listener;
 
-        public LightweightWorkerQueue(Endpoint endpoint, ITransportLogger? logger,
+        public LightweightWorkerQueue(Endpoint endpoint, ILogger logger,
             IHandlerPipeline pipeline, AdvancedSettings? settings)
         {
             _logger = logger;
@@ -42,7 +43,7 @@ namespace Jasper.Runtime.WorkerQueues
                 catch (Exception? e)
                 {
                     // This *should* never happen, but of course it will
-                    logger.LogException(e);
+                    logger.LogError(e, "Unexpected error in Pipeline invocation");
                 }
             }, endpoint.ExecutionOptions);
         }

@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Jasper.Logging;
 using Jasper.Transports.Util;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending
 {
     public class BatchedSender : ISender, ISenderRequiresCallback
     {
         private readonly CancellationToken _cancellation;
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
 
         private readonly ISenderProtocol _protocol;
         private BatchingBlock<Envelope> _batching;
@@ -20,7 +21,7 @@ namespace Jasper.Transports.Sending
         private ActionBlock<OutgoingMessageBatch> _sender;
         private ActionBlock<Envelope?> _serializing;
 
-        public BatchedSender(Uri? destination, ISenderProtocol protocol, CancellationToken cancellation, ITransportLogger? logger)
+        public BatchedSender(Uri? destination, ISenderProtocol protocol, CancellationToken cancellation, ILogger logger)
         {
             Destination = destination;
             _protocol = protocol;
@@ -36,7 +37,7 @@ namespace Jasper.Transports.Sending
 
             _sender.Completion.ContinueWith(x =>
             {
-                if (x.IsFaulted) _logger.LogException(x.Exception);
+                if (x.IsFaulted) _logger.LogError(x.Exception, "Error trying to complete the sending block");
             }, _cancellation);
 
             _serializing = new ActionBlock<Envelope?>(async e =>
@@ -47,7 +48,7 @@ namespace Jasper.Transports.Sending
                 }
                 catch (Exception? ex)
                 {
-                    _logger.LogException(ex, message: $"Error while trying to serialize envelope {e}");
+                    _logger.LogError(ex, message: $"Error while trying to serialize envelope {e}");
                 }
             },
                 new ExecutionDataflowBlockOptions
@@ -59,7 +60,7 @@ namespace Jasper.Transports.Sending
 
             _serializing.Completion.ContinueWith(x =>
             {
-                if (x.IsFaulted) _logger.LogException(x.Exception);
+                if (x.IsFaulted) _logger.LogError(x.Exception, "Failure while trying to shutdown serialization block");
             }, _cancellation);
 
 
@@ -75,7 +76,7 @@ namespace Jasper.Transports.Sending
 
             _batchWriting.Completion.ContinueWith(x =>
             {
-                if (x.IsFaulted) _logger.LogException(x.Exception);
+                if (x.IsFaulted) _logger.LogError(x.Exception, "Failure while trying to stop the batch writing block");
             }, _cancellation);
 
             _batchWriting.LinkTo(_sender);
@@ -83,7 +84,7 @@ namespace Jasper.Transports.Sending
             _batching = new BatchingBlock<Envelope>(200, _batchWriting, _cancellation);
             _batching.Completion.ContinueWith(x =>
             {
-                if (x.IsFaulted) _logger.LogException(x.Exception);
+                if (x.IsFaulted) _logger.LogError(x.Exception, "Failure while trying to stop the batching block");
             }, _cancellation);
         }
 
@@ -179,7 +180,7 @@ namespace Jasper.Transports.Sending
             }
             catch (Exception? e)
             {
-                _logger.LogException(e);
+                _logger.LogError(e, "Error while trying to process a send failure");
             }
         }
     }

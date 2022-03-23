@@ -33,13 +33,13 @@ namespace Jasper.Runtime
         public JasperRuntime(JasperOptions options,
             IMessageLogger messageLogger,
             IContainer container,
-            ITransportLogger? transportLogger)
+            ILogger<JasperRuntime> logger)
         {
             Settings = options.Advanced;
             Options = options;
             Options.Serializers.Add(new NewtonsoftSerializer(Settings.JsonSerialization));
             Handlers = options.HandlerGraph;
-            TransportLogger = transportLogger;
+            Logger = logger;
 
             MessageLogger = messageLogger;
 
@@ -158,7 +158,7 @@ namespace Jasper.Runtime
 
         public AdvancedSettings? Settings { get; }
 
-        public ITransportLogger? TransportLogger { get; }
+        public ILogger Logger { get; }
 
         public IScheduledJobProcessor ScheduledJobs { get; set; }
 
@@ -233,8 +233,8 @@ namespace Jasper.Runtime
 
                 // TODO -- use the worker queue for Retries?
                 var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Settings, Persistence,
-                    TransportLogger);
-                Durability = new DurabilityAgent(TransportLogger, durabilityLogger, worker, Persistence, Runtime,
+                    Logger);
+                Durability = new DurabilityAgent(Logger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);
 
                 await Durability.StartAsync(Options.Advanced.Cancellation);

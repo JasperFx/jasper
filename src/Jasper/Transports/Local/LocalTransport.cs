@@ -99,12 +99,12 @@ namespace Jasper.Transports.Local
             switch (queue.Mode)
             {
                 case EndpointMode.BufferedInMemory:
-                    return new LightweightLocalSendingAgent(queue, root.TransportLogger, root.Pipeline, root.Settings,
+                    return new LightweightLocalSendingAgent(queue, root.Logger, root.Pipeline, root.Settings,
                         root.MessageLogger);
 
                 case EndpointMode.Durable:
                     return new DurableLocalSendingAgent(queue, root.Pipeline, root.Settings, root.Persistence,
-                        root.TransportLogger, root.MessageLogger);
+                        root.Logger, root.MessageLogger);
 
                 case EndpointMode.Inline:
                     throw new NotImplementedException();

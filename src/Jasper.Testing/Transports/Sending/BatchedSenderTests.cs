@@ -4,6 +4,8 @@ using Baseline;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Xunit;
 
@@ -14,7 +16,7 @@ namespace Jasper.Testing.Transports.Sending
         public BatchedSenderTests()
         {
             theSender = new BatchedSender(TransportConstants.RepliesUri, theProtocol, theCancellation.Token,
-                TransportLogger.Empty());
+                NullLogger.Instance);
 
             theSender.RegisterCallback(theSenderCallback);
 

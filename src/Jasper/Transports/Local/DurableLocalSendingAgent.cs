@@ -7,6 +7,7 @@ using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Serialization;
 using Jasper.Transports.Sending;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Local
 {
@@ -18,7 +19,7 @@ namespace Jasper.Transports.Local
         private readonly IMessageSerializer? _serializer;
 
         public DurableLocalSendingAgent(Endpoint endpoint, IHandlerPipeline pipeline,
-            AdvancedSettings? settings, IEnvelopePersistence? persistence, ITransportLogger? logger,
+            AdvancedSettings? settings, IEnvelopePersistence? persistence, ILogger logger,
             IMessageLogger messageLogger) : base(endpoint, pipeline, settings, persistence, logger)
         {
             _settings = settings;

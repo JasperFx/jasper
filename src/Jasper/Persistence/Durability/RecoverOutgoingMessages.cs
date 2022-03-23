@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Durability
 {
@@ -12,9 +13,9 @@ namespace Jasper.Persistence.Durability
     {
         private readonly ITransportRuntime _runtime;
         private readonly AdvancedSettings? _settings;
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
 
-        public RecoverOutgoingMessages(ITransportRuntime runtime, AdvancedSettings? settings, ITransportLogger? logger)
+        public RecoverOutgoingMessages(ITransportRuntime runtime, AdvancedSettings? settings, ILogger logger)
         {
             _runtime = runtime;
             _settings = settings;
@@ -102,14 +103,14 @@ namespace Jasper.Persistence.Durability
                     }
                     catch (Exception? e)
                     {
-                        _logger.LogException(e, message: $"Unable to enqueue {envelope} for sending");
+                        _logger.LogError(e, message: $"Unable to enqueue {envelope} for sending");
                     }
 
                 return outgoing.Count();
             }
             catch (UnknownTransportException? e)
             {
-                _logger.LogException(e, message: $"Could not resolve a channel for {destination}");
+                _logger.LogError(e, message: $"Could not resolve a channel for {destination}");
 
                 await storage.Session.Begin();
 

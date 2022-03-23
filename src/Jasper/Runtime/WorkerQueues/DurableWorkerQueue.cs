@@ -7,6 +7,7 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 
@@ -16,13 +17,13 @@ namespace Jasper.Runtime.WorkerQueues
     {
         private readonly AdvancedSettings _settings;
         private readonly IEnvelopePersistence _persistence;
-        private readonly ITransportLogger _logger;
+        private readonly ILogger _logger;
         private readonly ActionBlock<Envelope?> _receiver;
         private IListener _listener;
         private readonly AsyncRetryPolicy _policy;
 
         public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
-            AdvancedSettings settings, IEnvelopePersistence persistence, ITransportLogger logger)
+            AdvancedSettings settings, IEnvelopePersistence persistence, ILogger logger)
         {
             _settings = settings;
             _persistence = persistence;
@@ -41,7 +42,7 @@ namespace Jasper.Runtime.WorkerQueues
                 catch (Exception? e)
                 {
                     // This *should* never happen, but of course it will
-                    logger.LogException(e);
+                    logger.LogError(e, "Unexpected pipeline invocation error");
                 }
             }, endpoint.ExecutionOptions);
 
@@ -49,7 +50,7 @@ namespace Jasper.Runtime.WorkerQueues
                 .Handle<Exception>()
                 .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
                     , (e, timeSpan) => {
-                        _logger.LogException(e);
+                        _logger.LogError(e, "Unexpected failure.");
                     });
         }
 

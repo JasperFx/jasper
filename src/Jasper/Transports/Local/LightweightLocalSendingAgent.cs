@@ -6,6 +6,7 @@ using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports.Sending;
 using Jasper.Util;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Local
 {
@@ -13,7 +14,7 @@ namespace Jasper.Transports.Local
     {
         private readonly IMessageLogger _messageLogger;
 
-        public LightweightLocalSendingAgent(Endpoint endpoint, ITransportLogger? logger,
+        public LightweightLocalSendingAgent(Endpoint endpoint, ILogger logger,
             IHandlerPipeline pipeline, AdvancedSettings? settings, IMessageLogger messageLogger) : base(endpoint, logger, pipeline, settings)
         {
             _messageLogger = messageLogger;

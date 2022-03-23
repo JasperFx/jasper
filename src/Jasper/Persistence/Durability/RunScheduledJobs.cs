@@ -4,15 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Durability
 {
     internal class RunScheduledJobs : IMessagingAction
     {
         private readonly AdvancedSettings? _settings;
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
 
-        public RunScheduledJobs(AdvancedSettings? settings, ITransportLogger? logger)
+        public RunScheduledJobs(AdvancedSettings? settings, ILogger logger)
         {
             _settings = settings;
             _logger = logger;

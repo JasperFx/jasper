@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Database
 {
@@ -91,19 +92,19 @@ namespace Jasper.Persistence.Database
             return Connection?.State == ConnectionState.Open;
         }
 
-        public async Task ConnectAndLockCurrentNode(ITransportLogger? logger, int nodeId)
+        public async Task ConnectAndLockCurrentNodeAsync(ILogger logger, int nodeId)
         {
             if (Connection != null)
             {
                 try
                 {
-                    Connection.Close();
+                    await Connection.CloseAsync();
                     Connection.Dispose();
                     Connection = null;
                 }
                 catch (Exception e)
                 {
-                    logger.LogException(e);
+                    logger.LogError(e, "Error while trying to close current connection");
                 }
             }
 

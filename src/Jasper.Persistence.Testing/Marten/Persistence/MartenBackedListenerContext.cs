@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using IntegrationTests;
-using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.Postgresql.Schema;
@@ -14,6 +13,7 @@ using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Util;
 using Marten;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -83,7 +83,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                     new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings);
             thePipeline = Substitute.For<IHandlerPipeline>();
             theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings,
-                persistence, TransportLogger.Empty());
+                persistence, NullLogger.Instance);
 
 
             var agent = Substitute.For<IListener>();

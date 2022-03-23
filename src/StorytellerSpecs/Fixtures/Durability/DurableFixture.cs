@@ -13,6 +13,8 @@ using Jasper.Tracking;
 using Jasper.Util;
 using Lamar;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using StoryTeller;
 
@@ -30,6 +32,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
 
             var senderRegistry = new JasperOptions();
+            senderRegistry.Services.ForSingletonOf<ILogger>().Use(NullLogger.Instance);
             senderRegistry.Extensions.Include<TcpTransportExtension>();
             senderRegistry.Handlers
                 .DisableConventionalDiscovery()
@@ -57,6 +60,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
 
             var receiverRegistry = new JasperOptions();
+            receiverRegistry.Services.ForSingletonOf<ILogger>().Use(NullLogger.Instance);
             receiverRegistry.Extensions.Include<TcpTransportExtension>();
             receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
             receiverRegistry.Handlers.DisableConventionalDiscovery()

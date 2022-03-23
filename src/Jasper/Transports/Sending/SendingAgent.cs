@@ -6,12 +6,13 @@ using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending
 {
     public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit
     {
-        private readonly ITransportLogger? _logger;
+        private readonly ILogger _logger;
         private readonly IMessageLogger _messageLogger;
         protected readonly ISender _sender;
         protected readonly AdvancedSettings? _settings;
@@ -21,7 +22,7 @@ namespace Jasper.Transports.Sending
         protected Func<Envelope, Task> _senderDelegate;
 
 
-        public SendingAgent(ITransportLogger? logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings? settings, Endpoint endpoint)
+        public SendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings? settings, Endpoint endpoint)
         {
             _logger = logger;
             _messageLogger = messageLogger;
@@ -137,7 +138,7 @@ namespace Jasper.Transports.Sending
                 }
                 catch (Exception? exception)
                 {
-                    _logger.LogException(exception);
+                    _logger.LogError(exception, "Error while trying to process a failure");
                 }
             }
         }
@@ -158,7 +159,7 @@ namespace Jasper.Transports.Sending
                 }
                 catch (Exception? exception)
                 {
-                    _logger.LogException(exception);
+                    _logger.LogError(exception, "Error while trying to process a batch send failure");
                 }
             }
         }
@@ -216,8 +217,9 @@ namespace Jasper.Transports.Sending
         {
             _logger.OutgoingBatchFailed(outgoing);
             // Can't really happen now, but what the heck.
-            _logger.LogException(new Exception("Serialization failure with outgoing envelopes " +
-                                               outgoing.Messages.Select(x => x.ToString()).Join(", ")));
+            var exception = new Exception("Serialization failure with outgoing envelopes " +
+                                          outgoing.Messages.Select(x => x.ToString()).Join(", "));
+            _logger.LogError(exception, "Serialization failure");
 
             return Task.CompletedTask;
         }
@@ -244,7 +246,7 @@ namespace Jasper.Transports.Sending
 
         public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception? exception)
         {
-            _logger.LogException(exception,
+            _logger.LogError(exception,
                 message: $"Failure trying to send a message batch to {outgoing.Destination}");
             _logger.OutgoingBatchFailed(outgoing, exception);
             return MarkFailed(outgoing);

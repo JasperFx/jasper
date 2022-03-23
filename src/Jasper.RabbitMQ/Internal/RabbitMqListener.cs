@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
-        private readonly ITransportLogger _logger;
+        private readonly ILogger _logger;
         private readonly RabbitMqEndpoint _endpoint;
         private readonly RabbitMqTransport _transport;
         private IListeningWorkerQueue _callback;
@@ -19,7 +20,7 @@ namespace Jasper.RabbitMQ.Internal
         private readonly RabbitMqSender _sender;
         private CancellationToken _cancellation = CancellationToken.None;
 
-        public RabbitMqListener(ITransportLogger logger,
+        public RabbitMqListener(ILogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
             _logger = logger;

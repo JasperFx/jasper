@@ -96,11 +96,11 @@ namespace Jasper.Transports
             switch (endpoint.Mode)
             {
                 case EndpointMode.Durable:
-                    return new DurableSendingAgent(sender, _root.Settings, _root.TransportLogger, _root.MessageLogger,
+                    return new DurableSendingAgent(sender, _root.Settings, _root.Logger, _root.MessageLogger,
                         _root.Persistence, endpoint);
 
                 case EndpointMode.BufferedInMemory:
-                    return new LightweightSendingAgent(_root.TransportLogger, _root.MessageLogger, sender, _root.Settings, endpoint);
+                    return new LightweightSendingAgent(_root.Logger, _root.MessageLogger, sender, _root.Settings, endpoint);
 
                 case EndpointMode.Inline:
                     return new InlineSendingAgent(sender, endpoint, _root.MessageLogger, _root.Settings);
@@ -187,15 +187,15 @@ namespace Jasper.Transports
             {
                 case EndpointMode.Durable:
                     worker = new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,
-                        _root.TransportLogger);
+                        _root.Logger);
                     break;
 
                 case EndpointMode.BufferedInMemory:
-                    worker = new LightweightWorkerQueue(settings, _root.TransportLogger, _root.Pipeline, _root.Settings);
+                    worker = new LightweightWorkerQueue(settings, _root.Logger, _root.Pipeline, _root.Settings);
                     break;
 
                 case EndpointMode.Inline:
-                    worker = new InlineWorkerQueue(_root.Pipeline, _root.TransportLogger, listener, _root.Settings);
+                    worker = new InlineWorkerQueue(_root.Pipeline, _root.Logger, listener, _root.Settings);
                     break;
             }
 

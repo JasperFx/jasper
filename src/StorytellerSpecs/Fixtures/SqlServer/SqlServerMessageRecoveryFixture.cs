@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
+
 using IntegrationTests;
 using Jasper;
 using Jasper.Configuration;
@@ -19,6 +20,8 @@ using Jasper.Transports.Stub;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
@@ -79,7 +82,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
                 .UseJasper(_ =>
                 {
                     _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-
+                    _.Services.AddSingleton<ILogger>(NullLogger.Instance);
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
                     _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
                     _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();

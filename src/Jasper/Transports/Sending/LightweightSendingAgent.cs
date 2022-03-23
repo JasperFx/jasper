@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending
 {
     public class LightweightSendingAgent : SendingAgent
     {
-        public LightweightSendingAgent(ITransportLogger? logger, IMessageLogger messageLogger, ISender sender,
+        public LightweightSendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender,
             AdvancedSettings? settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
         {
         }

@@ -2,6 +2,7 @@ using System;
 using System.Data.Common;
 using System.Threading.Tasks;
 using Jasper.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Durability
 {
@@ -18,7 +19,7 @@ namespace Jasper.Persistence.Durability
         Task ReleaseGlobalLock(int lockId);
 
         bool IsConnected();
-        Task ConnectAndLockCurrentNode(ITransportLogger? logger, int nodeId);
+        Task ConnectAndLockCurrentNodeAsync(ILogger logger, int nodeId);
         DbTransaction Transaction { get; }
         DbCommand CallFunction(string functionName);
         DbCommand CreateCommand(string sql);

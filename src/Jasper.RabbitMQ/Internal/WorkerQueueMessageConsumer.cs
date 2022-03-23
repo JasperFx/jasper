@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Jasper.Logging;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -13,11 +14,11 @@ namespace Jasper.RabbitMQ.Internal
         private readonly CancellationToken _cancellation;
         private readonly RabbitMqListener Listener;
         private readonly IListeningWorkerQueue _workerQueue;
-        private readonly ITransportLogger _logger;
+        private readonly ILogger _logger;
         private readonly RabbitMqEndpoint _endpoint;
         private bool _latched;
 
-        public WorkerQueueMessageConsumer(IListeningWorkerQueue workerQueue, ITransportLogger logger,
+        public WorkerQueueMessageConsumer(IListeningWorkerQueue workerQueue, ILogger logger,
             RabbitMqListener listener,
             RabbitMqEndpoint endpoint, Uri address, RabbitMqSender rabbitMqSender, CancellationToken cancellation)
         {
@@ -52,7 +53,7 @@ namespace Jasper.RabbitMQ.Internal
             }
             catch (Exception e)
             {
-                _logger.LogException(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
+                _logger.LogError(e, message: "Error trying to map an incoming RabbitMQ message to an Envelope");
                 Model.BasicAck(envelope.DeliveryTag, false);
 
                 return;
@@ -68,7 +69,7 @@ namespace Jasper.RabbitMQ.Internal
             {
                 if (t.IsFaulted)
                 {
-                    _logger.LogException(t.Exception, envelope.Id, "Failure to receive an incoming message");
+                    _logger.LogError(t.Exception, "Failure to receive an incoming message with {Id}", envelope.Id);
                     Model.BasicNack(deliveryTag, false, true);
                 }
             }, _cancellation);

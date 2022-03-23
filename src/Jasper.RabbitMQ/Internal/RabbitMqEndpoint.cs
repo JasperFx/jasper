@@ -157,11 +157,11 @@ namespace Jasper.RabbitMQ.Internal
 
             if (ListenerCount > 1)
             {
-                _listener = new ParallelRabbitMqListener(root.TransportLogger, this, Parent);
+                _listener = new ParallelRabbitMqListener(root.Logger, this, Parent);
             }
             else
             {
-                _listener = new RabbitMqListener(root.TransportLogger, this, Parent);
+                _listener = new RabbitMqListener(root.Logger, this, Parent);
             }
 
             runtime.AddListener(_listener, this);

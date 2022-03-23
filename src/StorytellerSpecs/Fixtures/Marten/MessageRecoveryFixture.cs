@@ -19,6 +19,8 @@ using Jasper.Transports.Stub;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
@@ -80,7 +82,7 @@ namespace StorytellerSpecs.Fixtures.Marten
                 .UseJasper(_ =>
                 {
                     _.ServiceName = Guid.NewGuid().ToString();
-
+                    _.Services.AddSingleton<ILogger>(NullLogger.Instance);
                     _.Extensions.UseMarten(Servers.PostgresConnectionString);
 
                     _.Services.AddSingleton<IWorkerQueue>(_workers);
