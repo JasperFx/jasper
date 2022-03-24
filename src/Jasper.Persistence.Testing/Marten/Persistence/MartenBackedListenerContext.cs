@@ -52,8 +52,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
     public class MartenBackedListenerContext : PostgresqlContext, IDisposable, IAsyncLifetime
     {
         protected readonly IEnvelopeStorageAdmin EnvelopeStorageAdmin =
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString});
+            new PostgresqlEnvelopePersistence(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString}, new AdvancedSettings(null), new NullLogger<PostgresqlEnvelopePersistence>());
 
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
@@ -76,11 +76,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theSettings = new AdvancedSettings(null);
 
 
-            await EnvelopeStorageAdmin.RebuildSchemaObjects();
+            await EnvelopeStorageAdmin.RebuildStorageAsync();
 
             var persistence =
                 new PostgresqlEnvelopePersistence(
-                    new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings);
+                    new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings, new NullLogger<PostgresqlEnvelopePersistence>());
             thePipeline = Substitute.For<IHandlerPipeline>();
             theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings,
                 persistence, NullLogger.Instance);

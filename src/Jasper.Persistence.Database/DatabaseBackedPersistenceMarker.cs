@@ -12,7 +12,7 @@ namespace Jasper.Persistence.Database
 
         public Variable Create(Type type)
         {
-            return Variable.For<DatabaseBackedEnvelopePersistence>();
+            return Variable.For<IDatabaseBackedEnvelopePersistence>();
         }
     }
 }

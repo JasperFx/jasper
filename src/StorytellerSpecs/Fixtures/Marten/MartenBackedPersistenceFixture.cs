@@ -12,6 +12,7 @@ using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Fixtures.Marten.App;
@@ -64,10 +65,13 @@ namespace StorytellerSpecs.Fixtures.Marten
                 _.DatabaseSchemaName = "sender";
             });
 
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}).RebuildSchemaObjects().GetAwaiter().GetResult();
-            new PostgresqlEnvelopeStorageAdmin(new PostgresqlSettings
-                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}).RebuildSchemaObjects().GetAwaiter().GetResult();
+            var advanced = new AdvancedSettings(null);
+            var logger = new NullLogger<PostgresqlEnvelopePersistence>();
+
+            new PostgresqlEnvelopePersistence(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "receiver"}, advanced, logger).RebuildStorageAsync().GetAwaiter().GetResult();
+            new PostgresqlEnvelopePersistence(new PostgresqlSettings
+                {ConnectionString = Servers.PostgresConnectionString, SchemaName = "sender"}, advanced, logger).RebuildStorageAsync().GetAwaiter().GetResult();
 
             _sendingStore.Advanced.Clean.CompletelyRemoveAll();
             _sendingStore.Schema.ApplyAllConfiguredChangesToDatabaseAsync().GetAwaiter().GetResult();

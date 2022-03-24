@@ -8,8 +8,8 @@ namespace Jasper.Persistence.Durability
     public interface IEnvelopeStorageAdmin
     {
         Task ClearAllPersistedEnvelopes();
-        Task RebuildSchemaObjects();
-        string CreateSql();
+        Task RebuildStorageAsync();
+        string ToDatabaseScript();
         Task<PersistedCounts> GetPersistedCounts();
 
         Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes();

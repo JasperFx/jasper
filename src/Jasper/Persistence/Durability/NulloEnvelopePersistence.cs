@@ -135,12 +135,12 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
-        public Task RebuildSchemaObjects()
+        public Task RebuildStorageAsync()
         {
             return Task.CompletedTask;
         }
 
-        public string CreateSql()
+        public string ToDatabaseScript()
         {
             return string.Empty;
         }

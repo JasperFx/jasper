@@ -14,7 +14,7 @@ namespace Jasper.Persistence
         /// <param name="host"></param>
         public static Task RebuildMessageStorage(this IHost host)
         {
-            return host.Services.GetRequiredService<IEnvelopePersistence>().Admin.RebuildSchemaObjects();
+            return host.Services.GetRequiredService<IEnvelopePersistence>().Admin.RebuildStorageAsync();
         }
 
         /// <summary>

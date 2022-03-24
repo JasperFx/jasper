@@ -6,6 +6,7 @@ using Jasper.Persistence.Sagas;
 using Lamar.Scanning.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Weasel.Core.Migrations;
 
 namespace Jasper.Persistence.Postgresql
 {
@@ -19,9 +20,8 @@ namespace Jasper.Persistence.Postgresql
             options.Services.AddSingleton(Settings);
 
             options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
-
+            options.Services.AddSingleton(s => (IDatabase)s.GetRequiredService<IEnvelopePersistence>());
             options.Advanced.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
-
 
             options.Services.For<NpgsqlConnection>().Use<NpgsqlConnection>();
 

@@ -20,7 +20,7 @@ namespace EFPlusSqlServerConsole
 
                     // Just the normal work to get the connection string out of
                     // application configuration
-                    var connectionString = "Server=localhost;User Id=sa;Password=P@55w0rd;Timeout=5";
+                    var connectionString = "Server=localhost,1435;User Id=sa;Password=P@55w0rd;Timeout=5;Encrypt=false";
 
                     // Setting up Sql Server-backed message persistence
                     // This requires a reference to Jasper.Persistence.SqlServer

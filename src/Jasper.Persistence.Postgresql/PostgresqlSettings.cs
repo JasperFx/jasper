@@ -7,13 +7,14 @@ using Jasper.Persistence.Database;
 using Npgsql;
 using NpgsqlTypes;
 using Weasel.Core;
+using Weasel.Postgresql;
 
 namespace Jasper.Persistence.Postgresql
 {
     public class PostgresqlSettings : DatabaseSettings
     {
 
-        public PostgresqlSettings() : base("public")
+        public PostgresqlSettings() : base("public", new PostgresqlMigrator())
         {
         }
 

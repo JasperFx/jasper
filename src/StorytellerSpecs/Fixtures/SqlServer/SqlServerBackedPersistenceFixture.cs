@@ -8,11 +8,13 @@ using Jasper;
 using Jasper.Logging;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 using StorytellerSpecs.Fixtures.SqlServer.App;
@@ -43,10 +45,11 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
             _messageLogger.Start(Context);
 
-            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
-                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}).RebuildSchemaObjects().GetAwaiter().GetResult();
-            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings
-                {ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}).RebuildSchemaObjects().GetAwaiter().GetResult();
+            new SqlServerEnvelopePersistence(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "receiver"}, new AdvancedSettings(null), new NullLogger<SqlServerEnvelopePersistence>())
+                .RebuildStorageAsync().GetAwaiter().GetResult();
+
+            new SqlServerEnvelopePersistence(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString, SchemaName = "sender"}, new AdvancedSettings(null), new NullLogger<SqlServerEnvelopePersistence>())
+                .RebuildStorageAsync().GetAwaiter().GetResult();
 
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {

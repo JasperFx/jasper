@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Jasper.Persistence.Database;
 using Microsoft.Data.SqlClient;
 using Weasel.Core;
+using Weasel.SqlServer;
 
 namespace Jasper.Persistence.SqlServer
 {
     public class SqlServerSettings : DatabaseSettings
     {
-        public SqlServerSettings() : base("dbo")
+        public SqlServerSettings() : base("dbo", new SqlServerMigrator())
         {
         }
 

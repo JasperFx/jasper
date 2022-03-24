@@ -9,14 +9,14 @@ namespace Jasper.Persistence.Database
 {
     public class DatabaseEnvelopeTransaction : IEnvelopeTransaction, IDisposable
     {
-        private readonly DatabaseBackedEnvelopePersistence _persistence;
+        private readonly IDatabaseBackedEnvelopePersistence _persistence;
         private readonly DbTransaction _tx;
 
         public DatabaseEnvelopeTransaction(IExecutionContext context, DbTransaction tx)
         {
-            _persistence = context.Persistence as DatabaseBackedEnvelopePersistence ??
+            _persistence = context.Persistence as IDatabaseBackedEnvelopePersistence ??
                            throw new InvalidOperationException(
-                               "This message context is not using Sql Server-backed messaging persistence");
+                               "This message context is not using Database-backed messaging persistence");
             _tx = tx;
         }
 

@@ -39,7 +39,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             var persistence = theHost.Get<IEnvelopePersistence>();
 
-            await persistence.Admin.RebuildSchemaObjects();
+            await persistence.Admin.RebuildStorageAsync();
 
 
             persistence.ScheduleJobAsync(theEnvelope).Wait(3.Seconds());

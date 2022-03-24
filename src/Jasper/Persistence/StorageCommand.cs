@@ -47,7 +47,7 @@ namespace Jasper.Persistence
                 {
                     case (StorageAction.counts):
 
-                        await persistor.Admin.RebuildSchemaObjects();
+                        await persistor.Admin.RebuildStorageAsync();
 
                         var counts = await persistor.Admin.GetPersistedCounts();
                         Console.WriteLine("Persisted Enveloper Counts");
@@ -63,18 +63,18 @@ namespace Jasper.Persistence
                         break;
 
                     case (StorageAction.rebuild):
-                        await persistor.Admin.RebuildSchemaObjects();
+                        await persistor.Admin.RebuildStorageAsync();
                         ConsoleWriter.Write(ConsoleColor.Green, "Successfully rebuilt the envelope storage");
                         break;
 
                     case (StorageAction.script):
                         Console.WriteLine("Exporting script to " + input.FileFlag.ToFullPath());
-                        await File.WriteAllTextAsync(input.FileFlag, persistor.Admin.CreateSql());
+                        await File.WriteAllTextAsync(input.FileFlag, persistor.Admin.ToDatabaseScript());
 
                         break;
 
                     case StorageAction.release:
-                        await persistor.Admin.RebuildSchemaObjects();
+                        await persistor.Admin.RebuildStorageAsync();
                         Console.WriteLine("Releasing all ownership of persisted envelopes");
                         await persistor.Admin.ReleaseAllOwnership();
 

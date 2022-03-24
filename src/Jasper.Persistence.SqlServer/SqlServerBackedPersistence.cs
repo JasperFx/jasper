@@ -9,6 +9,7 @@ using Jasper.Persistence.SqlServer.Util;
 using Lamar.Scanning.Conventions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
+using Weasel.Core.Migrations;
 
 namespace Jasper.Persistence.SqlServer
 {
@@ -24,9 +25,9 @@ namespace Jasper.Persistence.SqlServer
             options.Services.AddSingleton(Settings);
 
             options.Services.AddTransient<IEnvelopePersistence, SqlServerEnvelopePersistence>();
+            options.Services.AddSingleton(s => (IDatabase)s.GetRequiredService<IEnvelopePersistence>());
 
             options.Advanced.CodeGeneration.Sources.Add(new DatabaseBackedPersistenceMarker());
-
 
             options.Services.For<SqlConnection>().Use<SqlConnection>();
 

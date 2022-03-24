@@ -6,7 +6,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Database
 {
-    public partial class DatabaseBackedEnvelopePersistence
+    public abstract partial class DatabaseBackedEnvelopePersistence<T>
     {
         public Task ScheduleExecutionAsync(Envelope?[] envelopes)
         {
@@ -40,7 +40,7 @@ namespace Jasper.Persistence.Database
             return Session.Transaction
                 .CreateCommand($"select {DatabaseConstants.IncomingFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")
                 .With("time", utcNow)
-                .FetchList(r => ReadIncoming(r, _cancellation), cancellation: _cancellation);
+                .FetchList(r => DatabasePersistence.ReadIncoming(r, _cancellation), cancellation: _cancellation);
         }
 
 

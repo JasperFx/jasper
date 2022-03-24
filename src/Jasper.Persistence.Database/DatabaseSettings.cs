@@ -12,9 +12,10 @@ namespace Jasper.Persistence.Database
     {
         private string _schemaName;
 
-        protected DatabaseSettings(string defaultSchema)
+        protected DatabaseSettings(string defaultSchema, Migrator migrator)
         {
             SchemaName = defaultSchema;
+            Migrator = migrator;
         }
 
         public string ConnectionString { get; set; }
@@ -31,6 +32,8 @@ namespace Jasper.Persistence.Database
                 DeadLetterFullName = $"{value}.{DatabaseConstants.DeadLetterTable}";
             }
         }
+
+        public Migrator Migrator { get; }
 
         public string DeadLetterFullName { get; private set; }
 

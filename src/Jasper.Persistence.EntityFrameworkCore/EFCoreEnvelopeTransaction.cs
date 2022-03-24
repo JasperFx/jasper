@@ -18,7 +18,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
         public EFCoreEnvelopeTransaction(DbContext db, IExecutionContext messaging)
         {
-            if (messaging.Persistence is DatabaseBackedEnvelopePersistence persistence)
+            if (messaging.Persistence is IDatabaseBackedEnvelopePersistence persistence)
             {
                 _settings = persistence.DatabaseSettings;
                 _nodeId = persistence.Settings.UniqueNodeId;
@@ -42,7 +42,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
             var conn = _db.Database.GetDbConnection();
             var tx = _db.Database.CurrentTransaction.GetDbTransaction();
-            var cmd = DatabaseBackedEnvelopePersistence.BuildOutgoingStorageCommand(envelope, envelope.OwnerId, _settings);
+            var cmd = DatabasePersistence.BuildOutgoingStorageCommand(envelope, envelope.OwnerId, _settings);
             cmd.Transaction = tx;
             cmd.Connection = conn;
 
@@ -63,7 +63,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
             var conn = _db.Database.GetDbConnection();
             var tx = _db.Database.CurrentTransaction.GetDbTransaction();
-            var cmd = DatabaseBackedEnvelopePersistence.BuildIncomingStorageCommand(envelopes, _settings);
+            var cmd = DatabasePersistence.BuildIncomingStorageCommand(envelopes, _settings);
             cmd.Transaction = tx;
             cmd.Connection = conn;
 
@@ -80,7 +80,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
             var conn = _db.Database.GetDbConnection();
             var tx = _db.Database.CurrentTransaction.GetDbTransaction();
             var builder = _settings.ToCommandBuilder();
-            DatabaseBackedEnvelopePersistence.BuildIncomingStorageCommand(_settings, builder, envelope);
+            DatabasePersistence.BuildIncomingStorageCommand(_settings, builder, envelope);
             await builder.ExecuteNonQueryAsync(conn, tx: tx);
 
         }

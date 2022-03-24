@@ -1,22 +1,24 @@
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Persistence.Durability;
+using Microsoft.Extensions.Logging;
 using Weasel.Core;
+using Weasel.Core.Migrations;
 
 namespace Jasper.Persistence.Database
 {
-    public abstract partial class DatabaseBackedEnvelopePersistence : IEnvelopePersistence
+    public abstract partial class DatabaseBackedEnvelopePersistence<T> : DatabaseBase<T>, IDatabaseBackedEnvelopePersistence, IEnvelopeStorageAdmin where T : DbConnection, new()
     {
         protected readonly CancellationToken _cancellation;
         private readonly string _outgoingEnvelopeSql;
 
         protected DatabaseBackedEnvelopePersistence(DatabaseSettings databaseSettings, AdvancedSettings settings,
-            IEnvelopeStorageAdmin admin)
+            ILogger logger) : base(new MigrationLogger(logger), AutoCreate.CreateOrUpdate, databaseSettings.Migrator, "JasperEnvelopeStorage", databaseSettings.ConnectionString)
         {
             DatabaseSettings = databaseSettings;
-            Admin = admin;
 
             Settings = settings;
             _cancellation = settings.Cancellation;
@@ -37,7 +39,7 @@ namespace Jasper.Persistence.Database
 
         public DatabaseSettings DatabaseSettings { get; }
 
-        public IEnvelopeStorageAdmin Admin { get; }
+        public IEnvelopeStorageAdmin Admin => this;
 
         public IDurableStorageSession Session { get; }
 

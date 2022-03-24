@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using IntegrationTests;
 using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Persistence;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,13 +30,13 @@ namespace Jasper.Persistence.Testing.SqlServer
                 });
 
 
+            using var host = builder.Build();
+            host.Services.GetRequiredService<SqlServerSettings>()
+                .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
 
-            using (var host = builder.Build())
-            {
-
-                host.Services.GetRequiredService<SqlServerSettings>()
-                    .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
-            }
+            var databases = host.Services.GetServices<Weasel.Core.Migrations.IDatabase>();
+            databases.OfType<SqlServerEnvelopePersistence>()
+                .Count().ShouldBe(1);
         }
 
 

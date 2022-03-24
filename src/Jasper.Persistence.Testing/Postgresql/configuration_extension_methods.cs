@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using IntegrationTests;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.SqlServer;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using Weasel.Core.Migrations;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Postgresql
@@ -29,12 +31,12 @@ namespace Jasper.Persistence.Testing.Postgresql
                 });
 
 
-            using (var host = builder.Build())
-            {
+            using var host = builder.Build();
+            host.Services.GetRequiredService<PostgresqlSettings>()
+                .ConnectionString.ShouldBe(Servers.PostgresConnectionString);
 
-                host.Services.GetRequiredService<PostgresqlSettings>()
-                    .ConnectionString.ShouldBe(Servers.PostgresConnectionString);
-            }
+            host.Services.GetServices<IDatabase>().OfType<PostgresqlEnvelopePersistence>()
+                .Count().ShouldBe(1);
         }
 
 

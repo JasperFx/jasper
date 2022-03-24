@@ -5,33 +5,89 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Logging;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer.Schema;
 using Jasper.Persistence.SqlServer.Util;
 using Jasper.Transports;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Weasel.Core;
 using Weasel.SqlServer;
 using CommandExtensions = Weasel.Core.CommandExtensions;
 
 namespace Jasper.Persistence.SqlServer.Persistence
 {
-    public class SqlServerEnvelopePersistence : DatabaseBackedEnvelopePersistence
+    public class SqlServerEnvelopePersistence : DatabaseBackedEnvelopePersistence<SqlConnection>
     {
         private readonly SqlServerSettings _databaseSettings;
         private readonly string _findAtLargeEnvelopesSql;
         private readonly string _moveToDeadLetterStorageSql;
 
 
-        public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings)
-            : base(databaseSettings, settings, new SqlServerEnvelopeStorageAdmin(databaseSettings))
+        public SqlServerEnvelopePersistence(SqlServerSettings databaseSettings, AdvancedSettings settings, ILogger<SqlServerEnvelopePersistence> logger)
+            : base(databaseSettings, settings, logger)
         {
             _databaseSettings = databaseSettings;
             _findAtLargeEnvelopesSql =
                 $"select top {settings.RecoveryBatchSize} {DatabaseConstants.IncomingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where owner_id = {TransportConstants.AnyNode} and status = '{EnvelopeStatus.Incoming}'";
 
             _moveToDeadLetterStorageSql = $"EXEC {_databaseSettings.SchemaName}.uspDeleteIncomingEnvelopes @IDLIST;";
+        }
+
+        public override async Task<PersistedCounts> GetPersistedCounts()
+        {
+            var counts = new PersistedCounts();
+
+            await using var conn = DatabaseSettings.CreateConnection();
+            await conn.OpenAsync();
+
+
+            await using var reader = await conn
+                .CreateCommand(
+                    $"select status, count(*) from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} group by status")
+                .ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
+                var count = await reader.GetFieldValueAsync<int>(1);
+
+                switch (status)
+                {
+                    case EnvelopeStatus.Incoming:
+                        counts.Incoming = count;
+                        break;
+                    case EnvelopeStatus.Scheduled:
+                        counts.Scheduled = count;
+                        break;
+                }
+            }
+
+            counts.Outgoing = (int) await CommandExtensions.CreateCommand(conn, $"select count(*) from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteScalarAsync();
+
+
+            return counts;
+        }
+
+        public override ISchemaObject[] Objects
+        {
+            get
+            {
+                return new ISchemaObject[]
+                {
+                    new OutgoingEnvelopeTable(DatabaseSettings.SchemaName),
+                    new IncomingEnvelopeTable(DatabaseSettings.SchemaName),
+                    new DeadLettersTable(DatabaseSettings.SchemaName),
+                    new EnvelopeIdTable(DatabaseSettings.SchemaName),
+                    new JasperStoredProcedure("uspDeleteIncomingEnvelopes.sql", DatabaseSettings),
+                    new JasperStoredProcedure("uspDeleteOutgoingEnvelopes.sql", DatabaseSettings),
+                    new JasperStoredProcedure("uspDiscardAndReassignOutgoing.sql", DatabaseSettings),
+                    new JasperStoredProcedure("uspMarkIncomingOwnership.sql", DatabaseSettings),
+                    new JasperStoredProcedure("uspMarkOutgoingOwnership.sql", DatabaseSettings),
+                };
+            }
         }
 
         public override Task DeleteIncomingEnvelopesAsync(Envelope?[] envelopes)
@@ -54,7 +110,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
 
             builder.Append(_moveToDeadLetterStorageSql);
 
-            ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
+            DatabasePersistence.ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
 
             return builder.Compile().ExecuteOnce(_cancellation);
         }
@@ -99,7 +155,7 @@ namespace Jasper.Persistence.SqlServer.Persistence
         public override Task<IReadOnlyList<Envelope?>> LoadPageOfGloballyOwnedIncomingAsync()
         {
             return Session.CreateCommand(_findAtLargeEnvelopesSql)
-                .FetchList(r => ReadIncoming(r));
+                .FetchList(r => DatabasePersistence.ReadIncoming(r));
         }
 
         public override Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope?> incoming)

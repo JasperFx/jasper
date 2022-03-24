@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.SqlServer;
+using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Persistence.SqlServer.Schema;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.SqlServer
@@ -9,10 +11,12 @@ namespace Jasper.Persistence.Testing.SqlServer
     [Collection("sqlserver")]
     public abstract class SqlServerContext : IAsyncLifetime
     {
+        protected SqlServerEnvelopePersistence thePersistence;
+
         public async Task InitializeAsync()
         {
-            var loader = new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString});
-            await loader.RecreateAll();
+            thePersistence = new SqlServerEnvelopePersistence(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString}, new AdvancedSettings(null), new NullLogger<SqlServerEnvelopePersistence>());
+            await thePersistence.RebuildStorageAsync();
             await initialize();
         }
 

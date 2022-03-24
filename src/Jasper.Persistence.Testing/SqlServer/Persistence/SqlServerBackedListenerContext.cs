@@ -16,6 +16,7 @@ using Jasper.Util;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
+using Xunit;
 
 namespace Jasper.Persistence.Testing.SqlServer.Persistence
 {
@@ -32,9 +33,6 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         public SqlServerBackedListenerContext()
         {
-            new SqlServerEnvelopeStorageAdmin(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString}).RecreateAll();
-
-
             theSettings = new AdvancedSettings(null);
 
             mssqlSettings = new SqlServerSettings
@@ -42,7 +40,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 ConnectionString = Servers.SqlServerConnectionString
             };
 
-            thePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings);
+            thePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings, new NullLogger<SqlServerEnvelopePersistence>());
 
 
             thePipeline = Substitute.For<IHandlerPipeline>();

@@ -5,11 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Logging;
 using Jasper.Persistence.Database;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql.Schema;
 using Jasper.Persistence.Postgresql.Util;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using NpgsqlTypes;
 using Weasel.Postgresql;
@@ -18,7 +20,7 @@ using Weasel.Core;
 
 namespace Jasper.Persistence.Postgresql
 {
-    public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence
+    public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence<NpgsqlConnection>
     {
         private readonly string _deleteIncomingEnvelopesSql;
         private readonly string _reassignOutgoingSql;
@@ -28,8 +30,8 @@ namespace Jasper.Persistence.Postgresql
         private readonly string _reassignIncomingSql;
 
 
-        public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings) : base(databaseSettings,
-            settings, new PostgresqlEnvelopeStorageAdmin(databaseSettings))
+        public PostgresqlEnvelopePersistence(PostgresqlSettings databaseSettings, AdvancedSettings settings, ILogger<PostgresqlEnvelopePersistence> logger) : base(databaseSettings,
+            settings, logger)
         {
             _deleteIncomingEnvelopesSql = $"delete from {databaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} WHERE id = ANY(@ids);";
             _reassignOutgoingSql = $"update {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @owner where id = ANY(@ids)";
@@ -43,6 +45,53 @@ namespace Jasper.Persistence.Postgresql
                                              $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)";
         }
 
+        public override async Task<PersistedCounts> GetPersistedCounts()
+        {
+            var counts = new PersistedCounts();
+
+            await using var conn = DatabaseSettings.CreateConnection();
+            await conn.OpenAsync();
+
+
+            using (var reader = await conn
+                       .CreateCommand(
+                           $"select status, count(*) from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} group by status")
+                       .ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
+                    var count = await reader.GetFieldValueAsync<int>(1);
+
+                    if (status == EnvelopeStatus.Incoming)
+                        counts.Incoming = count;
+                    else if (status == EnvelopeStatus.Scheduled) counts.Scheduled = count;
+                }
+            }
+
+            var longCount = await conn
+                .CreateCommand($"select count(*) from {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable}").ExecuteScalarAsync();
+
+            counts.Outgoing =  Convert.ToInt32(longCount);
+
+
+            return counts;
+        }
+
+
+        public override ISchemaObject[] Objects
+        {
+            get
+            {
+                return new ISchemaObject[]
+                {
+                    new OutgoingEnvelopeTable(DatabaseSettings.SchemaName),
+                    new IncomingEnvelopeTable(DatabaseSettings.SchemaName),
+                    new DeadLettersTable(DatabaseSettings.SchemaName)
+                };
+            }
+        }
+
 
         public override Task MoveToDeadLetterStorageAsync(ErrorReport[] errors)
         {
@@ -52,7 +101,7 @@ namespace Jasper.Persistence.Postgresql
             param.Value = errors.Select(x => x.Id).ToArray();
             param.NpgsqlDbType = NpgsqlDbType.Uuid | NpgsqlDbType.Array;
 
-            ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
+            DatabasePersistence.ConfigureDeadLetterCommands(errors, builder, DatabaseSettings);
 
             return builder.Compile().ExecuteOnce(_cancellation);
         }
@@ -106,7 +155,7 @@ namespace Jasper.Persistence.Postgresql
         {
             return Session
                 .CreateCommand(_findAtLargeEnvelopesSql)
-                .FetchList(r => ReadIncoming(r));
+                .FetchList(r => DatabasePersistence.ReadIncoming(r));
         }
 
         public override Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope?> incoming)

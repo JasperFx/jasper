@@ -97,7 +97,7 @@ namespace StorytellerSpecs.Fixtures.Marten
 
 
             _admin = _host.Services.GetService<IEnvelopePersistence>().Admin;
-            _admin.RebuildSchemaObjects().GetAwaiter().GetResult();
+            _admin.RebuildStorageAsync().GetAwaiter().GetResult();
 
             _settings = _host.Services.GetService<PostgresqlSettings>();
 

@@ -50,7 +50,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         [Fact]
         public void can_get_storage_sql()
         {
-            var sql = theSender.Get<IEnvelopePersistence>().Admin.CreateSql();
+            var sql = theSender.Get<IEnvelopePersistence>().Admin.ToDatabaseScript();
 
             sql.ShouldNotBeNull();
 

@@ -48,7 +48,7 @@ namespace Jasper.Persistence.Database
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
-            _isUsingPersistence = chain.IsUsingSqlServerPersistence();
+            _isUsingPersistence = chain.IsUsingDatabasePersistence();
 
             _connection = chain.FindVariable(typeof(TConnection));
             yield return _connection;
@@ -66,7 +66,7 @@ namespace Jasper.Persistence.Database
 
     internal static class MethodVariablesExtensions
     {
-        internal static bool IsUsingSqlServerPersistence(this IMethodVariables method)
+        internal static bool IsUsingDatabasePersistence(this IMethodVariables method)
         {
             return method.TryFindVariable(typeof(DatabaseBackedPersistenceMarker), VariableSource.NotServices) != null;
         }

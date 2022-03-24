@@ -8,6 +8,7 @@ using IntegrationTests;
 using Jasper.Configuration;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -22,7 +23,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 = new SqlServerEnvelopePersistence(new SqlServerSettings
                 {
                     ConnectionString = Servers.SqlServerConnectionString
-                }, new AdvancedSettings(null));
+                }, new AdvancedSettings(null), new NullLogger<SqlServerEnvelopePersistence>());
 
         }
 
