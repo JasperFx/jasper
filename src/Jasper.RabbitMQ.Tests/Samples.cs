@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using Jasper.RabbitMQ.Internal;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Tests
 {
-    // SAMPLE: AppListeningToRabbitMQ
+    #region sample_AppListeningToRabbitMQ
     public class AppListeningToRabbitMQ : JasperOptions
     {
         public AppListeningToRabbitMQ()
@@ -14,9 +14,9 @@ namespace Jasper.RabbitMQ.Tests
             //Transports.ListenForMessagesFrom("rabbitmq://rabbitserver:5672/messages");
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: AppPublishingToRabbitMQ
+    #region sample_AppPublishingToRabbitMQ
     public class AppPublishingToRabbitMQ : JasperOptions
     {
         public AppPublishingToRabbitMQ()
@@ -24,7 +24,7 @@ namespace Jasper.RabbitMQ.Tests
             //Publish.AllMessagesTo("rabbitmq://rabbitserver:5672/messages");
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
 }

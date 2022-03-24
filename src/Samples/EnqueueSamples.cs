@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Jasper;
 using TestMessages;
 
@@ -6,7 +6,7 @@ namespace Samples
 {
     public class EnqueueSamples
     {
-        // SAMPLE: enqueue-locally
+        #region sample_enqueue_locally
         public static async Task enqueue_locally(ICommandBus bus)
         {
             // Enqueue a message to the local worker queues
@@ -14,6 +14,6 @@ namespace Samples
 
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

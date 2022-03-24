@@ -5,7 +5,7 @@ using TestMessages;
 
 namespace Samples
 {
-    // SAMPLE: StaticPublishingRules
+    #region sample_StaticPublishingRules
     public class StaticPublishingRulesApp : JasperOptions
     {
         public StaticPublishingRulesApp()
@@ -37,6 +37,6 @@ namespace Samples
             // Or you just send all messages to a certain endpoint
             PublishAllMessages().ToPort(3333);
         }
-        // ENDSAMPLE
+        #endregion
     }
 }

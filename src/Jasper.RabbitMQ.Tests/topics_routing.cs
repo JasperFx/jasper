@@ -129,7 +129,7 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
-    // SAMPLE: RabbitMqTopicSendingApp
+    #region sample_RabbitMqTopicSendingApp
     public class TopicSendingApp : JasperOptions
     {
         public TopicSendingApp()
@@ -151,7 +151,7 @@ namespace Jasper.RabbitMQ.Tests
             Extensions.UseMessageTrackingTestingSupport();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class TopicListeningApp : JasperOptions
     {

@@ -2,7 +2,7 @@ using Baseline.Dates;
 
 namespace Jasper.Persistence.Testing.Samples
 {
-    // SAMPLE: AdvancedConfigurationOfDurabilityAgent
+    #region sample_AdvancedConfigurationOfDurabilityAgent
     public class DurabilityAgentCustomization : JasperOptions
     {
         public DurabilityAgentCustomization()
@@ -24,5 +24,5 @@ namespace Jasper.Persistence.Testing.Samples
             Advanced.ScheduledJobPollingTime = 60.Seconds();
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

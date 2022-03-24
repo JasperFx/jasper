@@ -1,10 +1,10 @@
-﻿using Jasper;
+using Jasper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Samples
 {
-    // SAMPLE: JasperAppWithServices
+    #region sample_JasperAppWithServices
     public class JasperAppWithServices : JasperOptions
     {
         public JasperAppWithServices()
@@ -18,7 +18,7 @@ namespace Samples
             Services.For(typeof(ILogger)).Use(typeof(Logger<>));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public interface IThirdPartyService

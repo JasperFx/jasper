@@ -3,7 +3,7 @@ using LamarCodeGeneration;
 
 namespace Jasper.Http
 {
-    // SAMPLE: IRoutePolicy
+    #region sample_IRoutePolicy
     /// <summary>
     ///     Use to apply your own conventions or policies to HTTP route handlers
     /// </summary>
@@ -17,5 +17,5 @@ namespace Jasper.Http
         void Apply(RouteGraph graph, GenerationRules rules);
     }
 
-    // ENDSAMPLE
+    #endregion
 }

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Lamar;
 using Shouldly;
 using TestingSupport;
@@ -30,10 +30,10 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void will_apply_an_extension()
         {
-            // SAMPLE: explicitly-add-extension
+            #region sample_explicitly_add_extension
             var registry = new JasperOptions();
             registry.Extensions.Include<OptionalExtension>();
-            // ENDSAMPLE
+            #endregion
 
             registry.Handlers.DisableConventionalDiscovery();
 

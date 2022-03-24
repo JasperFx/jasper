@@ -1,10 +1,10 @@
-﻿using Jasper;
+using Jasper;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Samples
 {
-    // SAMPLE: SampleExtension
+    #region sample_SampleExtension
     public class SampleExtension : IJasperExtension
     {
         public void Configure(JasperOptions options)
@@ -19,7 +19,7 @@ namespace Samples
                 .TypeNameHandling = TypeNameHandling.All;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public interface IFoo

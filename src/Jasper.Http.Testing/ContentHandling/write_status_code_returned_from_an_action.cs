@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Threading.Tasks;
 using Baseline.Reflection;
 using Shouldly;
@@ -30,7 +30,7 @@ namespace Jasper.Http.Testing.ContentHandling
             });
         }
 
-        // SAMPLE: StatusCodeEndpointSpec
+        #region sample_StatusCodeEndpointSpec
         [Fact]
         public Task set_status_from_sync_action()
         {
@@ -40,7 +40,7 @@ namespace Jasper.Http.Testing.ContentHandling
                 _.StatusCodeShouldBe(201);
             });
         }
-        // ENDSAMPLE
+        #endregion
 
         [Fact]
         public void sync_int_returning_action_is_action_candidate()
@@ -52,7 +52,7 @@ namespace Jasper.Http.Testing.ContentHandling
         }
     }
 
-    // SAMPLE: StatusCodeEndpoint
+    #region sample_StatusCodeEndpoint
     public class StatusCodeEndpoint
     {
         public static int get_status1()
@@ -66,5 +66,5 @@ namespace Jasper.Http.Testing.ContentHandling
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

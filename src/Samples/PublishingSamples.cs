@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
@@ -7,7 +7,7 @@ namespace Samples
 {
     public class PublishingSamples
     {
-        // SAMPLE: CustomizingEnvelope
+        #region sample_CustomizingEnvelope
         public Task CustomizingEnvelope(IExecutionContext bus)
         {
             var envelope = new Envelope(new SomeMessage())
@@ -34,10 +34,10 @@ namespace Samples
 
             // Send the envelope and its contained message
             return bus.SendEnvelopeAsync(envelope);
-            // ENDSAMPLE
+            #endregion
         }
 
-        // SAMPLE: IServiceBus.Invoke
+        #region sample_IServiceBus.Invoke
         public Task Invoke(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
@@ -50,9 +50,9 @@ namespace Samples
 
             return bus.Invoke(@event);
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: IServiceBus.Enqueue
+        #region sample_IServiceBus.Enqueue
         public Task Enqueue(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
@@ -65,9 +65,9 @@ namespace Samples
 
             return bus.Enqueue(@event);
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: IServiceBus.Enqueue-to-specific-worker-queue
+        #region sample_IServiceBus.Enqueue_to_specific_worker_queue
         public Task EnqueueToQueue(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
@@ -82,9 +82,9 @@ namespace Samples
             // queue named 'highpriority'
             return bus.Enqueue(@event, "highpriority");
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: send-delayed-message
+        #region sample_send_delayed_message
         public async Task SendScheduledMessage(IExecutionContext bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
@@ -99,9 +99,9 @@ namespace Samples
             // Schedule the message to be processed at a certain time
             await bus.ScheduleSendAsync(message, DateTime.UtcNow.AddDays(30));
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: schedule-job-locally
+        #region sample_schedule_job_locally
         public async Task ScheduleLocally(IExecutionContext bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
@@ -116,9 +116,9 @@ namespace Samples
             // Schedule the message to be processed at a certain time
             await bus.Schedule(message, DateTime.UtcNow.AddDays(30));
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: sending-message-with-servicebus
+        #region sample_sending_message_with_servicebus
         public Task SendMessage(IExecutionContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
@@ -133,10 +133,10 @@ namespace Samples
 
             return bus.SendAsync(@event);
         }
-        // ENDSAMPLE
+        #endregion
 
 
-        // SAMPLE: publishing-message-with-servicebus
+        #region sample_publishing_message_with_servicebus
         public Task PublishMessage(IExecutionContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
@@ -151,10 +151,10 @@ namespace Samples
 
             return bus.PublishAsync(@event);
         }
-        // ENDSAMPLE
+        #endregion
 
 
-        // SAMPLE: send-message-to-specific-destination
+        #region sample_send_message_to_specific_destination
         public async Task SendMessageToSpecificDestination(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
@@ -182,7 +182,7 @@ namespace Samples
         {
             public Guid InvoiceId { get; set; }
         }
-        // ENDSAMPLE
+        #endregion
 
         public class InvoiceCreated
         {
@@ -197,7 +197,7 @@ namespace Samples
         }
     }
 
-    // SAMPLE: LocalQueuesApp
+    #region sample_LocalQueuesApp
     public class LocalQueuesApp : JasperOptions
     {
         public LocalQueuesApp()
@@ -227,5 +227,5 @@ namespace Samples
                 });
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

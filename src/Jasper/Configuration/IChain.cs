@@ -6,7 +6,7 @@ using LamarCodeGeneration.Frames;
 
 namespace Jasper.Configuration
 {
-    // SAMPLE: IChain
+    #region sample_IChain
     /// <summary>
     /// Models the middleware arrangement for either an HTTP route execution
     /// or the execution of a message
@@ -46,6 +46,6 @@ namespace Jasper.Configuration
         /// <returns></returns>
         IEnumerable<Type> ServiceDependencies(IContainer container);
     }
-    // ENDSAMPLE
+    #endregion
 
 }

@@ -11,7 +11,7 @@ All of the transport types can be configured by using meaningful `Uri` values sp
 
 All listener or sender endpoints are registered from the `JasperOptions.Endpoints` property like this:
 
-<[sample:SenderAndListener]>
+snippet: sample_SenderAndListener
 
 It is important to note that all of the transport endpoint types can be used in either a lightweight [fire and forget](http://www.enterpriseintegrationpatterns.com/patterns/conversation/FireAndForget.html) with limited retries, or with durable, [store and forward messaging](https://en.wikipedia.org/wiki/Store_and_forward) or [guaranteed delivery](http://www.enterpriseintegrationpatterns.com/patterns/messaging/GuaranteedMessaging.html). For durable messaging.
 

@@ -20,9 +20,9 @@ Today the options are:
 1. A <[linkto:documentation/durability/postgresql;title=Postgresql backed option]> 
 1. A <[linkto:documentation/durability/sqlserver;title=Sql Server backed option]>
 
-<[info]>
+::: tip warning
 You will need to be using some kind of database-backed message persistence in order to make the <[linkto:documentation/integration/scheduled]> or <[linkto:documentation/local;title=scheduled local execution]> function durably.
-<[/info]>
+:::
 
 Note that the <[linkto:documentation/durability/marten]> support relies on the Postgresql backed persistence, and the 
 <[linkto:documentation/durability/efcore]> support will need to be used in conjunction with either the Sql Server or Postgresql backed 

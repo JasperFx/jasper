@@ -163,14 +163,14 @@ namespace Jasper.Testing.Acceptance
 
 
 
-        // SAMPLE: using_global_request_and_reply
+        #region sample_using_global_request_and_reply
         internal async Task using_global_request_and_reply(IExecutionContext messaging)
         {
             // Send a question to another application, and request that the handling
             // service send back an answer
             await messaging.SendAndExpectResponseForAsync<Answer>(new Question());
         }
-        // ENDSAMPLE
+        #endregion
 
         [Fact]
         public async Task invoke_expecting_a_response()

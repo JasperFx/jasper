@@ -16,22 +16,22 @@ see the [the InMemoryMediator sample project](https://github.com/JasperFx/Jasper
 Assuming that `Jasper.Persistence.EntityFrameworkCore` is referenced by your application, here's a custom
 [DbContext]() type from the [sample project](https://github.com/JasperFx/JasperSamples/tree/master/InMemoryMediator):
 
-<[sample:ItemsDbContext]>
+snippet: sample_ItemsDbContext
 
 Most of this is just standard EF Core. The only Jasper specific thing is the call
 to `modelBuilder.MapEnvelopeStorage()` in the `OnModelCreating()` method. This adds mappings
 to Jasper's <[linkto:documentation/durability;title=message persistence]> and allowing
 the `ItemsDbContext` objects to enroll in Jasper outbox transactions.
 
-<[warning]>
+::: tip warning
 You will have to explicitly opt into a specific database persistence for the messaging **and**
 also explicitly add in the EF Core transactional support. 
-<[/warning]>
+:::
 
 Now, to wire up EF Core into our Jasper application and add Sql Server-backed message persistence, use
 this <[linkto:documentation/bootstrapping;title=JasperOptions]> class:
 
-<[sample:InMemoryMediator-JasperConfig]>
+snippet: sample_InMemoryMediator_JasperConfig
 
 There's a couple things to note in the code above:
 
@@ -52,7 +52,7 @@ First, let's look at using the EF Core-backed outbox usage in the following MVC 
 1. Commits the unit of work
 1. Flushes out the newly persisted `ItemCreated` outgoing message to Jasper's sending agents
 
-<[sample:InMemoryMediator-DoItAllMyselfItemController]>
+snippet: sample_InMemoryMediator_DoItAllMyselfItemController
 
 Outside of a Jasper <[linkto:documentation/execution/handlers;title=message handler]>, you will have to explicitly
 *enlist* a Jasper `IMessageContext` in a `DbContext` unit of work through the `EnlistInTransaction(DbContext)`
@@ -66,7 +66,7 @@ the application or by failing over to another running node of your application.
 Alright, that was some busy code, so let's see how this can be cleaner running inside a Jasper message
 handler that takes advantage of the `[Transactional]` middleware:
 
-<[sample:InMemoryMediator-Items]>
+snippet: sample_InMemoryMediator_Items
 
 The code above effectively does the same thing as the `DoItAllMyselfItemController` shown earlier, 
 but Jasper is generating some middleware code around the `ItemHandler.Handle()` method to enlist

@@ -15,7 +15,7 @@ namespace Jasper.DotPulsar.Tests
 {
     public class PulsarSendingComplianceTestsShell
     {
-        // SAMPLE: PulsarSendReceiveExample
+        #region sample_PulsarSendReceiveExample
         private static string Server = "pulsar://localhost:6650";
 
         public class Sender : JasperOptions
@@ -38,7 +38,7 @@ namespace Jasper.DotPulsar.Tests
                 Endpoints.ListenToPulsarTopic(Guid.NewGuid().ToString(), topic);
             }
         }
-        // ENDSAMPLE
+        #endregion
 
         public class PulsarSendingComplianceTests : SendingCompliance
         {

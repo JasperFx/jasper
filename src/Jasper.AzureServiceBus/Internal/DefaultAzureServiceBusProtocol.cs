@@ -6,7 +6,7 @@ using Microsoft.Azure.ServiceBus;
 
 namespace Jasper.AzureServiceBus.Internal
 {
-    // SAMPLE: DefaultAzureServiceBusProtocol
+    #region sample_DefaultAzureServiceBusProtocol
     public class DefaultAzureServiceBusProtocol : ITransportProtocol<Message>
     {
         public virtual Message WriteFromEnvelope(Envelope envelope)
@@ -55,5 +55,5 @@ namespace Jasper.AzureServiceBus.Internal
             return envelope;
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

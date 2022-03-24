@@ -462,7 +462,7 @@ namespace TestingSupport.Compliance
     }
 
 
-    // SAMPLE: BlueTextReader
+    #region sample_BlueTextReader
     public class BlueTextReader : IMessageSerializer
     {
         public BlueTextReader()
@@ -486,9 +486,9 @@ namespace TestingSupport.Compliance
             return new BlueMessage {Name = name};
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-        // SAMPLE: GreenTextWriter
+        #region sample_GreenTextWriter
         public class GreenTextWriter : IMessageSerializer
         {
             public string? ContentType { get; } = "text/plain";
@@ -510,5 +510,5 @@ namespace TestingSupport.Compliance
                 throw new NotSupportedException("This serializer only writes GreenMessage");
             }
         }
-        // ENDSAMPLE
+        #endregion
 }

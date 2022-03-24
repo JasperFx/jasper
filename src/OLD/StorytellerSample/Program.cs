@@ -1,4 +1,4 @@
-﻿using Jasper.TestSupport.Storyteller;
+using Jasper.TestSupport.Storyteller;
 using StoryTeller;
 
 namespace StorytellerSample
@@ -7,16 +7,16 @@ namespace StorytellerSample
     {
         private static int Main(string[] args)
         {
-            // SAMPLE: adding-external-node
+            #region sample_adding_external_node
             var host = new JasperStorytellerHost<MyJasperAppOptions>();
             host.AddNode(new OtherApp());
 
             return StorytellerAgent.Run(args, host);
-            // ENDSAMPLE
+            #endregion
             /*
-            // SAMPLE: bootstrapping-storyteller-with-Jasper
+            #region sample_bootstrapping_storyteller_with_Jasper
             JasperStorytellerHost.Run<MyJasperAppOptions>(args);
-            // ENDSAMPLE
+            #endregion
             */
         }
     }

@@ -28,7 +28,7 @@ namespace Jasper.Http
 
             registry.Services.Policies.Add(new RouteScopingPolicy(Options.Routes));
 
-            // SAMPLE: applying-route-policy
+            #region sample_applying_route_policy
             // Applying a global policy
             Options.GlobalPolicy<ControllerUsagePolicy>();
 
@@ -47,7 +47,7 @@ namespace Jasper.Http
                 x.AddAllTypesOf<IRequestReader>();
                 x.AddAllTypesOf<IResponseWriter>();
             });
-            // ENDSAMPLE
+            #endregion
 
 
             registry.Services.AddSingleton<IWriterRule, ActionResultWriterRule>();

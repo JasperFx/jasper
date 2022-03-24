@@ -1,4 +1,4 @@
-﻿using Jasper;
+using Jasper;
 using Jasper.Configuration;
 using Jasper.TestSupport.Storyteller;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +15,7 @@ namespace StorytellerSample
         }
     }
 
-    // SAMPLE: MyJasperStorytellerHarness
+    #region sample_MyJasperStorytellerHarness
     public class MyJasperStorytellerHarness : JasperStorytellerHost<MyJasperAppOptions>
     {
         public MyJasperStorytellerHarness()
@@ -54,7 +54,7 @@ namespace StorytellerSample
             Host.Services.GetService<ISomeService>().Shutdown();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class IncrementCounter
     {
@@ -85,9 +85,9 @@ namespace StorytellerSample
     {
         public void Main(string[] args)
         {
-            // SAMPLE: running-MyJasperStorytellerHarness
+            #region sample_running_MyJasperStorytellerHarness
             StorytellerAgent.Run(args, new MyJasperStorytellerHarness());
-            // ENDSAMPLE
+            #endregion
         }
     }
 

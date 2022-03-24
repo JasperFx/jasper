@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper.Messaging.Tracking;
 using Jasper.TestSupport.Storyteller;
@@ -7,7 +7,7 @@ using StoryTeller;
 
 namespace StorytellerSample
 {
-    // SAMPLE: TeamFixture
+    #region sample_TeamFixture
     public class TeamFixture : MessagingFixture
     {
         [FormatAs("A new team {team} has joined the league")]
@@ -39,5 +39,5 @@ namespace StorytellerSample
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

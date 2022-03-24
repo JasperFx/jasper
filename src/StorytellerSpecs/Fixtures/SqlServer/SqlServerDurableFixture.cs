@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -89,7 +89,7 @@ create table receiver.item_created
         protected override async Task withContext(IHost sender, IExecutionContext context,
             Func<IExecutionContext, Task> action)
         {
-            // SAMPLE: basic-sql-server-outbox-sample
+            #region sample_basic_sql_server_outbox_sample
             using (var conn = new SqlConnection(Servers.SqlServerConnectionString))
             {
                 await conn.OpenAsync();
@@ -106,7 +106,7 @@ create table receiver.item_created
                 await context.SendAllQueuedOutgoingMessages();
             }
 
-            // ENDSAMPLE
+            #endregion
         }
 
         protected override IReadOnlyList<Envelope> loadAllOutgoingEnvelopes(IHost sender)
@@ -130,7 +130,7 @@ create table receiver.item_created
         }
     }
 
-    // SAMPLE: UsingSqlTransaction
+    #region sample_UsingSqlTransaction
     public class ItemCreatedHandler
     {
         [Transactional]
@@ -146,11 +146,11 @@ create table receiver.item_created
                 .ExecuteNonQueryAsync();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class CreateItemHandler
     {
-        // SAMPLE: SqlServerOutboxWithSqlTransaction
+        #region sample_SqlServerOutboxWithSqlTransaction
         [Transactional]
         public async Task<ItemCreatedEvent> Handle(CreateItemCommand command, SqlTransaction tx)
         {
@@ -162,7 +162,7 @@ create table receiver.item_created
 
             return new ItemCreatedEvent {Item = item};
         }
-        // ENDSAMPLE
+        #endregion
 
         private Task persist(SqlTransaction tx, Item item)
         {

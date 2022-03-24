@@ -13,12 +13,12 @@ All of the above properties are of type `Guid`, and the values are assigned thro
 
 Jasper internally uses the concept of semantic logging for messaging events with the following interface registered with a default `MessageLogger` implementation in the underlying IoC container.
 
-<[sample:IMessageLogger]>
+snippet: sample_IMessageLogger
 
 The default implementation just writes formatted string messages to the built in ASP.Net Core `ILogger` mechanisms. You can of course substitute in your own custom logging to track more structured logging by writing your own custom `IMessageLogger`. The easiest way to do that is to subclass `MessageLogger` and just intercept the events you care about as in this example:
 
-<[sample:CustomMessageLogger]>
+snippet: sample_CustomMessageLogger
 
 Lastly, you can override the `IMessageLogger` in the IoC container like so:
 
-<[sample:AppWithCustomLogging]>
+snippet: sample_AppWithCustomLogging

@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Samples
 {
-    // SAMPLE: MyMissingHandler
+    #region sample_MyMissingHandler
     public class MyMissingHandler : IMissingHandler
     {
         public Task Handle(Envelope? envelope, IJasperRuntime root)
@@ -14,9 +14,9 @@ namespace Samples
                 .SendFailureAcknowledgement(envelope,"I don't know how to process this message");
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: ConfigureMissingHandler
+    #region sample_ConfigureMissingHandler
     public class ConfigureMissingHandlerApp : JasperOptions
     {
         public ConfigureMissingHandlerApp()
@@ -26,5 +26,5 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

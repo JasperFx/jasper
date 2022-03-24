@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Jasper.Runtime;
 
 namespace Jasper
 {
-    // SAMPLE: IMissingHandler
+    #region sample_IMissingHandler
     /// <summary>
     ///     Hook interface to receive notifications of envelopes received
     ///     that do not match any known handlers within the system
@@ -19,5 +19,5 @@ namespace Jasper
         Task Handle(Envelope? envelope, IJasperRuntime root);
     }
 
-    // ENDSAMPLE
+    #endregion
 }

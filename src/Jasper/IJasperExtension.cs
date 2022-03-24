@@ -1,6 +1,6 @@
-﻿namespace Jasper
+namespace Jasper
 {
-    // SAMPLE: IJasperExtension
+    #region sample_IJasperExtension
     /// <summary>
     ///     Use to create loadable extensions to Jasper applications
     /// </summary>
@@ -13,5 +13,5 @@
         void Configure(JasperOptions options);
     }
 
-    // ENDSAMPLE
+    #endregion
 }

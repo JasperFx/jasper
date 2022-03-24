@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 namespace Jasper.Http.Testing
 {
     /*
-     // SAMPLE: SampleHomeEndpoint
+     #region sample_SampleHomeEndpoint
     public class HomeEndpoint
     {
         public string Get()
@@ -21,7 +21,7 @@ namespace Jasper.Http.Testing
             return "Hello, World from a Jasper application!";
         }
     }
-    // ENDSAMPLE
+    #endregion
     */
 
 
@@ -30,7 +30,7 @@ namespace Jasper.Http.Testing
         public int Total { get; set; }
     }
 
-    // SAMPLE: simple-json-endpoint
+    #region sample_simple_json_endpoint
     public static class JsonEndpoint
     {
         // Responds to the route "GET: /add/:one/:two"
@@ -39,7 +39,7 @@ namespace Jasper.Http.Testing
             return new() {Total = one + two};
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class Invoice
     {
@@ -52,7 +52,7 @@ namespace Jasper.Http.Testing
 
     [JasperIgnore]
 
-    // SAMPLE: simple-json-post
+    #region sample_simple_json_post
     public class PostEndpoint
     {
         // Responds to the route "POST: /invoice/create"
@@ -63,20 +63,20 @@ namespace Jasper.Http.Testing
             return service.Create(invoice);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     [JasperIgnore]
     public class AspNetCoreInjectingEndpoint
     {
-        // SAMPLE: injecting-httpcontext
+        #region sample_injecting_httpcontext
         public Task get_color_name(string name, HttpContext context)
         {
             return context.Response.WriteAsync("The color is " + name);
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: injecting-request-and-response
+        #region sample_injecting_request_and_response
         public Task get_stuff(HttpRequest request, HttpResponse response, ILogger<AspNetCoreInjectingEndpoint> logger)
         {
             logger.LogDebug(request.Path);
@@ -84,14 +84,14 @@ namespace Jasper.Http.Testing
             return response.WriteAsync("here's some stuff");
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
 
     [JasperIgnore]
     public class ResourceEndpoint
     {
-        // SAMPLE: ResourceEndpoints
+        #region sample_ResourceEndpoints
         public Task<Invoice> get_invoice_async(string invoiceId, IQuerySession session)
         {
             return session.LoadAsync<Invoice>(invoiceId);
@@ -102,7 +102,7 @@ namespace Jasper.Http.Testing
             return session.LoadAsync<Invoice>(invoiceId);
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     public class Command
@@ -116,7 +116,7 @@ namespace Jasper.Http.Testing
     [JasperIgnore]
     public class ResourceEndpoints
     {
-        // SAMPLE: ResourceAndInputTypes
+        #region sample_ResourceAndInputTypes
         // ResourceModel is the "resource" type
         // Command is the "input" type
         public ResourceModel post_resource(Command model)
@@ -130,35 +130,35 @@ namespace Jasper.Http.Testing
         {
             return Task.FromResult(new ResourceModel());
         }
-        // ENDSAMPLE
+        #endregion
 
 
         /*
-        // SAMPLE: crude-http
+        #region sample_crude_http
         // Responds to "PUT: /something"
         public Task put_something(HttpRequest request, HttpResponse response)
         {
             // Read the HttpRequest
             // Write out some kind of response
         }
-        // ENDSAMPLE
+        #endregion
         */
 
-        // SAMPLE: resource-with-argument
+        #region sample_resource_with_argument
         // ResourceModel is the resource type
         // "id" is a route argument
         public ResourceModel get_resource_id(string id)
         {
             return lookupById(id);
         }
-        // ENDSAMPLE
+        #endregion
 
         private ResourceModel lookupById(string id)
         {
             throw new NotImplementedException();
         }
 
-        // SAMPLE: input-type-without-any-resource-type
+        #region sample_input_type_without_any_resource_type
         // Responds to "PUT: /invoice"
         // Invoice is the input type
         // There is no resource type
@@ -166,9 +166,9 @@ namespace Jasper.Http.Testing
         {
             // process the new invoice
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: input-type-without-any-resource-type-but-a-status-code
+        #region sample_input_type_without_any_resource_type_but_a_status_code
         // Responds to "POST: /invoice"
         // Invoice is the input type
         // There is no resource type
@@ -180,10 +180,10 @@ namespace Jasper.Http.Testing
             return 201;
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
-    // SAMPLE: overwriting-the-JSON-serialization-with-StartUp
+    #region sample_overwriting_the_JSON_serialization_with_StartUp
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
@@ -196,9 +196,9 @@ namespace Jasper.Http.Testing
             });
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: overwriting-the-JSON-serialization-with-JasperOptions
+    #region sample_overwriting_the_JSON_serialization_with_JasperOptions
     public class MySpecialJsonUsingApp : JasperOptions
     {
         public MySpecialJsonUsingApp()
@@ -209,10 +209,10 @@ namespace Jasper.Http.Testing
             });
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: InvoiceXmlWriter
+    #region sample_InvoiceXmlWriter
     public class InvoiceXmlWriter : MessageSerializerBase<Invoice>
     {
         public InvoiceXmlWriter() : base("application/xml")
@@ -226,9 +226,9 @@ namespace Jasper.Http.Testing
             throw new NotSupportedException();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: InvoiceXmlReader
+    #region sample_InvoiceXmlReader
     public class InvoiceXmlReader : MessageDeserializerBase<Invoice>
     {
         public InvoiceXmlReader() : base("application/xml")
@@ -248,9 +248,9 @@ namespace Jasper.Http.Testing
             return Task.FromResult(model);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: registering-custom-readers-writers
+    #region sample_registering_custom_readers_writers
     public class AppWithCustomSerializers : JasperOptions
     {
         public AppWithCustomSerializers()
@@ -263,5 +263,5 @@ namespace Jasper.Http.Testing
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

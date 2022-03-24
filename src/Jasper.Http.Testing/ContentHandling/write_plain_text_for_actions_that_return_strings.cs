@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Alba;
 using Xunit;
 
@@ -10,7 +10,7 @@ namespace Jasper.Http.Testing.ContentHandling
         {
         }
 
-        // SAMPLE: StringEndpointSpec
+        #region sample_StringEndpointSpec
         [Fact]
         public Task write_as_text()
         {
@@ -23,10 +23,10 @@ namespace Jasper.Http.Testing.ContentHandling
             });
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
-    // SAMPLE: StringEndpoint
+    #region sample_StringEndpoint
     public class StringEndpoint
     {
         public string get_string()
@@ -35,5 +35,5 @@ namespace Jasper.Http.Testing.ContentHandling
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

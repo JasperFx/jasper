@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
@@ -7,7 +7,7 @@ namespace Samples
 {
     public class ScheduledExecutionSamples
     {
-        // SAMPLE: ScheduleSend-In-3-Days
+        #region sample_ScheduleSend_In_3_Days
         public async Task schedule_send(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
@@ -18,9 +18,9 @@ namespace Samples
             // Process the issue timeout logic 3 days from now
             await context.ScheduleSendAsync(timeout, 3.Days());
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: ScheduleSend-At-5-PM-Tomorrow
+        #region sample_ScheduleSend_At_5_PM_Tomorrow
         public async Task schedule_send_at_5_tomorrow_afternoon(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
@@ -36,9 +36,9 @@ namespace Samples
             // to universal time in storage
             await context.ScheduleSendAsync(timeout, time);
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: ScheduleSend-Yourself
+        #region sample_ScheduleSend_Yourself
         public async Task send_at_5_tomorrow_afternoon_yourself(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
@@ -58,9 +58,9 @@ namespace Samples
             });
 
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: ScheduleLocally-In-3-Days
+        #region sample_ScheduleLocally_In_3_Days
         public async Task schedule_locally(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
@@ -72,10 +72,10 @@ namespace Samples
             // in *this* system
             await context.Schedule(timeout, 3.Days());
         }
-        // ENDSAMPLE
+        #endregion
 
 
-        // SAMPLE: ScheduleLocally-At-5-PM-Tomorrow
+        #region sample_ScheduleLocally_At_5_PM_Tomorrow
         public async Task schedule_locally_at_5_tomorrow_afternoon(IExecutionContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
@@ -93,7 +93,7 @@ namespace Samples
             await context.ScheduleSendAsync(timeout, time);
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     public class WarnIfIssueIsStale

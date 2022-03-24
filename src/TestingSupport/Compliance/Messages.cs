@@ -21,7 +21,7 @@ namespace TestingSupport.Compliance
         public int Number3;
     }
 
-    // SAMPLE: PingAndPongMessage
+    #region sample_PingAndPongMessage
     public class PingMessage
     {
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -33,7 +33,7 @@ namespace TestingSupport.Compliance
         public Guid Id { get; set; }
         public string Name { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class ImplicitPing
     {

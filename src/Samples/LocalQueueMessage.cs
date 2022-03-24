@@ -2,12 +2,12 @@ using Jasper.Attributes;
 
 namespace Samples
 {
-    // SAMPLE: local-queue-routed-message
+    #region sample_local_queue_routed_message
     [LocalQueue("important")]
     public class ImportanceMessage
     {
 
     }
 
-    // ENDSAMPLE
+    #endregion
 }

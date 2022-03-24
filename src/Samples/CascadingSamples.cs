@@ -15,7 +15,7 @@ namespace Samples
 
     }
 
-    // SAMPLE: NoCascadingHandler
+    #region sample_NoCascadingHandler
     public class NoCascadingHandler
     {
         private readonly IExecutionContext _bus;
@@ -32,10 +32,10 @@ namespace Samples
             _bus.SendAsync(new MyResponse());
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: CascadingHandler
+    #region sample_CascadingHandler
     public class CascadingHandler
     {
         public MyResponse Consume(MyMessage message)
@@ -43,10 +43,10 @@ namespace Samples
             return new MyResponse();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: Request/Replay-with-cascading
+    #region sample_Request/Replay_with_cascading
     public class Requester
     {
         private readonly IExecutionContext _bus;
@@ -61,7 +61,7 @@ namespace Samples
             return _bus.SendAndExpectResponseForAsync<MyResponse>(new MyMessage());
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class DirectionRequest
@@ -72,7 +72,7 @@ namespace Samples
     public class GoNorth{}
     public class GoSouth {}
 
-    // SAMPLE: ConditionalResponseHandler
+    #region sample_ConditionalResponseHandler
     public class ConditionalResponseHandler
     {
         public object Consume(DirectionRequest request)
@@ -89,12 +89,12 @@ namespace Samples
             return null;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class GoWest{}
     public class GoEast{}
 
-    // SAMPLE: DelayedResponseHandler
+    #region sample_DelayedResponseHandler
     public class ScheduledResponseHandler
     {
         public Envelope Consume(DirectionRequest request)
@@ -108,10 +108,10 @@ namespace Samples
             return new Envelope(new GoEast()).ScheduleAt(DateTime.Today.AddHours(20));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: MultipleResponseHandler
+    #region sample_MultipleResponseHandler
     public class MultipleResponseHandler
     {
         public IEnumerable<object> Consume(MyMessage message)
@@ -123,9 +123,9 @@ namespace Samples
             yield return new Envelope(new GoWest()).ScheduleDelayed(TimeSpan.FromHours(1));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: TupleResponseHandler
+    #region sample_TupleResponseHandler
     public class TupleResponseHandler
     {
         // Both GoNorth and GoWest will be interpreted as
@@ -135,5 +135,5 @@ namespace Samples
             return (new GoNorth(), new GoWest());
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

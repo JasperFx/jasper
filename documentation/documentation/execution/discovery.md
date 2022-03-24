@@ -19,7 +19,7 @@ Jasper will also pick the first parameter as the input type regardless of parame
 
 To make that concrete, here are some valid handler method signatures:
 
-<[sample:ValidMessageHandlers]>
+snippet: sample_ValidMessageHandlers
 
 The valid method names are:
 
@@ -40,14 +40,14 @@ conventions in the older FubuMVC messaging that Jasper replaces.
 You can completely turn off any automatic discovery of message handlers through type scanning by
 using this syntax in your `JasperRegistry`:
 
-<[sample:ExplicitHandlerDiscovery]>
+snippet: sample_ExplicitHandlerDiscovery
 
 ## Explicitly Ignoring Methods
 
 You can force Jasper to disregard a candidate message handler action at either the class or method
 level by using the `[JasperIgnore]` attribute like this:
 
-<[sample:JasperIgnoreAttribute]>
+snippet: sample_JasperIgnoreAttribute
 
 
 ## Customizing Conventional Discovery
@@ -60,7 +60,7 @@ from those naming conventions you can either supplement the handler discovery or
 
 At a minimum, you can disable the built in discovery, add additional type filtering criteria, or register specific handler classes with the code below:
 
-<[sample:CustomHandlerApp]>
+snippet: sample_CustomHandlerApp
 
 
 ## Subclass or Interface Handlers
@@ -69,15 +69,15 @@ Jasper will allow you to use handler methods that work against interfaces or abs
 generic functionality across messages. Let's say that some subset of your messages implement some kind of
 `IMessage` interface like this one and an implentation of it below:
 
-<[sample:Handlers-IMessage]>
+snippet: sample_Handlers_IMessage
 
 You can handle the `MessageOne` specifically with a handler action like this:
 
-<[sample:Handlers-SpecificMessageHandler]>
+snippet: sample_Handlers_SpecificMessageHandler
 
 You can also create a handler for `IMessage` like this one:
 
-<[sample:Handlers-GenericMessageHandler]>
+snippet: sample_Handlers_GenericMessageHandler
 
 When Jasper handles the `MessageOne` message, it first calls all the specific handlers for that message type,
 then will call any handlers that handle a more generic message type (interface or abstract class most likely) where

@@ -1,8 +1,8 @@
 <!--title:RabbitMQ Transport-->
 
-<[info]>
+::: tip warning
 Jasper uses the [Rabbit MQ .Net Client](https://www.rabbitmq.com/dotnet.html) to connect to Rabbit MQ. 
-<[/info]>
+:::
 
 ## Quick Start
 
@@ -28,7 +28,7 @@ All the code samples in this section are from the [Ping/Pong with Rabbit MQ samp
 
 To use [RabbitMQ](http://www.rabbitmq.com/) as a transport with Jasper, first install the `Jasper.RabbitMQ` library via nuget to your project. Behind the scenes, this package uses the [RabbitMQ C# Client](https://www.rabbitmq.com/dotnet.html) to both send and receive messages from RabbitMQ.
 
-<[sample:BootstrappingRabbitMQ]>
+snippet: sample_BootstrappingRabbitMQ
 
 See the [Rabbit MQ .Net Client documentation](https://www.rabbitmq.com/dotnet-api-guide.html#connecting) for more information about configuring the `ConnectionFactory` to connect to Rabbit MQ.
 
@@ -39,11 +39,11 @@ All the calls to `Declare*****()` are optional helpers for auto-provisioning Rab
 
 In terms of publishing or listening to a specific, named queue (or publish to a routing key), use the syntax shown below:
 
-<[sample:PublishAndListenForRabbitMqQueue]>
+snippet: sample_PublishAndListenForRabbitMqQueue
 
 Or if you want to do this by `Uri`:
 
-<[sample:PublishAndListenForRabbitMqQueueByUri]>
+snippet: sample_PublishAndListenForRabbitMqQueueByUri
 
 Please note that you will lose the option to configure Rabbit MQ-specific options by endpoint if you use the generic
 `Uri` approach.
@@ -52,7 +52,7 @@ Please note that you will lose the option to configure Rabbit MQ-specific option
 
 Publishing to a specific topic can be done with this syntax:
 
-<[sample:PublishRabbitMqTopic]>
+snippet: sample_PublishRabbitMqTopic
 
 **Please note** that in the call to `Endpoints.Publish****().ToRabbitMq()`, the second argument refers to the Rabbit MQ exchange name
 and this must be specified to publish to a named topic.
@@ -61,7 +61,7 @@ and this must be specified to publish to a named topic.
 
 Jasper.RabbitMQ supports using [Rabbit MQ *fanout* exchanges](https://www.tutlane.com/tutorial/rabbitmq/csharp-rabbitmq-fanout-exchange) as shown below:
 
-<[sample:PublishRabbitMqFanout]>
+snippet: sample_PublishRabbitMqFanout
 
 ## Scheduled Messages
 
@@ -78,11 +78,11 @@ mapping between Jasper's `Envelope` structure and Rabbit MQ's structures using a
 
 That interface is shown below:
 
-<[sample:IRabbitMqProtocol]>
+snippet: sample_IRabbitMqProtocol
 
 And here's what the default protocol looks like because it's likely easier to start with this than build something all new:
 
-<[sample:DefaultRabbitMqProtocol]>
+snippet: sample_DefaultRabbitMqProtocol
 
 Lastly, to apply the protocol, use the mechanism shown in the previous section.
 
@@ -93,7 +93,7 @@ One of the best things about developing against Rabbit MQ is how easy it is to s
 
 Here's a sample usage:
 
-<[sample:PublishRabbitMqTopic]>
+snippet: sample_PublishRabbitMqTopic
 
 
 

@@ -1,4 +1,4 @@
-﻿using Baseline.Dates;
+using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
 using Jasper.Tcp;
@@ -7,7 +7,7 @@ using TestMessages;
 
 namespace Samples
 {
-    // SAMPLE: configuring-messaging-with-JasperOptions
+    #region sample_configuring_messaging_with_JasperOptions
     public class MyMessagingApp : JasperOptions
     {
         public MyMessagingApp()
@@ -28,10 +28,10 @@ namespace Samples
             this.ListenAtPort(2233);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: MyListeningApp
+    #region sample_MyListeningApp
     public class MyListeningApp : JasperOptions
     {
         public MyListeningApp()
@@ -42,10 +42,10 @@ namespace Samples
             this.ListenAtPort(2233);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: LightweightTransportApp
+    #region sample_LightweightTransportApp
     public class LightweightTransportApp : JasperOptions
     {
         public LightweightTransportApp()
@@ -60,9 +60,9 @@ namespace Samples
             });
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: DurableTransportApp
+    #region sample_DurableTransportApp
     public class DurableTransportApp : JasperOptions
     {
         public DurableTransportApp()
@@ -86,10 +86,10 @@ namespace Samples
 
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: LocalTransportApp
+    #region sample_LocalTransportApp
     public class LocalTransportApp : JasperOptions
     {
         public LocalTransportApp()
@@ -104,9 +104,9 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: LocalDurableTransportApp
+    #region sample_LocalDurableTransportApp
     public class LocalDurableTransportApp : JasperOptions
     {
         public LocalDurableTransportApp()
@@ -120,19 +120,19 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 
 
     public class Samples
     {
         public void Go()
         {
-            // SAMPLE: using-configuration-with-jasperoptions
+            #region sample_using_configuration_with_jasperoptions
             var host = Host.CreateDefaultBuilder()
                 .UseJasper()
                 .Start();
 
-            // ENDSAMPLE
+            #endregion
         }
 
     }

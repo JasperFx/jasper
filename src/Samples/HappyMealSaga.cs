@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper;
@@ -6,7 +6,7 @@ using Jasper.Persistence.Sagas;
 
 namespace Samples
 {
-    // SAMPLE: HappyMealOrderState
+    #region sample_HappyMealOrderState
     public class HappyMealOrderState
     {
         // Jasper wants you to make the saga state
@@ -27,9 +27,9 @@ namespace Samples
             return DrinkReady && ToyReady && SideReady && MainReady;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: HappyMealOrder
+    #region sample_HappyMealOrder
     public class HappyMealOrder
     {
         public string Drink { get; set; }
@@ -37,7 +37,7 @@ namespace Samples
         public string SideDish { get; set; }
         public string MainDish { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class FetchDrink
     {
@@ -67,7 +67,7 @@ namespace Samples
     }
 
 
-    // SAMPLE: HappyMealSaga1
+    #region sample_HappyMealSaga1
     /// <summary>
     ///     This is being done completely in memory, which you most likely wouldn't
     ///     do in "real" systems
@@ -102,14 +102,14 @@ namespace Samples
             // and others
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class HappyMealSagaNoTuple : StatefulSagaOf<HappyMealOrderState>
     {
         private int _orderIdSequence;
 
-        // SAMPLE: HappyMealSaga1NoTuple
+        #region sample_HappyMealSaga1NoTuple
 
         public async Task<HappyMealOrderState> Starts(
             HappyMealOrder order, // The first argument is assumed to be the message type
@@ -128,14 +128,14 @@ namespace Samples
             return state;
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     public class HappyMealSagaAllLocal : StatefulSagaOf<HappyMealOrderState>
     {
         private int _orderIdSequence;
 
-        // SAMPLE: HappyMealSaga1Local
+        #region sample_HappyMealSaga1Local
 
         public async Task<HappyMealOrderState> Starts(
             HappyMealOrder order, // The first argument is assumed to be the message type
@@ -154,10 +154,10 @@ namespace Samples
             return state;
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
-    // SAMPLE: SodaHandler
+    #region sample_SodaHandler
     // This message handler is in another system responsible for
     // filling sodas
     public class SodaHandler
@@ -168,7 +168,7 @@ namespace Samples
             return new SodaFetched();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     /// <summary>
     ///     This is being done completely in memory, which you most likely wouldn't
@@ -208,7 +208,7 @@ namespace Samples
     {
     }
 
-    // SAMPLE: BurgerReady
+    #region sample_BurgerReady
     public class BurgerReady
     {
         // By default, Jasper is going to look for a property
@@ -216,9 +216,9 @@ namespace Samples
         // document
         public int SagaId { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: ToyOnTray
+    #region sample_ToyOnTray
     public class ToyOnTray
     {
         // There's always *some* reason to deviate,
@@ -227,12 +227,12 @@ namespace Samples
         // Saga state document
         [SagaIdentity] public int OrderId { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class HappyMealSaga3 : StatefulSagaOf<HappyMealOrderState>
     {
-        // SAMPLE: completing-saga
+        #region sample_completing_saga
         public void Handle(
             SodaFetched soda, // The first argument is the message type
             IOrderService service // Additional arguments are injected services
@@ -251,10 +251,10 @@ namespace Samples
                 MarkCompleted();
             }
         }
-        // ENDSAMPLE
+        #endregion
 
 
-        // SAMPLE: passing-saga-state-id-through-message
+        #region sample_passing_saga_state_id_through_message
         public void Handle(ToyOnTray toyReady)
         {
             State.ToyReady = true;
@@ -267,6 +267,6 @@ namespace Samples
             if (State.IsOrderComplete()) MarkCompleted();
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

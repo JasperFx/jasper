@@ -30,7 +30,7 @@ namespace Jasper.ConfluentKafka.Tests
             MessageTimeoutMs = 1000
         };
 
-        // SAMPLE: KafkaBasicExample
+        #region sample_KafkaBasicExample
         private static ProducerConfig ProducerConfig = new ProducerConfig
         {
             BootstrapServers = KafkaServer,
@@ -65,7 +65,7 @@ namespace Jasper.ConfluentKafka.Tests
                 Endpoints.ListenToKafkaTopic(topic, ConsumerConfig);
             }
         }
-        // ENDSAMPLE
+        #endregion
 
         public class FailureSender : JasperOptions
         {
@@ -114,7 +114,7 @@ namespace Jasper.ConfluentKafka.Tests
 
 
 
-        // SAMPLE: can_stop_and_start_ASB
+        #region sample_can_stop_and_start_ASB
         [Fact]
         public async Task can_send_and_receive_from_kafka()
         {
@@ -172,7 +172,7 @@ namespace Jasper.ConfluentKafka.Tests
             colorsSent.ShouldBe(colorsPublished);
         }
 
-        // ENDSAMPLE
+        #endregion
         public class KafkaUsingApp : JasperOptions
         {
             public KafkaUsingApp()

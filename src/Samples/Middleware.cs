@@ -15,7 +15,7 @@ namespace Samples
     {
         public static void Stopwatch(ILogger logger)
         {
-            // SAMPLE: stopwatch-concept
+            #region sample_stopwatch_concept
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             try
@@ -28,12 +28,12 @@ namespace Samples
                 stopwatch.Stop();
                 logger.Info("Ran something in " + stopwatch.ElapsedMilliseconds);
             }
-            // ENDSAMPLE
+            #endregion
         }
     }
 
 
-    // SAMPLE: StopwatchFrame
+    #region sample_StopwatchFrame
     public class StopwatchFrame : SyncFrame
     {
         private readonly IChain _chain;
@@ -77,9 +77,9 @@ namespace Samples
             yield return _logger;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: StopwatchAttribute
+    #region sample_StopwatchAttribute
     public class StopwatchAttribute : ModifyChainAttribute
     {
         public override void Modify(IChain chain, GenerationRules rules, IContainer container)
@@ -87,9 +87,9 @@ namespace Samples
             chain.Middleware.Add(new StopwatchFrame(chain));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: ClockedEndpoint
+    #region sample_ClockedEndpoint
     public class ClockedEndpoint
     {
         [Stopwatch]
@@ -98,5 +98,5 @@ namespace Samples
             return "how fast";
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

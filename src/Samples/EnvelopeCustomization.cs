@@ -4,7 +4,7 @@ using Jasper.Tcp;
 
 namespace Samples
 {
-    // SAMPLE: MonitoringDataPublisher
+    #region sample_MonitoringDataPublisher
     public class MonitoringDataPublisher : JasperOptions
     {
         public MonitoringDataPublisher()
@@ -18,5 +18,5 @@ namespace Samples
                 .CustomizeOutgoing(env => env.DeliverWithin(2.Seconds()));
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

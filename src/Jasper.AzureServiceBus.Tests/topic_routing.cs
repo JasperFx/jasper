@@ -134,7 +134,7 @@ namespace Jasper.AzureServiceBus.Tests
             }
         }
 
-        // SAMPLE: AzureServiceBus-TopicSendingApp
+        #region sample_AzureServiceBus_TopicSendingApp
         public class TopicSendingApp : JasperOptions
         {
             public TopicSendingApp()
@@ -150,7 +150,7 @@ namespace Jasper.AzureServiceBus.Tests
             }
         }
 
-        // ENDSAMPLE
+        #endregion
 
         public class ImplicitTopicSendingApp : JasperOptions
         {

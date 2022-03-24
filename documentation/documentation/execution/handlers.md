@@ -6,7 +6,7 @@ or base class, but it allows Jasper to be much more flexible and reduces code no
 
 As an example, here's about the simplest possible handler you could create:
 
-<[sample:simplest-possible-handler]>
+snippet: sample_simplest_possible_handler
 
 Like most frameworks, Jasper follows the [Hollywood Principle](http://wiki.c2.com/?HollywoodPrinciple) where the framework acts as an intermediary
 between the rest of the world and your application code. When a Jasper application receives a `MyMessage` message through one of its transports, Jasper will call your method and pass in the message that it received.
@@ -16,7 +16,7 @@ between the rest of the world and your application code. When a Jasper applicati
 If you're worried about the performance implications of Jasper calling into your code without any interfaces or base classes, nothing to worry about because Jasper **does not use Reflection at runtime** to call your actions. Instead, Jasper uses [runtime
 code generation with Roslyn](https://jeremydmiller.com/2015/11/11/using-roslyn-for-runtime-code-generation-in-marten/) to write the "glue" code around your actions. Internally, Jasper is generating a subclass of `MessageHandler` for each known message type:
 
-<[sample:MessageHandler]>
+snippet: sample_MessageHandler
 
 See <[linkto:documentation/execution/handlers]> for information on how Jasper generates the `MessageHandler` code
 and how to customize that code.
@@ -38,7 +38,7 @@ See <[linkto:documentation/execution/discovery]> for more information.
 
 Handler methods can be instance methods on handler classes if it's desirable to scope the handler object to the message:
 
-<[sample:ExampleHandlerByInstance]>
+snippet: sample_ExampleHandlerByInstance
 
 Note that you can use either synchronous or asynchronous methods depending on your needs, so you're not constantly being
 forced to return `Task.CompletedTask` over and over again for operations that are purely CPU-bound (but Jasper itself might be doing
@@ -53,7 +53,7 @@ improvement by avoiding the need to create and garbage collect new objects at ru
 
 As an alternative, you can also use static methods as message handlers:
 
-<[sample:ExampleHandlerByStaticMethods]>
+snippet: sample_ExampleHandlerByStaticMethods
 
 The handler classes can be static classes as well. This technique gets much more useful when combined with Jasper's
 support for method injection in a following section.
@@ -64,7 +64,7 @@ Jasper can create your message handler objects by using an IoC container (or in 
 without any IoC container overhead). In that case, you can happily inject dependencies into your message handler classes through the
 constructor like this example that takes in a dependency on an `IDocumentSession` from [Marten](http://jasperfx.github.io/marten):
 
-<[sample:HandlerBuiltByConstructorInjection]>
+snippet: sample_HandlerBuiltByConstructorInjection
 
 See <[linkto:documentation/ioc]> for more information about how Jasper integrates the application's IoC container.
 
@@ -75,7 +75,7 @@ arguments that will be passed into your method by Jasper when a new message is b
 
 Below is an example action method that takes in a dependency on an `IDocumentSession` from [Marten](http://jasperfx.github.io/marten):
 
-<[sample:HandlerUsingMethodInjection]>
+snippet: sample_HandlerUsingMethodInjection
 
 So, what can be injected as an argument to your message handler?
 
@@ -94,7 +94,7 @@ you can return the outgoing messages from your handler methods with <[linkto:doc
 To access the `Envelope` for the current message being handled in your message handler, just accept `Envelope` as a method
 argument like this:
 
-<[sample:HandlerUsingEnvelope]>
+snippet: sample_HandlerUsingEnvelope
 
 See <[linkto:documentation/integration/customizing_envelopes]> for more information on interacting with `Envelope` objects.
 
@@ -104,4 +104,4 @@ If you want to access or use the current `IMessageContext` for the message being
 or maybe to enqueue local commands within the current outbox scope, just take in `IMessageContext` as a method argument 
 like in this example:
 
-<[sample:PingHandler]>
+snippet: sample_PingHandler

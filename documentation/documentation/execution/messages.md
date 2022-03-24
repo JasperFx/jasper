@@ -31,20 +31,20 @@ First though, it might help to understand how Jasper reads the message when it r
 
 Let's say that you have a basic message structure like this:
 
-<[sample:PersonBorn1]>
+snippet: sample_PersonBorn1
 
 By default, Jasper will identify this type by just using the .Net full name like so:
 
-<[sample:ootb-message-alias]>
+snippet: sample_ootb_message_alias
 
 However, if you want to explicitly control the message type because you aren't sharing the DTO types or for some
 other reason (readability? diagnostics?), you can override the message type alias with an attribute:
 
-<[sample:override-message-alias]>
+snippet: sample_override_message_alias
 
 Which now gives you different behavior:
 
-<[sample:explicit-message-alias]>
+snippet: sample_explicit_message_alias
 
 
 ## Versioning
@@ -53,7 +53,7 @@ By default, Jasper will just assume that any message is "V1" unless marked other
 Going back to the original `PersonBorn` message class in previous sections, let's say that you
 create a new version of that message that is no longer structurally equivalent to the original message:
 
-<[sample:PersonBorn-V2]>
+snippet: sample_PersonBorn_V2
 
 The `[Version("V2")]` attribute usage tells Jasper that this class is "V2" for the `message-type` = "person-born."
 
@@ -64,24 +64,24 @@ Any custom serializers should follow some kind of naming convention for content 
 
 You can create custom message deserializers for a message by providing your own implementation of the `IMessageDeserializer` interface from Jasper:
 
-<[sample:IMediaReader]>
+snippet: sample_IMediaReader
 
 The easiest way to do this is to just subclass the base `MessageDeserializerBase<T>` class as shown below:
 
-<[sample:BlueTextReader]>
+snippet: sample_BlueTextReader
 
 Likewise, to provide a custom message serializer for a message type, you need to implement the `IMessageSerializer` interface shown below:
 
-<[sample:IMediaWriter]>
+snippet: sample_IMediaWriter
 
 Again, the easiest way to implement this interface is to subclass the `MessageSerializerBase<T>` class as shown below:
 
-<[sample:GreenTextWriter]>
+snippet: sample_GreenTextWriter
 
 `IMessageDeserializer` and `IMessageSerializer` classes in the main application assembly are automatically discovered and applied by Jasper. If you need to add custom
 reader or writers from another assembly, you just need to add them to the underlying IoC container like so:
 
-<[sample:RegisteringCustomReadersAndWriters]>
+snippet: sample_RegisteringCustomReadersAndWriters
 
 
 ## Custom Serializers
@@ -89,7 +89,7 @@ reader or writers from another assembly, you just need to add them to the underl
 To use additional .Net serializers, you just need to create a new implementation of the `Jasper.Conneg.ISerializerFactory` interface and register
 that into the IoC service container.
 
-<[sample:ISerializer]>
+snippet: sample_ISerializer
 
 See the [built in Newtonsoft.Json adapter](https://github.com/JasperFx/jasper/blob/master/src/Jasper/Conneg/Json/NewtonsoftSerializerFactory.cs) for an example usage.
 
@@ -98,16 +98,16 @@ See the [built in Newtonsoft.Json adapter](https://github.com/JasperFx/jasper/bl
 
 If you make breaking changes to an incoming message in a later version, you can simply handle both versions of that message separately:
 
-<[sample:PersonCreatedHandler]>
+snippet: sample_PersonCreatedHandler
 
 Or you could use a custom `IMessageDeserializer` to read incoming messages from V1 into the new V2 message type, or you can take advantage of message forwarding
 so you only need to handle one message type using the `IForwardsTo<T>` interface as shown below:
 
-<[sample:IForwardsTo<PersonBornV2>]>
+snippet: sample_IForwardsTo<PersonBornV2>
 
 Which forwards to the current message type:
 
-<[sample:PersonBorn-V2]>
+snippet: sample_PersonBorn_V2
 
 Using this strategy, other systems could still send your system the original `application/vnd.person-born.v1+json` formatted
 message, and on the receiving end, Jasper would know to deserialize the Json data into the `PersonBorn` object, then call its
@@ -119,7 +119,7 @@ message, and on the receiving end, Jasper would know to deserialize the Json dat
 Just in case the default Json serialization isn't quite what you need, you can customize the Json serialization inside
 of your `JasperRegistry` class like so:
 
-<[sample:CustomizingJsonSerialization]>
+snippet: sample_CustomizingJsonSerialization
 
 
 

@@ -1,11 +1,11 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Jasper.Http.Model;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
 namespace Jasper.Http.ContentHandling
 {
-    // SAMPLE: WriteText
+    #region sample_WriteText
     public class WriteText : IWriterRule
     {
         public bool TryToApply(RouteChain chain)
@@ -20,7 +20,7 @@ namespace Jasper.Http.ContentHandling
             return true;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class CallWriteText : MethodCall
     {

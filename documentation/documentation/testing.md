@@ -19,10 +19,10 @@ Jasper was built intentionally with [testability](https://en.wikipedia.org/wiki/
 
 ## Message Tracking
 
-<[warning]>
+::: tip warning
 The message tracking adds a little bit of extra overhead to the logging in Jasper, and should *not* be used
 in production.
-<[/warning]>
+:::
 
 Jasper is a successor to a much earlier project called [FubuMVC](https://fubumvc.github.io). One of the genuinely successful
 parts of FubuMVC was a mechanism to coordinate automated testing of its messaging support as described in these blog posts:
@@ -39,7 +39,7 @@ tests.
 
 To at least ameliorate the issues around timing, Jasper comes with the "Message Tracking" feature that can be used as a helper in automated testing. To enable that in your applications, just include the extension as shown below:
 
-<[sample:AppUsingMessageTracking]>
+snippet: sample_AppUsingMessageTracking
 
 
 Now, in testing you can use extension methods off of `IHost` that will execute an action with the service bus and 
@@ -48,19 +48,19 @@ or it times out in a reasonable time. **The message tracking will throw an excep
 
 To use the message tracking, consider this skeleton of a test:
 
-<[sample:invoke_a_message_with_tracking]>
+snippet: sample_invoke_a_message_with_tracking
 
 The other usages of message tracking are shown below:
 
-<[sample:other-message-tracking-usages]>
+snippet: sample_other_message_tracking_usages
 
 All of these methods return an `ITrackedSession` object that gives you access to the tracked activity. Here's an example from Jasper's tests that uses `ITrackedSession`:
 
-<[sample:using_stubbed_listeners]>
+snippet: sample_using_stubbed_listeners
 
 The `ITrackedSession` interface looks like this:
 
-<[sample:ITrackedSession]>
+snippet: sample_ITrackedSession
 
 
 ## Message Tracking with External Transports
@@ -69,7 +69,7 @@ By default, the message tracking runs in a "local" mode that logs any outgoing m
 any indication that those messages are completely received on the other end. To include tracking of activity from external transports
 even when you are testing one application, use this syntax shown in an internal Jasper test for the Azure Service Bus support:
 
-<[sample:can_stop_and_start_ASB]>
+snippet: sample_can_stop_and_start_ASB
 
 
 
@@ -77,7 +77,7 @@ even when you are testing one application, use this syntax shown in an internal 
 
 Sometimes you'll need to develop on your Jasper application without your application having any access to external transports for one reason or another. Jasper still has you covered with the feature `JasperOptions.Endpoints.StubAllExternallyOutgoingEndpoints()` shown below:
 
-<[sample:UseJasperWithInlineOptionsConfigurationAndHosting]>
+snippet: sample_UseJasperWithInlineOptionsConfigurationAndHosting
 
 When this is active, Jasper will simply not start up any of the configured listeners or subscribers for external transports. Any messages published to these endpoints will simply be ignored at runtime -- but you can still use the message tracking feature shown above to capture the outgoing messages for automated testing.
 
@@ -90,17 +90,17 @@ the *Jasper.TestSupport.Storyteller* extension library.
 To get started with this package, create a new console application in your solution and add the `Jasper.TestSupport.Storyteller` Nuget dependency. Next,
 in the `Program.Main()` method, use this code to connect your application to Storyteller:
 
-<[sample:bootstrapping-storyteller-with-Jasper]>
+snippet: sample_bootstrapping_storyteller_with_Jasper
 
 In this case, `MyJasperAppRegistry` would be the name of whatever the `JasperRegistry` class is for your application.
 
 If you want to hook into events during the Storyteller bootstrapping, teardown, or specification execution, you can subclass `JasperStorytellerHost<T>` like this:
 
-<[sample:MyJasperStorytellerHarness]>
+snippet: sample_MyJasperStorytellerHarness
 
 Then, your bootstrapping changes slightly to:
 
-<[sample:running-MyJasperStorytellerHarness]>
+snippet: sample_running_MyJasperStorytellerHarness
 
 ## MessagingFixture
 
@@ -110,7 +110,7 @@ related to the message being sent has completed.
 
 Here's a sample `MessagingFixture` from the sample project:
 
-<[sample:TeamFixture]>
+snippet: sample_TeamFixture
 
 ## Diagnostics
 

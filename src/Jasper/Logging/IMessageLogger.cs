@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 
 namespace Jasper.Logging
 {
-    // SAMPLE: IMessageLogger
+    #region sample_IMessageLogger
     public interface IMessageLogger
     {
         /// <summary>
@@ -77,5 +77,5 @@ namespace Jasper.Logging
         void DiscardedEnvelope(Envelope envelope);
     }
 
-    // ENDSAMPLE
+    #endregion
 }

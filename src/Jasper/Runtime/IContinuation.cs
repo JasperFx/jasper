@@ -5,7 +5,7 @@ using Jasper.Transports;
 
 namespace Jasper.Runtime
 {
-    // SAMPLE: IContinuation
+    #region sample_IContinuation
     /// <summary>
     /// Represents an action to take after processing a message
     /// </summary>
@@ -20,5 +20,5 @@ namespace Jasper.Runtime
         Task Execute(IExecutionContext execution, DateTime utcNow);
     }
 
-    // ENDSAMPLE
+    #endregion
 }

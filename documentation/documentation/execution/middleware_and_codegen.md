@@ -1,11 +1,11 @@
 <!--title:Jasper Middleware and Policies-->
 
-<[warning]>
+::: tip warning
 Jasper is the successor to an earlier project called [FubuMVC](https://fubumvc.github.io) that focused very hard on
 user-defined conventions and a modular runtime pipeline. Great, but some users overused those features resulting in systems that were unmaintainable. While Jasper
 definitely still supports user defined conventions and a flexible runtime pipeline, we urge some caution about overusing these
 features when just some explicit code will do the job.
-<[/warning]>
+:::
 
 ## Jasper's Architectural Model
 
@@ -27,7 +27,7 @@ Jasper's internal middleware is the [Frame model](https://jasperfx.github.io/lam
 
 To apply middleware to either HTTP routes or message handling, you'll be working with the common `IChain` interface shown below:
 
-<[sample:IChain]>
+snippet: sample_IChain
 
 
 For the HTTP routes in `Jasper.Http`:
@@ -43,19 +43,19 @@ For the HTTP routes in `Jasper.Http`:
 
 ## Authoring Middleware
 
-<[warning]>
+::: tip warning
 This whole code compilation model is pretty new and there aren't enough examples yet. Feel very free to ask questions in the Gitter room linked in the top bar of this page.
-<[/warning]>
+:::
 
 Jasper supports the "Russian Doll" model of middleware, similar in concept to ASP.Net Core but very different in implementation. Jasper's middleware uses runtime code generation and compilation with [LamarCompiler](https://jasperfx.github.io/lamar/documentation/compilation/). What this means is that "middleware" in Jasper is code that is woven right into the message and route handlers.
 
 As an example, let's say you want to build some custom middleware that is a simple performance timing of either HTTP route execution or message execution. In essence, you want to inject code like this:
 
-<[sample:stopwatch-concept]>
+snippet: sample_stopwatch_concept
 
 Alright, the first step is to create a LamarCompiler `Frame` class that generates that code around the inner message or HTTP handler:
 
-<[sample:StopwatchFrame]>
+snippet: sample_StopwatchFrame
 
 
 
@@ -74,14 +74,14 @@ Even though one of the original design goals of FubuMVC and now Jasper was to el
 To attach our `StopwatchFrame` as middleware to any route or message handler, we can write a custom attribute based on Jasper's 
 `ModifyChainAttribute` class as shown below:
 
-<[sample:StopwatchAttribute]>
+snippet: sample_StopwatchAttribute
 
 This attribute can now be placed either on a specific HTTP route endpoint method or message handler method to **only** apply to
 that specific action, or it can be placed on a `Handler` or `Endpoint` class to apply to all methods exported by that type. 
 
 Here's an example:
 
-<[sample:ClockedEndpoint]>
+snippet: sample_ClockedEndpoint
 
 Now, when the application is bootstrapped, this is the code that would be generated to handle the "GET /clocked" route:
 
@@ -124,28 +124,28 @@ Now, when the application is bootstrapped, this is the code that would be genera
 
 ## Policies
 
-<[warning]>
+::: tip warning
 Again, please go easy with this feature and try not to shoot yourself in the foot by getting too aggressive with custom policies
-<[/warning]>
+:::
 
 You can register user-defined policies that apply to all chains or some subset of chains. For message handlers, implement this interface:
 
-<[sample:IHandlerPolicy]>
+snippet: sample_IHandlerPolicy
 
 Here's a simple sample that registers middleware on each handler chain:
 
-<[sample:WrapWithSimple]>
+snippet: sample_WrapWithSimple
 
 Then register your custom `IHandlerPolicy` with a Jasper application like this:
 
-<[sample:AppWithHandlerPolicy]>
+snippet: sample_AppWithHandlerPolicy
 
 ## Using Configure(chain) Methods
 
-<[info]>
+::: tip warning
 This feature is experimental, but is meant to provide an easy way to apply middleware or other configuration to specific HTTP endpoints or
 message handlers without writing custom policies or having to resort to all new attributes.
-<[/info]>
+:::
 
 There's one last option for configuring chains by a naming convention. If you want to configure the chains from just one handler or endpoint class,
 you can implement a method with one of these signatures:
@@ -171,7 +171,7 @@ public static void Configure(HandlerChain chain)
 
 Here's an example of this being used from Jasper's test suite:
 
-<[sample:customized-handler-using-Configure]>
+snippet: sample_customized_handler_using_Configure
 
 
 

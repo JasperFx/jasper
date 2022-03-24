@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Alba;
 using Shouldly;
 using Xunit;
@@ -43,7 +43,7 @@ namespace Jasper.Http.Testing.ContentHandling
         public int Sum { get; set; }
     }
 
-    // SAMPLE: NumbersEndpoint
+    #region sample_NumbersEndpoint
     public class NumbersEndpoint
     {
         public static SumValue post_sum(SomeNumbers input)
@@ -52,5 +52,5 @@ namespace Jasper.Http.Testing.ContentHandling
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

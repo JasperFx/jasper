@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -79,7 +79,7 @@ namespace Jasper.Testing.Acceptance
     {
     }
 
-    // SAMPLE: UsingDeliverWithinAttribute
+    #region sample_UsingDeliverWithinAttribute
     // Any message of this type should be successfully
     // delivered within 10 seconds or discarded
     [DeliverWithin(10)]
@@ -87,5 +87,5 @@ namespace Jasper.Testing.Acceptance
     {
     }
 
-    // ENDSAMPLE
+    #endregion
 }

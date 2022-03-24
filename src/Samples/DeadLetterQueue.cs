@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper.Persistence.Durability;
 
@@ -6,7 +6,7 @@ namespace Samples
 {
     public class DeadLetterQueue
     {
-        // SAMPLE: FetchErrorReport
+        #region sample_FetchErrorReport
         public async Task load_error_report(IEnvelopePersistence persistence, Guid envelopeId)
         {
             var report = await persistence.LoadDeadLetterEnvelopeAsync(envelopeId);
@@ -33,6 +33,6 @@ namespace Samples
             Console.WriteLine(report.ExceptionText);
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

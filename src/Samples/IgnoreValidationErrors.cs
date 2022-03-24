@@ -1,8 +1,8 @@
-﻿using Jasper;
+using Jasper;
 
 namespace Samples
 {
-    // SAMPLE: IgnoreValidationErrors
+    #region sample_IgnoreValidationErrors
     public class IgnoreValidationErrors : JasperOptions
     {
         public IgnoreValidationErrors()
@@ -11,5 +11,5 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

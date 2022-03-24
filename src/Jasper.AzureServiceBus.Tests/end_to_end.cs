@@ -22,7 +22,7 @@ namespace Jasper.AzureServiceBus.Tests
         public const string ConnectionString =
             "Endpoint=sb://jaspertest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tYfuj6uX/L2kolyKi+dc7Jztu45vHVp4wf3W+YBoXHc=";
 
-        // SAMPLE: can_stop_and_start_ASB
+        #region sample_can_stop_and_start_ASB
         [Fact]
         public async Task can_stop_and_start()
         {
@@ -44,7 +44,7 @@ namespace Jasper.AzureServiceBus.Tests
                 colors.Name.ShouldBe("Red");
             }
         }
-        // ENDSAMPLE
+        #endregion
 
         [Fact]
         public async Task schedule_send_message_to_and_receive_through_asb_with_durable_transport_option()

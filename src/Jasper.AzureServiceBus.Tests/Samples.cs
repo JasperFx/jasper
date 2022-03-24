@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Jasper.AzureServiceBus.Tests
 {
-    // SAMPLE: SettingAzureServiceBusOptions
+    #region sample_SettingAzureServiceBusOptions
     public class JasperWithAzureServiceBusApp : JasperOptions
     {
         public JasperWithAzureServiceBusApp()
@@ -34,9 +34,9 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ListenToAzureServiceBusQueue("incoming");
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: AzureServiceBus-AzureServiceBusTopicSendingApp
+    #region sample_AzureServiceBus_AzureServiceBusTopicSendingApp
     public class AzureServiceBusTopicSendingApp : JasperOptions
     {
         public AzureServiceBusTopicSendingApp()
@@ -53,7 +53,7 @@ namespace Jasper.AzureServiceBus.Tests
                 .ToAzureServiceBusTopics();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class MySpecialProtocol : ITransportProtocol<Message>
@@ -70,7 +70,7 @@ namespace Jasper.AzureServiceBus.Tests
     }
 
 
-    // SAMPLE: PublishAndSubscribeToAzureServiceBusQueue
+    #region sample_PublishAndSubscribeToAzureServiceBusQueue
     internal class JasperConfig : JasperOptions
     {
         public JasperConfig()
@@ -96,9 +96,9 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: PublishAndSubscribeToAzureServiceBusQueueByUri
+    #region sample_PublishAndSubscribeToAzureServiceBusQueueByUri
     internal class JasperConfig2 : JasperOptions
     {
         public JasperConfig2()
@@ -122,10 +122,10 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: PublishAndSubscribeToAzureServiceBusTopic
+    #region sample_PublishAndSubscribeToAzureServiceBusTopic
     internal class JasperConfig3 : JasperOptions
     {
         public JasperConfig3()
@@ -151,9 +151,9 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: PublishAndSubscribeToAzureServiceBusTopicByUri
+    #region sample_PublishAndSubscribeToAzureServiceBusTopicByUri
     internal class JasperConfig4 : JasperOptions
     {
         public JasperConfig4()
@@ -177,10 +177,10 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: CustomAzureServiceBusProtocol
+    #region sample_CustomAzureServiceBusProtocol
 
     public class SpecialAzureServiceBusProtocol : DefaultAzureServiceBusProtocol
     {
@@ -207,10 +207,10 @@ namespace Jasper.AzureServiceBus.Tests
             return envelope;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: PublishAndSubscribeToAzureServiceBusTopicAndCustomProtocol
+    #region sample_PublishAndSubscribeToAzureServiceBusTopicAndCustomProtocol
     internal class JasperConfig5 : JasperOptions
     {
         public JasperConfig5()
@@ -240,20 +240,20 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: ItemCreatedWithTopic
+    #region sample_ItemCreatedWithTopic
     [Topic("items")]
     public class ItemCreated
     {
         public string Name { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 
     public static class Sender
     {
-        // SAMPLE: SendItemCreatedByTopic
+        #region sample_SendItemCreatedByTopic
         public static async Task SendMessage(IMessagePublisher publisher)
         {
             await publisher.Send(new ItemCreated
@@ -261,9 +261,9 @@ namespace Jasper.AzureServiceBus.Tests
                 Name = "NewItem"
             });
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: SendItemCreatedToTopic
+        #region sample_SendItemCreatedToTopic
         public static async Task SendToTopic(IMessagePublisher publisher)
         {
             var @event = new ItemCreated
@@ -275,9 +275,9 @@ namespace Jasper.AzureServiceBus.Tests
             // "NorthAmerica" topic
             await publisher.SendToTopic(@event, "NorthAmerica");
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: SendLogMessageToTopic
+        #region sample_SendLogMessageToTopic
         public static async Task SendLogMessage(IMessagePublisher publisher)
         {
             var message = new LogMessage
@@ -290,18 +290,18 @@ namespace Jasper.AzureServiceBus.Tests
             // message to the "High" topic
             await publisher.Send(message);
         }
-        // ENDSAMPLE
+        #endregion
     }
 
-    // SAMPLE: LogMessageWithPriority
+    #region sample_LogMessageWithPriority
     public class LogMessage
     {
         public string Message { get; set; }
         public string Priority { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: AppWithTopicNamingRule
+    #region sample_AppWithTopicNamingRule
     public class PublishWithTopicRulesApp : JasperOptions
     {
         public PublishWithTopicRulesApp()
@@ -321,5 +321,5 @@ namespace Jasper.AzureServiceBus.Tests
             Endpoints.ConfigureAzureServiceBus(connectionString);
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

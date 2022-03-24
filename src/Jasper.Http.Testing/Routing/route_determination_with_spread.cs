@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Alba;
 using Baseline;
@@ -67,20 +67,20 @@ namespace Jasper.Http.Testing.Routing
 
     public class SpreadHttpActions
     {
-        // SAMPLE: SpreadHttpActions-by-path
+        #region sample_SpreadHttpActions_by_path
         // Responds to "GET: /folder/..."
         public string get_folder(string relativePath)
         {
             return relativePath;
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: SpreadHttpActions-by-segments
+        #region sample_SpreadHttpActions_by_segments
         public string get_file(string[] pathSegments)
         {
             return pathSegments.Join("-");
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

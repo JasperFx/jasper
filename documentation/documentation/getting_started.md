@@ -1,8 +1,8 @@
 <!--title: Getting Started-->
 
-<[info]>
+::: tip warning
 Jasper only targets Netstandard 2.1 at this time and supports .Net Core 3.* runtimes.
-<[/info]>
+:::
 
 Jasper is a toolset for command execution and message handling within .Net Core applications. The killer feature of Jasper (*we* think) is its very efficient command execution
 pipeline that can be used as:
@@ -58,7 +58,7 @@ ASP.Net Core applications.
 
 If you prefer to use typical ASP.Net Core bootstrapping or want to add Jasper messaging support to an existing project, you can use the `UseJasper<T>()` extension method on ASP.Net Core's `IHostBuilder` as shown below:
 
-<[sample:QuickStart-Add-To-AspNetCore]>
+snippet: sample_QuickStart_Add_To_AspNetCore
 
 See <[linkto:documentation/bootstrapping]> for more information about configuring Jasper through the unified .Net Core `IHostBuilder`.
 
@@ -68,7 +68,7 @@ See <[linkto:documentation/bootstrapping]> for more information about configurin
 Let's say you're building an invoicing application and your application should handle an
 `InvoiceCreated` event. The skeleton for the message handler for that event would look like this:
 
-<[sample:QuickStart-InvoiceCreated]>
+snippet: sample_QuickStart_InvoiceCreated
 
 As long as this **public** class is inside of your main application assembly, Jasper is going to find this automatically and write this handler up to its execution pipeline. 
 

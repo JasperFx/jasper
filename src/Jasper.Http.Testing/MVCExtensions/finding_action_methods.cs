@@ -116,7 +116,7 @@ namespace Jasper.Http.Testing.MVCExtensions
         }
     }
 
-    // SAMPLE: ControllerUsingMvcRouting
+    #region sample_ControllerUsingMvcRouting
     public class ControllerUsingMvcRouting : ControllerBase
     {
         public string get_stuff()
@@ -142,9 +142,9 @@ namespace Jasper.Http.Testing.MVCExtensions
             return $"the dog is {name}";
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: ControllerUsingJasperRouting
+    #region sample_ControllerUsingJasperRouting
     public class ControllerUsingJasperRouting : Controller
     {
         // Use idiomatic Jasper routing
@@ -154,9 +154,9 @@ namespace Jasper.Http.Testing.MVCExtensions
             return "other stuff";
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: UsingRouteAttribute
+    #region sample_UsingRouteAttribute
 
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
@@ -176,5 +176,5 @@ namespace Jasper.Http.Testing.MVCExtensions
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

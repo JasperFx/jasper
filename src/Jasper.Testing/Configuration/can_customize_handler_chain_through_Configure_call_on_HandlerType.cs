@@ -1,4 +1,4 @@
-﻿using Jasper.Runtime.Handlers;
+using Jasper.Runtime.Handlers;
 using Jasper.Testing.Compilation;
 using Xunit;
 
@@ -21,7 +21,7 @@ namespace Jasper.Testing.Configuration
     {
     }
 
-    // SAMPLE: customized-handler-using-Configure
+    #region sample_customized_handler_using_Configure
     public class CustomizedHandler
     {
         public void Handle(SpecialMessage message)
@@ -34,5 +34,5 @@ namespace Jasper.Testing.Configuration
             chain.Middleware.Add(new CustomFrame());
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

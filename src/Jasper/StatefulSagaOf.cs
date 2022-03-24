@@ -1,6 +1,6 @@
-﻿namespace Jasper
+namespace Jasper
 {
-    // SAMPLE: StatefulSagaOf
+    #region sample_StatefulSagaOf
     /// <summary>
     /// Base class for implementing handlers for a stateful saga
     /// </summary>
@@ -27,5 +27,5 @@
         /// </summary>
         public TState State { get; set; }
     }
-    // ENDSAMPLE
+    #endregion
 }

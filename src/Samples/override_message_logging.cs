@@ -9,7 +9,7 @@ namespace Samples
     {
     }
 
-    // SAMPLE: AppWithCustomLogging
+    #region sample_AppWithCustomLogging
     public class AppWithCustomLogging : JasperOptions
     {
         public AppWithCustomLogging()
@@ -17,9 +17,9 @@ namespace Samples
             Services.AddSingleton<IMessageLogger, CustomMessageLogger>();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: CustomMessageLogger
+    #region sample_CustomMessageLogger
     public class CustomMessageLogger : MessageLogger
     {
         private readonly ILogger<CustomMessageLogger> _logger;
@@ -40,5 +40,5 @@ namespace Samples
         // And any other events you might care about
     }
 
-    // ENDSAMPLE
+    #endregion
 }

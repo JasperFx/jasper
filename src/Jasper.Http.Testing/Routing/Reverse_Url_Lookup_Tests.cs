@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Baseline.Reflection;
@@ -32,7 +32,7 @@ namespace Jasper.Http.Testing.Routing
         // ENDSAMPLE
 
 
-        // SAMPLE: LookupByInputType
+        #region sample_LookupByInputType
         public static void LookupByInputType(IUrlRegistry urls)
         {
             // Find the url that would handle the CreateUser
@@ -44,9 +44,9 @@ namespace Jasper.Http.Testing.Routing
             var input = new CreateUser();
             var url2 = urls.UrlFor(input);
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: LookupByMethod
+        #region sample_LookupByMethod
         public static void LookupByMethod(IUrlRegistry urls)
         {
             // By type and method name
@@ -171,9 +171,9 @@ namespace Jasper.Http.Testing.Routing
         {
             urls.UrlFor(typeof(OneController), nameof(OneController.head_one_m3)).ShouldBe("/one/m3");
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: url_for_named_route_with_arguments
+        #region sample_url_for_named_route_with_arguments
         [Fact]
         public void url_for_named_route_with_arguments()
         {
@@ -182,7 +182,7 @@ namespace Jasper.Http.Testing.Routing
             url.ShouldBe("/range/2/6");
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     public class CreateUser
@@ -244,7 +244,7 @@ namespace Jasper.Http.Testing.Routing
             return "welcome to the default view";
         }
 
-        // SAMPLE: get_range_from_to
+        #region sample_get_range_from_to
         // This action would respond to the route GET: /range/:from/:to
         [RouteName("GetRange")]
         public string get_range_from_to(int from, int to)
@@ -252,7 +252,7 @@ namespace Jasper.Http.Testing.Routing
             return $"From {from} to {to}";
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     public class TwoController

@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Jasper.Messaging.Tracking;
 using Jasper.TestSupport.Storyteller;
 using StoryTeller;
 
 namespace StorytellerSample
 {
-    // SAMPLE: IncrementFixture
+    #region sample_IncrementFixture
     public class IncrementFixture : MessagingFixture
     {
         [FormatAs("Send increment message from the other application")]
@@ -29,5 +29,5 @@ namespace StorytellerSample
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Jasper.Attributes;
 using Jasper.Http.Routing;
 using Shouldly;
@@ -185,7 +185,7 @@ namespace Jasper.Http.Testing.Routing
 
     public class DashAndUnderscoreEndpoint
     {
-        // SAMPLE: using-dash-and-underscore-in-routes
+        #region sample_using_dash_and_underscore_in_routes
         // Responds to "GET: /_text"
         public string get__text()
         {
@@ -198,6 +198,6 @@ namespace Jasper.Http.Testing.Routing
             return "some cool stuff";
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

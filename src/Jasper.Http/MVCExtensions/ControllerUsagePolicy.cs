@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jasper.Http.MVCExtensions
 {
-    // SAMPLE: ControllerUsagePolicy
+    #region sample_ControllerUsagePolicy
     internal class ControllerUsagePolicy : IRoutePolicy
     {
         public void Apply(RouteGraph graph, GenerationRules rules)
@@ -21,5 +21,5 @@ namespace Jasper.Http.MVCExtensions
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

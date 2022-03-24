@@ -5,12 +5,12 @@ Many times during the processing of a message you will need to create and send o
 maybe you need to trigger a subsequent action, or send out additional messages to start some kind of background processing. You can do that by just having
 your handler class use the `IMessageContext` interface as shown in this sample:
 
-<[sample:NoCascadingHandler]>
+snippet: sample_NoCascadingHandler
 
 The code above certainly works and this is consistent with most of the competing service bus tools. However, Jasper supports the concept of _cascading messages_
 that allow you to automatically send out objects returned from your handler methods without having to use `IMessageContext` as shown below:
 
-<[sample:CascadingHandler]>
+snippet: sample_CascadingHandler
 
 When Jasper executes `CascadingHandler.Consume(MyMessage)`, it "knows" that the `MyResponse` return value should be sent through the 
 service bus as part of the same transaction with whatever routing rules apply to `MyResponse`. A couple things to note here:
@@ -42,11 +42,11 @@ is "MyResponse."
 Let's say that we have two running service bus nodes named "Sender" and "Receiver." If this code below
 is called from the "Sender" node:
 
-<[sample:Request/Replay-with-cascading]>
+snippet: sample_Request/Replay_with_cascading
 
 and inside Receiver we have this code:
 
-<[sample:CascadingHandler]>
+snippet: sample_CascadingHandler
 
 Assuming that `MyMessage` is configured to be sent to "Receiver," the following steps take place:
 
@@ -63,14 +63,14 @@ You may need some conditional logic within your handler to know what the cascadi
 different types of cascading messages based on some kind of logic, you can still do that by making your handler method return signature
 be `object` like this sample shown below:
 
-<[sample:ConditionalResponseHandler]>
+snippet: sample_ConditionalResponseHandler
 
 
 ## Schedule Response Messages
 
 You may want to raise a delayed or scheduled response. In this case you will need to return an <[linkto:documentation/integration/customizing_envelopes;title=Envelope]> for the response as shown below:
 
-<[sample:DelayedResponseHandler]>
+snippet: sample_DelayedResponseHandler
 
 ## Multiple Cascading Messages
 
@@ -78,7 +78,7 @@ You can also raise any number of cascading messages by returning either any type
 cast to `IEnumerable<object>`, and Jasper will treat each element as a separate cascading message.
 An empty enumerable is just ignored.
 
-<[sample:MultipleResponseHandler]>
+snippet: sample_MultipleResponseHandler
 
 
 ## Using C# Tuples as Return Values
@@ -89,11 +89,11 @@ C# tuples to better denote the cascading message types.
 
 This handler cascading a pair of messages:
 
-<[sample:MultipleResponseHandler]>
+snippet: sample_MultipleResponseHandler
 
 can be rewritten with C# 7 tuples to:
 
-<[sample:TupleResponseHandler]>
+snippet: sample_TupleResponseHandler
 
 The sample above still treats both `GoNorth` and the `ScheduledResponse` as cascading messages. The Jasper team thinks that the
 tuple-ized signature makes the code more self-documenting and easier to unit test.

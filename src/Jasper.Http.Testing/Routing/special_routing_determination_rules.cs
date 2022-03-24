@@ -1,4 +1,4 @@
-﻿using Jasper.Attributes;
+using Jasper.Attributes;
 using Jasper.Http.Routing;
 using Shouldly;
 using Xunit;
@@ -55,7 +55,7 @@ namespace Jasper.Http.Testing.Routing
 
 
     [JasperIgnore]
-    // SAMPLE: ServiceEndpoint
+    #region sample_ServiceEndpoint
     public class ServiceEndpoint
     {
         // GET: /
@@ -83,5 +83,5 @@ namespace Jasper.Http.Testing.Routing
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

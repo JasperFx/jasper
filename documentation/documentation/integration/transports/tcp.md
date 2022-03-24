@@ -1,8 +1,8 @@
 <!--title:TCP Transport-->
 
-<[warning]>
+::: tip warning
  This transport works by sending traffic directly via sockets and may not be acceptable in your IT department policies. It is load tested and is based on the older [LightningQueues](https://github.com/LightningQueues/LightningQueues) project that was happily used in high volume systems, so we feel like it's plenty robust. 
-<[/warning]>
+:::
 
 
 ## Lightweight, fire and forget
@@ -11,7 +11,7 @@ The TCP transport without durability is meant for scenarios where message delive
 
 To set up a Jasper application to listen for incoming and outgoing messages through the TCP transport in the lightweight mode, see this example:
 
-<[sample:LightweightTransportApp]>
+snippet: sample_LightweightTransportApp
 
 
 In the case of a failure to send a message, the lightweight transport will retry to send the message a few times (3 is the default), but the message will
@@ -24,7 +24,7 @@ First, see <[linkto:documentation/durability]> about how message durability is e
 
 The TCP transport can be used durably as both listener or sender. To configure a durable TCP listener, use one of these options:
 
-<[sample:DurableTransportApp]>
+snippet: sample_DurableTransportApp
 
 
 ## Uri Pattern

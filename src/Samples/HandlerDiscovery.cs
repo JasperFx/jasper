@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
@@ -6,7 +6,7 @@ using TestingSupport.Compliance;
 
 namespace Samples
 {
-    // SAMPLE: SimpleHandler
+    #region sample_SimpleHandler
     public class SimpleHandler
     {
         public void Handle(PingMessage message)
@@ -14,7 +14,7 @@ namespace Samples
             Console.WriteLine("I got a ping!");
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class PongWriter : IPongWriter
     {
@@ -24,7 +24,7 @@ namespace Samples
         }
     }
 
-    // SAMPLE: AsyncHandler
+    #region sample_AsyncHandler
     public interface IPongWriter
     {
         Task WritePong(PongMessage message);
@@ -44,9 +44,9 @@ namespace Samples
             return _writer.WritePong(message);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: Handlers-IMessage
+    #region sample_Handlers_IMessage
     public interface IMessage
     {
     }
@@ -54,9 +54,9 @@ namespace Samples
     public class MessageOne : IMessage
     {
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: Handlers-GenericMessageHandler
+    #region sample_Handlers_GenericMessageHandler
     public class GenericMessageHandler
     {
         public void Consume(IMessage messagem, Envelope envelope)
@@ -64,22 +64,22 @@ namespace Samples
             Console.WriteLine($"Got a message from {envelope.Source}");
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: Handlers-SpecificMessageHandler
+    #region sample_Handlers_SpecificMessageHandler
     public class SpecificMessageHandler
     {
         public void Consume(MessageOne message)
         {
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class MyService : IMyService
     {
     }
 
-    // SAMPLE: injecting-services-into-handlers
+    #region sample_injecting_services_into_handlers
     public interface IMyService
     {
     }
@@ -100,17 +100,17 @@ namespace Samples
             // input
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: IHandler_of_T
+    #region sample_IHandler_of_T
     public interface IHandler<T>
     {
         void Handle(T message);
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: CustomHandlerApp
+    #region sample_CustomHandlerApp
     public class CustomHandlerApp : JasperOptions
     {
         public CustomHandlerApp()
@@ -134,5 +134,5 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

@@ -8,7 +8,7 @@ namespace Jasper.Tcp.Tests
 {
     public class using_stubbed_listeners
     {
-        // SAMPLE: using_stubbed_listeners
+        #region sample_using_stubbed_listeners
         [Fact]
         public async Task track_outgoing_to_tcp_when_stubbed()
         {
@@ -29,6 +29,6 @@ namespace Jasper.Tcp.Tests
             session.FindSingleTrackedMessageOfType<Message1>(EventType.Sent)
                 .ShouldBeSameAs(message);
         }
-        // ENDSAMPLE
+        #endregion
     }
 }

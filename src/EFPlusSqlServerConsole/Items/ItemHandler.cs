@@ -2,7 +2,7 @@ using Jasper.Attributes;
 
 namespace InMemoryMediator.Items
 {
-    // SAMPLE: InMemoryMediator-Items
+    #region sample_InMemoryMediator_Items
     public class ItemHandler
     {
         // This attribute applies Jasper's EF Core transactional
@@ -35,5 +35,5 @@ namespace InMemoryMediator.Items
             };
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

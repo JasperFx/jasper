@@ -1,41 +1,41 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper;
 using Microsoft.Extensions.Hosting;
 
 namespace Samples
 {
-    // SAMPLE: MyAppOptions
+    #region sample_MyAppOptions
     public class MyAppOptions : JasperOptions
     {
     }
-// ENDSAMPLE
+#endregion
 
 
-// SAMPLE: ServiceBusApp
+#region sample_ServiceBusApp
     public class ServiceBusApp : JasperOptions
     {
     }
-// ENDSAMPLE
+#endregion
 
     public static class Program
     {
         public static async Task EntryPoint()
         {
-            // SAMPLE: QuickStart-Add-To-AspNetCore
+            #region sample_QuickStart_Add_To_AspNetCore
             var host = await Host.CreateDefaultBuilder()
                 // Adds Jasper to your .Net Core application
                 // with its default configuration
                 .UseJasper()
                 .StartAsync();
 
-            // ENDSAMPLE
+            #endregion
         }
 
 
     }
 
-// SAMPLE: QuickStart-InvoiceCreated
+#region sample_QuickStart_InvoiceCreated
     public class InvoiceCreated
     {
         public Guid InvoiceId { get; set; }
@@ -49,6 +49,6 @@ namespace Samples
         }
     }
 
-// ENDSAMPLE
+#endregion
 
 }

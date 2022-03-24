@@ -13,7 +13,7 @@ namespace Samples
 
     public class SampleProgram1
     {
-        // SAMPLE: UseJasperWithInlineOptionsConfiguration
+        #region sample_UseJasperWithInlineOptionsConfiguration
         public static IHostBuilder CreateHostBuilder() =>
             Host.CreateDefaultBuilder()
 
@@ -23,13 +23,13 @@ namespace Samples
                 {
                     opts.Extensions.UseMessageTrackingTestingSupport();
                 });
-        // ENDSAMPLE
+        #endregion
 
     }
 
     public class SampleProgram2
     {
-        // SAMPLE: UseJasperWithInlineOptionsConfigurationAndHosting
+        #region sample_UseJasperWithInlineOptionsConfigurationAndHosting
         public static IHostBuilder CreateHostBuilder() =>
             Host.CreateDefaultBuilder()
 
@@ -53,7 +53,7 @@ namespace Samples
                         opts.Extensions.UseMessageTrackingTestingSupport();
                     }
                 });
-        // ENDSAMPLE
+        #endregion
 
     }
 

@@ -8,14 +8,14 @@ Jasper's <[linkto:documentation/execution]> can be consumed from in memory queue
 
 ## Enqueueing Messages Locally
 
-<[info]>
+::: tip warning
 The `IMessagePublisher` and `IMessageContext` interfaces both implement the `ICommandBus` interface, and truth be told,
 it's just one underlying concrete class and the interfaces just expose narrower or broader options.
-<[/info]>
+:::
 
 Using the `ICommandBus.Enqueue()` method, you can queue up messages to be executed asynchronously:
 
-<[sample:enqueue-locally]>
+snippet: sample_enqueue_locally
 
 This feature is useful for asynchronous processing in web applications or really any kind of application where you need some parallelization or concurrency. 
 
@@ -43,11 +43,11 @@ In the absence of any kind of routing rules, any message enqueued with `ICommand
 *default* local queue. To override that choice on a message type by message type basis, you can use the `[LocalQueue]` attribute
 on a message type:
 
-<[sample:local-queue-routed-message]>
+snippet: sample_local_queue_routed_message
 
 Otherwise, you can take advantage of the routing rules on the `JasperOptions.Endpoints.Publish()` method like this:
 
-<[sample:LocalTransportApp]>
+snippet: sample_LocalTransportApp
 
 The routing rules and/or `[LocalQueue]` routing is also honored for cascading messages, meaning that any message that is handled inside a Jasper system could publish cascading messages to the local worker queues.
 
@@ -58,7 +58,7 @@ The local worker queues can optionally be designated as "durable," meaning that 
 
 Here is an example of configuring a local queue to be durable:
 
-<[sample:LocalDurableTransportApp]>
+snippet: sample_LocalDurableTransportApp
 
 
 See <[linkto:documentation/durability]> for more information.
@@ -68,33 +68,33 @@ See <[linkto:documentation/durability]> for more information.
 
 The "scheduled execution" feature can be used with local execution within the same application. See <[linkto:documentation/integration/scheduled]> for more information. Use the `ICommandBus.Schedule()` methods like this:
 
-<[sample:schedule-job-locally]>
+snippet: sample_schedule_job_locally
 
 
 ## Configuring Parallelization and Execution Properties
 
 The queues are built on top of the TPL Dataflow library, so it's pretty easy to configure parallelization (how many concurrent messages could be handled by a queue). Here's an example of how to establish this:
 
-<[sample:LocalQueuesApp]>
+snippet: sample_LocalQueuesApp
 
 
 ## Explicitly Enqueue to a Specific Local Queue
 
 If you want to enqueue a message locally to a specific worker queue, you can use this syntax:
 
-<[sample:IServiceBus.Enqueue-to-specific-worker-queue]>
+snippet: sample_IServiceBus.Enqueue_to_specific_worker_queue
 
 
 ## Local Queues as a Messaging Transport
 
 
-<[info]>
+::: tip warning
 The local transport is used underneath the covers by Jasper for retrying
 locally enqueued messages or scheduled messages that may have initially failed.
-<[/info]>
+:::
 
 In the sample Jasper configuration shown below:
 
-<[sample:LocalTransportApp]>
+snippet: sample_LocalTransportApp
 
 Calling `IMessagePublisher.Send(new Message2())` would publish the message to the local "important" queue. 

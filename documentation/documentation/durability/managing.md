@@ -34,7 +34,7 @@ dotnet run -- storage clear
 
 Let's say that we're all good developers who invest in automated testing of our applications. Now, let's say that we're building a Jasper application that uses Sql Server backed message persistence like so:
 
-<[sample:SqlServerPersistedMessageApp]>
+snippet: sample_SqlServerPersistedMessageApp
 
 
 
@@ -44,6 +44,6 @@ application startup.
 
 In addition to the `StorageProvisioning` property, there is also an extension method hanging off of `IJasperHost` called `RebuildMessageSchema()` that will completely rebuild all the necessary schema objects for message persistence. Below is an example of using an [xUnit shared fixture](https://xunit.github.io/docs/shared-context) approach for integration tests of the `MyJasperApp` application.
 
-<[sample:MyJasperAppFixture]>
+snippet: sample_MyJasperAppFixture
 
 

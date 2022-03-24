@@ -2,7 +2,7 @@ using Jasper;
 
 namespace Samples
 {
-    // SAMPLE: DurableScheduledMessagesLocalQueue
+    #region sample_DurableScheduledMessagesLocalQueue
     public class ConfigureDurableLocalQueueApp : JasperOptions
     {
         public ConfigureDurableLocalQueueApp()
@@ -14,5 +14,5 @@ namespace Samples
                 .MaximumThreads(3);
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

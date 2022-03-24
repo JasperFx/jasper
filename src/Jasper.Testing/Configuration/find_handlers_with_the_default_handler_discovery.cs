@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Attributes;
 using Shouldly;
@@ -158,7 +158,7 @@ namespace Jasper.Testing.Configuration
         }
     }
 
-    // SAMPLE: JasperIgnoreAttribute
+    #region sample_JasperIgnoreAttribute
     public class NetflixHandler : IMovieSink
     {
         public void Listen(MovieAdded added)
@@ -204,7 +204,7 @@ namespace Jasper.Testing.Configuration
         {
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class Event1

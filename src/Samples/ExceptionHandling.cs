@@ -10,7 +10,7 @@ namespace Samples
 
     }
 
-    // SAMPLE: AppWithErrorHandling
+    #region sample_AppWithErrorHandling
     public class AppWithErrorHandling : JasperOptions
     {
         public AppWithErrorHandling()
@@ -34,9 +34,9 @@ namespace Samples
                 });
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: AppWithScriptedErrorHandling
+    #region sample_AppWithScriptedErrorHandling
     public class AppWithScriptedErrorHandling : JasperOptions
     {
         public AppWithScriptedErrorHandling()
@@ -64,7 +64,7 @@ namespace Samples
                 });
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class SqlException : Exception{}

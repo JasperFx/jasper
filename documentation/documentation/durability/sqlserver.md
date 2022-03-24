@@ -3,7 +3,7 @@
 The Jasper.Persistence.SqlServer Nuget library provides Jasper users with a quick way to integrate Sql Server-backed persistence into their
 Jasper applications. To get started, just add the *Jasper.Persistence.SqlServer* Nuget to your project, and enable the persistence like this:
 
-<[sample:AppUsingSqlServer]>
+snippet: sample_AppUsingSqlServer
 
 Enabling this configuration adds a couple things to your system:
 
@@ -17,7 +17,7 @@ Enabling this configuration adds a couple things to your system:
 Assuming that the Jasper.Persistence.SqlServer Nuget is referenced by your project, you can use the `[Transactional]` attribute on message (or HTTP) handler methods to wrap the message handling inside
 a single Sql Server transaction like so:
 
-<[sample:UsingSqlTransaction]>
+snippet: sample_UsingSqlTransaction
 
 When you use this middleware, be sure to pull in the current `SqlTransaction` object as a parameter to your handler method.
 
@@ -27,12 +27,12 @@ See [Jasper’s “Outbox” Pattern Support](https://jeremydmiller.com/2018/04/
 
 Jasper supports the ["outbox" pattern](https://jimmybogard.com/refactoring-towards-resilience-evaluating-coupling/) with Sql Server connections. You can explicitly opt into this usage with code like this:
 
-<[sample:basic-sql-server-outbox-sample]>
+snippet: sample_basic_sql_server_outbox_sample
 
 If you use the `[Transaction]` middleware in a message handler, the middleware will take care of some of the repetitive mechanics for you. In the code below, the `IMessageContext` is enrolled in the current transaction before the action runs, and the outgoing messages
 are flushed into the outgoing sending queue after the action runs.
 
-<[sample:SqlServerOutboxWithSqlTransaction]>
+snippet: sample_SqlServerOutboxWithSqlTransaction
 
 ## Message Persistence Schema
 
@@ -55,6 +55,6 @@ and also these functions that are all used by the durable messaging in its "mess
 
 In testing, you can build -- or rebuild -- the message storage in your system with a call to the `RebuildMessageStorage() ` extension method off of either `IWebHost` or `IJasperHost` as shown below in a sample taken from xUnit integration testing with Jasper:
 
-<[sample:MyJasperAppFixture]>
+snippet: sample_MyJasperAppFixture
 
 See [this GitHub issue](https://github.com/JasperFx/jasper/issues/372) for some utilities to better manage the database objects.

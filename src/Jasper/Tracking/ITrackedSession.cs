@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Jasper.Tracking
 {
-    // SAMPLE: ITrackedSession
+    #region sample_ITrackedSession
     public interface ITrackedSession
     {
         /// <summary>
@@ -77,5 +77,5 @@ namespace Jasper.Tracking
         /// <returns></returns>
         EnvelopeRecord[] AllRecordsInOrder(EventType eventType);
     }
-    // ENDSAMPLE
+    #endregion
 }

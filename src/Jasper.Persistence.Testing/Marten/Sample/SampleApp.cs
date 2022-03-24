@@ -83,7 +83,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
     public class UserHandler
     {
-        // SAMPLE: UserHandler-handle-CreateUser
+        #region sample_UserHandler_handle_CreateUser
         [Transactional]
         public static UserCreated Handle(CreateUser message, IDocumentSession session)
         {
@@ -91,7 +91,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
             return new UserCreated {UserName = message.Name};
         }
-        // ENDSAMPLE
+        #endregion
 
         public static void Handle(UserCreated message, UserNames names)
         {

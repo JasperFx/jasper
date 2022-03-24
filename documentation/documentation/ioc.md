@@ -1,8 +1,8 @@
 <!--title:IoC Container Integration-->
 
-<[info]>
+::: tip warning
 If you're curious, in the real world *Lamar* is a slightly bigger town just up US Highway 71 from Jasper's namesake.
-<[/info]>
+:::
 
 Jasper **only** supports the [Lamar](http://github.com/jasperfx/lamar) IoC container and `UseJasper()` will
 also replace the built in ASP.Net Core DI container with Lamar.
@@ -32,7 +32,7 @@ See [Introducing BlueMilk: StructureMap’s Replacement & Jasper’s Special Sau
 
 To register services in a Jasper application, use the `JasperOptions.Services` root like this:
 
-<[sample:JasperAppWithServices]>
+snippet: sample_JasperAppWithServices
 
 <[linkto:documentation/extensions;title=Extensions]> can also register services, but Jasper will enforce a service registration precedence like this:
 
@@ -47,7 +47,7 @@ What this means is that registrations made in your application's `JasperOptions`
 
 The best practice in theory states that you should never need to access the underlying IoC container in your application after the initial bootstrapping, but there's always some reason (testing?) to do so and there's a **lot** of functionality in [Lamar](https://jasperfx.github.io/lamar) that isn't exposed through the simple `IServiceProvider` abstraction, so you can do this:
 
-<[sample:GetAtTheContainer]>
+snippet: sample_GetAtTheContainer
 
 Or, you can always inject the current `IContainer` as a constructor argument into any service that is resolved from the container.
 

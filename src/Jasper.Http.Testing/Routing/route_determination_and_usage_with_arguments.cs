@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Alba;
@@ -45,7 +45,7 @@ namespace Jasper.Http.Testing.Routing
             });
         }
 
-        // SAMPLE: using-char-arguments
+        #region sample_using_char_arguments
         [Fact]
         public async Task char_arguments()
         {
@@ -55,7 +55,7 @@ namespace Jasper.Http.Testing.Routing
                 _.ContentShouldBe("b-q");
             });
         }
-        // ENDSAMPLE
+        #endregion
 
         [Fact]
         public async Task double_argument()
@@ -112,12 +112,12 @@ namespace Jasper.Http.Testing.Routing
             return id.ToString("r");
         }
 
-        // SAMPLE: using-guid-route-argument
+        #region sample_using_guid_route_argument
         public string get_guid_id(Guid id)
         {
             return $"*{id}*";
         }
-        // ENDSAMPLE
+        #endregion
 
         public string get_bool_value(bool value)
         {
@@ -139,12 +139,12 @@ namespace Jasper.Http.Testing.Routing
             return number.ToString();
         }
 
-        // SAMPLE: using-multiple-arguments
+        #region sample_using_multiple_arguments
         public string get_letters_first_to_end(char first, char end, HttpRequest request)
         {
             return $"{first}-{end}";
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

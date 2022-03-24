@@ -8,13 +8,13 @@ using Xunit;
 namespace Jasper.Testing.Configuration
 {
 
-    // SAMPLE: using-Topic-attribute
+    #region sample_using_Topic_attribute
     [Topic("one")]
     public class TopicMessage1
     {
 
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class ColorMessagee

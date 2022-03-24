@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -39,7 +39,7 @@ namespace Jasper.Persistence.Testing.Marten
     }
 
 
-    // SAMPLE: CreateDocCommandHandler
+    #region sample_CreateDocCommandHandler
     public class CreateDocCommandHandler
     {
         [Transactional]
@@ -48,9 +48,9 @@ namespace Jasper.Persistence.Testing.Marten
             session.Store(new FakeDoc {Id = message.Id});
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: UsingDocumentSessionHandler
+    #region sample_UsingDocumentSessionHandler
     public class UsingDocumentSessionHandler
     {
         // Take in IDocumentStore as a constructor argument
@@ -63,9 +63,9 @@ namespace Jasper.Persistence.Testing.Marten
         {
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: CommandsAreTransactional
+    #region sample_CommandsAreTransactional
     public class CommandsAreTransactional : IHandlerPolicy
     {
         public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
@@ -78,9 +78,9 @@ namespace Jasper.Persistence.Testing.Marten
                 .Each(x => x.Middleware.Add(new TransactionalFrame()));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: Using-CommandsAreTransactional
+    #region sample_Using_CommandsAreTransactional
     public class CommandsAreTransactionalApp : JasperOptions
     {
         public CommandsAreTransactionalApp()
@@ -90,5 +90,5 @@ namespace Jasper.Persistence.Testing.Marten
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Jasper.Http.Testing.Samples
 {
-    // SAMPLE: StopwatchFrame
+    #region sample_StopwatchFrame
     public class StopwatchFrame : SyncFrame
     {
         private readonly IChain _chain;
@@ -59,10 +59,10 @@ namespace Jasper.Http.Testing.Samples
             yield return _logger;
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: StopwatchAttribute
+    #region sample_StopwatchAttribute
     public class StopwatchAttribute : ModifyChainAttribute
     {
         public override void Modify(IChain chain, GenerationRules rules, IContainer container)
@@ -70,10 +70,10 @@ namespace Jasper.Http.Testing.Samples
             chain.Middleware.Add(new StopwatchFrame(chain));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     [JasperIgnore]
-    // SAMPLE: ClockedEndpoint
+    #region sample_ClockedEndpoint
     public class ClockedEndpoint
     {
         [Stopwatch]
@@ -82,10 +82,10 @@ namespace Jasper.Http.Testing.Samples
             return "how fast";
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: using-IRoutePolicy-and-IHandlerPolicy
+    #region sample_using_IRoutePolicy_and_IHandlerPolicy
     public class PutStopwatchOnRoutes : IRoutePolicy
     {
         public void Apply(RouteGraph graph, GenerationRules rules)
@@ -118,7 +118,7 @@ namespace Jasper.Http.Testing.Samples
 //            Settings.Http(x => x.GlobalPolicy<PutStopwatchOnRoutes>());
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class try_it_out
     {
@@ -131,7 +131,7 @@ namespace Jasper.Http.Testing.Samples
 
         public void what_we_are_trying_to_do(ILogger<IChain> logger)
         {
-            // SAMPLE: stopwatch-concept
+            #region sample_stopwatch_concept
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             try
@@ -145,7 +145,7 @@ namespace Jasper.Http.Testing.Samples
                 logger.LogInformation("Ran something in " + stopwatch.ElapsedMilliseconds);
             }
 
-            // ENDSAMPLE
+            #endregion
         }
     }
 }

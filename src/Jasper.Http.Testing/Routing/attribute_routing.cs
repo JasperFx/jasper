@@ -126,7 +126,7 @@ namespace Jasper.Http.Testing.Routing
             return "stuff";
         }
 
-        // SAMPLE: AttributeUsingEndpoint
+        #region sample_AttributeUsingEndpoint
         [HttpPost("one")]
         public int Post1()
         {
@@ -145,11 +145,11 @@ namespace Jasper.Http.Testing.Routing
             return $"the dog is {name}";
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
 
-    // SAMPLE: ControllerUsingJasperRouting
+    #region sample_ControllerUsingJasperRouting
     public class IdiomaticJasperRouteEndpoint
     {
         // Use idiomatic Jasper routing
@@ -160,5 +160,5 @@ namespace Jasper.Http.Testing.Routing
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

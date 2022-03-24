@@ -79,15 +79,15 @@ namespace Jasper.Http.Testing.MVCExtensions
             return "Hello!";
         }
 
-        // SAMPLE: using-HttpContext-in-Controller
+        #region sample_using_HttpContext_in_Controller
         [HttpGet("write")]
         public Task WriteIntoTheContext()
         {
             return HttpContext.Response.WriteAsync("I wrote some stuff here");
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: using-IActionResult
+        #region sample_using_IActionResult
         [HttpGet("result")]
         public IActionResult Result()
         {
@@ -104,6 +104,6 @@ namespace Jasper.Http.Testing.MVCExtensions
             });
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 }

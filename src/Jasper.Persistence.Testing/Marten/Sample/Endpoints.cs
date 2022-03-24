@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Testing.Marten.Sample
 {
-    // SAMPLE: MartenUsingEndpoint-with-ctor-injection
+    #region sample_MartenUsingEndpoint_with_ctor_injection
     public class MartenUsingEndpoint
     {
         private readonly IQuerySession _session;
@@ -22,9 +22,9 @@ namespace Jasper.Persistence.Testing.Marten.Sample
             return _session.LoadAsync<User>(id);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: MartenStaticEndpoint
+    #region sample_MartenStaticEndpoint
     public static class MartenStaticEndpoint
     {
         public static Task<User> get_user_id(
@@ -40,5 +40,5 @@ namespace Jasper.Persistence.Testing.Marten.Sample
             return session.LoadAsync<User>(id);
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

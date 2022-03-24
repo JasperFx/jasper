@@ -1,9 +1,9 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jasper.Runtime.Handlers
 {
-    // SAMPLE: MessageHandler
+    #region sample_MessageHandler
     public abstract class MessageHandler
     {
         public HandlerChain Chain { get; set; }
@@ -12,5 +12,5 @@ namespace Jasper.Runtime.Handlers
         public abstract Task Handle(IExecutionContext context, CancellationToken cancellation);
     }
 
-    // ENDSAMPLE
+    #endregion
 }

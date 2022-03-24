@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -23,7 +23,7 @@ namespace Jasper.Testing.Runtime.Samples
     {
     }
 
-    // SAMPLE: ErrorHandlingPolicy
+    #region sample_ErrorHandlingPolicy
     // This error policy will apply to all message types in the namespace
     // 'MyApp.Messages', and add a "requeue on SqlException" to all of these
     // message handlers
@@ -41,9 +41,9 @@ namespace Jasper.Testing.Runtime.Samples
             }
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: MyApp-with-error-handling
+    #region sample_MyApp_with_error_handling
     public class MyApp : JasperOptions
     {
         public MyApp()
@@ -51,9 +51,9 @@ namespace Jasper.Testing.Runtime.Samples
             Handlers.GlobalPolicy<ErrorHandlingPolicy>();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: GlobalErrorHandlingConfiguration
+    #region sample_GlobalErrorHandlingConfiguration
     public class GlobalRetryApp : JasperOptions
     {
         public GlobalRetryApp()
@@ -68,10 +68,10 @@ namespace Jasper.Testing.Runtime.Samples
                 .RetryLater(5.Seconds());
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
-    // SAMPLE: configure-error-handling-per-chain-with-configure
+    #region sample_configure_error_handling_per_chain_with_configure
     public class MyErrorCausingHandler
     {
         // This method signature is meaningful
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Runtime.Samples
             // handle the invoice approved message
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class InvoiceCreated
     {
@@ -107,7 +107,7 @@ namespace Jasper.Testing.Runtime.Samples
     {
     }
 
-    // SAMPLE: configuring-error-handling-with-attributes
+    #region sample_configuring_error_handling_with_attributes
     public class AttributeUsingHandler
     {
         [RetryLater(typeof(IOException), 5)]
@@ -120,13 +120,13 @@ namespace Jasper.Testing.Runtime.Samples
             // handle the invoice created message
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class SqlException : Exception
     {
     }
 
-    // SAMPLE: filtering-by-exception-type
+    #region sample_filtering_by_exception_type
     public class FilteredApp : JasperOptions
     {
         public FilteredApp()
@@ -145,9 +145,9 @@ namespace Jasper.Testing.Runtime.Samples
             Handlers.OnException<InvalidOperationException>().RetryNow();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: continuation-actions
+    #region sample_continuation_actions
     public class ContinuationTypes : JasperOptions
     {
         public ContinuationTypes()
@@ -178,7 +178,7 @@ namespace Jasper.Testing.Runtime.Samples
             Handlers.OnException<SqlException>().MoveToErrorQueue();
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
 
@@ -189,7 +189,7 @@ namespace Jasper.Testing.Runtime.Samples
         }
     }
 
-    // SAMPLE: AppWithCustomContinuation
+    #region sample_AppWithCustomContinuation
     public class AppWithCustomContinuation : JasperOptions
     {
         public AppWithCustomContinuation()
@@ -201,9 +201,9 @@ namespace Jasper.Testing.Runtime.Samples
                 .With((envelope, exception) => new RaiseAlert(exception));
         }
     }
-    // ENDSAMPLE
+    #endregion
 
-    // SAMPLE: RaiseAlert-Continuation
+    #region sample_RaiseAlert_Continuation
     public class RaiseAlert : IContinuation
     {
         private readonly Exception _ex;
@@ -229,7 +229,7 @@ namespace Jasper.Testing.Runtime.Samples
 
         }
     }
-    // ENDSAMPLE
+    #endregion
 
     public class RescheduledAlert
     {

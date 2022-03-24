@@ -2,7 +2,7 @@
 
 To add durable messaging behavior to any kind of endpoint (), use the `Durably()` method to tag any listener or publishing point as durable as shown below:
 
-<[sample:DurableTransportApp]>
+snippet: sample_DurableTransportApp
 
 This sample uses the built in <[linkto:documentation/integration/transports/tcp]>, but the durability option is available for any supported
 Jasper transport including the <[linkto:documentation/local]>.

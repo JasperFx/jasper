@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Jasper;
 using Jasper.Attributes;
 using Jasper.Serialization;
@@ -11,7 +11,7 @@ namespace Samples
 {
     namespace FirstTry
     {
-        // SAMPLE: PersonBorn1
+        #region sample_PersonBorn1
         public class PersonBorn
         {
             public string FirstName { get; set; }
@@ -23,12 +23,12 @@ namespace Samples
             public int Month { get; set; }
             public int Year { get; set; }
         }
-        // ENDSAMPLE
+        #endregion
 
 
         public class message_alias
         {
-            // SAMPLE: ootb-message-alias
+            #region sample_ootb_message_alias
             [Fact]
             public void message_alias_is_fullname_by_default()
             {
@@ -36,13 +36,13 @@ namespace Samples
                     .MessageType.ShouldBe(typeof(PersonBorn).FullName);
             }
 
-            // ENDSAMPLE
+            #endregion
         }
     }
 
     namespace SecondTry
     {
-        // SAMPLE: override-message-alias
+        #region sample_override_message_alias
         [MessageIdentity("person-born")]
         public class PersonBorn
         {
@@ -52,11 +52,11 @@ namespace Samples
             public int Month { get; set; }
             public int Year { get; set; }
         }
-        // ENDSAMPLE
+        #endregion
 
         public class message_alias
         {
-            // SAMPLE: explicit-message-alias
+            #region sample_explicit_message_alias
             [Fact]
             public void message_alias_is_fullname_by_default()
             {
@@ -64,13 +64,13 @@ namespace Samples
                     .MessageType.ShouldBe("person-born");
             }
 
-            // ENDSAMPLE
+            #endregion
         }
     }
 
     namespace ThirdTry
     {
-        // SAMPLE: PersonBorn-V2
+        #region sample_PersonBorn_V2
         [MessageIdentity("person-born", Version = 2)]
         public class PersonBornV2
         {
@@ -78,9 +78,9 @@ namespace Samples
             public string LastName { get; set; }
             public DateTime Birthday { get; set; }
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: IForwardsTo<PersonBornV2>
+        #region sample_IForwardsTo<PersonBornV2>
         public class PersonBorn : IForwardsTo<PersonBornV2>
         {
             public string FirstName { get; set; }
@@ -99,9 +99,9 @@ namespace Samples
                 };
             }
         }
-        // ENDSAMPLE
+        #endregion
 
-        // SAMPLE: PersonCreatedHandler
+        #region sample_PersonCreatedHandler
         public class PersonCreatedHandler
         {
             public static void Handle(PersonBorn person)
@@ -115,7 +115,7 @@ namespace Samples
             }
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
 
@@ -143,7 +143,7 @@ namespace Samples
     }
 
 
-    // SAMPLE: CustomizingJsonSerialization
+    #region sample_CustomizingJsonSerialization
     public class CustomizingJsonSerialization : JasperOptions
     {
         public CustomizingJsonSerialization()
@@ -154,5 +154,5 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

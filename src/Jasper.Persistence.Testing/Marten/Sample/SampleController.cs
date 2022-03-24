@@ -7,7 +7,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 {
     public class SampleController : ControllerBase
     {
-        // SAMPLE: using-outbox-with-marten-in-mvc-action
+        #region sample_using_outbox_with_marten_in_mvc_action
         public async Task<IActionResult> PostCreateUser(
             [FromBody] CreateUser user,
             [FromServices] IExecutionContext context,
@@ -26,7 +26,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
             return Ok();
         }
 
-        // ENDSAMPLE
+        #endregion
 
 
 

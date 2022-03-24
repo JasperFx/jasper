@@ -1,15 +1,15 @@
 <!--title:Using Marten with Jasper-->
 
-<[info]>
+::: tip warning
 The Jasper.Persistence.Marten has a dependency on the lower level Jasper.Persistence.Postgresql Nuget library.
-<[/info]>
+:::
 
 The Jasper.Persistence.Marten library provides some easy to use recipes for integrating  [Marten](https://jasperfx.github.io/marten) and Postgresql into a Jasper application. All you need to do to get
 started with Marten + Jasper is to add the *Jasper.Persistence.Marten* nuget to your project and at minimum,
 at least set the connection string to the underlying Postgresql database by configuring
 Marten's `StoreOptions` object like this:
 
-<[sample:AppWithMarten]>
+snippet: sample_AppWithMarten
 
 Note that `ConfigureMarten()` is an extension method in Jasper.Marten.
 
@@ -26,14 +26,14 @@ If you need to customize an `IDocumentSession` for something like transaction le
 
 As an example:
 
-<[sample:UsingDocumentSessionHandler]>
+snippet: sample_UsingDocumentSessionHandler
 
 ## Transactional Middleware
 
 Assuming that the Jasper.Persistence.Marten Nuget is referenced by your project, you can explicitly apply transactional middleware to a message or HTTP handler action with the
 `[Transactional]` attribute as shown below:
 
-<[sample:CreateDocCommandHandler]>
+snippet: sample_CreateDocCommandHandler
 
 Doing this will simply insert a call to `IDocumentSession.SaveChangesAsync()` after the last handler action is called within the generated `MessageHandler`. This effectively makes a unit of work out of all the actions that might be called to process a single message.
 
@@ -43,11 +43,11 @@ If so desired, you *can* also use a policy to apply the Marten transaction seman
 name ends with "Command" to use the Marten transaction middleware. You could accomplish that
 with a handler policy like this:
 
-<[sample:CommandsAreTransactional]>
+snippet: sample_CommandsAreTransactional
 
 Then add the policy to your application like this:
 
-<[sample:Using-CommandsAreTransactional]>
+snippet: sample_Using_CommandsAreTransactional
 
 
  ## "Outbox" Pattern Usage
@@ -59,7 +59,7 @@ between your application database and the outgoing queues like [RabbitMQ](https:
 
 To see the outbox pattern in action, consider this [ASP.Net Core MVC controller](https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/adding-controller?view=aspnetcore-2.1) action method:
 
-<[sample:using-outbox-with-marten-in-mvc-action]>
+snippet: sample_using_outbox_with_marten_in_mvc_action
 
 A couple notes here:
 
@@ -77,7 +77,7 @@ sent to the recipients or even if the recipient services are temporarily down an
 The outbox usage is a little bit easier to use within a Jasper message handler action decorated with the `[MartenTransaction`] attribute
 as shown below:
 
-<[sample:UserHandler-handle-CreateUser]>
+snippet: sample_UserHandler_handle_CreateUser
 
 By decorating the action with that attribute, `Jasper.Marten` will inject a little bit of code around that method to enlist the current
 message context into the current Marten `IDocumentSession`, and the outgoing `UserCreated` message would be persisted as an outgoing envelope when the session is successfully saved.
@@ -91,7 +91,7 @@ See <[linkto:documentation/execution/sagas]> for an introduction to stateful sag
 To use [Marten](http://jasperfx.github.io/marten) as the backing store for saga persistence, start by enabling
 the Marten message persistence like this:
 
-<[sample:SagaApp-with-Marten]>
+snippet: sample_SagaApp_with_Marten
 
 Any message handlers within a `StatefulSagaOf<T>` class will automatically have the transactional middleware support
 applied. The limitation here is that you have to allow Jasper.Marten to handle all the transactional boundaries.
@@ -110,6 +110,6 @@ your handler class that returns an `IDocumentSession`. If Jasper sees that metho
 
 Here's an example from the tests:
 
-<[sample:custom-marten-session-creation]>
+snippet: sample_custom_marten_session_creation
 
 

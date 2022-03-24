@@ -2,7 +2,7 @@ using Jasper;
 
 namespace Samples
 {
-    // SAMPLE: SenderAndListener
+    #region sample_SenderAndListener
     public class SenderAndListener : JasperOptions
     {
         public SenderAndListener()
@@ -18,5 +18,5 @@ namespace Samples
             ListenForMessagesFrom("tcp://localhost:6666");
         }
     }
-    // ENDSAMPLE
+    #endregion
 }

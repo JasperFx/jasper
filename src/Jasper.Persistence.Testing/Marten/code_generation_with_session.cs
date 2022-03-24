@@ -1,4 +1,4 @@
-﻿using IntegrationTests;
+using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Persistence.Marten;
 using Jasper.Runtime.Handlers;
@@ -84,7 +84,7 @@ namespace Jasper.Persistence.Testing.Marten
         }
     }
 
-    // SAMPLE: custom-marten-session-creation
+    #region sample_custom_marten_session_creation
     public class SessionUsingBlock2
     {
         // This method will be used to create the IDocumentSession
@@ -107,5 +107,5 @@ namespace Jasper.Persistence.Testing.Marten
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

@@ -1,4 +1,4 @@
-﻿// SAMPLE: QuickStartConsoleMain
+#region sample_QuickStartConsoleMain
 
 using System.Threading.Tasks;
 using Jasper;
@@ -55,4 +55,4 @@ namespace MyApp
         }
     }
 }
-// ENDSAMPLE
+#endregion

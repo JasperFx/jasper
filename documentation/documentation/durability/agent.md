@@ -12,4 +12,4 @@ At this point, Jasper relies very heavily on [advisory locks in Postgresql](http
 
 There are a few configuration items of the `DurabilityAgent` you might want to tweak in your system:
 
-<[sample:AdvancedConfigurationOfDurabilityAgent]>
+snippet: sample_AdvancedConfigurationOfDurabilityAgent

@@ -1,10 +1,10 @@
-﻿using Jasper.Runtime.Handlers;
+using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration;
 
 namespace Jasper.Configuration
 {
-    // SAMPLE: IHandlerPolicy
+    #region sample_IHandlerPolicy
     /// <summary>
     ///     Use to apply your own conventions or policies to message handlers
     /// </summary>
@@ -18,5 +18,5 @@ namespace Jasper.Configuration
         /// <param name="container">The application's underlying Lamar Container</param>
         void Apply(HandlerGraph graph, GenerationRules rules, IContainer container);
     }
-    // ENDSAMPLE
+    #endregion
 }

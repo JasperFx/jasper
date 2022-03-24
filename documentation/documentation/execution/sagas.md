@@ -1,10 +1,10 @@
 <!--title:Stateful Sagas-->
 
-<[info]>
+::: tip warning
 A single stateful sagas can received command messages from any combination of external messages coming in from 
 transports like Rabbit MQ or Azure Service Bus and local command messages through the `ICommandBus`. A `StatefulSagaOf<T>`
 handler is just like any other Jasper handler, but with some extra conventions around the saga state.
-<[/info]>
+:::
 
 
 As is so common in these docs, I would direct you to this from the old "EIP" book: [Process Manager](http://www.enterpriseintegrationpatterns.com/patterns/messaging/ProcessManager.html). A stateful saga in Jasper is used
@@ -17,7 +17,7 @@ consists of a couple parts:
 
 The `StatefulSagaOf<T>` base class looks like this:
 
-<[sample:StatefulSagaOf]>
+snippet: sample_StatefulSagaOf
 
 Right now the options for saga persistence are 
 
@@ -32,16 +32,16 @@ to our customers.
 
 As a first step, let's say that the process of building out a Happy Meal starts with receiving this message shown below:
 
-<[sample:HappyMealOrder]>
+snippet: sample_HappyMealOrder
 
 Next, we need to track the current state of our happy meal order with a new document type that will be persisted across different 
 messages being handled by our saga:
 
-<[sample:HappyMealOrderState]>
+snippet: sample_HappyMealOrderState
 
 Finally, let's add a new saga handler for our new state document and a single message handler action to start the saga:
 
-<[sample:HappyMealSaga1]>
+snippet: sample_HappyMealSaga1
 
 There's a couple things to note about the `Starts()` method up above:
 
@@ -52,17 +52,17 @@ for the saga and the saga persistence will save the document as part of executin
 
 If you're uncomfortable with C# tuples or just don't like the magic, you can effect the same outgoing messages by using this alternative:
 
-<[sample:HappyMealSaga1NoTuple]>
+snippet: sample_HappyMealSaga1NoTuple
 
 Both of the examples above assume that the `SodaRequested` messages will be sent to other systems, but it's perfectly possible
 to use a stateful saga to manage processing that's handled completely within your system like this:
 
-<[sample:HappyMealSaga1Local]>
+snippet: sample_HappyMealSaga1Local
 
-<[info]>
+::: tip warning
 The logical saga can be split across multiple classes inheriting from the `SagaStatefulOf<T>` abstract class, as long as the 
 handler types all use the same *state* type
-<[/info]>
+:::
 
 ## Updating and Completing Saga State
 
@@ -70,7 +70,7 @@ As we saw above, methods named `Start` or `Starts` are assumed to create a brand
 
 Related to the saga above, let's say that we receive a `SodaFetched` message that denotes that the soda we requested at the onset of the saga is ready. We'll need to update the state to mark that the drink is ready, and if all the parts of the happy meal are ready, we'll tell some kind of `IOrderService` to close the order and mark the saga as complete. That handler mthod could look like this:
 
-<[sample:completing-saga]>
+snippet: sample_completing_saga
 
 Things to note in the sample up above:
 
@@ -99,19 +99,19 @@ is related to a certain persisted state document by the id of that state documen
 If the message is being passed to the local system or exchanging messages with an external Jasper system, there's an `Envelope.SagaId` property that gets propagated on every message and response that Jasper can use automatically to do the state document to message correlation. For example, if the `SodaRequested` message is sent to another system running Jasper that replies to our system with 
 a corresponding `SodaFetched` message in a handler like this:
 
-<[sample:SodaHandler]>
+snippet: sample_SodaHandler
 
 If you are receiving messages from an external system or don't want to or can't depend on that envelope metadata, you can pass the identity of the saga state document in the message itself. Jasper always checks the `Envelope.SagaId` value first, but failing that it falls back to looking for a property named `SagaId` on the incoming message type like this:
 
-<[sample:BurgerReady]>
+snippet: sample_BurgerReady
 
 Or if you want to use a different property name, you can override that with an attribute like this:
 
-<[sample:ToyOnTray]>
+snippet: sample_ToyOnTray
 
 To add some context, let's see these two messages in context:
 
-<[sample:passing-saga-state-id-through-message]>
+snippet: sample_passing_saga_state_id_through_message
 
 If you were using the <[linkto:documentation/durability/marten;title=Marten-backed saga persistence]>, the code above
 would result in the `HappyMealOrderState` document being loaded with the value in `BurgerReady.SagaId` or `ToyOnTray.OrderId` as the document id.

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Jasper;
 using Jasper.Attributes;
@@ -8,7 +8,7 @@ using TestMessages;
 
 namespace Samples
 {
-    // SAMPLE: ValidMessageHandlers
+    #region sample_ValidMessageHandlers
     public class ValidMessageHandlers
     {
         // There's only one argument, so we'll assume that
@@ -47,7 +47,7 @@ namespace Samples
             Guid Id { get; }
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public interface IEmailService
@@ -55,7 +55,7 @@ namespace Samples
     }
 
 
-    // SAMPLE: simplest-possible-handler
+    #region sample_simplest_possible_handler
     public class MyMessageHandler
     {
         public void Handle(MyMessage message)
@@ -63,12 +63,12 @@ namespace Samples
             // do stuff with the message
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     namespace One
     {
-        // SAMPLE: ExampleHandlerByInstance
+        #region sample_ExampleHandlerByInstance
         public class ExampleHandler
         {
             public void Handle(Message1 message)
@@ -83,12 +83,12 @@ namespace Samples
             }
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     namespace Two
     {
-        // SAMPLE: ExampleHandlerByStaticMethods
+        #region sample_ExampleHandlerByStaticMethods
         public static class ExampleHandler
         {
             public static void Handle(Message1 message)
@@ -103,13 +103,13 @@ namespace Samples
             }
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
     namespace Sample2
     {
          [JasperIgnore]
-        // SAMPLE: HandlerBuiltByConstructorInjection
+        #region sample_HandlerBuiltByConstructorInjection
         public class ServiceUsingHandler
         {
             private readonly IDocumentSession _session;
@@ -127,13 +127,13 @@ namespace Samples
                 return _session.SaveChangesAsync();
             }
         }
-        // ENDSAMPLE
+        #endregion
     }
 
     namespace Three
     {
         [JasperIgnore]
-        // SAMPLE: HandlerUsingMethodInjection
+        #region sample_HandlerUsingMethodInjection
         public static class MethodInjectionHandler
         {
             public static Task Handle(InvoiceCreated message, IDocumentSession session)
@@ -145,10 +145,10 @@ namespace Samples
             }
         }
 
-        // ENDSAMPLE
+        #endregion
     }
 
-    // SAMPLE: HandlerUsingEnvelope
+    #region sample_HandlerUsingEnvelope
     public class EnvelopeUsingHandler
     {
         public void Handle(InvoiceCreated message, Envelope envelope)
@@ -157,7 +157,7 @@ namespace Samples
                 DateTime.UtcNow.Subtract(envelope.SentAt);
         }
     }
-    // ENDSAMPLE
+    #endregion
 
 
     public class Invoice
@@ -166,7 +166,7 @@ namespace Samples
     }
 
 
-    // SAMPLE: ExplicitHandlerDiscovery
+    #region sample_ExplicitHandlerDiscovery
     public class ExplicitHandlerDiscovery : JasperOptions
     {
         public ExplicitHandlerDiscovery()
@@ -176,5 +176,5 @@ namespace Samples
         }
     }
 
-    // ENDSAMPLE
+    #endregion
 }

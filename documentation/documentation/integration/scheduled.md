@@ -1,16 +1,16 @@
 <!--title:Scheduled Message Delivery and Execution-->
 
 
-<[info]>
+::: tip warning
 Why didn't we just use [Hangfire](https://www.hangfire.io/)? We looked at it, but thought that our current solution avoided having to have more dependencies and the database mechanism was actually easier for diagnostic views of the scheduled messages. We do recommend Hangfire if you really just want scheduled job execution.
-<[/info]>
+:::
 
 
 ## Schedule Message Delivery
 
 You can send messages with Jasper, but request that the actual message sending to happen at some later time with `IMessageContext.ScheduleSend()`:
 
-<[sample:send-delayed-message]>
+snippet: sample_send_delayed_message
 
 
 This functionality is useful for long lived workflows where there are time limits for any part of the process. Internally, this feature is used for the *retry later* function in <[linkto:documentation/execution/errorhandling;error handling and retries]>. 
@@ -28,13 +28,13 @@ Here's a couple things to know about this functionality:
 
 This same functionality is used for the `ICommandBus.Schedule()` functionality as shown below:
 
-<[sample:schedule-job-locally]>
+snippet: sample_schedule_job_locally
 
 In the case above though, the message is executed locally at the designated time.
 
 The locally scheduled messages are handled in the local "durable" queue. You can fine tune the parallelization of this <[linkto:documentation/local;title=local worker queue]> through this syntax:
 
-<[sample:DurableScheduledMessagesLocalQueue]>
+snippet: sample_DurableScheduledMessagesLocalQueue
 
 
 ## Schedule Execution From Cascading Messages
@@ -42,7 +42,7 @@ The locally scheduled messages are handled in the local "durable" queue. You can
 To schedule a message to another system as a <[linkto:documentation/execution/cascading;title=cascading message]> from a message handler, 
 you can return the `ScheduledResponse` object like this:
 
-<[sample:DelayedResponseHandler]>
+snippet: sample_DelayedResponseHandler
 
 
 ## RequeueLater
