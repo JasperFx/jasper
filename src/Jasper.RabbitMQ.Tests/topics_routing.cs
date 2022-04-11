@@ -134,7 +134,7 @@ namespace Jasper.RabbitMQ.Tests
     {
         public TopicSendingApp()
         {
-            ConfigureRabbitMq(rabbit =>
+            this.ConfigureRabbitMq(rabbit =>
             {
                 rabbit.ConnectionFactory.HostName = "localhost";
                 rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
@@ -159,7 +159,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             var queueName = "q" + topic;
 
-            ConfigureRabbitMq(rabbit =>
+            this.ConfigureRabbitMq(rabbit =>
             {
                 rabbit.ConnectionFactory.HostName = "localhost";
                 rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
@@ -174,7 +174,7 @@ namespace Jasper.RabbitMQ.Tests
                 });
             });
 
-            ListenToRabbitQueue(queueName);
+            this.ListenToRabbitQueue(queueName);
 
             ServiceName = topic;
 

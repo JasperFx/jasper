@@ -39,11 +39,11 @@ namespace Jasper.RabbitMQ.Tests
         public async Task send_message_to_and_receive_through_rabbitmq_with_durable_transport_option()
         {
             var queueName = RabbitTesting.NextQueueName();
-            using var publisher = JasperHost.For(_ =>
+            using var publisher = JasperHost.For(opts =>
             {
-                _.Extensions.UseMessageTrackingTestingSupport();
+                opts.Extensions.UseMessageTrackingTestingSupport();
 
-                _.ConfigureRabbitMq(x =>
+                opts.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -51,19 +51,18 @@ namespace Jasper.RabbitMQ.Tests
                     x.AutoPurgeOnStartup = true;
                 });
 
-                _.Endpoints
-                    .PublishAllMessages()
+                opts.PublishAllMessages()
                     .ToRabbit(queueName)
                     .Durably();
 
-                _.Extensions.UseMarten(x =>
+                opts.Extensions.UseMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "sender";
                 });
 
-                _.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
 
             });
 
@@ -110,13 +109,13 @@ namespace Jasper.RabbitMQ.Tests
             var queueName2 = RabbitTesting.NextQueueName();
 
 
-            using var publisher = JasperHost.For(_ =>
+            using var publisher = JasperHost.For(opts =>
             {
-                _.ServiceName = "Publisher";
-                _.Extensions.UseMessageTrackingTestingSupport();
+                opts.ServiceName = "Publisher";
+                opts.Extensions.UseMessageTrackingTestingSupport();
 
 
-                _.ConfigureRabbitMq(x =>
+                opts.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName1);
@@ -124,21 +123,20 @@ namespace Jasper.RabbitMQ.Tests
                     x.AutoProvision = true;
                 });
 
-                _.Endpoints
-                    .PublishAllMessages()
+                opts.PublishAllMessages()
                     .ToRabbit(queueName1)
                     .Durably();
 
-                _.ListenToRabbitQueue(queueName2).UseForReplies();
+                opts.ListenToRabbitQueue(queueName2).UseForReplies();
 
-                _.Extensions.UseMarten(x =>
+                opts.Extensions.UseMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "sender";
                 });
 
-                _.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
 
             });
 
@@ -551,14 +549,14 @@ namespace Jasper.RabbitMQ.Tests
         {
             Extensions.UseMessageTrackingTestingSupport();
 
-            ConfigureRabbitMq(x =>
+            this.ConfigureRabbitMq(x =>
             {
                 x.ConnectionFactory.HostName = "localhost";
                 x.DeclareQueue("messages3");
                 x.AutoProvision = true;
             });
 
-            ListenToRabbitQueue("messages3");
+            this.ListenToRabbitQueue("messages3");
 
             Services.AddSingleton<ColorHistory>();
 

@@ -93,7 +93,7 @@ namespace Jasper.RabbitMQ.Internal
 
         internal IConnection BuildConnection()
         {
-            return AmqpTcpAny()
+            return AmqpTcpEndpoints.Any()
                 ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
                 : ConnectionFactory.CreateConnection();
         }

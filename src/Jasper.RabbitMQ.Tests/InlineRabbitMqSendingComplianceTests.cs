@@ -15,7 +15,7 @@ namespace Jasper.RabbitMQ.Tests
             QueueName = $"compliance{++Count}";
             var listener = $"listener{Count}";
 
-            ConfigureRabbitMq(x =>
+            this.ConfigureRabbitMq(x =>
             {
                 x.ConnectionFactory.HostName = "localhost";
                 x.DeclareQueue(QueueName);
@@ -24,7 +24,7 @@ namespace Jasper.RabbitMQ.Tests
                 x.AutoPurgeOnStartup = true;
             });
 
-            ListenToRabbitQueue(listener).UseForReplies().ProcessInline();
+            this.ListenToRabbitQueue(listener).UseForReplies().ProcessInline();
 
             PublishAllMessages().ToRabbit(QueueName).SendInline();
         }
@@ -36,12 +36,12 @@ namespace Jasper.RabbitMQ.Tests
     {
         public InlineReceiver(string queueName)
         {
-            ConfigureRabbitMq(x =>
+            this.ConfigureRabbitMq(x =>
             {
                 x.ConnectionFactory.HostName = "localhost";
             });
 
-            ListenToRabbitQueue(queueName).ProcessInline();
+            this.ListenToRabbitQueue(queueName).ProcessInline();
 
 
         }

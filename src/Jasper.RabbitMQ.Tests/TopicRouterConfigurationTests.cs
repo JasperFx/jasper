@@ -15,7 +15,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             var router = new RabbitMqTopicRouter("numbers");
 
-            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
+            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions());
 
             configuration.DurablyStoreAndForward();
 
@@ -28,7 +28,7 @@ namespace Jasper.RabbitMQ.Tests
             var router = new RabbitMqTopicRouter("numbers");
             router.Mode = EndpointMode.Inline;
 
-            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
+            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions());
 
             configuration.BufferedInMemory();
 
@@ -41,7 +41,7 @@ namespace Jasper.RabbitMQ.Tests
             var router = new RabbitMqTopicRouter("numbers");
             router.Mode = EndpointMode.BufferedInMemory;
 
-            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions().Endpoints);
+            var configuration = new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, new JasperOptions());
 
             configuration.SendInline();
 
