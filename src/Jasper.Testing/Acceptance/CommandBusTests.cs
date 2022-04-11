@@ -23,18 +23,18 @@ namespace Jasper.Testing.Acceptance
 
         private void configure()
         {
-            with(_ =>
+            with(opts =>
             {
-                _.Services.AddSingleton(theTracker);
+                opts.Services.AddSingleton(theTracker);
 
-                _.Publish(x => x.MessagesFromAssemblyContaining<Message1>()
+                opts.Publish(x => x.MessagesFromAssemblyContaining<Message1>()
                     .ToLocalQueue("cascading"));
 
-                _.Services.AddSingleton<IMessageLogger>(this);
+                opts.Services.AddSingleton<IMessageLogger>(this);
 
-                _.Handlers.OnException<DivideByZeroException>().Requeue();
+                opts.Handlers.OnException<DivideByZeroException>().Requeue();
 
-                _.Handlers.Retries.MaximumAttempts = 3;
+                opts.Handlers.Retries.MaximumAttempts = 3;
             });
         }
 

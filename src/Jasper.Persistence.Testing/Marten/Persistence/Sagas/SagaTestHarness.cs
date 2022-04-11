@@ -19,24 +19,24 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 
         protected SagaTestHarness()
         {
-            _host = JasperHost.For(_ =>
+            _host = JasperHost.For(opts =>
             {
-                _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
+                opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                _.Extensions.UseMarten(x =>
+                opts.Extensions.UseMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.DatabaseSchemaName = "sagas";
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                 });
 
-                _.Extensions.Include<MessageTrackingExtension>();
+                opts.Extensions.Include<MessageTrackingExtension>();
 
 
 
-                _.PublishAllMessages().Locally();
+                opts.PublishAllMessages().Locally();
 
-                configure(_);
+                configure(opts);
             });
 
 

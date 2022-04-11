@@ -14,18 +14,18 @@ namespace Jasper.Testing.Acceptance
     {
         public publish_versus_send_mechanics(DefaultApp @default) : base(@default)
         {
-            with(_ =>
+            with(opts =>
             {
-                _.Handlers.DisableConventionalDiscovery();
+                opts.Handlers.DisableConventionalDiscovery();
 
-                _.Publish(x => x
+                opts.Publish(x => x
                     .Message<Message1>()
                     .Message<Message2>()
                     .ToLocalQueue("one"));
 
-                _.Publish(x => x.Message<Message2>().ToLocalQueue("two"));
+                opts.Publish(x => x.Message<Message2>().ToLocalQueue("two"));
 
-                _.Extensions.UseMessageTrackingTestingSupport();
+                opts.Extensions.UseMessageTrackingTestingSupport();
 
             });
         }

@@ -45,13 +45,13 @@ namespace StorytellerSpecs.Fixtures.Marten
 
             _messageLogger.Start(Context);
 
-            _receiverStore = DocumentStore.For(_ =>
+            _receiverStore = DocumentStore.For(opts =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "receiver";
+                opts.Connection(Servers.PostgresConnectionString);
+                opts.DatabaseSchemaName = "receiver";
 
 
-                _.Schema.For<TraceDoc>();
+                opts.Schema.For<TraceDoc>();
             });
 
             _receiverStore.Advanced.Clean.CompletelyRemoveAll();
@@ -59,10 +59,10 @@ namespace StorytellerSpecs.Fixtures.Marten
                 .GetAwaiter().GetResult();
 
 
-            _sendingStore = DocumentStore.For(_ =>
+            _sendingStore = DocumentStore.For(opts =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "sender";
+                opts.Connection(Servers.PostgresConnectionString);
+                opts.DatabaseSchemaName = "sender";
             });
 
             var advanced = new AdvancedSettings(null);

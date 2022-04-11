@@ -15,20 +15,20 @@ namespace Jasper.Tcp.Tests
         {
 
 
-            var host = JasperHost.For(_ =>
+            var host = JasperHost.For(opts =>
             {
-                _.Handlers.DisableConventionalDiscovery();
-                _.Handlers.IncludeType<NewMessageHandler>();
+                opts.Handlers.DisableConventionalDiscovery();
+                opts.Handlers.IncludeType<NewMessageHandler>();
 
-                _.Extensions.UseMessageTrackingTestingSupport();
+                opts.Extensions.UseMessageTrackingTestingSupport();
 
-                _.Publish(x =>
+                opts.Publish(x =>
                 {
                     x.Message<OriginalMessage>();
                     x.ToPort(2345);
                 });
 
-                _.ListenAtPort(2345);
+                opts.ListenAtPort(2345);
             });
 
             try

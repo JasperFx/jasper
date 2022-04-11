@@ -14,11 +14,11 @@ namespace Jasper.Testing.Compilation
     {
         private void forMessage<T>(Action<HandlerChain> action)
         {
-            using (var runtime = JasperHost.For(_ =>
+            using (var runtime = JasperHost.For(opts =>
             {
-                _.Handlers.DisableConventionalDiscovery();
-                _.Handlers.IncludeType<FakeHandler1>();
-                _.Handlers.IncludeType<FakeHandler2>();
+                opts.Handlers.DisableConventionalDiscovery();
+                opts.Handlers.IncludeType<FakeHandler1>();
+                opts.Handlers.IncludeType<FakeHandler2>();
             }))
             {
                 var chain = runtime.Get<HandlerGraph>().ChainFor<T>();

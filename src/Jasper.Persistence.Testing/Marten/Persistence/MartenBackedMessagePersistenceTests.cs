@@ -16,9 +16,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
     {
         public MartenBackedMessagePersistenceTests()
         {
-            theHost = JasperHost.For(_ =>
+            theHost = JasperHost.For(opts =>
             {
-                _.Extensions.UseMarten(x =>
+                opts.Extensions.UseMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                 });

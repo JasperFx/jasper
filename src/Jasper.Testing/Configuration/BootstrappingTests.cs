@@ -30,7 +30,7 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void can_apply_a_wrapper_to_all_chains()
         {
-            with(_ => _.Handlers.GlobalPolicy<WrapWithSimple>());
+            with(opts => opts.Handlers.GlobalPolicy<WrapWithSimple>());
 
             chainFor<MovieAdded>().Middleware.OfType<SimpleWrapper>().Any().ShouldBeTrue();
         }
@@ -57,10 +57,10 @@ namespace Jasper.Testing.Configuration
         [Fact]
         public void can_customize_source_code_generation()
         {
-            with(_ =>
+            with(opts =>
             {
-                _.Advanced.CodeGeneration.Sources.Add(new SpecialServiceSource());
-                _.Handlers.IncludeType<SpecialServiceUsingThing>();
+                opts.Advanced.CodeGeneration.Sources.Add(new SpecialServiceSource());
+                opts.Handlers.IncludeType<SpecialServiceUsingThing>();
             });
 
 

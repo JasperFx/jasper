@@ -21,15 +21,15 @@ namespace Jasper.Testing.Persistence.Sagas
 
         protected void withApplication()
         {
-            _host = JasperHost.For(_ =>
+            _host = JasperHost.For(opts =>
             {
-                _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
+                opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                _.Extensions.Include<MessageTrackingExtension>();
+                opts.Extensions.Include<MessageTrackingExtension>();
 
-                _.PublishAllMessages().To(TransportConstants.LocalUri);
+                opts.PublishAllMessages().To(TransportConstants.LocalUri);
 
-                configure(_);
+                configure(opts);
             });
 
         }

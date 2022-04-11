@@ -32,9 +32,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected override async Task initialize()
         {
-            theHost = JasperHost.For(_ =>
+            theHost = JasperHost.For(opts =>
             {
-                _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
             await theHost.RebuildMessageStorage();

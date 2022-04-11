@@ -73,10 +73,10 @@ namespace Jasper.Testing
             Host = JasperHost.For(opts =>
             {
                 configuration(opts);
-                opts.Services.Scan(_ =>
+                opts.Services.Scan(scan =>
                 {
-                    _.TheCallingAssembly();
-                    _.WithDefaultConventions();
+                    scan.TheCallingAssembly();
+                    scan.WithDefaultConventions();
                 });
             });
         }

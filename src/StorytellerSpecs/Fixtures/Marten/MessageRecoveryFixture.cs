@@ -79,19 +79,19 @@ namespace StorytellerSpecs.Fixtures.Marten
             _workers = new RecordingWorkerQueue();
 
             _host = Host.CreateDefaultBuilder()
-                .UseJasper(_ =>
+                .UseJasper(opts =>
                 {
-                    _.ServiceName = Guid.NewGuid().ToString();
-                    _.Services.AddSingleton<ILogger>(NullLogger.Instance);
-                    _.Extensions.UseMarten(Servers.PostgresConnectionString);
+                    opts.ServiceName = Guid.NewGuid().ToString();
+                    opts.Services.AddSingleton<ILogger>(NullLogger.Instance);
+                    opts.Extensions.UseMarten(Servers.PostgresConnectionString);
 
-                    _.Services.AddSingleton<IWorkerQueue>(_workers);
+                    opts.Services.AddSingleton<IWorkerQueue>(_workers);
 
 
-                    _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
-                    _.Advanced.ScheduledJobFirstExecution = 30.Minutes();
-                    _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
-                    _.Advanced.NodeReassignmentPollingTime = 30.Minutes();
+                    opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                    opts.Advanced.ScheduledJobFirstExecution = 30.Minutes();
+                    opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                    opts.Advanced.NodeReassignmentPollingTime = 30.Minutes();
                 })
                 .Start();
 

@@ -79,16 +79,16 @@ namespace StorytellerSpecs.Fixtures.SqlServer
 
 
             _host = Host.CreateDefaultBuilder()
-                .UseJasper(_ =>
+                .UseJasper(opts =>
                 {
-                    _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-                    _.Services.AddSingleton<ILogger>(NullLogger.Instance);
-                    _.Services.AddSingleton<IWorkerQueue>(_workers);
-                    _.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
-                    _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
-                    _.Advanced.ScheduledJobFirstExecution = 30.Minutes();
-                    _.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
-                    _.Advanced.NodeReassignmentPollingTime = 30.Minutes();
+                    opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                    opts.Services.AddSingleton<ILogger>(NullLogger.Instance);
+                    opts.Services.AddSingleton<IWorkerQueue>(_workers);
+                    opts.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
+                    opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                    opts.Advanced.ScheduledJobFirstExecution = 30.Minutes();
+                    opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                    opts.Advanced.NodeReassignmentPollingTime = 30.Minutes();
                 })
                 .Start();
 

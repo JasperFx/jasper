@@ -15,12 +15,12 @@ namespace Jasper.Persistence.Testing.Marten
         {
             var code = "";
 
-            using (var runtime = JasperHost.For(_ =>
+            using (var runtime = JasperHost.For(opts =>
             {
-                _.Extensions.UseMarten(Servers.PostgresConnectionString);
+                opts.Extensions.UseMarten(Servers.PostgresConnectionString);
 
-                _.Handlers.DisableConventionalDiscovery();
-                _.Handlers.IncludeType<THandler>();
+                opts.Handlers.DisableConventionalDiscovery();
+                opts.Handlers.IncludeType<THandler>();
             }))
             {
                 code = runtime.Get<HandlerGraph>().ChainFor<TMessage>().SourceCode;

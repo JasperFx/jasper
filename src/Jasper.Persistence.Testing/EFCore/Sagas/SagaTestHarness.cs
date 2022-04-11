@@ -29,21 +29,21 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
         protected SagaTestHarness(ITestOutputHelper output)
         {
             _output = output;
-            _host = JasperHost.For(_ =>
+            _host = JasperHost.For(opts =>
             {
-                _.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
+                opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                _.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
-                _.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
+                opts.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
 
-                _.Extensions.UseEntityFrameworkCorePersistence();
+                opts.Extensions.UseEntityFrameworkCorePersistence();
 
-                _.Extensions.UseMessageTrackingTestingSupport();
+                opts.Extensions.UseMessageTrackingTestingSupport();
 
-                _.PublishAllMessages().Locally();
+                opts.PublishAllMessages().Locally();
 
-                configure(_);
+                configure(opts);
             });
         }
 

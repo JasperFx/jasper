@@ -16,10 +16,10 @@ namespace StorytellerSpecs.Fixtures.Marten.App
 
             Publish(x => x.Message<TraceMessage>().To(listener).Durably());
 
-            Extensions.UseMarten(_ =>
+            Extensions.UseMarten(opts =>
             {
-                _.Connection(Servers.PostgresConnectionString);
-                _.DatabaseSchemaName = "sender";
+                opts.Connection(Servers.PostgresConnectionString);
+                opts.DatabaseSchemaName = "sender";
             });
 
             Advanced.ScheduledJobPollingTime = 1.Seconds();

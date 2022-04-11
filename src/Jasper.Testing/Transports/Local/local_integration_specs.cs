@@ -15,12 +15,12 @@ namespace Jasper.Testing.Transports.Local
 
         private void configure()
         {
-            with(_ =>
+            with(opts =>
             {
-                _.Publish(x => x.Message<Message1>()
+                opts.Publish(x => x.Message<Message1>()
                     .ToLocalQueue("incoming"));
 
-                _.Extensions.UseMessageTrackingTestingSupport();
+                opts.Extensions.UseMessageTrackingTestingSupport();
 
             });
         }

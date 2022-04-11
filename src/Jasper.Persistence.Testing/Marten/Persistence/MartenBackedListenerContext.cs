@@ -65,9 +65,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         public MartenBackedListenerContext()
         {
-            theStore = DocumentStore.For(_ =>
+            theStore = DocumentStore.For(opts =>
             {
-                _.Connection(Servers.PostgresConnectionString);
+                opts.Connection(Servers.PostgresConnectionString);
             });
         }
 
