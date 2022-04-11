@@ -13,6 +13,6 @@
     <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LamarCodeGeneration.Commands" Version="6.1.1" />
+    <PackageReference Include="LamarCodeGeneration.Commands" Version="6.1.2" />
   </ItemGroup>
 </Project>
