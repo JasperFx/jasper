@@ -51,14 +51,17 @@ namespace TestingSupport.Compliance
 
         public bool AllLocally { get; set; }
 
-        protected Task SenderIs(JasperOptions options)
+        protected Task SenderIs(Action<JasperOptions> configure)
         {
-            configureSender(options);
-            Sender = JasperHost.For(options);
+            Sender = JasperHost.For(opts =>
+            {
+                configure(opts);
+                configureSender(opts);
+            });
             return Sender.RebuildMessageStorage();
         }
 
-        private void configureSender<T>(T options) where T : JasperOptions, new()
+        private void configureSender(JasperOptions options)
         {
             options.Handlers
                 .DisableConventionalDiscovery()
@@ -72,16 +75,19 @@ namespace TestingSupport.Compliance
             options.Services.AddSingleton<IMessageSerializer, GreenTextWriter>();
         }
 
-        public Task ReceiverIs(JasperOptions options)
+        public Task ReceiverIs(Action<JasperOptions> configure)
         {
-            configureReceiver(options);
-            Receiver = JasperHost.For(options);
+            Receiver = JasperHost.For(opts =>
+            {
+                configure(opts);
+                configureReceiver(opts);
+            });
+
             return Receiver.RebuildMessageStorage();
         }
 
         private static void configureReceiver<T>(T options) where T : JasperOptions, new()
         {
-
             options.Handlers.Retries.MaximumAttempts = 3;
             options.Handlers
                 .DisableConventionalDiscovery()

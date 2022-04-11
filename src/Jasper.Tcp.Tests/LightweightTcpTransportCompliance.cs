@@ -7,34 +7,6 @@ using Xunit;
 
 namespace Jasper.Tcp.Tests
 {
-    public class Sender : JasperOptions
-    {
-        public Sender(int portNumber)
-        {
-            this.ListenAtPort(portNumber);
-        }
-
-        public Sender()
-            : this(2389)
-        {
-
-        }
-    }
-
-    public class Receiver : JasperOptions
-    {
-        public Receiver(int portNumber)
-        {
-            this.ListenAtPort(portNumber);
-        }
-
-        public Receiver() : this(2388)
-        {
-
-        }
-    }
-
-
     public class PortFinder
     {
         private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
@@ -57,9 +29,15 @@ namespace Jasper.Tcp.Tests
 
         public async Task InitializeAsync()
         {
-            await SenderIs(new Sender(PortFinder.GetAvailablePort()));
+            await SenderIs(opts =>
+            {
+                opts.ListenAtPort(PortFinder.GetAvailablePort());
+            });
 
-            await ReceiverIs(new Receiver(OutboundAddress.Port));
+            await ReceiverIs(opts =>
+            {
+                opts.ListenAtPort(OutboundAddress.Port);
+            });
         }
 
         public Task DisposeAsync()

@@ -11,45 +11,7 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten
 {
-    public class Sender : JasperOptions
-    {
-        public Sender()
-        {
-            Extensions.Include<TcpTransportExtension>();
-            ReceivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
-            ListenForMessagesFrom(ReceivingUri);
 
-            Extensions.UseMarten(x =>
-            {
-                x.Connection(Servers.PostgresConnectionString);
-                x.DatabaseSchemaName = "sender";
-            });
-
-        }
-
-        public Uri ReceivingUri { get; set; }
-    }
-
-    public class Receiver : JasperOptions
-    {
-        public Receiver()
-        {
-            Extensions.Include<TcpTransportExtension>();
-            ReceivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
-            ListenForMessagesFrom(ReceivingUri);
-
-
-
-            Extensions.UseMarten(x =>
-            {
-                x.Connection(Servers.PostgresConnectionString);
-                x.DatabaseSchemaName = "receiver";
-            });
-
-        }
-
-        public Uri ReceivingUri { get; set; }
-    }
 
     public class PortFinder
     {
@@ -75,12 +37,32 @@ namespace Jasper.Persistence.Testing.Marten
 
         public async Task InitializeAsync()
         {
-            var receiver = new Receiver();
-            OutboundAddress = receiver.ReceivingUri;
-            var sender = new Sender();
-            await SenderIs(sender);
+            OutboundAddress = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
 
-            await ReceiverIs(receiver);
+            await SenderIs(opts =>
+            {
+                opts.Extensions.Include<TcpTransportExtension>();
+                var receivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
+                opts.ListenForMessagesFrom(receivingUri);
+
+                opts.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.DatabaseSchemaName = "sender";
+                });
+            });
+
+            await ReceiverIs(opts =>
+            {
+                opts.Extensions.Include<TcpTransportExtension>();
+                opts.ListenForMessagesFrom(OutboundAddress);
+
+                opts.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.DatabaseSchemaName = "receiver";
+                });
+            });
         }
 
         public Task DisposeAsync()

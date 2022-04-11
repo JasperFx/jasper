@@ -7,45 +7,6 @@ using Xunit;
 namespace Jasper.RabbitMQ.Tests
 {
 
-    public class Sender : JasperOptions
-    {
-        public Sender()
-        {
-            QueueName = RabbitTesting.NextQueueName();
-            var listener = $"listener{RabbitTesting.Number}";
-
-            this.ConfigureRabbitMq(x =>
-            {
-                x.ConnectionFactory.HostName = "localhost";
-                x.DeclareQueue(QueueName);
-                x.DeclareQueue(listener);
-                x.AutoProvision = true;
-                x.AutoPurgeOnStartup = true;
-            });
-
-            this.ListenToRabbitQueue(listener).UseForReplies();
-
-        }
-
-        public string QueueName { get; set; }
-    }
-
-    public class Receiver : JasperOptions
-    {
-        public Receiver(string queueName)
-        {
-            this.ConfigureRabbitMq(x =>
-            {
-                x.ConnectionFactory.HostName = "localhost";
-            });
-
-            this.ListenToRabbitQueue(queueName);
-
-
-        }
-    }
-
-
     public class RabbitMqSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
         public RabbitMqSendingFixture() : base($"rabbitmq://queue/{RabbitTesting.NextQueueName()}".ToUri())
@@ -55,19 +16,39 @@ namespace Jasper.RabbitMQ.Tests
 
         public async Task InitializeAsync()
         {
-            var sender = new Sender();
-            OutboundAddress = $"rabbitmq://queue/{sender.QueueName}".ToUri();
+            var queueName = RabbitTesting.NextQueueName();
+            OutboundAddress = $"rabbitmq://queue/{queueName}".ToUri();
 
-            await SenderIs(sender);
+            await SenderIs(opts =>
+            {
 
-            var receiver = new Receiver(sender.QueueName);
+                var listener = $"listener{RabbitTesting.Number}";
 
-            await ReceiverIs(receiver);
+                opts.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue(queueName);
+                    x.DeclareQueue(listener);
+                    x.AutoProvision = true;
+                    x.AutoPurgeOnStartup = true;
+                });
+
+                opts.ListenToRabbitQueue(listener).UseForReplies();
+            });
+
+            await ReceiverIs(opts =>
+            {
+                opts.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                });
+
+                opts.ListenToRabbitQueue(queueName);
+            });
         }
 
         public Task DisposeAsync()
         {
-
             return Task.CompletedTask;
         }
     }

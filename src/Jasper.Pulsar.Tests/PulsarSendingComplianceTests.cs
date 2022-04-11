@@ -9,32 +9,6 @@ using Xunit;
 namespace Jasper.Pulsar.Tests
 {
 
-    public class Sender : JasperOptions
-    {
-
-        public Sender()
-        {
-            var topic = Guid.NewGuid().ToString();
-            TopicPath = $"persistent://public/default/compliance{topic}";
-            var listener = $"persistent://public/default/replies{topic}";
-            this.ConfigurePulsar(e => {});
-            this.ListenToPulsarTopic(listener).UseForReplies();
-
-        }
-
-        public string TopicPath { get; set; }
-    }
-
-    public class Receiver : JasperOptions
-    {
-        public Receiver(string topicPath)
-        {
-            this.ConnectToLocalPulsar();
-            this.ListenToPulsarTopic(topicPath);
-        }
-    }
-
-
     public class PulsarSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
         public PulsarSendingFixture() : base(null)
@@ -44,14 +18,22 @@ namespace Jasper.Pulsar.Tests
 
         public async Task InitializeAsync()
         {
-            var sender = new Sender();
-            OutboundAddress = PulsarEndpoint.UriFor(sender.TopicPath);
+            var topic = Guid.NewGuid().ToString();
+            var topicPath = $"persistent://public/default/compliance{topic}";
+            OutboundAddress = PulsarEndpoint.UriFor(topicPath);
 
-            await SenderIs(sender);
+            await SenderIs(opts =>
+            {
+                var listener = $"persistent://public/default/replies{topic}";
+                opts.ConfigurePulsar(e => {});
+                opts.ListenToPulsarTopic(listener).UseForReplies();
+            });
 
-            var receiver = new Receiver(sender.TopicPath);
-
-            await ReceiverIs(receiver);
+            await ReceiverIs(opts =>
+            {
+                opts.ConnectToLocalPulsar();
+                opts.ListenToPulsarTopic(topicPath);
+            });
         }
 
         public override void BeforeEach()

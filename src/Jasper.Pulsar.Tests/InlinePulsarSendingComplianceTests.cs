@@ -8,42 +8,8 @@ using Xunit;
 
 namespace Jasper.Pulsar.Tests
 {
-    public class InlineSender : JasperOptions
-    {
-
-        public InlineSender()
-        {
-            var topic = Guid.NewGuid().ToString();
-            TopicPath = $"persistent://public/default/{topic}";
-
-            var replyPath = $"persistent://public/default/replies-{topic}";
-
-            this.ConnectToLocalPulsar();
-
-            this.ListenToPulsarTopic(replyPath).UseForReplies().ProcessInline();
-
-            this.PublishAllMessages().ToPulsar(TopicPath).SendInline();
-        }
-
-        public string TopicPath { get; set; }
-    }
-
-    public class InlineReceiver : JasperOptions
-    {
-        public InlineReceiver(string topicPath)
-        {
-            this.ConnectToLocalPulsar();
-
-            this.ListenToPulsarTopic(topicPath).ProcessInline();
-
-
-        }
-    }
-
-
     public class InlinePulsarSendingFixture : SendingComplianceFixture, IAsyncLifetime
     {
-
         public InlinePulsarSendingFixture() : base(null)
         {
 
@@ -51,16 +17,23 @@ namespace Jasper.Pulsar.Tests
 
         public async Task InitializeAsync()
         {
-            var sender = new InlineSender();
-            OutboundAddress = PulsarEndpoint.UriFor(sender.TopicPath);
+            var topic = Guid.NewGuid().ToString();
+            var topicPath = $"persistent://public/default/{topic}";
+            OutboundAddress = PulsarEndpoint.UriFor(topicPath);
 
-            var receiver = new InlineReceiver(sender.TopicPath);
+            await ReceiverIs(opts =>
+            {
+                opts.ConnectToLocalPulsar();
+                opts.ListenToPulsarTopic(topicPath).ProcessInline();
+            });
 
-            await ReceiverIs(receiver);
-
-            await SenderIs(sender);
-
-
+            await SenderIs(opts =>
+            {
+                var replyPath = $"persistent://public/default/replies-{topic}";
+                opts.ConnectToLocalPulsar();
+                opts.ListenToPulsarTopic(replyPath).UseForReplies().ProcessInline();
+                opts.PublishAllMessages().ToPulsar(topicPath).SendInline();
+            });
         }
 
         public override void BeforeEach()
