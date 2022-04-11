@@ -108,7 +108,7 @@ namespace Jasper
                 services.AddSingleton<IMessageLogger, MessageLogger>();
 
                 services.AddSingleton<IDescribedSystemPart>(s => s.GetRequiredService<JasperOptions>().HandlerGraph);
-                services.AddSingleton<IDescribedSystemPart>(s=> s.GetRequiredService<JasperOptions>().Transports);
+                services.AddSingleton<IDescribedSystemPart>(s=> s.GetRequiredService<JasperOptions>());
 
                 services.AddSingleton<IEnvelopePersistence, NulloEnvelopePersistence>();
                 services.AddSingleton<InMemorySagaPersistor>();

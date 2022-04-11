@@ -9,7 +9,7 @@ namespace Samples
     {
         public MonitoringDataPublisher()
         {
-            Endpoints.PublishAllMessages()
+            PublishAllMessages()
                 .ToPort(2222)
 
                 // Set a message expiration on all

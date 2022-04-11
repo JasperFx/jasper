@@ -71,10 +71,10 @@ namespace StorytellerSpecs.Fixtures
         {
             Services.AddSingleton(Receiver);
 
-            Endpoints.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageApp>()
+            Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageApp>()
                 .ToLocalQueue("incoming"));
 
-            Endpoints.ListenForMessagesFrom("local://incoming");
+            ListenForMessagesFrom("local://incoming");
 
             Handlers.Discovery(x =>
             {

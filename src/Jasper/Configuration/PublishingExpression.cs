@@ -16,12 +16,12 @@ namespace Jasper.Configuration
 
         private readonly IList<Subscriber> _subscribers = new List<Subscriber>();
 
-        internal PublishingExpression(TransportCollection parent)
+        internal PublishingExpression(JasperOptions parent)
         {
             Parent = parent;
         }
 
-        public TransportCollection Parent { get; }
+        public JasperOptions Parent { get; }
 
         internal bool AutoAddSubscriptions { get; set; }
 

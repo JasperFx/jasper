@@ -13,15 +13,13 @@ namespace Jasper.RabbitMQ
             return host
                 .Get<IJasperRuntime>()
                 .Options
-                .Endpoints
-                .As<TransportCollection>()
                 .Get<RabbitMqTransport>();
         }
 
         /// <summary>
         /// Connects to the configured Rabbit MQ broker and ensures that
         /// the exchanges, queues, and bindings declared by this Jasper application
-        /// inside the JasperOptions.Endpoints.ConfigureRabbitMq() block
+        /// inside the JasperOptions.ConfigureRabbitMq() block
         /// have been created
         /// </summary>
         /// <param name="host"></param>
@@ -44,7 +42,7 @@ namespace Jasper.RabbitMQ
         /// <summary>
         /// Connects to the configured Rabbit MQ broker and deletes all
         /// the exchanges, queues, and bindings declared by this Jasper application
-        /// inside the JasperOptions.Endpoints.ConfigureRabbitMq() block
+        /// inside the JasperOptions.ConfigureRabbitMq() block
         /// </summary>
         /// <param name="host"></param>
         public static void TearDownAllRabbitMqObjects(this IHost host)

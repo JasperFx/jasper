@@ -13,7 +13,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
-            Endpoints.ListenAtPort(2345).DurablyPersistedLocally();
+            this.ListenAtPort(2345).DurablyPersistedLocally();
         }
     }
 }

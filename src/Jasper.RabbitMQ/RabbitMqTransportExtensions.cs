@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ
         /// <returns></returns>
         internal static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
         {
-            var transports = endpoints.As<TransportCollection>();
+            var transports = endpoints.As<JasperOptions>();
             var transport = transports.Get<RabbitMqTransport>();
             if (transport == null)
             {

@@ -14,7 +14,7 @@ namespace Publisher
                 .CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.Endpoints.ListenAtPort(2211);
+                    opts.ListenAtPort(2211);
                 })
                 .RunOaktonCommands(args);
         }

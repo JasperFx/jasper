@@ -14,7 +14,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
             Extensions.Include<TcpTransportExtension>();
             Handlers.DisableConventionalDiscovery();
 
-            Endpoints.Publish(x => x.Message<TraceMessage>().To(listener).Durably());
+            Publish(x => x.Message<TraceMessage>().To(listener).Durably());
 
             Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "sender");
 

@@ -31,7 +31,7 @@ namespace Jasper.RabbitMQ.Internal
             IEndpoints endpoints)
         {
             var uri = BuildUriForTopic(topicName);
-            var endpoint = endpoints.As<TransportCollection>().GetOrCreateEndpoint(uri);
+            var endpoint = endpoints.As<JasperOptions>().GetOrCreateEndpoint(uri);
 
             return new RabbitMqSubscriberConfiguration((RabbitMqEndpoint) endpoint);
         }

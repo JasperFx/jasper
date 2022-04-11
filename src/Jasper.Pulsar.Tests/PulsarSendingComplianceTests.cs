@@ -17,8 +17,8 @@ namespace Jasper.Pulsar.Tests
             var topic = Guid.NewGuid().ToString();
             TopicPath = $"persistent://public/default/compliance{topic}";
             var listener = $"persistent://public/default/replies{topic}";
-            Endpoints.ConfigurePulsar(e => {});
-            Endpoints.ListenToPulsarTopic(listener).UseForReplies();
+            this.ConfigurePulsar(e => {});
+            this.ListenToPulsarTopic(listener).UseForReplies();
 
         }
 
@@ -29,10 +29,8 @@ namespace Jasper.Pulsar.Tests
     {
         public Receiver(string topicPath)
         {
-            Endpoints.ConnectToLocalPulsar();
-            Endpoints.ListenToPulsarTopic(topicPath);
-
-
+            this.ConnectToLocalPulsar();
+            this.ListenToPulsarTopic(topicPath);
         }
     }
 

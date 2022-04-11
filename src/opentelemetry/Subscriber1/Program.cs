@@ -20,9 +20,9 @@ namespace Subscriber1
                 .UseJasper(opts =>
                 {
                     opts.ServiceName = "subscriber1";
-                    opts.Endpoints.ConnectToRabbitMqLocally();
+                    opts.ConnectToRabbitMqLocally();
 
-                    opts.Endpoints.ListenToRabbitQueue("subscriber1");
+                    opts.ListenToRabbitQueue("subscriber1");
 
                     opts.Services.AddOpenTelemetryTracing(builder =>
                     {

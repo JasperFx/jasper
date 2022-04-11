@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
 
 
 
-                _.Endpoints.PublishAllMessages().Locally();
+                _.PublishAllMessages().Locally();
 
                 configure(_);
             });

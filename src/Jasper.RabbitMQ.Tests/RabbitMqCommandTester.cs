@@ -17,7 +17,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 HostBuilder = Host.CreateDefaultBuilder().UseJasper(opts =>
                 {
-                    opts.Endpoints.ConfigureRabbitMq(x =>
+                    opts.ConfigureRabbitMq(x =>
                     {
                         x.ConnectionFactory.HostName = "localhost";
                         x.ConnectionFactory.Port = 5672;
@@ -53,7 +53,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 HostBuilder = Host.CreateDefaultBuilder().UseJasper(opts =>
                 {
-                    opts.Endpoints.ConfigureRabbitMq(x =>
+                    opts.ConfigureRabbitMq(x =>
                     {
                         x.ConnectionFactory.HostName = "localhost";
                         x.ConnectionFactory.Port = 5672;
@@ -81,7 +81,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 HostBuilder = Host.CreateDefaultBuilder().UseJasper(opts =>
                 {
-                    opts.Endpoints.ConfigureRabbitMq(x =>
+                    opts.ConfigureRabbitMq(x =>
                     {
                         x.ConnectionFactory.HostName = "localhost";
                         x.ConnectionFactory.Port = 5672;

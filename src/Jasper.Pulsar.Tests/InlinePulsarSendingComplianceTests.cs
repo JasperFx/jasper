@@ -18,11 +18,11 @@ namespace Jasper.Pulsar.Tests
 
             var replyPath = $"persistent://public/default/replies-{topic}";
 
-            Endpoints.ConnectToLocalPulsar();
+            this.ConnectToLocalPulsar();
 
-            Endpoints.ListenToPulsarTopic(replyPath).UseForReplies().ProcessInline();
+            this.ListenToPulsarTopic(replyPath).UseForReplies().ProcessInline();
 
-            Endpoints.PublishAllMessages().ToPulsar(TopicPath).SendInline();
+            this.PublishAllMessages().ToPulsar(TopicPath).SendInline();
         }
 
         public string TopicPath { get; set; }
@@ -32,9 +32,9 @@ namespace Jasper.Pulsar.Tests
     {
         public InlineReceiver(string topicPath)
         {
-            Endpoints.ConnectToLocalPulsar();
+            this.ConnectToLocalPulsar();
 
-            Endpoints.ListenToPulsarTopic(topicPath).ProcessInline();
+            this.ListenToPulsarTopic(topicPath).ProcessInline();
 
 
         }

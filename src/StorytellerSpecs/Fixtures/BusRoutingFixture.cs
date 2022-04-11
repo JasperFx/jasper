@@ -47,7 +47,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("The application is configured to publish all messages locally")]
         public void PublishAllLocally()
         {
-            _options.Endpoints.PublishAllMessages().Locally();
+            _options.PublishAllMessages().Locally();
         }
 
         [FormatAs("The application is configured to publish the message {MessageType} locally")]
@@ -55,7 +55,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var messageType = messageTypeFor(MessageType);
 
-            _options.Endpoints.Publish(x =>
+            _options.Publish(x =>
             {
                 x.Message(messageType);
                 x.Locally();
@@ -69,10 +69,10 @@ namespace StorytellerSpecs.Fixtures
         {
             var type = messageTypeFor(messageType);
 
-            _options.Endpoints.Publish(x => { x.Message(type).To(channel); });
+            _options.Publish(x => { x.Message(type).To(channel); });
 
             // Just makes the test harness listen for things
-            _options.Endpoints.ListenForMessagesFrom(channel);
+            _options.ListenForMessagesFrom(channel);
         }
 
 

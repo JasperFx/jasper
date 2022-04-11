@@ -27,7 +27,7 @@ namespace Jasper.Testing.Acceptance
             {
                 _.Services.AddSingleton(theTracker);
 
-                _.Endpoints.Publish(x => x.MessagesFromAssemblyContaining<Message1>()
+                _.Publish(x => x.MessagesFromAssemblyContaining<Message1>()
                     .ToLocalQueue("cascading"));
 
                 _.Services.AddSingleton<IMessageLogger>(this);

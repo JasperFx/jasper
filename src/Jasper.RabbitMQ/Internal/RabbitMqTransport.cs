@@ -93,7 +93,7 @@ namespace Jasper.RabbitMQ.Internal
 
         internal IConnection BuildConnection()
         {
-            return AmqpTcpEndpoints.Any()
+            return AmqpTcpAny()
                 ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
                 : ConnectionFactory.CreateConnection();
         }
@@ -205,7 +205,7 @@ namespace Jasper.RabbitMQ.Internal
                 {nameof(AutoPurgeOnStartup), AutoPurgeOnStartup}
             };
 
-            var table = TransportCollection.BuildTableForProperties(props);
+            var table = JasperOptions.BuildTableForProperties(props);
             parentNode.AddNode(table);
 
 

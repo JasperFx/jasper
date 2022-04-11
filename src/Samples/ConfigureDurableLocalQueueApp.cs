@@ -7,7 +7,7 @@ namespace Samples
     {
         public ConfigureDurableLocalQueueApp()
         {
-            Endpoints.DurableScheduledMessagesLocalQueue
+            DurableScheduledMessagesLocalQueue
 
                 // Allow no more than 3 scheduled messages
                 // to execute at one time

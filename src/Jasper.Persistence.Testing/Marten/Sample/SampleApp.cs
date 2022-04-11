@@ -72,7 +72,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         public SampleApp()
         {
 
-            Endpoints.PublishAllMessages().Locally();
+            PublishAllMessages().Locally();
 
             Services.AddSingleton<UserNames>();
 

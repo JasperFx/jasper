@@ -134,7 +134,7 @@ namespace Jasper.RabbitMQ.Tests
     {
         public TopicSendingApp()
         {
-            Endpoints.ConfigureRabbitMq(rabbit =>
+            ConfigureRabbitMq(rabbit =>
             {
                 rabbit.ConnectionFactory.HostName = "localhost";
                 rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
@@ -144,7 +144,7 @@ namespace Jasper.RabbitMQ.Tests
             // This directs Jasper to send all messages
             // to the "numbers" exchange in Rabbit MQ with
             // a routing key derived from the message type
-            Endpoints.PublishAllMessages()
+            PublishAllMessages()
                 .ToRabbitTopics("numbers")
                 .OutgoingTopicNameIs<NumberMessage>(x => x.Topic);
 
@@ -159,7 +159,7 @@ namespace Jasper.RabbitMQ.Tests
         {
             var queueName = "q" + topic;
 
-            Endpoints.ConfigureRabbitMq(rabbit =>
+            ConfigureRabbitMq(rabbit =>
             {
                 rabbit.ConnectionFactory.HostName = "localhost";
                 rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
@@ -174,7 +174,7 @@ namespace Jasper.RabbitMQ.Tests
                 });
             });
 
-            Endpoints.ListenToRabbitQueue(queueName);
+            ListenToRabbitQueue(queueName);
 
             ServiceName = topic;
 

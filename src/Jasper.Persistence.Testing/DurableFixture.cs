@@ -35,7 +35,7 @@ namespace Jasper.Persistence.Testing
 
             senderRegistry.Extensions.UseMessageTrackingTestingSupport();
 
-            senderRegistry.Endpoints.Publish(x =>
+            senderRegistry.Publish(x =>
             {
                 x.Message<TriggerMessage>();
                 x.Message<ItemCreated>();
@@ -46,7 +46,7 @@ namespace Jasper.Persistence.Testing
             });
 
 
-            senderRegistry.Endpoints.ListenAtPort(senderPort).DurablyPersistedLocally();
+            senderRegistry.ListenAtPort(senderPort).DurablyPersistedLocally();
 
             configureSender(senderRegistry);
 
@@ -62,7 +62,7 @@ namespace Jasper.Persistence.Testing
                 .IncludeType<QuestionHandler>()
                 .IncludeType<ScheduledMessageHandler>();
 
-            receiverRegistry.Endpoints.ListenAtPort(receiverPort).DurablyPersistedLocally();
+            receiverRegistry.ListenAtPort(receiverPort).DurablyPersistedLocally();
 
             receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
 

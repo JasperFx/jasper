@@ -59,10 +59,10 @@ namespace StorytellerSpecs.Fixtures.InMemory
         {
             var type = messageTypeFor(messageType);
 
-            _options.Endpoints.Publish(x => x.Message(type).To(channel));
+            _options.Publish(x => x.Message(type).To(channel));
 
             // Just makes the test harness listen for things
-            _options.Endpoints.ListenForMessagesFrom(channel);
+            _options.ListenForMessagesFrom(channel);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Testing.Marten
         {
             Extensions.Include<TcpTransportExtension>();
             ReceivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
-            Endpoints.ListenForMessagesFrom(ReceivingUri);
+            ListenForMessagesFrom(ReceivingUri);
 
             Extensions.UseMarten(x =>
             {
@@ -36,7 +36,7 @@ namespace Jasper.Persistence.Testing.Marten
         {
             Extensions.Include<TcpTransportExtension>();
             ReceivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
-            Endpoints.ListenForMessagesFrom(ReceivingUri);
+            ListenForMessagesFrom(ReceivingUri);
 
 
 

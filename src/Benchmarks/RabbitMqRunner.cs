@@ -50,15 +50,15 @@ namespace Benchmarks
 
                 var queueName = RabbitTesting.NextQueueName();
 
-                opts.Endpoints.ConfigureRabbitMq(x =>
+                opts.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
                     x.AutoProvision = true;
                 });
 
-                opts.Endpoints.PublishAllMessages().ToRabbit(queueName);
-                opts.Endpoints.ListenToRabbitQueue(queueName)
+                opts.PublishAllMessages().ToRabbit(queueName);
+                opts.ListenToRabbitQueue(queueName)
                     .MaximumThreads(NumberOfThreads)
                     .ListenerCount(ListenerCount);
 

@@ -40,7 +40,7 @@ namespace Samples
                     // This is an example usage of the application's
                     // IConfiguration inside of Jasper bootstrapping
                     var port = context.Configuration.GetValue<int>("ListenerPort");
-                    opts.Endpoints.ListenAtPort(port);
+                    opts.ListenAtPort(port);
 
                     // If we're running in development mode and you don't
                     // want to worry about having all the external messaging
@@ -48,7 +48,7 @@ namespace Samples
                     if (context.HostingEnvironment.IsDevelopment())
                     {
                         // This will "stub" out all configured external endpoints
-                        opts.Endpoints.StubAllExternallyOutgoingEndpoints();
+                        opts.StubAllExternallyOutgoingEndpoints();
 
                         opts.Extensions.UseMessageTrackingTestingSupport();
                     }

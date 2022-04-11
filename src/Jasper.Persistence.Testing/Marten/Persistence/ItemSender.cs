@@ -13,7 +13,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         public ItemSender()
         {
 
-            Endpoints.Publish(x =>
+            Publish(x =>
             {
                 x.Message<ItemCreated>();
                 x.Message<Question>();
@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             Extensions.UseMessageTrackingTestingSupport();
 
-            Endpoints.ListenAtPort(2567);
+            this.ListenAtPort(2567);
 
         }
     }

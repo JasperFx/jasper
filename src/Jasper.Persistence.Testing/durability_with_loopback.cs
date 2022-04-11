@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Testing
                 Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             }
 
-            Endpoints.PublishAllMessages()
+            PublishAllMessages()
                 .ToLocalQueue("one")
                 .DurablyPersistedLocally();
 

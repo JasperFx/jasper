@@ -14,8 +14,8 @@ namespace Jasper.Tcp.Tests
         {
             using var host = JasperHost.For(options =>
             {
-                options.Endpoints.PublishAllMessages().ToPort(7777);
-                options.Endpoints.StubAllExternallyOutgoingEndpoints();
+                options.PublishAllMessages().ToPort(7777);
+                options.StubAllExternallyOutgoingEndpoints();
                 options.Extensions.UseMessageTrackingTestingSupport();
             });
 

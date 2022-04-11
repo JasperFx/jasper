@@ -154,7 +154,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer
         {
             var stub = getStubTransport();
 
-            return stub.Endpoints.SelectMany(x =>
+            return stub.SelectMany(x =>
             {
                 return x.Sent.Select(c => new OutgoingMessageAction
                 {

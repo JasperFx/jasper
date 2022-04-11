@@ -13,7 +13,7 @@ namespace Jasper.RabbitMQ.Internal
             // this will force the transport collection
             // to add Rabbit MQ if it does not alreay
             // exist
-            options.Endpoints.RabbitMqTransport();
+            options.RabbitMqTransport();
 
         }
     }

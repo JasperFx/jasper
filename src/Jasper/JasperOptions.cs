@@ -5,10 +5,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Baseline;
 using BaselineTypeDiscovery;
+using Jasper;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
+using Jasper.Transports.Local;
+using Jasper.Transports.Stub;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +23,7 @@ namespace Jasper;
 /// <summary>
 ///     Completely defines and configures a Jasper application
 /// </summary>
-public class JasperOptions : IExtensions
+public partial class JasperOptions : IExtensions
 {
     protected static Assembly _rememberedCallingAssembly;
 
@@ -38,7 +41,8 @@ public class JasperOptions : IExtensions
 
     public JasperOptions(string assemblyName)
     {
-        Transports = new TransportCollection(this);
+        Add(new StubTransport());
+        Add(new LocalTransport());
 
         establishApplicationAssembly(assemblyName);
 
@@ -77,14 +81,6 @@ public class JasperOptions : IExtensions
     ///     handling, local worker queues, and other policies on message handling
     /// </summary>
     public IHandlerConfiguration Handlers => HandlerGraph;
-
-
-    /// <summary>
-    ///     Configure message listeners or sending endpoints
-    /// </summary>
-    public IEndpoints Endpoints => Transports;
-
-    internal TransportCollection Transports { get; }
 
     /// <summary>
     ///     Read only view of the extensions that have been applied to this

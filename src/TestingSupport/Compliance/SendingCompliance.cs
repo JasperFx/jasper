@@ -67,7 +67,7 @@ namespace TestingSupport.Compliance
             options.Serializers.Add(new GreenTextWriter());
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
-            options.Endpoints.PublishAllMessages().To(OutboundAddress);
+            options.PublishAllMessages().To(OutboundAddress);
 
             options.Services.AddSingleton<IMessageSerializer, GreenTextWriter>();
         }

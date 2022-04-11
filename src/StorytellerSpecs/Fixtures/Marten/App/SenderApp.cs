@@ -14,7 +14,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
             Extensions.Include<TcpTransportExtension>();
             Handlers.DisableConventionalDiscovery();
 
-            Endpoints.Publish(x => x.Message<TraceMessage>().To(listener).Durably());
+            Publish(x => x.Message<TraceMessage>().To(listener).Durably());
 
             Extensions.UseMarten(_ =>
             {

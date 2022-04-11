@@ -12,7 +12,7 @@ namespace Jasper.Tcp
         /// <param name="port"></param>
         public static IListenerConfiguration ListenAtPort(this IEndpoints endpoints, int port)
         {
-            var settings = endpoints.As<TransportCollection>().Get<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
+            var settings = endpoints.As<JasperOptions>().Get<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
             return new ListenerConfiguration(settings);
         }
 

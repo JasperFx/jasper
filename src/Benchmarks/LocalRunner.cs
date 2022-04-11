@@ -45,7 +45,7 @@ namespace Benchmarks
                         break;
                 }
 
-                opts.Endpoints.DefaultLocalQueue
+                opts.DefaultLocalQueue
                     .MaximumThreads(NumberOfThreads);
 
             }).GetAwaiter().GetResult();

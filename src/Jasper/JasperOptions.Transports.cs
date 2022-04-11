@@ -5,25 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Jasper.Configuration;
 using Jasper.Transports;
 using Jasper.Transports.Local;
-using Jasper.Transports.Stub;
 using Oakton.Descriptions;
 using Spectre.Console;
+using ITreeDescriber = Jasper.Configuration.ITreeDescriber;
 
-namespace Jasper.Configuration
+namespace Jasper
 {
-    public class TransportCollection : IEnumerable<ITransport>, IEndpoints, IDescribedSystemPart, IWriteToConsole
+    public partial class JasperOptions : IEnumerable<ITransport>, IEndpoints, IDescribedSystemPart, IWriteToConsole
     {
-        private readonly JasperOptions _parent;
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
-
-        public TransportCollection(JasperOptions parent)
-        {
-            _parent = parent;
-            Add(new StubTransport());
-            Add(new LocalTransport());
-        }
 
         public ITransport? TransportForScheme(string scheme)
         {
@@ -63,11 +56,6 @@ namespace Jasper.Configuration
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        IListenerConfiguration IEndpoints.LocalQueue(string queueName)
-        {
-            return LocalQueue(queueName);
         }
 
         public Endpoint TryGetEndpoint(Uri? uri)
@@ -142,7 +130,7 @@ namespace Jasper.Configuration
 
         public void StubAllExternallyOutgoingEndpoints()
         {
-            _parent.Advanced.StubAllOutgoingExternalSenders = true;
+            Advanced.StubAllOutgoingExternalSenders = true;
         }
 
         public Endpoint[] AllEndpoints()

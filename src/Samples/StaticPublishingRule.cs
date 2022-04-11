@@ -10,7 +10,7 @@ namespace Samples
     {
         public StaticPublishingRulesApp()
         {
-            Endpoints.Publish(x =>
+            Publish(x =>
             {
                 // Apply as many message matching
                 // rules as you need
@@ -35,7 +35,7 @@ namespace Samples
             });
 
             // Or you just send all messages to a certain endpoint
-            Endpoints.PublishAllMessages().ToPort(3333);
+            PublishAllMessages().ToPort(3333);
         }
         // ENDSAMPLE
     }

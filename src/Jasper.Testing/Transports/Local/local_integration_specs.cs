@@ -17,7 +17,7 @@ namespace Jasper.Testing.Transports.Local
         {
             with(_ =>
             {
-                _.Endpoints.Publish(x => x.Message<Message1>()
+                _.Publish(x => x.Message<Message1>()
                     .ToLocalQueue("incoming"));
 
                 _.Extensions.UseMessageTrackingTestingSupport();

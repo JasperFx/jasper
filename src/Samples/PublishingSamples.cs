@@ -210,19 +210,16 @@ namespace Samples
 
             // Use this option if message ordering is
             // important
-            Endpoints
-                .LocalQueue("one")
+            LocalQueue("one")
                 .DurablyPersistedLocally()
                 .Sequential();
 
-
-            Endpoints
-                .LocalQueue("two")
+            LocalQueue("two")
                 .MaximumThreads(5);
 
 
             // Or just edit the ActionBlock directly
-            Endpoints.LocalQueue("three")
+            LocalQueue("three")
                 .ConfigureExecution(options =>
                 {
                     options.MaxDegreeOfParallelism = 5;

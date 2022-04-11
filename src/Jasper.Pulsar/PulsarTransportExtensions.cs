@@ -20,8 +20,6 @@ namespace Jasper.Pulsar
             return host
                 .Get<IJasperRuntime>()
                 .Options
-                .Endpoints
-                .As<TransportCollection>()
                 .Get<PulsarTransport>();
         }
 
@@ -33,7 +31,7 @@ namespace Jasper.Pulsar
         /// <returns></returns>
         internal static PulsarTransport PulsarTransport(this IEndpoints endpoints)
         {
-            var transports = endpoints.As<TransportCollection>();
+            var transports = endpoints.As<JasperOptions>();
             var transport = transports.Get<PulsarTransport>();
             if (transport == null)
             {

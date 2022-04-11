@@ -11,7 +11,7 @@ namespace Jasper.Tcp.Tests
     {
         public Sender(int portNumber)
         {
-            Endpoints.ListenAtPort(portNumber);
+            this.ListenAtPort(portNumber);
         }
 
         public Sender()
@@ -25,7 +25,7 @@ namespace Jasper.Tcp.Tests
     {
         public Receiver(int portNumber)
         {
-            Endpoints.ListenAtPort(portNumber);
+            this.ListenAtPort(portNumber);
         }
 
         public Receiver() : this(2388)

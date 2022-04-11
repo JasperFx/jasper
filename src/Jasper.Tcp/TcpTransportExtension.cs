@@ -14,7 +14,7 @@ namespace Jasper.Tcp
     {
         public void Configure(JasperOptions options)
         {
-            options.Endpoints.As<TransportCollection>().Get<TcpTransport>();
+            options.Get<TcpTransport>();
         }
     }
 }

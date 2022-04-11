@@ -41,7 +41,7 @@ namespace StorytellerSpecs.Fixtures.Durability
 
             senderRegistry.Extensions.UseMessageTrackingTestingSupport();
 
-            senderRegistry.Endpoints.Publish(x =>
+            senderRegistry.Publish(x =>
             {
                 x.Message<TriggerMessage>();
                 x.Message<ItemCreated>();
@@ -52,7 +52,7 @@ namespace StorytellerSpecs.Fixtures.Durability
             });
 
 
-            senderRegistry.Endpoints.ListenAtPort(senderPort).DurablyPersistedLocally();
+            senderRegistry.ListenAtPort(senderPort).DurablyPersistedLocally();
 
             configureSender(senderRegistry);
 
@@ -69,7 +69,7 @@ namespace StorytellerSpecs.Fixtures.Durability
                 .IncludeType<QuestionHandler>()
                 .IncludeType<ScheduledMessageHandler>();
 
-            receiverRegistry.Endpoints.ListenAtPort(receiverPort).DurablyPersistedLocally();
+            receiverRegistry.ListenAtPort(receiverPort).DurablyPersistedLocally();
 
             receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
 

@@ -52,9 +52,9 @@ namespace Jasper.RabbitMQ.Tests
         public void configure_topic_subscribers()
         {
             var options = new JasperOptions();
-            options.Endpoints.ConfigureRabbitMq(rabbit => { rabbit.ConnectionFactory.HostName = "localhost"; });
+            options.ConfigureRabbitMq(rabbit => { rabbit.ConnectionFactory.HostName = "localhost"; });
 
-            options.Endpoints.PublishAllMessages().ToRabbitTopics("numbers")
+            options.PublishAllMessages().ToRabbitTopics("numbers")
                 .ConfigureTopicConfiguration("one", topic => { topic.SendInline(); });
 
             using var host = JasperHost.For(options);

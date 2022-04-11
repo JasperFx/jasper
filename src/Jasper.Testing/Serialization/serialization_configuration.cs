@@ -20,8 +20,8 @@ namespace Jasper.Testing.Serialization
         {
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                opts.Endpoints.PublishAllMessages().To("stub://one");
-                opts.Endpoints.PublishAllMessages().To("stub://two");
+                opts.PublishAllMessages().To("stub://one");
+                opts.PublishAllMessages().To("stub://two");
             }).StartAsync();
 
             var root = host.Services.GetRequiredService<IJasperRuntime>();
@@ -42,9 +42,9 @@ namespace Jasper.Testing.Serialization
 
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                opts.Endpoints.PublishAllMessages().To("stub://one");
+                opts.PublishAllMessages().To("stub://one");
 
-                opts.Endpoints.PublishAllMessages().To("stub://two")
+                opts.PublishAllMessages().To("stub://two")
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
@@ -86,9 +86,9 @@ namespace Jasper.Testing.Serialization
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
                 opts.Serializers.Add(new FooSerializer());
-                opts.Endpoints.PublishAllMessages().To("stub://one");
+                opts.PublishAllMessages().To("stub://one");
 
-                opts.Endpoints.ListenForMessagesFrom("stub://two")
+                opts.ListenForMessagesFrom("stub://two")
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
@@ -111,10 +111,10 @@ namespace Jasper.Testing.Serialization
 
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                opts.Endpoints.PublishAllMessages().To("stub://one")
+                opts.PublishAllMessages().To("stub://one")
                     .DefaultSerializer(fooSerializer);
 
-                opts.Endpoints.ListenForMessagesFrom("stub://two")
+                opts.ListenForMessagesFrom("stub://two")
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
@@ -132,9 +132,9 @@ namespace Jasper.Testing.Serialization
 
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                opts.Endpoints.PublishAllMessages().To("stub://one");
+                opts.PublishAllMessages().To("stub://one");
 
-                opts.Endpoints.ListenForMessagesFrom("stub://two")
+                opts.ListenForMessagesFrom("stub://two")
                     .CustomNewtonsoftJsonSerialization(customSettings);
             }).StartAsync();
 
@@ -156,9 +156,9 @@ namespace Jasper.Testing.Serialization
 
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                opts.Endpoints.PublishAllMessages().To("stub://one");
+                opts.PublishAllMessages().To("stub://one");
 
-                opts.Endpoints.ListenForMessagesFrom("stub://two")
+                opts.ListenForMessagesFrom("stub://two")
                     .DefaultSerializer(fooSerializer);
             }).StartAsync();
 
@@ -180,9 +180,9 @@ namespace Jasper.Testing.Serialization
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
                 opts.DefaultSerializer = fooSerializer;
-                opts.Endpoints.PublishAllMessages().To("stub://one");
+                opts.PublishAllMessages().To("stub://one");
 
-                opts.Endpoints.ListenForMessagesFrom("stub://two");
+                opts.ListenForMessagesFrom("stub://two");
             }).StartAsync();
 
             var root = host.Services.GetRequiredService<IJasperRuntime>();

@@ -18,13 +18,13 @@ namespace MyApp
             // until the executable is stopped
             return JasperHost.Run(args, (context, opts) =>
             {
-                opts.Endpoints.ListenAtPort(2222);
+                opts.ListenAtPort(2222);
 
-                opts.Endpoints.PublishAllMessages().ToPort(2224);
+                opts.PublishAllMessages().ToPort(2224);
 
                 opts.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 
-                opts.Endpoints.ConfigureRabbitMq(x =>
+                opts.ConfigureRabbitMq(x =>
                 {
                     x.AutoProvision = true;
                     x.AutoPurgeOnStartup = true;
@@ -41,8 +41,8 @@ namespace MyApp
 
                 });
 
-                opts.Endpoints.ListenToRabbitQueue("rabbit1");
-                opts.Endpoints.PublishAllMessages().ToRabbit("rabbit2");
+                opts.ListenToRabbitQueue("rabbit1");
+                opts.PublishAllMessages().ToRabbit("rabbit2");
             });
 
             // The code above is shorthand for the following:

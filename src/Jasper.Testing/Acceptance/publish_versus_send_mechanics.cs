@@ -18,12 +18,12 @@ namespace Jasper.Testing.Acceptance
             {
                 _.Handlers.DisableConventionalDiscovery();
 
-                _.Endpoints.Publish(x => x
+                _.Publish(x => x
                     .Message<Message1>()
                     .Message<Message2>()
                     .ToLocalQueue("one"));
 
-                _.Endpoints.Publish(x => x.Message<Message2>().ToLocalQueue("two"));
+                _.Publish(x => x.Message<Message2>().ToLocalQueue("two"));
 
                 _.Extensions.UseMessageTrackingTestingSupport();
 

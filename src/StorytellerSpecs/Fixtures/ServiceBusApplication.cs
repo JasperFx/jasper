@@ -44,7 +44,7 @@ namespace StorytellerSpecs.Fixtures
         {
             var type = messageTypeFor(messageType);
 
-            _options.Endpoints.Publish(x => x.Message(type).To(channel));
+            _options.Publish(x => x.Message(type).To(channel));
         }
 
         [FormatAs("When a Message1 is received, it cascades a matching Message2")]
@@ -62,7 +62,7 @@ namespace StorytellerSpecs.Fixtures
         [FormatAs("Listen for incoming messages from {channel}")]
         public void ListenForMessagesFrom([SelectionList("Channels")] Uri channel)
         {
-            _options.Endpoints.ListenForMessagesFrom(channel);
+            _options.ListenForMessagesFrom(channel);
         }
     }
 }

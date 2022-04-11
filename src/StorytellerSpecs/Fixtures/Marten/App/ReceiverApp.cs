@@ -22,7 +22,7 @@ namespace StorytellerSpecs.Fixtures.Marten.App
                 o.DatabaseSchemaName = "receiver";
             });
 
-            Endpoints.ListenForMessagesFrom(listener).DurablyPersistedLocally();
+            ListenForMessagesFrom(listener).DurablyPersistedLocally();
         }
     }
 }

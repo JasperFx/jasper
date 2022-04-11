@@ -17,7 +17,7 @@ namespace StorytellerSpecs.Fixtures.SqlServer.App
 
             Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
-            Endpoints.ListenForMessagesFrom(listener).DurablyPersistedLocally();
+            ListenForMessagesFrom(listener).DurablyPersistedLocally();
         }
     }
 }

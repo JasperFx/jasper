@@ -39,17 +39,17 @@ namespace Jasper.Testing.Acceptance
         {
             using var host = JasperHost.For(opts =>
             {
-                opts.Endpoints.PublishAllMessages().To("stub://one")
+                opts.PublishAllMessages().To("stub://one")
                     .CustomizeOutgoing(e => e.Headers.Add("a", "one"))
                     .CustomizeOutgoingMessagesOfType<BaseMessage>(e => e.Headers.Add("d", "four"));
 
-                opts.Endpoints.PublishAllMessages().To("stub://two")
+                opts.PublishAllMessages().To("stub://two")
                     .CustomizeOutgoing(e => e.Headers.Add("b", "two"))
                     .CustomizeOutgoing(e => e.Headers.Add("c", "three"))
                     .CustomizeOutgoingMessagesOfType<SenderConfigurationTests.OtherMessage>(e => e.Headers.Add("e", "five"));
 
-                opts.Endpoints.ListenForMessagesFrom("stub://5678");
-                opts.Endpoints.ListenForMessagesFrom("stub://6789");
+                opts.ListenForMessagesFrom("stub://5678");
+                opts.ListenForMessagesFrom("stub://6789");
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
             });

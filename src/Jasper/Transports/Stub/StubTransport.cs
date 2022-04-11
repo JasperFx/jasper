@@ -23,8 +23,6 @@ namespace Jasper.Transports.Stub
                 .Services
                 .GetRequiredService<IJasperRuntime>()
                 .Options
-                .Endpoints
-                .As<TransportCollection>()
                 .Get<StubTransport>();
         }
     }

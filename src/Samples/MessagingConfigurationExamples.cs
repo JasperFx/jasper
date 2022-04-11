@@ -18,14 +18,14 @@ namespace Samples
                 .RetryLater(3.Seconds());
 
             // Declare published messages
-            Endpoints.Publish(x =>
+            Publish(x =>
             {
                 x.Message<Message1>();
                 x.ToServerAndPort("server1", 2222);
             });
 
             // Configure the built in transports
-            Endpoints.ListenAtPort(2233);
+            this.ListenAtPort(2233);
         }
     }
     // ENDSAMPLE
@@ -39,7 +39,7 @@ namespace Samples
             // Use the simpler, but transport specific syntax
             // to just declare what port the transport should use
             // to listen for incoming messages
-            Endpoints.ListenAtPort(2233);
+            this.ListenAtPort(2233);
         }
     }
     // ENDSAMPLE
@@ -51,9 +51,9 @@ namespace Samples
         public LightweightTransportApp()
         {
             // Set up a listener (this is optional)
-            Endpoints.ListenAtPort(4000);
+            this.ListenAtPort(4000);
 
-            Endpoints.Publish(x =>
+            Publish(x =>
             {
                 x.Message<Message2>()
                     .ToServerAndPort("remoteserver", 2201);
@@ -67,8 +67,7 @@ namespace Samples
     {
         public DurableTransportApp()
         {
-            Endpoints
-                .PublishAllMessages()
+            PublishAllMessages()
                 .ToServerAndPort("server1", 2201)
 
                 // This applies the store and forward persistence
@@ -76,7 +75,7 @@ namespace Samples
                 .Durably();
 
             // Set up a listener (this is optional)
-            Endpoints.ListenAtPort(2200)
+            this.ListenAtPort(2200)
 
                 // This applies the message persistence
                 // to the incoming endpoint such that incoming
@@ -97,7 +96,7 @@ namespace Samples
         {
             // Publish the message Message2 the "important"
             // local queue
-            Endpoints.Publish(x =>
+            Publish(x =>
             {
                 x.Message<Message2>();
                 x.ToLocalQueue("important");
@@ -113,11 +112,10 @@ namespace Samples
         public LocalDurableTransportApp()
         {
             // Make the default local queue durable
-            Endpoints.DefaultLocalQueue.DurablyPersistedLocally();
+            DefaultLocalQueue.DurablyPersistedLocally();
 
             // Or do just this by name
-            Endpoints
-                .LocalQueue("important")
+            LocalQueue("important")
                 .DurablyPersistedLocally();
         }
     }

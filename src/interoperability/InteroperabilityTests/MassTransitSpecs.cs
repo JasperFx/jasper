@@ -30,7 +30,7 @@ namespace InteroperabilityTests
                 // application/vnd.masstransit+json
                 opts.Advanced.JsonSerialization.TypeNameHandling = TypeNameHandling.All;
 
-                opts.Endpoints.ConfigureRabbitMq(t =>
+                opts.ConfigureRabbitMq(t =>
                 {
                     t.AutoProvision = true;
                     t.AutoPurgeOnStartup = true;
@@ -54,7 +54,7 @@ namespace InteroperabilityTests
                     });
                 });
 
-                opts.Endpoints.PublishAllMessages().ToRabbit("masstransit")
+                opts.PublishAllMessages().ToRabbit("masstransit")
                     .Advanced(endpoint =>
                     {
                         // TODO -- will need access to the RabbitMqTransport to get the reply endpoint, then
@@ -67,7 +67,7 @@ namespace InteroperabilityTests
                         });
                     });
 
-                opts.Endpoints.ListenToRabbitQueue("jasper")
+                opts.ListenToRabbitQueue("jasper")
                     .DefaultIncomingMessage<ResponseMessage>();
 
                 opts.Extensions.UseMessageTrackingTestingSupport();

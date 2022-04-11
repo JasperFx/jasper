@@ -22,13 +22,13 @@ namespace Jasper.Tcp.Tests
 
                 _.Extensions.UseMessageTrackingTestingSupport();
 
-                _.Endpoints.Publish(x =>
+                _.Publish(x =>
                 {
                     x.Message<OriginalMessage>();
                     x.ToPort(2345);
                 });
 
-                _.Endpoints.ListenAtPort(2345);
+                _.ListenAtPort(2345);
             });
 
             try

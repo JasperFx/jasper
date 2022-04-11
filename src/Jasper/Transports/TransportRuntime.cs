@@ -27,12 +27,12 @@ namespace Jasper.Transports
 
 
         private readonly IJasperRuntime _root;
-        private TransportCollection _transports;
+        private JasperOptions _transports;
 
         public TransportRuntime(IJasperRuntime root)
         {
             _root = root;
-            _transports = root.Options.Transports;
+            _transports = root.Options;
         }
 
         public void Initialize()

@@ -22,7 +22,7 @@ namespace PerformanceTests
             startTheSender(opts =>
             {
 
-                opts.Endpoints.ConfigureRabbitMq(x =>
+                opts.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(outboundName);
@@ -30,10 +30,10 @@ namespace PerformanceTests
                     x.AutoProvision = true;
                 });
 
-                opts.Endpoints.ListenToRabbitQueue(replyName)
+                opts.ListenToRabbitQueue(replyName)
                     .ProcessInline().ListenerCount(3);
 
-                opts.Endpoints.PublishAllMessages().ToRabbit(outboundName);
+                opts.PublishAllMessages().ToRabbit(outboundName);
             });
 
             await time(() => sendMessages(100, 10));
@@ -48,7 +48,7 @@ namespace PerformanceTests
             startTheSender(opts =>
             {
 
-                opts.Endpoints.ConfigureRabbitMq(x =>
+                opts.ConfigureRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(outboundName);
@@ -56,9 +56,9 @@ namespace PerformanceTests
                     x.AutoProvision = true;
                 });
 
-                opts.Endpoints.ListenToRabbitQueue(replyName).UseForReplies();
+                opts.ListenToRabbitQueue(replyName).UseForReplies();
 
-                opts.Endpoints.PublishAllMessages().ToRabbit(outboundName);
+                opts.PublishAllMessages().ToRabbit(outboundName);
             });
 
             await sendMessages(100, 10);
@@ -67,12 +67,12 @@ namespace PerformanceTests
             {
                 startTheReceiver(opts =>
                 {
-                    opts.Endpoints.ConfigureRabbitMq(x =>
+                    opts.ConfigureRabbitMq(x =>
                     {
                         x.ConnectionFactory.HostName = "localhost";
                     });
 
-                    opts.Endpoints.ListenToRabbitQueue(outboundName)
+                    opts.ListenToRabbitQueue(outboundName)
                         .ProcessInline()
                         .ListenerCount(3)
                         .UseForReplies();

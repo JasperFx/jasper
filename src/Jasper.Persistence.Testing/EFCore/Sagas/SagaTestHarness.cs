@@ -41,7 +41,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
                 _.Extensions.UseMessageTrackingTestingSupport();
 
-                _.Endpoints.PublishAllMessages().Locally();
+                _.PublishAllMessages().Locally();
 
                 configure(_);
             });
