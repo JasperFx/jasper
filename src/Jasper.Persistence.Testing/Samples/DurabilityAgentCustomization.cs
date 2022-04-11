@@ -1,28 +1,36 @@
+using System.Threading.Tasks;
 using Baseline.Dates;
+using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Persistence.Testing.Samples
 {
-    #region sample_AdvancedConfigurationOfDurabilityAgent
-    public class DurabilityAgentCustomization : JasperOptions
+    public static class DurabilityAgentCustomization
     {
-        public DurabilityAgentCustomization()
+        public static async Task AdvancedConfigurationOfDurabilityAgent()
         {
-            // Control the maximum batch size of recovered
-            // messages that the current node will try
-            // to pull into itself
-            Advanced.RecoveryBatchSize = 500;
+            #region sample_AdvancedConfigurationOfDurabilityAgent
+
+            using var host = Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // Control the maximum batch size of recovered
+                    // messages that the current node will try
+                    // to pull into itself
+                    opts.Advanced.RecoveryBatchSize = 500;
 
 
-            // How soon should the first node reassignment
-            // execution to try to look for dormant nodes
-            // run?
-            Advanced.FirstNodeReassignmentExecution = 1.Seconds();
+                    // How soon should the first node reassignment
+                    // execution to try to look for dormant nodes
+                    // run?
+                    opts.Advanced.FirstNodeReassignmentExecution = 1.Seconds();
 
-            // Fine tune how the polling for ready to execute
-            // or send scheduled messages
-            Advanced.ScheduledJobFirstExecution = 0.Seconds();
-            Advanced.ScheduledJobPollingTime = 60.Seconds();
+                    // Fine tune how the polling for ready to execute
+                    // or send scheduled messages
+                    opts.Advanced.ScheduledJobFirstExecution = 0.Seconds();
+                    opts.Advanced.ScheduledJobPollingTime = 60.Seconds();
+                }).StartAsync();
+
+            #endregion
         }
     }
-    #endregion
 }

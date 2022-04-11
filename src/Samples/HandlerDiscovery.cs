@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper;
+using Microsoft.Extensions.Hosting;
 using TestingSupport.Compliance;
 
 namespace Samples
@@ -109,30 +110,35 @@ namespace Samples
     }
     #endregion
 
-
-    #region sample_CustomHandlerApp
-    public class CustomHandlerApp : JasperOptions
+    internal static class HandlerSamples
     {
-        public CustomHandlerApp()
+        public static async Task custom_handler_config()
         {
-            Handlers.Discovery(x =>
-            {
-                // Turn off the default handler conventions
-                // altogether
-                x.DisableConventionalDiscovery();
+            #region sample_CustomHandlerApp
 
-                // Include candidate actions by a user supplied
-                // type filter
-                x.IncludeTypes(t => t.IsInNamespace("MyApp.Handlers"));
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.Handlers.Discovery(x =>
+                    {
+                        // Turn off the default handler conventions
+                        // altogether
+                        x.DisableConventionalDiscovery();
 
-                // Include candidate classes by suffix
-                x.IncludeClassesSuffixedWith("Listener");
+                        // Include candidate actions by a user supplied
+                        // type filter
+                        x.IncludeTypes(t => t.IsInNamespace("MyApp.Handlers"));
 
-                // Include a specific handler class with a generic argument
-                x.IncludeType<SimpleHandler>();
-            });
+                        // Include candidate classes by suffix
+                        x.IncludeClassesSuffixedWith("Listener");
+
+                        // Include a specific handler class with a generic argument
+                        x.IncludeType<SimpleHandler>();
+                    });
+                }).StartAsync();
+
+            #endregion
         }
     }
 
-    #endregion
 }

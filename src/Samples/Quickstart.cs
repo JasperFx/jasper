@@ -5,18 +5,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace Samples
 {
-    #region sample_MyAppOptions
-    public class MyAppOptions : JasperOptions
-    {
-    }
-#endregion
-
-
-#region sample_ServiceBusApp
-    public class ServiceBusApp : JasperOptions
-    {
-    }
-#endregion
 
     public static class Program
     {

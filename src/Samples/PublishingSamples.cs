@@ -2,11 +2,49 @@ using System;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
+using Microsoft.Extensions.Hosting;
 
 namespace Samples
 {
+
     public class PublishingSamples
     {
+        public static async Task LocalQueuesApp()
+                {
+                    #region sample_LocalQueuesApp
+
+                    using var host = Host.CreateDefaultBuilder()
+                        .UseJasper(opts =>
+                        {
+                            // Force a local queue to be
+                            // strictly first in, first out
+                            // with no more than a single
+                            // thread handling messages enqueued
+                            // here
+
+                            // Use this option if message ordering is
+                            // important
+                            opts.LocalQueue("one")
+                                .DurablyPersistedLocally()
+                                .Sequential();
+
+                            opts.LocalQueue("two")
+                                .MaximumThreads(5);
+
+
+                            // Or just edit the ActionBlock directly
+                            opts.LocalQueue("three")
+                                .ConfigureExecution(options =>
+                                {
+                                    options.MaxDegreeOfParallelism = 5;
+                                    options.BoundedCapacity = 1000;
+                                });
+                        }).StartAsync();
+
+                    #endregion
+                }
+
+
         #region sample_CustomizingEnvelope
         public Task CustomizingEnvelope(IExecutionContext bus)
         {
@@ -197,35 +235,6 @@ namespace Samples
         }
     }
 
-    #region sample_LocalQueuesApp
-    public class LocalQueuesApp : JasperOptions
-    {
-        public LocalQueuesApp()
-        {
-            // Force a local queue to be
-            // strictly first in, first out
-            // with no more than a single
-            // thread handling messages enqueued
-            // here
-
-            // Use this option if message ordering is
-            // important
-            LocalQueue("one")
-                .DurablyPersistedLocally()
-                .Sequential();
-
-            LocalQueue("two")
-                .MaximumThreads(5);
 
 
-            // Or just edit the ActionBlock directly
-            LocalQueue("three")
-                .ConfigureExecution(options =>
-                {
-                    options.MaxDegreeOfParallelism = 5;
-                    options.BoundedCapacity = 1000;
-                });
-        }
-    }
-    #endregion
 }

@@ -542,29 +542,6 @@ namespace Jasper.RabbitMQ.Tests
         }
     }
 
-
-    public class RabbitMqUsingApp : JasperOptions
-    {
-        public RabbitMqUsingApp()
-        {
-            Extensions.UseMessageTrackingTestingSupport();
-
-            this.ConfigureRabbitMq(x =>
-            {
-                x.ConnectionFactory.HostName = "localhost";
-                x.DeclareQueue("messages3");
-                x.AutoProvision = true;
-            });
-
-            this.ListenToRabbitQueue("messages3");
-
-            Services.AddSingleton<ColorHistory>();
-
-            PublishAllMessages().ToRabbit("messages3");
-
-        }
-    }
-
     public class ColorHandler
     {
         public void Handle(ColorChosen message, ColorHistory history, Envelope envelope)

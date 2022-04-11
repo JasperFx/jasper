@@ -23,7 +23,7 @@ namespace Jasper;
 /// <summary>
 ///     Completely defines and configures a Jasper application
 /// </summary>
-public partial class JasperOptions : IExtensions
+public sealed partial class JasperOptions : IExtensions
 {
     protected static Assembly _rememberedCallingAssembly;
 

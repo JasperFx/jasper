@@ -1,22 +1,31 @@
+using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Tcp;
+using Microsoft.Extensions.Hosting;
 
 namespace Samples
 {
-    #region sample_MonitoringDataPublisher
-    public class MonitoringDataPublisher : JasperOptions
+    public static class EnvelopeCustomizationSamples
     {
-        public MonitoringDataPublisher()
+        public static async Task monitoring_data_publisher()
         {
-            PublishAllMessages()
-                .ToPort(2222)
+            #region sample_MonitoringDataPublisher
 
-                // Set a message expiration on all
-                // outgoing messages to this
-                // endpoint
-                .CustomizeOutgoing(env => env.DeliverWithin(2.Seconds()));
+            using var host = Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.PublishAllMessages()
+                        .ToPort(2222)
+
+                        // Set a message expiration on all
+                        // outgoing messages to this
+                        // endpoint
+                        .CustomizeOutgoing(env => env.DeliverWithin(2.Seconds()));
+                }).StartAsync();
+
+            #endregion
         }
     }
-    #endregion
+
 }

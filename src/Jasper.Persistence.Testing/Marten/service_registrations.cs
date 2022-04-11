@@ -4,7 +4,6 @@ using Jasper.Persistence.Marten;
 using Marten;
 using Shouldly;
 using Weasel.Core;
-using Weasel.Postgresql;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten
@@ -14,9 +13,16 @@ namespace Jasper.Persistence.Testing.Marten
         [Fact]
         public void registers_document_store_in_a_usable_way()
         {
-            using (var runtime = JasperHost.For<MartenUsingApp>())
+            using (var runtime = JasperHost.For(opts =>
+                   {
+                       opts.Extensions.UseMarten(o =>
+                       {
+                           o.Connection(Servers.PostgresConnectionString);
+                           o.AutoCreateSchemaObjects = AutoCreate.All;
+                       });
+                   }))
             {
-                var doc = new FakeDoc {Id = Guid.NewGuid()};
+                var doc = new FakeDoc { Id = Guid.NewGuid() };
 
 
                 using (var session = runtime.Get<IDocumentSession>())
@@ -36,17 +42,5 @@ namespace Jasper.Persistence.Testing.Marten
     public class FakeDoc
     {
         public Guid Id { get; set; }
-    }
-
-    public class MartenUsingApp : JasperOptions
-    {
-        public MartenUsingApp()
-        {
-            Extensions.UseMarten(o =>
-            {
-                o.Connection(Servers.PostgresConnectionString);
-                o.AutoCreateSchemaObjects = AutoCreate.All;
-            });
-        }
     }
 }

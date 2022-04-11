@@ -1,42 +1,50 @@
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.Tcp;
+using Microsoft.Extensions.Hosting;
 using TestingSupport.Compliance;
 using TestMessages;
 
 namespace Samples
 {
-    #region sample_StaticPublishingRules
-    public class StaticPublishingRulesApp : JasperOptions
+    public static class static_publishing_rules
     {
-        public StaticPublishingRulesApp()
+        public static async Task StaticPublishingRules()
         {
-            Publish(x =>
-            {
-                // Apply as many message matching
-                // rules as you need
+            #region sample_StaticPublishingRules
 
-                // Specific message types
-                x.Message<PingMessage>();
-                x.Message<Message1>();
+            using var host = Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.Publish(rule =>
+                    {
+                        // Apply as many message matching
+                        // rules as you need
 
-                // All types in a certain assembly
-                x.MessagesFromAssemblyContaining<PingMessage>();
+                        // Specific message types
+                        rule.Message<PingMessage>();
+                        rule.Message<Message1>();
 
-                // or this
-                x.MessagesFromAssembly(typeof(PingMessage).Assembly);
+                        // All types in a certain assembly
+                        rule.MessagesFromAssemblyContaining<PingMessage>();
 
-                // or by namespace
-                x.MessagesFromNamespace("MyMessageLibrary");
-                x.MessagesFromNamespaceContaining<PingMessage>();
+                        // or this
+                        rule.MessagesFromAssembly(typeof(PingMessage).Assembly);
 
-                // Express the subscribers
-                x.ToPort(1111);
-                x.ToPort(2222);
-            });
+                        // or by namespace
+                        rule.MessagesFromNamespace("MyMessageLibrary");
+                        rule.MessagesFromNamespaceContaining<PingMessage>();
 
-            // Or you just send all messages to a certain endpoint
-            PublishAllMessages().ToPort(3333);
+                        // Express the subscribers
+                        rule.ToPort(1111);
+                        rule.ToPort(2222);
+                    });
+
+                    // Or you just send all messages to a certain endpoint
+                    opts.PublishAllMessages().ToPort(3333);
+                }).StartAsync();
+
+            #endregion
         }
-        #endregion
     }
 }

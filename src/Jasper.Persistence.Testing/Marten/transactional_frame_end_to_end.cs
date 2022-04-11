@@ -2,14 +2,18 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Configuration;
+using Jasper.Persistence.Marten;
 using Jasper.Persistence.Marten.Codegen;
 using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using Shouldly;
+using Weasel.Core;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten
@@ -19,18 +23,35 @@ namespace Jasper.Persistence.Testing.Marten
         [Fact]
         public async Task the_transactional_middleware_works()
         {
-            using (var runtime = JasperHost.For<MartenUsingApp>())
+            using var host = JasperHost.For(opts =>
             {
-                var command = new CreateDocCommand();
-                await runtime.Invoke(command);
-
-                using (var query = runtime.Get<IQuerySession>())
+                opts.Extensions.UseMarten(o =>
                 {
-                    query.Load<FakeDoc>(command.Id)
-                        .ShouldNotBeNull();
-                }
-            }
+                    o.Connection(Servers.PostgresConnectionString);
+                    o.AutoCreateSchemaObjects = AutoCreate.All;
+                });
+            });
+            var command = new CreateDocCommand();
+            await host.Invoke(command);
+
+            await using var query = host.Get<IQuerySession>();
+            query.Load<FakeDoc>(command.Id)
+                .ShouldNotBeNull();
         }
+
+        public static async Task Using_CommandsAreTransactional()
+                {
+                    #region sample_Using_CommandsAreTransactional
+
+                    using var host = Host.CreateDefaultBuilder()
+                        .UseJasper(opts =>
+                        {
+                            // And actually use the policy
+                            opts.Handlers.GlobalPolicy<CommandsAreTransactional>();
+                        }).StartAsync();
+
+                    #endregion
+                }
     }
 
     public class CreateDocCommand
@@ -80,15 +101,4 @@ namespace Jasper.Persistence.Testing.Marten
     }
     #endregion
 
-    #region sample_Using_CommandsAreTransactional
-    public class CommandsAreTransactionalApp : JasperOptions
-    {
-        public CommandsAreTransactionalApp()
-        {
-            // And actually use the policy
-            Handlers.GlobalPolicy<CommandsAreTransactional>();
-        }
-    }
-
-    #endregion
 }

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IntegrationTests;
+using Jasper.Persistence.Marten;
 using Jasper.Persistence.Postgresql;
+using Jasper.Tcp;
+using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -34,7 +38,18 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             return Task.CompletedTask;
         }
 
-        public IHost theHost = JasperHost.For<ItemReceiver>();
+        public IHost theHost = JasperHost.For(opts =>
+        {
+            opts.Extensions.UseMarten(x =>
+            {
+                x.Connection(Servers.PostgresConnectionString);
+                x.DatabaseSchemaName = "receiver";
+            });
+
+            opts.ListenAtPort(2345).DurablyPersistedLocally();
+
+            opts.Extensions.UseMessageTrackingTestingSupport();
+        });
 
         [Fact]
         public async Task get_counts()

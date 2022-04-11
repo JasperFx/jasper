@@ -153,29 +153,6 @@ namespace Jasper.Testing.Configuration
         public ILogger<Thing> Logger { get; }
     }
 
-    #region sample_AppWithHandlerPolicy
-    public class AppWithHandlerPolicy : JasperOptions
-    {
-        public AppWithHandlerPolicy()
-        {
-            Handlers.GlobalPolicy<WrapWithSimple>();
-        }
-    }
-    #endregion
-
-    #region sample_WrapWithSimple
-    public class WrapWithSimple : IHandlerPolicy
-    {
-        public void Apply(HandlerGraph graph, GenerationRules rules, IContainer container)
-        {
-            foreach (var chain in graph.Chains)
-            {
-                chain.Middleware.Add(new SimpleWrapper());
-            }
-        }
-    }
-    #endregion
-
     public class SimpleWrapper : Frame
     {
         public SimpleWrapper() : base(false)

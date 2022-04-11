@@ -1,25 +1,28 @@
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Samples
 {
-    public class override_message_logging
+    public static class override_message_logging
     {
-    }
-
-    #region sample_AppWithCustomLogging
-    public class AppWithCustomLogging : JasperOptions
-    {
-        public AppWithCustomLogging()
+        public static async Task AppWithCustomLogging()
         {
-            Services.AddSingleton<IMessageLogger, CustomMessageLogger>();
+            #region sample_AppWithCustomLogging
+
+            using var host = Host.CreateDefaultBuilder()
+                .UseJasper(opts => { opts.Services.AddSingleton<IMessageLogger, CustomMessageLogger>(); }).StartAsync();
+
+            #endregion
         }
     }
-    #endregion
+
 
     #region sample_CustomMessageLogger
+
     public class CustomMessageLogger : MessageLogger
     {
         private readonly ILogger<CustomMessageLogger> _logger;

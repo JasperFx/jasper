@@ -86,7 +86,7 @@ namespace TestingSupport.Compliance
             return Receiver.RebuildMessageStorage();
         }
 
-        private static void configureReceiver<T>(T options) where T : JasperOptions, new()
+        private static void configureReceiver(JasperOptions options)
         {
             options.Handlers.Retries.MaximumAttempts = 3;
             options.Handlers

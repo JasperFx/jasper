@@ -21,7 +21,15 @@ namespace Jasper.Persistence.Testing.Marten.Sample
     {
         public MessageInvocationTests()
         {
-            theHost = JasperHost.For<SampleApp>();
+            theHost = JasperHost.For(opts =>
+            {
+                opts.PublishAllMessages().Locally();
+
+                opts.Services.AddSingleton<UserNames>();
+
+                opts.Extensions.UseMarten(Servers.PostgresConnectionString);
+                opts.Extensions.Include<MessageTrackingExtension>();
+            });
 
             theHost.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();
         }
@@ -67,19 +75,6 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
 
 
-    public class SampleApp : JasperOptions
-    {
-        public SampleApp()
-        {
-
-            PublishAllMessages().Locally();
-
-            Services.AddSingleton<UserNames>();
-
-            Extensions.UseMarten(Servers.PostgresConnectionString);
-            Extensions.Include<MessageTrackingExtension>();
-        }
-    }
 
     public class UserHandler
     {

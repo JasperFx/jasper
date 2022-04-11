@@ -1,9 +1,12 @@
 ﻿using System;
+using IntegrationTests;
 using Jasper.Attributes;
+using Jasper.Persistence.Marten;
 using Jasper.Runtime.Handlers;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using Weasel.Core;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten
@@ -12,7 +15,14 @@ namespace Jasper.Persistence.Testing.Marten
     {
         public code_generation()
         {
-            runtime = JasperHost.For<MartenUsingApp>();
+            runtime = JasperHost.For(opts =>
+            {
+                opts.Extensions.UseMarten(o =>
+                {
+                    o.Connection(Servers.PostgresConnectionString);
+                    o.AutoCreateSchemaObjects = AutoCreate.All;
+                });
+            });
         }
 
         public void Dispose()

@@ -4,7 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using IntegrationTests;
 using Jasper.Persistence.Durability;
+using Jasper.Persistence.Marten;
+using Jasper.Persistence.SqlServer;
+using Jasper.Tcp;
 using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
@@ -21,8 +25,40 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         public end_to_end_with_persistence(ITestOutputHelper output)
         {
             _output = output;
-            theSender = JasperHost.For<ItemSender>();
-            theReceiver = JasperHost.For<ItemReceiver>();
+            theSender = JasperHost.For(opts =>
+            {
+                opts.Publish(x =>
+                {
+                    x.Message<ItemCreated>();
+                    x.Message<Question>();
+                    x.ToPort(2345).Durably();
+                });
+
+                opts.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.DatabaseSchemaName = "sender";
+                });
+
+                opts.Extensions.UseMessageTrackingTestingSupport();
+
+                opts.ListenAtPort(2567);
+            });
+
+            theReceiver = JasperHost.For(opts =>
+            {
+                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+
+                opts.ListenAtPort(2345).DurablyPersistedLocally();
+
+                opts.Extensions.UseMessageTrackingTestingSupport();
+
+                opts.Extensions.UseMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.DatabaseSchemaName = "receiver";
+                });
+            });
         }
 
         public async Task InitializeAsync()

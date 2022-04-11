@@ -31,11 +31,6 @@ namespace Jasper.Testing
         {
         }
 
-        public class MyOptions : JasperOptions
-        {
-        }
-
-
         [Fact]
         public void unique_node_id_is_really_unique()
         {
@@ -68,12 +63,6 @@ namespace Jasper.Testing
         }
 
         [Fact]
-        public void can_determine_the_root_assembly_on_subclass()
-        {
-            new MyOptions().ApplicationAssembly.ShouldBe(typeof(JasperOptionsTests).Assembly);
-        }
-
-        [Fact]
         public void sets_up_the_container_with_services()
         {
             var registry = new JasperOptions();
@@ -96,20 +85,6 @@ namespace Jasper.Testing
             options.StubAllExternallyOutgoingEndpoints();
 
             options.Advanced.StubAllOutgoingExternalSenders.ShouldBeTrue();
-        }
-
-        [Fact]
-        public void determine_name_from_JasperOptions_type_name()
-        {
-            new MyAppJasperOptions().ServiceName.ShouldBe("MyApp");
-            new MyApp2Options().ServiceName.ShouldBe("MyApp2");
-            new MyApp3().ServiceName.ShouldBe("MyApp3");
-        }
-
-        [Fact]
-        public void explicit_service_name_wins()
-        {
-            new MyApp4().ServiceName.ShouldBe("SomethingService");
         }
 
         [Fact]
@@ -281,24 +256,4 @@ namespace Jasper.Testing
         }
     }
 
-    public class MyAppJasperOptions : JasperOptions
-    {
-    }
-
-    public class MyApp2Options : JasperOptions
-    {
-    }
-
-    public class MyApp3 : JasperOptions
-    {
-    }
-
-    public class MyApp4 : JasperOptions
-    {
-        public MyApp4()
-        {
-            ServiceName = "SomethingService";
-        }
-
-    }
 }

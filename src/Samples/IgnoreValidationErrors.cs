@@ -1,15 +1,25 @@
+using System.Threading.Tasks;
 using Jasper;
+using Microsoft.Extensions.Hosting;
 
 namespace Samples
 {
-    #region sample_IgnoreValidationErrors
-    public class IgnoreValidationErrors : JasperOptions
+
+
+    public static class IgnoreValidationErrors
     {
-        public IgnoreValidationErrors()
+        public static async Task sample()
         {
-            Advanced.ThrowOnValidationErrors = false;
+            #region sample_IgnoreValidationErrors
+            using var host = Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.Advanced.ThrowOnValidationErrors = false;
+                }).StartAsync();
+            #endregion
         }
+
     }
 
-    #endregion
+
 }

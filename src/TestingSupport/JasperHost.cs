@@ -32,17 +32,6 @@ namespace Jasper
         }
 
         /// <summary>
-        ///     Builds and initializes a IHost for the options
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static IHost For<T>() where T : JasperOptions, new()
-        {
-            return bootstrap(new T());
-        }
-
-
-        /// <summary>
         ///     Builds and initializes a IHost for the configured JasperOptions
         /// </summary>
         /// <param name="configure"></param>

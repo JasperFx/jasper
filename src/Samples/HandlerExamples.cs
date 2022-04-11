@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Jasper;
 using Jasper.Attributes;
 using Marten;
+using Microsoft.Extensions.Hosting;
 using TestingSupport;
 using TestMessages;
 
@@ -165,16 +166,21 @@ namespace Samples
         public Guid Id { get; set; }
     }
 
-
-    #region sample_ExplicitHandlerDiscovery
-    public class ExplicitHandlerDiscovery : JasperOptions
+    public static class HandlerExamples
     {
-        public ExplicitHandlerDiscovery()
+        public static async Task explicit_handler_discovery()
         {
-            // No automatic discovery of handlers
-            Handlers.DisableConventionalDiscovery();
+            #region sample_ExplicitHandlerDiscovery
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // No automatic discovery of handlers
+                    opts.Handlers.DisableConventionalDiscovery();
+                }).StartAsync();
+
+            #endregion
         }
     }
 
-    #endregion
 }

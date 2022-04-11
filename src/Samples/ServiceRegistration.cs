@@ -1,24 +1,32 @@
+using System.Threading.Tasks;
 using Jasper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Samples
 {
-    #region sample_JasperAppWithServices
-    public class JasperAppWithServices : JasperOptions
+    public static class jasper_app_services
     {
-        public JasperAppWithServices()
+        public static async Task JasperAppWithServices()
         {
-            // Add service registrations with the ASP.Net Core
-            // DI abstractions
-            Services.AddLogging();
+            #region sample_JasperAppWithServices
 
-            // or mix and match with StructureMap style
-            // registrations
-            Services.For(typeof(ILogger)).Use(typeof(Logger<>));
+            using var host = Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // Add service registrations with the ASP.Net Core
+                    // DI abstractions
+                    opts.Services.AddLogging();
+
+                    // or mix and match with StructureMap style
+                    // registrations
+                    opts.Services.For(typeof(ILogger)).Use(typeof(Logger<>));
+                }).StartAsync();
+
+            #endregion
         }
     }
-    #endregion
 
 
     public interface IThirdPartyService
@@ -28,6 +36,4 @@ namespace Samples
     public class StubThirdPartyService : IThirdPartyService
     {
     }
-
-
 }
