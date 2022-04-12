@@ -23,12 +23,12 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
             {
                 opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.DatabaseSchemaName = "sagas";
                     x.AutoCreateSchemaObjects = AutoCreate.All;
-                });
+                }).IntegrateWithJasper();
 
                 opts.Extensions.Include<MessageTrackingExtension>();
 

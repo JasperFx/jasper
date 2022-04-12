@@ -8,6 +8,7 @@ using Jasper.Persistence.Marten;
 using Jasper.Persistence.Testing.Marten;
 using Jasper.Runtime.Handlers;
 using Jasper.Tracking;
+using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -65,7 +66,8 @@ namespace Jasper.Persistence.Testing
                 .ToLocalQueue("one")
                 .DurablyPersistedLocally();
 
-            opts.Extensions.UseMarten(Servers.PostgresConnectionString);
+            opts.Services.AddMarten(Servers.PostgresConnectionString)
+                .IntegrateWithJasper();
 
             opts.Services.AddSingleton(new ReceivingSettings {Latched = latched});
 

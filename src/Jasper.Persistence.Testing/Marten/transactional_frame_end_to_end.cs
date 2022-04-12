@@ -25,12 +25,13 @@ namespace Jasper.Persistence.Testing.Marten
         {
             using var host = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMarten(o =>
+                opts.Services.AddMarten(o =>
                 {
                     o.Connection(Servers.PostgresConnectionString);
                     o.AutoCreateSchemaObjects = AutoCreate.All;
-                });
+                }).IntegrateWithJasper();
             });
+
             var command = new CreateDocCommand();
             await host.Invoke(command);
 

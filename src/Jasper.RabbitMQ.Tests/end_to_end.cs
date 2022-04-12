@@ -55,12 +55,12 @@ namespace Jasper.RabbitMQ.Tests
                     .ToRabbit(queueName)
                     .Durably();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "sender";
-                });
+                }).IntegrateWithJasper();
 
                 opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
 
@@ -81,12 +81,12 @@ namespace Jasper.RabbitMQ.Tests
                 opts.ListenToRabbitQueue(queueName);
                 opts.Services.AddSingleton<ColorHistory>();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "receiver";
-                });
+                }).IntegrateWithJasper();
 
                 opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             });
@@ -129,12 +129,12 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.ListenToRabbitQueue(queueName2).UseForReplies();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "sender";
-                });
+                }).IntegrateWithJasper();
 
                 opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
 
@@ -157,12 +157,12 @@ namespace Jasper.RabbitMQ.Tests
                 opts.ListenToRabbitQueue(queueName1);
                 opts.Services.AddSingleton<ColorHistory>();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "receiver";
-                });
+                }).IntegrateWithJasper();
 
                 opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
             });
@@ -281,12 +281,12 @@ namespace Jasper.RabbitMQ.Tests
 
 
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "rabbit_sender";
-                });
+                }).IntegrateWithJasper();
             });
 
             await publisher.RebuildMessageStorage();
@@ -302,22 +302,18 @@ namespace Jasper.RabbitMQ.Tests
                     x.ConnectionFactory.HostName = "localhost";
                 });
 
-
-
                 opts.ListenToRabbitQueue(queueName);
                 opts.Services.AddSingleton<ColorHistory>();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                     x.DatabaseSchemaName = "rabbit_receiver";
-                });
+                }).IntegrateWithJasper();
             });
 
             await receiver.RebuildMessageStorage();
-
-
 
             try
             {

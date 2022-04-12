@@ -83,7 +83,7 @@ namespace Jasper.Persistence.Marten.Codegen
 
             writer.BlankLine();
             writer.WriteComment("Commit the unit of work");
-            writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}();");
+            writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}().ConfigureAwait(false);");
 
             if (_createsSession) writer.FinishBlock();
         }
@@ -96,8 +96,7 @@ namespace Jasper.Persistence.Marten.Codegen
 
             public Loaded(Variable document, Type documentType, Variable docId)
             {
-                if (documentType == null) throw new ArgumentNullException(nameof(documentType));
-                _documentType = documentType;
+                _documentType = documentType ?? throw new ArgumentNullException(nameof(documentType));
 
                 _document = document ?? throw new ArgumentNullException(nameof(document));
 

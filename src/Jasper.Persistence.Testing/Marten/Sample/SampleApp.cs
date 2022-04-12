@@ -27,7 +27,8 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
                 opts.Services.AddSingleton<UserNames>();
 
-                opts.Extensions.UseMarten(Servers.PostgresConnectionString);
+                opts.Services.AddMarten(Servers.PostgresConnectionString)
+                    .IntegrateWithJasper();
                 opts.Extensions.Include<MessageTrackingExtension>();
             });
 

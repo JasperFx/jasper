@@ -40,11 +40,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         public IHost theHost = JasperHost.For(opts =>
         {
-            opts.Extensions.UseMarten(x =>
+            opts.Services.AddMarten(x =>
             {
                 x.Connection(Servers.PostgresConnectionString);
                 x.DatabaseSchemaName = "receiver";
-            });
+            }).IntegrateWithJasper();
 
             opts.ListenAtPort(2345).DurablyPersistedLocally();
 

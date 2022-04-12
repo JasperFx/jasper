@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Marten;
+using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
@@ -23,7 +24,8 @@ namespace Jasper.Persistence.Testing.Marten
 
             var exitCode = await Host.CreateDefaultBuilder().UseJasper(registry =>
             {
-                registry.Extensions.UseMarten(Servers.PostgresConnectionString);
+                registry.Services.AddMarten(Servers.PostgresConnectionString)
+                    .IntegrateWithJasper();
 
             }).RunJasper(args);
 

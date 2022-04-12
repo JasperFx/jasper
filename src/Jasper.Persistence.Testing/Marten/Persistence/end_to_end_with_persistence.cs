@@ -34,11 +34,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                     x.ToPort(2345).Durably();
                 });
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.DatabaseSchemaName = "sender";
-                });
+                }).IntegrateWithJasper();
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
@@ -53,11 +53,11 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
                     x.DatabaseSchemaName = "receiver";
-                });
+                }).IntegrateWithJasper();
             });
         }
 

@@ -6,6 +6,7 @@ using IntegrationTests;
 using Jasper.Persistence.Marten;
 using Jasper.Tcp;
 using Jasper.Util;
+using Marten;
 using TestingSupport.Compliance;
 using Xunit;
 
@@ -45,11 +46,11 @@ namespace Jasper.Persistence.Testing.Marten
                 var receivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
                 opts.ListenForMessagesFrom(receivingUri);
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(o =>
                 {
-                    x.Connection(Servers.PostgresConnectionString);
-                    x.DatabaseSchemaName = "sender";
-                });
+                    o.Connection(Servers.PostgresConnectionString);
+                    o.DatabaseSchemaName = "sender";
+                }).IntegrateWithJasper();
             });
 
             await ReceiverIs(opts =>
@@ -57,11 +58,11 @@ namespace Jasper.Persistence.Testing.Marten
                 opts.Extensions.Include<TcpTransportExtension>();
                 opts.ListenForMessagesFrom(OutboundAddress);
 
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(o =>
                 {
-                    x.Connection(Servers.PostgresConnectionString);
-                    x.DatabaseSchemaName = "receiver";
-                });
+                    o.Connection(Servers.PostgresConnectionString);
+                    o.DatabaseSchemaName = "receiver";
+                }).IntegrateWithJasper();
             });
         }
 

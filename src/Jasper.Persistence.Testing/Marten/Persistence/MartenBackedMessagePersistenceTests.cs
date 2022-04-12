@@ -6,6 +6,7 @@ using IntegrationTests;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten;
 using Jasper.Transports;
+using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
@@ -18,10 +19,10 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             theHost = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMarten(x =>
+                opts.Services.AddMarten(x =>
                 {
                     x.Connection(Servers.PostgresConnectionString);
-                });
+                }).IntegrateWithJasper();
 
             });
 

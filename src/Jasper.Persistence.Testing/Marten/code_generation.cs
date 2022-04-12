@@ -17,11 +17,11 @@ namespace Jasper.Persistence.Testing.Marten
         {
             runtime = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMarten(o =>
+                opts.Services.AddMarten(o =>
                 {
                     o.Connection(Servers.PostgresConnectionString);
                     o.AutoCreateSchemaObjects = AutoCreate.All;
-                });
+                }).IntegrateWithJasper();
             });
         }
 
@@ -38,7 +38,7 @@ namespace Jasper.Persistence.Testing.Marten
             var handlerGraph = runtime.Get<HandlerGraph>();
             var messageHandler = handlerGraph.HandlerFor<CreateFakeDoc>();
             messageHandler
-                .Chain.SourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
+                .Chain.SourceCode.ShouldContain("using var documentSession = _sessionFactory.OpenSession();");
         }
 
 
@@ -48,7 +48,7 @@ namespace Jasper.Persistence.Testing.Marten
             var handlerGraph = runtime.Get<HandlerGraph>();
             var messageHandler = handlerGraph.HandlerFor<LookupFakeDoc>();
             messageHandler
-                .Chain.SourceCode.ShouldContain("var querySession = _documentStore.QuerySession()");
+                .Chain.SourceCode.ShouldContain("using var querySession = _sessionFactory.QuerySession();");
         }
 
         [Fact]
@@ -60,8 +60,8 @@ namespace Jasper.Persistence.Testing.Marten
                 .Chain
                 .SourceCode;
 
-            sourceCode.ShouldContain("var documentSession = _documentStore.LightweightSession()");
-            sourceCode.ShouldContain("await documentSession.SaveChangesAsync()");
+            sourceCode.ShouldContain("using var documentSession = _sessionFactory.OpenSession();");
+            sourceCode.ShouldContain("await documentSession.SaveChangesAsync().ConfigureAwait(false)");
         }
     }
 

@@ -53,19 +53,20 @@ namespace Jasper.Persistence.Postgresql
             await conn.OpenAsync();
 
 
-            await using var reader = await conn
+            await using (var reader = await conn
                 .CreateCommand(
                     $"select status, count(*) from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} group by status")
-                .ExecuteReaderAsync();
-            
-            while (await reader.ReadAsync())
+                .ExecuteReaderAsync())
             {
-                var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
-                var count = await reader.GetFieldValueAsync<int>(1);
+                while (await reader.ReadAsync())
+                {
+                    var status = Enum.Parse<EnvelopeStatus>(await reader.GetFieldValueAsync<string>(0));
+                    var count = await reader.GetFieldValueAsync<int>(1);
 
-                if (status == EnvelopeStatus.Incoming)
-                    counts.Incoming = count;
-                else if (status == EnvelopeStatus.Scheduled) counts.Scheduled = count;
+                    if (status == EnvelopeStatus.Incoming)
+                        counts.Incoming = count;
+                    else if (status == EnvelopeStatus.Scheduled) counts.Scheduled = count;
+                }
             }
 
             var longCount = await conn
