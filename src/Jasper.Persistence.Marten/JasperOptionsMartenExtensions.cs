@@ -12,6 +12,7 @@ namespace Jasper.Persistence.Marten
         /// </summary>
         /// <param name="options"></param>
         /// <param name="connectionString"></param>
+        [Obsolete]
         public static void UseMarten(this IExtensions extensions, string connectionString)
         {
             extensions.UseMarten(o => o.Connection(connectionString));
@@ -25,6 +26,7 @@ namespace Jasper.Persistence.Marten
         /// </summary>
         /// <param name="options"></param>
         /// <param name="connectionString"></param>
+        [Obsolete]
         public static void UseMarten(this IExtensions extensions, Action<StoreOptions> configureMarten)
         {
             extensions.Include<MartenExtension>(x => configureMarten(x.Options));

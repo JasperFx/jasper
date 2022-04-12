@@ -16,6 +16,7 @@ namespace Jasper.Persistence.Marten
     {
         public void Configure(JasperOptions options)
         {
+            // Do this in the IntegrateWithJasper() method. Register an IConfigureJasper service
             options.Services.AddTransient<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
             options.Services.AddSingleton(Options);
 
@@ -25,20 +26,9 @@ namespace Jasper.Persistence.Marten
             options.Advanced.CodeGeneration.SetSagaPersistence(frameProvider);
             options.Advanced.CodeGeneration.SetTransactions(frameProvider);
 
-            options.Services.AddSingleton<IDocumentStore>(x =>
-            {
-                var documentStore = new DocumentStore(Options);
-                return documentStore;
-            });
-
-            options.Handlers.GlobalPolicy<FineGrainedSessionCreationPolicy>();
-
-
-            options.Services.AddScoped(c => c.GetService<IDocumentStore>().OpenSession());
-            options.Services.AddScoped(c => c.GetService<IDocumentStore>().QuerySession());
-
             options.Advanced.CodeGeneration.Sources.Add(new SessionVariableSource());
 
+            // START HERE IN THE MORNING. Schema needs to be variable.
             options.Services.AddSingleton(s =>
             {
                 var store = s.GetRequiredService<IDocumentStore>();

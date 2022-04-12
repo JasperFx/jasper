@@ -1,4 +1,5 @@
 ﻿using System;
+using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Marten;
 
@@ -13,9 +14,9 @@ namespace Jasper.Persistence.Marten.Codegen
 
         public Variable Create(Type type)
         {
-            if (type == typeof(IQuerySession)) return new QuerySessionFrame().Session;
+            if (type == typeof(IQuerySession)) return MethodCall.For<ISessionFactory>(x => x.QuerySession()).ReturnVariable;
 
-            if (type == typeof(IDocumentSession)) return new SessionFrame().Session;
+            if (type == typeof(IDocumentSession)) return MethodCall.For<ISessionFactory>(x => x.OpenSession()).ReturnVariable;
 
             throw new ArgumentOutOfRangeException();
         }
