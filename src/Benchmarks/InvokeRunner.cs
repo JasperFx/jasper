@@ -40,7 +40,7 @@ namespace Benchmarks
             {
                 foreach (var target in theDriver.Targets)
                 {
-                    await theDriver.Publisher.Invoke(target);
+                    await theDriver.Publisher.InvokeAsync(target);
                 }
             }
         }
@@ -55,7 +55,7 @@ namespace Benchmarks
                 {
                     foreach (var target in theDriver.Targets.Take(200))
                     {
-                        await theDriver.Publisher.Invoke(target);
+                        await theDriver.Publisher.InvokeAsync(target);
                     }
                 }
             });
@@ -66,7 +66,7 @@ namespace Benchmarks
                 {
                     foreach (var target in theDriver.Targets.Skip(200).Take(200))
                     {
-                        await theDriver.Publisher.Invoke(target);
+                        await theDriver.Publisher.InvokeAsync(target);
                     }
                 }
             });
@@ -77,7 +77,7 @@ namespace Benchmarks
                 {
                     foreach (var target in theDriver.Targets.Skip(400).Take(200))
                     {
-                        await theDriver.Publisher.Invoke(target);
+                        await theDriver.Publisher.InvokeAsync(target);
                     }
                 }
             });
@@ -88,7 +88,7 @@ namespace Benchmarks
                 {
                     foreach (var target in theDriver.Targets.Skip(600).Take(200))
                     {
-                        await theDriver.Publisher.Invoke(target);
+                        await theDriver.Publisher.InvokeAsync(target);
                     }
                 }
             });
@@ -99,7 +99,7 @@ namespace Benchmarks
                 {
                     foreach (var target in theDriver.Targets.Skip(800))
                     {
-                        await theDriver.Publisher.Invoke(target);
+                        await theDriver.Publisher.InvokeAsync(target);
                     }
                 }
             });

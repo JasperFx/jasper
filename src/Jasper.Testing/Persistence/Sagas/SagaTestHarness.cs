@@ -48,7 +48,7 @@ namespace Jasper.Testing.Persistence.Sagas
         {
             if (_host == null) withApplication();
 
-            await _host.Get<IMessagePublisher>().Invoke(message);
+            await _host.Get<IMessagePublisher>().InvokeAsync(message);
         }
 
         protected async Task send<T>(T message)

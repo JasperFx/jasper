@@ -114,7 +114,7 @@ namespace Jasper.Testing.Acceptance
             };
 
 
-            await Should.ThrowAsync<DivideByZeroException>(() => Publisher.Invoke(message));
+            await Should.ThrowAsync<DivideByZeroException>(() => Publisher.InvokeAsync(message));
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace Jasper.Testing.Acceptance
 
             try
             {
-                await Publisher.Invoke(new Message5 {FailThisManyTimes = 1});
+                await Publisher.InvokeAsync(new Message5 {FailThisManyTimes = 1});
             }
             catch (Exception)
             {
@@ -140,7 +140,7 @@ namespace Jasper.Testing.Acceptance
 
             var message = new Message5();
 
-            await Publisher.Invoke(message);
+            await Publisher.InvokeAsync(message);
 
             theTracker.LastMessage.ShouldBeSameAs(message);
         }
@@ -152,7 +152,7 @@ namespace Jasper.Testing.Acceptance
 
             var message = new Message5();
 
-            await Publisher.Invoke(message);
+            await Publisher.InvokeAsync(message);
 
             var m1 = await theTracker.Message1;
             m1.Id.ShouldBe(message.Id);
@@ -175,7 +175,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task invoke_expecting_a_response()
         {
-            var answer = await Bus.Invoke<Answer>(new Question {One = 3, Two = 4});
+            var answer = await Bus.InvokeAsync<Answer>(new Question {One = 3, Two = 4});
 
             answer.Sum.ShouldBe(7);
             answer.Product.ShouldBe(12);
@@ -185,7 +185,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task invoke_expecting_a_response_with_struct()
         {
-            var answer = await Bus.Invoke<AnswerStruct>(new QuestionStruct {One = 3, Two = 4});
+            var answer = await Bus.InvokeAsync<AnswerStruct>(new QuestionStruct {One = 3, Two = 4});
 
             answer.Sum.ShouldBe(7);
             answer.Product.ShouldBe(12);
@@ -196,21 +196,21 @@ namespace Jasper.Testing.Acceptance
         {
             await Should.ThrowAsync<ArgumentOutOfRangeException>(async () =>
             {
-                await Bus.Invoke<Answer>(new QuestionWithNoHandler());
+                await Bus.InvokeAsync<Answer>(new QuestionWithNoHandler());
             });
         }
 
         [Fact]
         public async Task invoke_with_no_known_response_do_not_blow_up()
         {
-            (await Bus.Invoke<Answer>(new QuestionWithNoAnswer()))
+            (await Bus.InvokeAsync<Answer>(new QuestionWithNoAnswer()))
                 .ShouldBeNull();
         }
 
         [Fact]
         public async Task should_return_result_for_command_with_castable_result()
         {
-            var answer = await Bus.Invoke<IAnswer>(new Question { One = 3, Two = 4 });
+            var answer = await Bus.InvokeAsync<IAnswer>(new Question { One = 3, Two = 4 });
 
             answer.Sum.ShouldBe(7);
             answer.Product.ShouldBe(12);

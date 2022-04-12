@@ -114,7 +114,7 @@ namespace Jasper.Tracking
         /// <returns></returns>
         public Task<ITrackedSession> InvokeMessageAndWait(object? message)
         {
-            return ExecuteAndWait(c => c.Invoke(message));
+            return ExecuteAndWait(c => c.InvokeAsync(message));
         }
 
         /// <summary>

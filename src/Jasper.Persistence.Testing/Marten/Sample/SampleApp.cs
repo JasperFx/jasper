@@ -46,7 +46,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_ExecuteAndWaitSync()
         {
-            await theHost.ExecuteAndWaitAsync(x => x.Invoke(new CreateUser {Name = "Tom"}));
+            await theHost.ExecuteAndWaitAsync(x => x.InvokeAsync(new CreateUser {Name = "Tom"}));
 
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
@@ -62,7 +62,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
         [Fact]
         public async Task using_InvokeMessageAndWait()
         {
-            await theHost.ExecuteAndWaitAsync(x => x.Invoke(new CreateUser {Name = "Bill"}));
+            await theHost.ExecuteAndWaitAsync(x => x.InvokeAsync(new CreateUser {Name = "Bill"}));
 
             using (var session = theHost.Get<IDocumentStore>().QuerySession())
             {

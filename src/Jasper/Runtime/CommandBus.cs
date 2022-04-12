@@ -38,7 +38,7 @@ namespace Jasper.Runtime
         public IEnumerable<Envelope?> Outstanding => _outstanding;
 
 
-        public Task Invoke(object? message)
+        public Task InvokeAsync(object? message)
         {
             return Root.Pipeline.InvokeNow(new Envelope(message)
             {
@@ -47,7 +47,7 @@ namespace Jasper.Runtime
             });
         }
 
-        public async Task<T> Invoke<T>(object? message)
+        public async Task<T> InvokeAsync<T>(object? message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 

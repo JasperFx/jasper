@@ -17,7 +17,7 @@ namespace OtelWebApi.Controllers
         [HttpPost("/local/now")]
         public Task Now()
         {
-            return _publisher.Invoke(new Work());
+            return _publisher.InvokeAsync(new Work());
         }
 
         [HttpPost("/local/later")]

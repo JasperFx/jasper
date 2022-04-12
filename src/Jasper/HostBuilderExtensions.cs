@@ -192,7 +192,7 @@ namespace Jasper
 
         public static Task Invoke<T>(this IHost host, T? command)
         {
-            return host.Get<ICommandBus>().Invoke(command);
+            return host.Get<ICommandBus>().InvokeAsync(command);
         }
 
         /// <summary>

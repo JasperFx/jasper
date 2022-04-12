@@ -64,7 +64,7 @@ namespace Jasper.Tracking
         public static Task<ITrackedSession> InvokeMessageAndWaitAsync(this IHost host, object? message,
             int timeoutInMilliseconds = 5000)
         {
-            return host.ExecuteAndWaitAsync(c => c.Invoke(message), timeoutInMilliseconds);
+            return host.ExecuteAndWaitAsync(c => c.InvokeAsync(message), timeoutInMilliseconds);
         }
 
 

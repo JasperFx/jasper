@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
-    <ProjectReference Include="..\Module1\Module1.csproj" />
+    <ProjectReference Include="..\Samples\Module1\Module1.csproj" />
     <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
   </ItemGroup>
 
