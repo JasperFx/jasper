@@ -46,7 +46,7 @@ namespace Jasper.Persistence.Testing.Marten
 
             code.ShouldContain("using var documentSession = _sessionFactory.OpenSession();");
             code.ShouldContain(
-                "await Jasper.Persistence.Marten.MessageContextExtensions.EnlistInTransaction(context, documentSession);");
+                "await Jasper.Persistence.Marten.ExecutionContextExtensions.EnlistInTransactionAsync(context, documentSession);");
         }
 
     }

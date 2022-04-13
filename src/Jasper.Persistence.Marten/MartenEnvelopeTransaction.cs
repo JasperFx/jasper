@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Jasper.Persistence.Durability;
-using Jasper.Persistence.Marten.Persistence;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Persistence.Postgresql;
 using Marten;
@@ -70,7 +68,7 @@ namespace Jasper.Persistence.Marten
 
         public override void AfterCommit(IDocumentSession session, IChangeSet commit)
         {
-            _bus.SendAllQueuedOutgoingMessages();
+            _bus.SendAllQueuedOutgoingMessages().GetAwaiter().GetResult();
         }
 
         public override Task AfterCommitAsync(IDocumentSession session, IChangeSet commit, CancellationToken token)

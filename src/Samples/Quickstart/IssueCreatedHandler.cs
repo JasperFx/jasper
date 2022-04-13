@@ -28,8 +28,6 @@ public static class IssueCreatedHandler
 
 #endregion
 
-public record IssueAssigned(Guid Id);
-
 public class AssignUserHandler
 {
     public IssueAssigned Handle(AssignIssue command, IssueRepository issues)

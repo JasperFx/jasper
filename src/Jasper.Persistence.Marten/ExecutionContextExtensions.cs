@@ -4,7 +4,7 @@ using Marten;
 
 namespace Jasper.Persistence.Marten
 {
-    public static class MessageContextExtensions
+    public static class ExecutionContextExtensions
     {
         /// <summary>
         ///     Enlists the current IExecutionContext in the Marten session's transaction
@@ -13,7 +13,7 @@ namespace Jasper.Persistence.Marten
         /// <param name="context"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        public static Task EnlistInTransaction(this IExecutionContext context, IDocumentSession session)
+        public static Task EnlistInTransactionAsync(this IExecutionContext context, IDocumentSession session)
         {
             if (context.Transaction is MartenEnvelopeTransaction)
             {

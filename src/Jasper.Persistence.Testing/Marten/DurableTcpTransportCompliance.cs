@@ -16,7 +16,6 @@ namespace Jasper.Persistence.Testing.Marten
 
     public class PortFinder
     {
-
         private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
 
         public static int GetAvailablePort()

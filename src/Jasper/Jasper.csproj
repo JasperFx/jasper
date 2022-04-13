@@ -39,7 +39,7 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="Oakton" Version="4.2.0" />
+    <PackageReference Include="Oakton" Version="4.3.0" />
   </ItemGroup>
 
   <Import Project="../../Analysis.Build.props" />

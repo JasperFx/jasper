@@ -17,6 +17,11 @@ namespace Jasper.Persistence.Marten
         /// <returns></returns>
         public static MartenServiceCollectionExtensions.MartenConfigurationExpression IntegrateWithJasper(this MartenServiceCollectionExtensions.MartenConfigurationExpression expression, string schemaName = null)
         {
+            expression.Services.ConfigureMarten(opts =>
+            {
+                opts.Storage.Add(new MartenDatabaseSchemaFeature(schemaName ?? opts.DatabaseSchemaName));
+            });
+
             expression.Services.AddSingleton<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
             expression.Services.AddSingleton<IJasperExtension>(new MartenMiddlewareExtension());
 

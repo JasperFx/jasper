@@ -13,7 +13,7 @@ namespace Jasper.Persistence.Testing.Marten.Sample
             [FromServices] IExecutionContext context,
             [FromServices] IDocumentSession session)
         {
-            await context.EnlistInTransaction(session);
+            await context.EnlistInTransactionAsync(session);
 
             session.Store(new User {Name = user.Name});
 
