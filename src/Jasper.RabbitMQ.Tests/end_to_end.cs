@@ -13,6 +13,7 @@ using Jasper.Util;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Oakton;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Weasel.Core;
@@ -33,6 +34,40 @@ namespace Jasper.RabbitMQ.Tests
     [Collection("marten")]
     public class end_to_end : RabbitMQContext
     {
+
+        [Fact]
+        public async Task rabbitmq_transport_is_exposed_as_a_resource()
+        {
+            var queueName = RabbitTesting.NextQueueName();
+            using var publisher = JasperHost.For(opts =>
+            {
+                opts.Extensions.UseMessageTrackingTestingSupport();
+
+                opts.ConfigureRabbitMq(x =>
+                {
+                    x.ConnectionFactory.HostName = "localhost";
+                    x.DeclareQueue(queueName);
+                    x.AutoProvision = true;
+                    x.AutoPurgeOnStartup = true;
+                });
+
+                opts.PublishAllMessages()
+                    .ToRabbit(queueName)
+                    .Durably();
+
+                opts.Services.AddMarten(x =>
+                {
+                    x.Connection(Servers.PostgresConnectionString);
+                    x.AutoCreateSchemaObjects = AutoCreate.All;
+                    x.DatabaseSchemaName = "sender";
+                }).IntegrateWithJasper();
+
+                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+            });
+
+            publisher.Services.GetServices<IStatefulResourceSource>().SelectMany(x => x.FindResources())
+                .OfType<RabbitMqTransport>().Any().ShouldBeTrue();
+        }
 
 
         [Fact]

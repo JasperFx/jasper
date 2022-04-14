@@ -10,7 +10,6 @@ using Jasper.Transports;
 using Jasper.Transports.Local;
 using Oakton.Descriptions;
 using Spectre.Console;
-using ITreeDescriber = Jasper.Configuration.ITreeDescriber;
 
 namespace Jasper
 {

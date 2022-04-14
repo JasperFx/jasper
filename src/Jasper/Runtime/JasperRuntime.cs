@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,10 +20,11 @@ using LamarCodeGeneration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
+using Oakton.Resources;
 
 namespace Jasper.Runtime
 {
-    public class JasperRuntime : PooledObjectPolicy<ExecutionContext>, IJasperRuntime, IHostedService
+    public class JasperRuntime : PooledObjectPolicy<ExecutionContext>, IJasperRuntime, IHostedService, IStatefulResourceSource
     {
         private readonly IContainer _container;
 
@@ -242,5 +244,12 @@ namespace Jasper.Runtime
         }
 
 
+        IReadOnlyList<IStatefulResource> IStatefulResourceSource.FindResources()
+        {
+            var list = new List<IStatefulResource>();
+            list.AddRange(Options.OfType<IStatefulResource>());
+
+            return list;
+        }
     }
 }

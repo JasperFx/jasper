@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 using Oakton;
 using Oakton.Descriptions;
+using Oakton.Resources;
 using OpenTelemetry.Trace;
 
 namespace Jasper
@@ -97,6 +98,8 @@ namespace Jasper
                 });
 
                 services.AddSingleton<IJasperRuntime, JasperRuntime>();
+
+                services.AddSingleton<IStatefulResourceSource>(s => (IStatefulResourceSource)s.GetRequiredService<IJasperRuntime>());
 
                 services.AddSingleton(options.HandlerGraph);
                 services.AddSingleton(options.Advanced);

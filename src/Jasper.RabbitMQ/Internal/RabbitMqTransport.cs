@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline;
-using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Transports;
 using RabbitMQ.Client;
-using Spectre.Console;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IRabbitMqTransport, ITreeDescriber
+    public partial class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IRabbitMqTransport
     {
         public const string ProtocolName = "rabbitmq";
 
@@ -98,78 +96,11 @@ namespace Jasper.RabbitMQ.Internal
                 : ConnectionFactory.CreateConnection();
         }
 
-        public void InitializeAllObjects()
-        {
-            using var connection = BuildConnection();
-            using var channel = connection.CreateModel();
 
-            foreach (var exchange in Exchanges)
-            {
-                exchange.Declare(channel);
-            }
 
-            foreach (var queue in Queues)
-            {
-                queue.Declare(channel);
-            }
 
-            foreach (var binding in Bindings)
-            {
-                binding.Declare(channel);
-            }
 
-            channel.Close();
 
-            connection.Close();
-        }
-
-        public void TeardownAll()
-        {
-            using var connection = BuildConnection();
-            using var channel = connection.CreateModel();
-
-            foreach (var binding in Bindings)
-            {
-                binding.Teardown(channel);
-            }
-
-            foreach (var exchange in Exchanges)
-            {
-                exchange.Teardown(channel);
-            }
-
-            foreach (var queue in Queues)
-            {
-                queue.Teardown(channel);
-            }
-
-            channel.Close();
-
-            connection.Close();
-        }
-
-        public void PurgeAllQueues()
-        {
-            using var connection = BuildConnection();
-            using var channel = connection.CreateModel();
-
-            foreach (var queue in Queues)
-            {
-                queue.Purge(channel);
-            }
-
-            var others = _endpoints.Select(x => x.QueueName).Where(x => x.IsNotEmpty())
-                .Where(x => Queues.All(q => q.Name != x)).ToArray();
-
-            foreach (var other in others)
-            {
-                channel.QueuePurge(other);
-            }
-
-            channel.Close();
-
-            connection.Close();
-        }
 
         public RabbitMqEndpoint EndpointForQueue(string queueName)
         {
@@ -196,55 +127,6 @@ namespace Jasper.RabbitMQ.Internal
             return findEndpointByUri(temp.Uri);
         }
 
-        public void Describe(TreeNode parentNode)
-        {
-            var props = new Dictionary<string, object>{
-                {"HostName", ConnectionFactory.HostName},
-                {"Port", ConnectionFactory.Port == -1 ? 5672 : ConnectionFactory.Port},
-                {nameof(AutoProvision), AutoProvision},
-                {nameof(AutoPurgeOnStartup), AutoPurgeOnStartup}
-            };
 
-            var table = JasperOptions.BuildTableForProperties(props);
-            parentNode.AddNode(table);
-
-
-            if (Exchanges.Any())
-            {
-                var exchangesNode = parentNode.AddNode("Exchanges");
-                foreach (var exchange in Exchanges)
-                {
-                    exchangesNode.AddNode(exchange.Name);
-                }
-            }
-
-            var queueNode = parentNode.AddNode("Queues");
-            foreach (var queue in Queues)
-            {
-                queueNode.AddNode(queue.Name);
-            }
-
-            if (Bindings.Any())
-            {
-                var bindings = parentNode.AddNode("Bindings");
-
-                var bindingTable = new Table();
-                bindingTable.AddColumn("Key");
-                bindingTable.AddColumn("Exchange Name");
-                bindingTable.AddColumn("Queue Name");
-                bindingTable.AddColumn("Arguments");
-
-                foreach (var binding in Bindings)
-                {
-                    bindingTable.AddRow(binding.BindingKey, binding.ExchangeName ?? string.Empty, binding.QueueName,
-                        binding.Arguments.Select(pair => $"{pair.Key}={pair.Value}").Join(", "));
-                }
-
-                bindings.AddNode(bindingTable);
-            }
-
-
-
-        }
     }
 }

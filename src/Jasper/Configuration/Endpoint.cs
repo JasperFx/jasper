@@ -9,6 +9,7 @@ using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization;
 using Jasper.Transports.Sending;
+using Oakton.Descriptions;
 using Spectre.Console;
 
 #nullable enable
@@ -20,20 +21,6 @@ namespace Jasper.Configuration
         Durable,
         BufferedInMemory,
         Inline
-    }
-
-    // TODO -- move this into Oakton
-    [Obsolete]
-    public interface IDescribesProperties
-    {
-        IDictionary<string, object> DescribeProperties();
-    }
-
-    // TODO -- move this into Oakton itself
-    [Obsolete]
-    public interface ITreeDescriber
-    {
-        void Describe(TreeNode parentNode);
     }
 
     /// <summary>

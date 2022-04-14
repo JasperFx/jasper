@@ -1,6 +1,9 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
+using Baseline;
 using Jasper.RabbitMQ.Internal;
+using Oakton.Resources;
 using Xunit;
 
 namespace Jasper.RabbitMQ.Tests
@@ -45,23 +48,23 @@ namespace Jasper.RabbitMQ.Tests
         }
 
         [Fact]
-        public void declare_all()
+        public async Task resource_setup()
         {
-            theTransport.InitializeAllObjects();
+            await theTransport.As<IStatefulResource>().Setup(CancellationToken.None);
         }
 
         [Fact]
-        public void purge_from_all()
+        public async Task clear_state_as_resource()
         {
-            theTransport.InitializeAllObjects();
-            theTransport.PurgeAllQueues();
+            await theTransport.As<IStatefulResource>().Setup(CancellationToken.None);
+            await theTransport.As<IStatefulResource>().ClearState(CancellationToken.None);
         }
 
         [Fact]
-        public void delete_all()
+        public async Task delete_all()
         {
-            theTransport.InitializeAllObjects();
-            theTransport.TeardownAll();
+            await theTransport.As<IStatefulResource>().Setup(CancellationToken.None);
+            await theTransport.As<IStatefulResource>().Teardown(CancellationToken.None);
         }
     }
 }
