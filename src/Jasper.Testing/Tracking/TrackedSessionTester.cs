@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSubstitute;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Tracking

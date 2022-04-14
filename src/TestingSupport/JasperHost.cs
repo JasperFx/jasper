@@ -1,9 +1,14 @@
+using BaselineTypeDiscovery;
 using System;
 using System.Threading.Tasks;
+using Jasper;
 using Microsoft.Extensions.Hosting;
 using Oakton;
+using Oakton.Resources;
 
-namespace Jasper
+[assembly: IgnoreAssembly]
+
+namespace TestingSupport
 {
     /// <summary>
     ///     Shortcut to bootstrap simple Jasper applications.
@@ -47,6 +52,7 @@ namespace Jasper
         {
             return Host.CreateDefaultBuilder()
                 .UseJasper(options, (c,o) => {})
+                .UseResourceSetupOnStartup(StartupAction.ResetState)
                 //.ConfigureLogging(x => x.ClearProviders())
                 .Start();
         }

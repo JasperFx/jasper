@@ -6,6 +6,7 @@ using Jasper.Testing.Persistence.Sagas;
 using Jasper.Tracking;
 using Jasper.Util;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Acceptance

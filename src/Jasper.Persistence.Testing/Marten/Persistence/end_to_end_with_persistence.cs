@@ -13,6 +13,7 @@ using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 using Xunit.Abstractions;
 

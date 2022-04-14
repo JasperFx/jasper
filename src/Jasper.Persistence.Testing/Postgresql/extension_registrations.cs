@@ -7,6 +7,7 @@ using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Postgresql

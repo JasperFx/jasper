@@ -5,6 +5,7 @@ using Jasper;
 using Jasper.RabbitMQ;
 using Jasper.Tcp;
 using LamarCodeGeneration;
+using TestingSupport;
 
 namespace MyApp
 {

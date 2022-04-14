@@ -9,6 +9,7 @@ using Jasper.Transports;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten.Persistence

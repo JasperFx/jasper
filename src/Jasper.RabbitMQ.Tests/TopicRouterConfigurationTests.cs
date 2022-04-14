@@ -4,6 +4,7 @@ using Jasper.Runtime;
 using Jasper.Util;
 using LamarCodeGeneration.Util;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.RabbitMQ.Tests

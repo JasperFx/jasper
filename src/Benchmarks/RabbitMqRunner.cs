@@ -7,6 +7,7 @@ using IntegrationTests;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.SqlServer;
 using Jasper.RabbitMQ;
+using Oakton.Resources;
 
 namespace Benchmarks
 {
@@ -64,7 +65,7 @@ namespace Benchmarks
 
             }).GetAwaiter().GetResult();
 
-            theDriver.Host.TryPurgeAllRabbitMqQueues();
+            theDriver.Host.ResetResourceState().GetAwaiter().GetResult();
 
         }
 

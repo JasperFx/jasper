@@ -7,6 +7,7 @@ using Jasper.Transports.Sending;
 using Jasper.Util;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Tcp.Tests

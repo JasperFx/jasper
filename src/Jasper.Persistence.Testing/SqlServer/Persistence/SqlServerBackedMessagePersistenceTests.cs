@@ -12,6 +12,7 @@ using Jasper.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.SqlServer.Persistence

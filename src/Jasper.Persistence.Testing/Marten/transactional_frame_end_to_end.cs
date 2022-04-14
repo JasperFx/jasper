@@ -13,6 +13,7 @@ using LamarCodeGeneration;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport;
 using Weasel.Core;
 using Xunit;
 

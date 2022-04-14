@@ -4,6 +4,7 @@ using Jasper.Runtime;
 using Jasper.Util;
 using Marten;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten

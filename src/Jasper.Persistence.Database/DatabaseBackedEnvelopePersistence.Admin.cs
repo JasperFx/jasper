@@ -17,6 +17,7 @@ namespace Jasper.Persistence.Database
             await truncateEnvelopeData(conn);
         }
 
+        [Obsolete("Eliminate in favor of resource model")]
         public async Task RebuildStorageAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();

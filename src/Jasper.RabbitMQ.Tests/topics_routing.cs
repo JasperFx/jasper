@@ -7,6 +7,7 @@ using Jasper.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.RabbitMQ.Tests

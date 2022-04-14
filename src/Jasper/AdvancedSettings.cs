@@ -64,6 +64,7 @@ namespace Jasper
         /// </summary>
         public bool DurabilityAgentEnabled { get; set; } = true;
 
+        [Obsolete("Use Oakton resource support")]
         public StorageProvisioning StorageProvisioning { get; set; } = StorageProvisioning.None;
 
         /// <summary>

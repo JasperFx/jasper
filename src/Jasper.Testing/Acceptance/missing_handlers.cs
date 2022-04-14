@@ -5,6 +5,7 @@ using Jasper.Runtime;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Acceptance

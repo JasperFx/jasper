@@ -12,6 +12,7 @@ using Jasper.Serialization;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport.ErrorHandling;
 using TestMessages;
@@ -51,14 +52,16 @@ namespace TestingSupport.Compliance
 
         public bool AllLocally { get; set; }
 
-        protected Task SenderIs(Action<JasperOptions> configure)
+        protected async Task SenderIs(Action<JasperOptions> configure)
         {
             Sender = JasperHost.For(opts =>
             {
                 configure(opts);
                 configureSender(opts);
             });
-            return Sender.RebuildMessageStorage();
+
+            await Sender.ResetResourceState();
+            await Sender.RebuildMessageStorage();
         }
 
         private void configureSender(JasperOptions options)
@@ -75,7 +78,7 @@ namespace TestingSupport.Compliance
             options.Services.AddSingleton<IMessageSerializer, GreenTextWriter>();
         }
 
-        public Task ReceiverIs(Action<JasperOptions> configure)
+        public async Task ReceiverIs(Action<JasperOptions> configure)
         {
             Receiver = JasperHost.For(opts =>
             {
@@ -83,7 +86,8 @@ namespace TestingSupport.Compliance
                 configureReceiver(opts);
             });
 
-            return Receiver.RebuildMessageStorage();
+            await Receiver.RebuildMessageStorage();
+            await Receiver.ResetResourceState();
         }
 
         private static void configureReceiver(JasperOptions options)
