@@ -12,6 +12,7 @@ using Jasper.Tcp;
 using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -64,8 +65,8 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         public async Task InitializeAsync()
         {
-            await theSender.RebuildMessageStorage();
-            await theReceiver.RebuildMessageStorage();
+            await theSender.ResetResourceState();
+            await theReceiver.ResetResourceState();
         }
 
         public Task DisposeAsync()

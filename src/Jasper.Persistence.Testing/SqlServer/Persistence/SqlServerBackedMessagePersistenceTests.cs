@@ -11,6 +11,7 @@ using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Transports;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -38,7 +39,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
                 opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
-            await theHost.RebuildMessageStorage();
+            await theHost.ResetResourceState();
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();

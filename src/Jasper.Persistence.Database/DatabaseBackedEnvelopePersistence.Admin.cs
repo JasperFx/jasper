@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Database
             await truncateEnvelopeDataAsync(conn);
         }
 
-        public async Task RebuildStorageAsync()
+        public async Task RebuildStorage()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
@@ -74,7 +74,7 @@ namespace Jasper.Persistence.Database
                 .FetchList(r => DatabasePersistence.ReadOutgoing(r, _cancellation), cancellation: _cancellation);
         }
 
-        public async Task ReleaseAllOwnershipAsync()
+        public async Task ReleaseAllOwnership()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);

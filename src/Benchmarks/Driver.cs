@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Oakton.Resources;
 using TestMessages;
 
 namespace Benchmarks
@@ -48,7 +49,7 @@ namespace Benchmarks
             Persistence = Host.Services.GetRequiredService<IEnvelopePersistence>();
             Publisher = Host.Services.GetRequiredService<IMessagePublisher>();
 
-            await Host.RebuildMessageStorage();
+            await Host.ResetResourceState();
 
             _waiter = TargetHandler.WaitForNumber(Targets.Length, 60.Seconds());
         }

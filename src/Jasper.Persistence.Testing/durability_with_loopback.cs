@@ -34,7 +34,8 @@ namespace Jasper.Persistence.Testing
                 counts.Incoming.ShouldBe(1);
             }
 
-            using (var host1 = JasperHost.For(opts => opts.ConfigureDurableSender(true, false)))
+            // Don't use JasperHost here because you need the existing persisted state!!!!
+            using (var host1 = Host.CreateDefaultBuilder().UseJasper(opts => opts.ConfigureDurableSender(true, false)).Start())
             {
                 var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
 

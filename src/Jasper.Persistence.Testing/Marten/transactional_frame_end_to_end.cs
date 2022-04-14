@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Testing.Marten
                 {
                     #region sample_Using_CommandsAreTransactional
 
-                    using var host = Host.CreateDefaultBuilder()
+                    using var host = await Host.CreateDefaultBuilder()
                         .UseJasper(opts =>
                         {
                             // And actually use the policy

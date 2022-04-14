@@ -215,7 +215,7 @@ namespace Jasper.Runtime
             switch (Settings.StorageProvisioning)
             {
                 case StorageProvisioning.Rebuild:
-                    await Persistence.Admin.RebuildStorageAsync();
+                    await Persistence.Admin.RebuildStorage();
                     break;
 
                 case StorageProvisioning.Clear:

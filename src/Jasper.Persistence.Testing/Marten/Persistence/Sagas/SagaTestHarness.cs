@@ -6,6 +6,7 @@ using Jasper.Runtime.Handlers;
 using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using TestingSupport;
 using Weasel.Core;
 using Weasel.Postgresql;
@@ -43,7 +44,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
             var store = _host.Get<IDocumentStore>();
             store.Advanced.Clean.CompletelyRemoveAll();
 
-            _host.RebuildMessageStorage();
+            _host.ResetResourceState();
         }
 
         public void Dispose()

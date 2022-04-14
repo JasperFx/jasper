@@ -76,7 +76,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theSettings = new AdvancedSettings(null);
 
 
-            await EnvelopeStorageAdmin.RebuildStorageAsync();
+            await EnvelopeStorageAdmin.RebuildStorage();
 
             var persistence =
                 new PostgresqlEnvelopePersistence(

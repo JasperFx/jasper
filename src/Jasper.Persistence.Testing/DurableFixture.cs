@@ -10,6 +10,7 @@ using Jasper.Tcp;
 using Jasper.Tracking;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -51,7 +52,7 @@ namespace Jasper.Persistence.Testing
             configureSender(senderRegistry);
 
             theSender = JasperHost.For(senderRegistry);
-            await theSender.RebuildMessageStorage();
+            await theSender.ResetResourceState();
 
 
             var receiverRegistry = new JasperOptions();
@@ -70,7 +71,7 @@ namespace Jasper.Persistence.Testing
 
 
             theReceiver = JasperHost.For(receiverRegistry);
-            await theReceiver.RebuildMessageStorage();
+            await theReceiver.ResetResourceState();
 
 
             await initializeStorage(theSender, theReceiver);
@@ -93,9 +94,9 @@ namespace Jasper.Persistence.Testing
 
         protected virtual async Task initializeStorage(IHost sender, IHost receiver)
         {
-            await theSender.RebuildMessageStorage();
+            await theSender.ResetResourceState();
 
-            await theReceiver.RebuildMessageStorage();
+            await theReceiver.ResetResourceState();
         }
 
         protected abstract void configureReceiver(JasperOptions receiverOptions);

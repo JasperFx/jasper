@@ -10,7 +10,7 @@ namespace Jasper.Persistence.Testing.Samples
         {
             #region sample_AdvancedConfigurationOfDurabilityAgent
 
-            using var host = Host.CreateDefaultBuilder()
+            using var host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
                     // Control the maximum batch size of recovered

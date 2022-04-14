@@ -11,6 +11,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using TestingSupport;
 using Weasel.Core;
 using Weasel.SqlServer;
@@ -63,7 +64,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             var migration = await SchemaMigration.Determine(conn, tables);
             await new SqlServerMigrator().ApplyAll(conn, migration, AutoCreate.All);
 
-            await _host.RebuildMessageStorage();
+            await _host.ResetResourceState();
         }
 
         public void Dispose()

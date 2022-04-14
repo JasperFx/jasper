@@ -8,6 +8,7 @@ using Jasper.Tcp;
 using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -30,7 +31,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             var store = theHost.Get<IDocumentStore>();
             await store.Advanced.Clean.CompletelyRemoveAllAsync();
-            await theHost.RebuildMessageStorage();
+            await theHost.ResetResourceState();
         }
 
         public Task DisposeAsync()

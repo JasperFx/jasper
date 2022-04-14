@@ -47,7 +47,7 @@ namespace TestingSupport.Compliance
                 configureSender(options);
             });
 
-            return Sender.RebuildMessageStorage();
+            return Task.CompletedTask;
         }
 
         public bool AllLocally { get; set; }
@@ -60,8 +60,6 @@ namespace TestingSupport.Compliance
                 configureSender(opts);
             });
 
-            await Sender.ResetResourceState();
-            await Sender.RebuildMessageStorage();
         }
 
         private void configureSender(JasperOptions options)
@@ -76,6 +74,7 @@ namespace TestingSupport.Compliance
             options.PublishAllMessages().To(OutboundAddress);
 
             options.Services.AddSingleton<IMessageSerializer, GreenTextWriter>();
+            options.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
         }
 
         public async Task ReceiverIs(Action<JasperOptions> configure)
@@ -85,9 +84,6 @@ namespace TestingSupport.Compliance
                 configure(opts);
                 configureReceiver(opts);
             });
-
-            await Receiver.RebuildMessageStorage();
-            await Receiver.ResetResourceState();
         }
 
         private static void configureReceiver(JasperOptions options)
@@ -117,6 +113,8 @@ namespace TestingSupport.Compliance
             options.Extensions.UseMessageTrackingTestingSupport();
 
             options.Services.AddSingleton(new ColorHistory());
+
+            options.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
         }
 
         public void Dispose()
@@ -158,11 +156,11 @@ namespace TestingSupport.Compliance
             theReceiver = Fixture.Receiver;
             theOutboundAddress = Fixture.OutboundAddress;
 
-            await Fixture.Sender.ClearAllPersistedMessages();
+            await Fixture.Sender.ResetResourceState();
 
             if (Fixture.Receiver != null && !object.ReferenceEquals(Fixture.Sender, Fixture.Receiver))
             {
-                await Fixture.Receiver.ClearAllPersistedMessages();
+                await Fixture.Receiver.ResetResourceState();
             }
 
             Fixture.BeforeEach();

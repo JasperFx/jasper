@@ -16,7 +16,7 @@ namespace Jasper.Persistence.Testing.SqlServer
         public async Task InitializeAsync()
         {
             thePersistence = new SqlServerEnvelopePersistence(new SqlServerSettings{ConnectionString = Servers.SqlServerConnectionString}, new AdvancedSettings(null), new NullLogger<SqlServerEnvelopePersistence>());
-            await thePersistence.RebuildStorageAsync();
+            await thePersistence.RebuildStorage();
             await initialize();
         }
 

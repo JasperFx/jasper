@@ -70,7 +70,7 @@ namespace Jasper.Persistence.Durability
             return Task.FromResult((IReadOnlyList<Envelope>)new List<Envelope>());
         }
 
-        public Task ReleaseAllOwnershipAsync()
+        public Task ReleaseAllOwnership()
         {
             return Task.CompletedTask;
         }
@@ -141,7 +141,7 @@ namespace Jasper.Persistence.Durability
             return Task.CompletedTask;
         }
 
-        public Task RebuildStorageAsync()
+        public Task RebuildStorage()
         {
             return Task.CompletedTask;
         }

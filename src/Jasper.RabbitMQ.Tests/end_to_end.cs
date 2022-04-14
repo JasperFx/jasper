@@ -317,7 +317,7 @@ namespace Jasper.RabbitMQ.Tests
                 }).IntegrateWithJasper();
             });
 
-            await publisher.RebuildMessageStorage();
+            await publisher.ResetResourceState();
 
             var receiver = JasperHost.For(opts =>
             {
@@ -338,7 +338,7 @@ namespace Jasper.RabbitMQ.Tests
                 }).IntegrateWithJasper();
             });
 
-            await receiver.RebuildMessageStorage();
+            await receiver.ResetResourceState();
 
             try
             {

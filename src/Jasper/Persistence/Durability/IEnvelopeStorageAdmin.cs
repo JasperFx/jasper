@@ -9,14 +9,14 @@ namespace Jasper.Persistence.Durability
     {
         Task ClearAllPersistedEnvelopes();
 
-        Task RebuildStorageAsync();
+        Task RebuildStorage();
         Task<PersistedCounts> GetPersistedCounts();
 
         Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes();
         Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes();
 
 
-        Task ReleaseAllOwnershipAsync();
+        Task ReleaseAllOwnership();
 
         public Task CheckAsync(CancellationToken token);
     }

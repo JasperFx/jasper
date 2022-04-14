@@ -32,7 +32,7 @@ internal class EnvelopeStorageResource : IStatefulResource
 
     public Task Setup(CancellationToken token)
     {
-        return _persistence.Admin.RebuildStorageAsync();
+        return _persistence.Admin.RebuildStorage();
     }
 
     public async Task<IRenderable> DetermineStatus(CancellationToken token)

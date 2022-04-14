@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -49,7 +50,7 @@ namespace Jasper.Persistence.Testing.EFCore
         [Fact]
         public async Task persist_an_outgoing_envelope()
         {
-            await Host.RebuildMessageStorage();
+            await Host.ResetResourceState();
 
             var envelope = new Envelope
             {
@@ -88,7 +89,7 @@ namespace Jasper.Persistence.Testing.EFCore
         [Fact]
         public async Task persist_an_incoming_envelope()
         {
-            await Host.RebuildMessageStorage();
+            await Host.ResetResourceState();
 
             var envelope = new Envelope
             {
