@@ -37,49 +37,41 @@ namespace Jasper.Persistence
 
         public override async Task<bool> Execute(StorageInput input)
         {
-            using (var host = input.BuildHost())
+            using var host = input.BuildHost();
+            var persistence = host.Services.GetRequiredService<IEnvelopePersistence>();
+
+            persistence.Describe(Console.Out);
+
+            switch (input.Action)
             {
-                var persistor = host.Services.GetRequiredService<IEnvelopePersistence>();
+                case (StorageAction.counts):
 
-                persistor.Describe(Console.Out);
+                    await persistence.Admin.RebuildStorageAsync();
 
-                switch (input.Action)
-                {
-                    case (StorageAction.counts):
+                    var counts = await persistence.Admin.GetPersistedCounts();
+                    Console.WriteLine("Persisted Enveloper Counts");
+                    Console.WriteLine($"Incoming    {counts.Incoming.ToString().PadLeft(5)}");
+                    Console.WriteLine($"Outgoing    {counts.Outgoing.ToString().PadLeft(5)}");
+                    Console.WriteLine($"Scheduled   {counts.Scheduled.ToString().PadLeft(5)}");
 
-                        await persistor.Admin.RebuildStorageAsync();
+                    break;
 
-                        var counts = await persistor.Admin.GetPersistedCounts();
-                        Console.WriteLine("Persisted Enveloper Counts");
-                        Console.WriteLine($"Incoming    {counts.Incoming.ToString().PadLeft(5)}");
-                        Console.WriteLine($"Outgoing    {counts.Outgoing.ToString().PadLeft(5)}");
-                        Console.WriteLine($"Scheduled   {counts.Scheduled.ToString().PadLeft(5)}");
+                case (StorageAction.clear):
+                    await persistence.Admin.ClearAllPersistedEnvelopes();
+                    ConsoleWriter.Write(ConsoleColor.Green, "Successfully deleted all persisted envelopes");
+                    break;
 
-                        break;
+                case (StorageAction.rebuild):
+                    await persistence.Admin.RebuildStorageAsync();
+                    ConsoleWriter.Write(ConsoleColor.Green, "Successfully rebuilt the envelope storage");
+                    break;
 
-                    case (StorageAction.clear):
-                        await persistor.Admin.ClearAllPersistedEnvelopes();
-                        ConsoleWriter.Write(ConsoleColor.Green, "Successfully deleted all persisted envelopes");
-                        break;
+                case StorageAction.release:
+                    await persistence.Admin.RebuildStorageAsync();
+                    Console.WriteLine("Releasing all ownership of persisted envelopes");
+                    await persistence.Admin.ReleaseAllOwnershipAsync();
 
-                    case (StorageAction.rebuild):
-                        await persistor.Admin.RebuildStorageAsync();
-                        ConsoleWriter.Write(ConsoleColor.Green, "Successfully rebuilt the envelope storage");
-                        break;
-
-                    case (StorageAction.script):
-                        Console.WriteLine("Exporting script to " + input.FileFlag.ToFullPath());
-                        await File.WriteAllTextAsync(input.FileFlag, persistor.Admin.ToDatabaseScript());
-
-                        break;
-
-                    case StorageAction.release:
-                        await persistor.Admin.RebuildStorageAsync();
-                        Console.WriteLine("Releasing all ownership of persisted envelopes");
-                        await persistor.Admin.ReleaseAllOwnership();
-
-                        break;
-                }
+                    break;
             }
 
             return true;

@@ -68,6 +68,8 @@ namespace Jasper
                     throw new InvalidOperationException("IHostBuilder.UseJasper() can only be called once per service collection");
                 }
 
+                services.AddSingleton<IStatefulResource, EnvelopeStorageResource>();
+
                 services.AddSingleton(s => s.GetRequiredService<IContainer>().CreateServiceVariableSource());
 
                 services.AddSingleton<JasperOptions>(s =>

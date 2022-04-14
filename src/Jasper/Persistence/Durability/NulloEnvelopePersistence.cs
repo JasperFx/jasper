@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Logging;
 using Jasper.Runtime.Scheduled;
@@ -69,7 +70,12 @@ namespace Jasper.Persistence.Durability
             return Task.FromResult((IReadOnlyList<Envelope>)new List<Envelope>());
         }
 
-        public Task ReleaseAllOwnership()
+        public Task ReleaseAllOwnershipAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task CheckAsync(CancellationToken token)
         {
             return Task.CompletedTask;
         }
@@ -138,11 +144,6 @@ namespace Jasper.Persistence.Durability
         public Task RebuildStorageAsync()
         {
             return Task.CompletedTask;
-        }
-
-        public string ToDatabaseScript()
-        {
-            return string.Empty;
         }
 
         public Task ScheduleJobAsync(Envelope? envelope)

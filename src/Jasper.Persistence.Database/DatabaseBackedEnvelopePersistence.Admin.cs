@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Logging;
-using Jasper.Persistence.Durability;
 using Weasel.Core;
 
 namespace Jasper.Persistence.Database
@@ -14,10 +14,9 @@ namespace Jasper.Persistence.Database
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
-            await truncateEnvelopeData(conn);
+            await truncateEnvelopeDataAsync(conn);
         }
 
-        [Obsolete("Eliminate in favor of resource model")]
         public async Task RebuildStorageAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
@@ -30,10 +29,10 @@ namespace Jasper.Persistence.Database
                 await Migrator.ApplyAll(conn, migration, AutoCreate.CreateOrUpdate);
             }
 
-            await truncateEnvelopeData(conn);
+            await truncateEnvelopeDataAsync(conn);
         }
 
-        private async Task truncateEnvelopeData(DbConnection conn)
+        private async Task truncateEnvelopeDataAsync(DbConnection conn)
         {
             try
             {
@@ -75,13 +74,20 @@ namespace Jasper.Persistence.Database
                 .FetchList(r => DatabasePersistence.ReadOutgoing(r, _cancellation), cancellation: _cancellation);
         }
 
-        public async Task ReleaseAllOwnership()
+        public async Task ReleaseAllOwnershipAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
 
             await conn.CreateCommand($"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0;update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = 0").ExecuteNonQueryAsync(_cancellation);
 
+        }
+
+        public async Task CheckAsync(CancellationToken token)
+        {
+            await using var conn = DatabaseSettings.CreateConnection();
+            await conn.OpenAsync(token);
+            await conn.CloseAsync();
         }
     }
 }

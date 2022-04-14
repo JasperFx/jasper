@@ -85,16 +85,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
 
         [Fact]
-        public void can_get_storage_sql()
-        {
-            var sql = theSender.Get<IEnvelopePersistence>().Admin.ToDatabaseScript();
-
-            sql.ShouldNotBeNull();
-
-            _output.WriteLine(sql);
-        }
-
-        [Fact]
         public async Task delete_all_persisted_envelopes()
         {
             var item = new ItemCreated
