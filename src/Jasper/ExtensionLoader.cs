@@ -44,6 +44,8 @@ namespace Jasper
                 return;
             }
 
+            options.IncludeExtensionAssemblies(assemblies);
+
             var extensions = assemblies.Select(x => x.GetAttribute<JasperModuleAttribute>().ExtensionType)
                 .Where(x => x != null)
                 .Select(x => Activator.CreateInstance(x).As<IJasperExtension>())

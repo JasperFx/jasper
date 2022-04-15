@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Attributes;
+using OrderExtension;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -75,6 +76,14 @@ namespace Jasper.Testing.Configuration
         {
             chainFor<MovieAdded>().ShouldHaveHandler<NetflixHandler>(x => x.Handle(null, null));
         }
+
+        [Fact]
+        public void find_handlers_from_jasper_module_extensions()
+        {
+            chainFor<CreateOrder>().ShouldHaveHandler<OrderHandler>(x => x.Handle(new CreateOrder()));
+            chainFor<ShipOrder>().ShouldHaveHandler<OrderHandler>(x => x.Handle(new ShipOrder()));
+        }
+
     }
 
     public class customized_finding : IntegrationContext

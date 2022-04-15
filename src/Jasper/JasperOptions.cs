@@ -213,4 +213,13 @@ public sealed partial class JasperOptions : IExtensions
         return Serializers.FirstOrDefault(x => x.ContentType.EqualsIgnoreCase(envelope.ContentType)) ??
                DefaultSerializer;
     }
+
+    internal void IncludeExtensionAssemblies(Assembly[] assemblies)
+    {
+        foreach (var assembly in assemblies)
+        {
+            HandlerGraph.Source.IncludeAssembly(assembly);
+        }
+
+    }
 }
