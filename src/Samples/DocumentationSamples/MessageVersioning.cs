@@ -159,8 +159,10 @@ namespace DocumentationSamples
             using var host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.Advanced.JsonSerialization
-                        .ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+                    opts.UseNewtonsoftForSerialization(settings =>
+                    {
+                        settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+                    });
                 }).StartAsync();
 
             #endregion

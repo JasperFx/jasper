@@ -28,7 +28,6 @@ namespace InteroperabilityTests
             Jasper = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
                 // application/vnd.masstransit+json
-                opts.Advanced.JsonSerialization.TypeNameHandling = TypeNameHandling.All;
 
                 opts.ConfigureRabbitMq(t =>
                 {

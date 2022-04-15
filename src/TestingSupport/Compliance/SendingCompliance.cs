@@ -68,7 +68,7 @@ namespace TestingSupport.Compliance
                 .DisableConventionalDiscovery()
                 .IncludeType<PongHandler>();
 
-            options.Serializers.Add(new GreenTextWriter());
+            options.AddSerializer(new GreenTextWriter());
             options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
             options.PublishAllMessages().To(OutboundAddress);
@@ -98,7 +98,7 @@ namespace TestingSupport.Compliance
                 .IncludeType<BlueHandler>()
                 .IncludeType<PingHandler>();
 
-            options.Serializers.Add(new BlueTextReader());
+            options. AddSerializer(new BlueTextReader());
 
             options.Handlers.OnException<DivideByZeroException>()
                 .MoveToErrorQueue();
@@ -477,7 +477,7 @@ namespace TestingSupport.Compliance
         {
         }
 
-        public string? ContentType { get; } = "text/plain";
+        public string ContentType { get; } = "text/plain";
         public byte[]? Write(object? message)
         {
             throw new NotImplementedException();

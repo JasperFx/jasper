@@ -50,7 +50,7 @@ namespace Jasper.Configuration
                 return serializer;
             }
 
-            serializer = Root?.Options.Serializers.FirstOrDefault(x => x.ContentType.EqualsIgnoreCase(contentType));
+            serializer = Root?.Options.FindSerializer(contentType);
             _serializers = _serializers.AddOrUpdate(contentType, serializer);
 
             return serializer;

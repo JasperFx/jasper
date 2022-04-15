@@ -39,7 +39,6 @@ namespace Jasper.Runtime
         {
             Settings = options.Advanced;
             Options = options;
-            Options.Serializers.Add(new NewtonsoftSerializer(Settings.JsonSerialization));
             Handlers = options.HandlerGraph;
             Logger = logger;
 

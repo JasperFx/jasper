@@ -27,11 +27,9 @@ namespace Jasper.Testing.Serialization
             var root = host.Services.GetRequiredService<IJasperRuntime>();
 
             root.Runtime.EndpointFor("stub://one".ToUri())
-                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
-                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>();
             root.Runtime.EndpointFor("stub://two".ToUri())
-                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
-                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>();
 
         }
 
@@ -50,8 +48,7 @@ namespace Jasper.Testing.Serialization
 
             var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
-                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
-                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>();
 
             root.Runtime.EndpointFor("stub://two".ToUri())
                 .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
@@ -85,7 +82,7 @@ namespace Jasper.Testing.Serialization
 
             using var host = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                opts.Serializers.Add(new FooSerializer());
+                opts.AddSerializer(new FooSerializer());
                 opts.PublishAllMessages().To("stub://one");
 
                 opts.ListenForMessagesFrom("stub://two")
@@ -140,8 +137,7 @@ namespace Jasper.Testing.Serialization
 
             var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
-                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
-                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>();
 
             root.Runtime.EndpointFor("stub://two".ToUri())
                 .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
@@ -164,8 +160,7 @@ namespace Jasper.Testing.Serialization
 
             var root = host.Services.GetRequiredService<IJasperRuntime>();
             root.Runtime.EndpointFor("stub://one".ToUri())
-                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>()
-                .Settings.ShouldBeSameAs(root.Settings.JsonSerialization);
+                .DefaultSerializer.ShouldBeOfType<NewtonsoftSerializer>();
 
             root.Runtime.EndpointFor("stub://two".ToUri())
                 .DefaultSerializer.ShouldBeSameAs(fooSerializer);

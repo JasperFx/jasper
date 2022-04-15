@@ -12,11 +12,9 @@ namespace DocumentationSamples
             // Add service registrations
             options.Services.AddTransient<IFoo, Foo>();
 
-
-
             // Alter settings within the application
-            options.Advanced.JsonSerialization
-                .TypeNameHandling = TypeNameHandling.All;
+            options
+                .UseNewtonsoftForSerialization(settings => settings.TypeNameHandling = TypeNameHandling.None);
         }
     }
     #endregion

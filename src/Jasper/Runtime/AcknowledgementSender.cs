@@ -15,9 +15,7 @@ namespace Jasper.Runtime
         public AcknowledgementSender(IEnvelopeRouter router, IJasperRuntime root)
         {
             _router = router;
-            _writer = root.Options.Serializers.FirstOrDefault(x =>
-                          x.ContentType.EqualsIgnoreCase(EnvelopeConstants.JsonContentType)) ??
-                      throw new InvalidOperationException("No registered serializer for JSON");
+            _writer = root.Options.FindSerializer(EnvelopeConstants.JsonContentType);
         }
 
         public Envelope? BuildAcknowledgement(Envelope? envelope)

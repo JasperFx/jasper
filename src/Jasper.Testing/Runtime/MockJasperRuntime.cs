@@ -25,11 +25,6 @@ namespace Jasper.Testing.Runtime
 
     public class MockJasperRuntime : IJasperRuntime
     {
-        public MockJasperRuntime()
-        {
-            Options.Serializers.Add(new NewtonsoftSerializer(Options.Advanced.JsonSerialization));
-        }
-
         public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
         public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();

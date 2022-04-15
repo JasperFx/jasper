@@ -116,15 +116,6 @@ namespace Jasper
         /// </summary>
         public TimeSpan ScheduledJobPollingTime { get; set; } = 5.Seconds();
 
-        /// <summary>
-        /// Newtonsoft.Json serialization settings for messages sent or received
-        /// </summary>
-        public JsonSerializerSettings JsonSerialization { get; set; } = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-        };
-
         public int UniqueNodeId { get; } = Guid.NewGuid().ToString().GetDeterministicHashCode();
 
         public CancellationToken Cancellation => _cancellation.Token;

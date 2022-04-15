@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using Baseline;
 using BaselineTypeDiscovery;
-using Jasper;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Scheduled;
@@ -14,6 +14,7 @@ using Jasper.Transports.Local;
 using Jasper.Transports.Stub;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("Jasper.Testing")]
 
@@ -26,13 +27,12 @@ namespace Jasper;
 public sealed partial class JasperOptions : IExtensions
 {
     protected static Assembly _rememberedCallingAssembly;
-
-
     private readonly List<IJasperExtension> _appliedExtensions = new();
-
     private readonly IList<Type> _extensionTypes = new List<Type>();
-
     private IMessageSerializer? _defaultSerializer;
+
+    private readonly IDictionary<string, IMessageSerializer>
+        _serializers = new Dictionary<string, IMessageSerializer>();
 
 
     public JasperOptions() : this(null)
@@ -41,6 +41,10 @@ public sealed partial class JasperOptions : IExtensions
 
     public JasperOptions(string assemblyName)
     {
+        _serializers.Add(EnvelopeReaderWriter.Instance.ContentType, EnvelopeReaderWriter.Instance);
+
+        UseNewtonsoftForSerialization();
+
         Add(new StubTransport());
         Add(new LocalTransport());
 
@@ -98,23 +102,26 @@ public sealed partial class JasperOptions : IExtensions
         set => Advanced.ServiceName = value;
     }
 
-    /// <summary>
-    ///     Default message serializers for the application
-    /// </summary>
-    public IList<IMessageSerializer?> Serializers { get; } =
-        new List<IMessageSerializer?> { EnvelopeReaderWriter.Instance };
+    // /// <summary>
+    // ///     Default message serializers for the application
+    // /// </summary>
+    // public IDictionary<string, IMessageSerializer> Serializers { get; } =
+    //     new Dictionary<string, IMessageSerializer>()
+    //     new List<IMessageSerializer?> { EnvelopeReaderWriter.Instance };
 
-    public IMessageSerializer? DefaultSerializer
+
+
+    public IMessageSerializer DefaultSerializer
     {
         get
         {
             return _defaultSerializer ??=
-                Serializers.FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType) ??
-                Serializers.FirstOrDefault();
+                _serializers.Values.FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType) ??
+                _serializers.Values.FirstOrDefault();
         }
         set
         {
-            Serializers.Fill(value);
+            _serializers[value.ContentType] = value;
             _defaultSerializer = value;
         }
     }
@@ -207,11 +214,50 @@ public sealed partial class JasperOptions : IExtensions
         services.AddRange(Services);
     }
 
-    internal IMessageSerializer DetermineSerializer(Envelope? envelope)
+    internal IMessageSerializer DetermineSerializer(Envelope envelope)
     {
-        // TODO -- make this a dictionary for the serializers
-        return Serializers.FirstOrDefault(x => x.ContentType.EqualsIgnoreCase(envelope.ContentType)) ??
-               DefaultSerializer;
+        if (envelope.ContentType.IsEmpty()) return DefaultSerializer;
+
+        if (_serializers.TryGetValue(envelope.ContentType, out var serializer))
+        {
+            return serializer;
+        }
+
+        return DefaultSerializer;
+    }
+
+    /// <summary>
+    /// Use Newtonsoft.Json as the default JSON serialization with optional configuration
+    /// </summary>
+    /// <param name="configuration"></param>
+    public void UseNewtonsoftForSerialization(Action<JsonSerializerSettings>? configuration = null)
+    {
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        };
+
+        configuration?.Invoke(settings);
+
+        var serializer = new NewtonsoftSerializer(settings);
+
+        _serializers[serializer.ContentType] = serializer;
+    }
+
+    /// <summary>
+    /// Use System.Text.Json as the default JSON serialization with optional configuration
+    /// </summary>
+    /// <param name="configuration"></param>
+    public void UseSystemTextJsonForSerialization(Action<JsonSerializerOptions>? configuration = null)
+    {
+        var options = new JsonSerializerOptions();
+
+        configuration?.Invoke(options);
+
+        var serializer = new SystemTextJsonSerializer(options);
+
+        _serializers[serializer.ContentType] = serializer;
     }
 
     internal void IncludeExtensionAssemblies(Assembly[] assemblies)
@@ -222,4 +268,25 @@ public sealed partial class JasperOptions : IExtensions
         }
 
     }
+
+    public IMessageSerializer FindSerializer(string contentType)
+    {
+        if (_serializers.TryGetValue(contentType, out var serializer))
+        {
+            return serializer;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(contentType));
+    }
+
+    /// <summary>
+    /// Register an alternative serializer with this Jasper application
+    /// </summary>
+    /// <param name="serializer"></param>
+    public void AddSerializer(IMessageSerializer serializer)
+    {
+        _serializers[serializer.ContentType] = serializer;
+    }
+
+
 }
