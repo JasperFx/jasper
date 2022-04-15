@@ -7,7 +7,6 @@ using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
-using Jasper.Persistence;
 using Jasper.Serialization;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
@@ -98,7 +97,7 @@ namespace TestingSupport.Compliance
                 .IncludeType<BlueHandler>()
                 .IncludeType<PingHandler>();
 
-            options. AddSerializer(new BlueTextReader());
+            options.AddSerializer(new BlueTextReader());
 
             options.Handlers.OnException<DivideByZeroException>()
                 .MoveToErrorQueue();

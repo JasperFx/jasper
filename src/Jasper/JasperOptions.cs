@@ -234,7 +234,7 @@ public sealed partial class JasperOptions : IExtensions
     {
         var settings = new JsonSerializerSettings
         {
-            TypeNameHandling = TypeNameHandling.All,
+            TypeNameHandling = TypeNameHandling.Auto,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
 

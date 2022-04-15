@@ -9,7 +9,7 @@ namespace TestMessages
     [MessageIdentity("Message1")]
     public class Message1
     {
-        public Guid Id = Guid.NewGuid();
+        public Guid Id { get; set; }= Guid.NewGuid();
     }
 
     [MessageIdentity("Message2")]

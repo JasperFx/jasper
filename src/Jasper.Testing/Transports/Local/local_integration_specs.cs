@@ -22,6 +22,8 @@ namespace Jasper.Testing.Transports.Local
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
+                opts.UseSystemTextJsonForSerialization();
+
             });
         }
 
