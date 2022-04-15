@@ -34,7 +34,8 @@ namespace Jasper.Runtime
             _channel = channel;
             _sagaId = originalEnvelope.SagaId;
 
-            EnlistInTransaction(this);
+            Transaction = this;
+            EnlistedInTransaction = true;
 
             if (Envelope.AckRequested)
             {
