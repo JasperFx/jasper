@@ -26,6 +26,7 @@ namespace Jasper.Persistence.Testing.EFCore
             {
                 services.AddDbContext<SampleDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
             })
+
             .UseJasper(options =>
             {
                 options.Services.AddSingleton<PassRecorder>();

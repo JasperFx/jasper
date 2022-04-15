@@ -181,7 +181,7 @@ namespace Jasper.Runtime.Handlers
         public override string ToString()
         {
             return
-                $"{MessageType.NameInCode()} handled by {GenericEnumerableExtensions.Join(Handlers.Select(x => $"{x.HandlerType.NameInCode()}.{x.Method.Name}()"), ", ")}";
+                $"{MessageType.NameInCode()} handled by {Handlers.Select(x => $"{x.HandlerType.NameInCode()}.{x.Method.Name}()").Join(", ")}";
         }
 
         public override bool ShouldFlushOutgoingMessages()
