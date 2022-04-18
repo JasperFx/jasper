@@ -14,14 +14,14 @@ namespace Jasper
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task SendAsync<T>(T? message);
+        Task SendAsync<T>(T message);
 
         /// <summary>
         ///     Publish a message to all known subscribers. Ignores the message if there are no known subscribers
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task PublishEnvelopeAsync(Envelope? envelope);
+        Task PublishEnvelopeAsync(Envelope envelope);
 
         /// <summary>
         ///     Publish a message to all known subscribers. Ignores the message if there are no known subscribers
@@ -29,7 +29,7 @@ namespace Jasper
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task PublishAsync<T>(T? message);
+        Task PublishAsync<T>(T message);
 
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Jasper
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task<Guid> SendEnvelopeAsync(Envelope? envelope);
+        Task<Guid> SendEnvelopeAsync(Envelope envelope);
 
         /// <summary>
         ///     Send a message with the expectation of a response sent back to the global subscription
@@ -47,7 +47,7 @@ namespace Jasper
         /// <param name="customization"></param>
         /// <typeparam name="TResponse"></typeparam>
         /// <returns></returns>
-        Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope?>? customization = null);
+        Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope>? customization = null);
 
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Jasper
         /// <param name="message"></param>
         /// <param name="topicName"></param>
         /// <returns></returns>
-        Task SendToTopicAsync(object? message, string? topicName);
+        Task SendToTopicAsync(object message, string topicName);
 
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Jasper
         /// <typeparam name="T"></typeparam>
         /// <param name="destination">The destination to send to</param>
         /// <param name="message"></param>
-        Task SendToDestinationAsync<T>(Uri? destination, T? message);
+        Task SendToDestinationAsync<T>(Uri destination, T message);
 
         /// <summary>
         ///     Send a message that should be executed at the given time
@@ -75,7 +75,7 @@ namespace Jasper
         /// <param name="message"></param>
         /// <param name="time"></param>
         /// <typeparam name="T"></typeparam>
-        Task ScheduleSendAsync<T>(T message, DateTime time);
+        Task ScheduleSendAsync<T>(T message, DateTimeOffset time);
 
         /// <summary>
         ///     Send a message that should be executed after the given delay

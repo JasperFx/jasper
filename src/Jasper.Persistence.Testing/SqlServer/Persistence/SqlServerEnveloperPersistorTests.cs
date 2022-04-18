@@ -299,10 +299,10 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             await thePersistence.StoreIncomingAsync(list.ToArray());
 
 
-            list[5].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
+            list[5].ScheduledTime = DateTimeOffset.Now.AddMinutes(5);
 
-            list[7].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
-            list[9].ExecutionTime = DateTimeOffset.Now.AddMinutes(5);
+            list[7].ScheduledTime = DateTimeOffset.Now.AddMinutes(5);
+            list[9].ScheduledTime = DateTimeOffset.Now.AddMinutes(5);
 
             await thePersistence.ScheduleExecutionAsync(new[] {list[5], list[7], list[9]});
 
@@ -310,9 +310,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             stored.Count(x => x.Status == EnvelopeStatus.Incoming).ShouldBe(7);
             stored.Count(x => x.Status == EnvelopeStatus.Scheduled).ShouldBe(3);
 
-            stored.Single(x => x.Id == list[5].Id).ExecutionTime.HasValue.ShouldBeTrue();
-            stored.Single(x => x.Id == list[7].Id).ExecutionTime.HasValue.ShouldBeTrue();
-            stored.Single(x => x.Id == list[9].Id).ExecutionTime.HasValue.ShouldBeTrue();
+            stored.Single(x => x.Id == list[5].Id).ScheduledTime.HasValue.ShouldBeTrue();
+            stored.Single(x => x.Id == list[7].Id).ScheduledTime.HasValue.ShouldBeTrue();
+            stored.Single(x => x.Id == list[9].Id).ScheduledTime.HasValue.ShouldBeTrue();
         }
 
         [Fact]

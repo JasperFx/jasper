@@ -31,7 +31,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
-            theEnvelope.ExecutionTime = DateTime.Today.ToUniversalTime().AddDays(1);
+            theEnvelope.ScheduledTime = DateTime.Today.ToUniversalTime().AddDays(1);
             theEnvelope.Status = EnvelopeStatus.Scheduled;
             theEnvelope.MessageType = "message1";
             theEnvelope.ContentType = EnvelopeConstants.JsonContentType;

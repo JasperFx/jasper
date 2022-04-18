@@ -157,7 +157,7 @@ namespace Jasper.Runtime.WorkerQueues
         public Task MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
-            envelope.ExecutionTime = time;
+            envelope.ScheduledTime = time;
             envelope.Status = EnvelopeStatus.Scheduled;
 
             return _policy.ExecuteAsync(() => _persistence.ScheduleExecutionAsync(new[] {envelope}));

@@ -129,12 +129,12 @@ namespace Jasper.Runtime
         /// <param name="message"></param>
         /// <param name="time"></param>
         /// <typeparam name="T"></typeparam>
-        public Task ScheduleSendAsync<T>(T message, DateTime time)
+        public Task ScheduleSendAsync<T>(T message, DateTimeOffset time)
         {
             return SendEnvelopeAsync(new Envelope
             {
                 Message = message,
-                ExecutionTime = time.ToUniversalTime(),
+                ScheduledTime = time.ToUniversalTime(),
                 Status = EnvelopeStatus.Scheduled
             });
         }

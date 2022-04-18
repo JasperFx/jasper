@@ -52,7 +52,7 @@ namespace DocumentationSamples
             // to universal time in storage
             await context.SendEnvelopeAsync(new Envelope(timeout)
             {
-                ExecutionTime = time
+                ScheduledTime = time
             });
 
         }

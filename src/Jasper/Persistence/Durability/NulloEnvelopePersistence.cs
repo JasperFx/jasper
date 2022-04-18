@@ -89,8 +89,8 @@ namespace Jasper.Persistence.Durability
         {
             if (envelope.Status == EnvelopeStatus.Scheduled)
             {
-                if (envelope.ExecutionTime == null) throw new ArgumentOutOfRangeException($"The envelope {envelope} is marked as Scheduled, but does not have an ExecutionTime");
-                ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
+                if (envelope.ScheduledTime == null) throw new ArgumentOutOfRangeException($"The envelope {envelope} is marked as Scheduled, but does not have an ExecutionTime");
+                ScheduledJobs?.Enqueue(envelope.ScheduledTime.Value, envelope);
             }
             return Task.CompletedTask;
         }
@@ -99,7 +99,7 @@ namespace Jasper.Persistence.Durability
         {
             foreach (var envelope in envelopes.Where(x => x.Status == EnvelopeStatus.Scheduled))
             {
-                ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
+                ScheduledJobs?.Enqueue(envelope.ScheduledTime.Value, envelope);
             }
 
             return Task.CompletedTask;
@@ -148,7 +148,7 @@ namespace Jasper.Persistence.Durability
 
         public Task ScheduleJobAsync(Envelope? envelope)
         {
-            ScheduledJobs?.Enqueue(envelope.ExecutionTime.Value, envelope);
+            ScheduledJobs?.Enqueue(envelope.ScheduledTime.Value, envelope);
 
             return Task.CompletedTask;
         }

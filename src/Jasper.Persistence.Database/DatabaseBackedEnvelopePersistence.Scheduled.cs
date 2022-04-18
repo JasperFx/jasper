@@ -15,7 +15,7 @@ namespace Jasper.Persistence.Database
             foreach (var envelope in envelopes)
             {
                 var id = builder.AddParameter(envelope.Id);
-                var time = builder.AddParameter(envelope.ExecutionTime.Value);
+                var time = builder.AddParameter(envelope.ScheduledTime.Value);
                 var attempts = builder.AddParameter(envelope.Attempts);
 
                 builder.Append(

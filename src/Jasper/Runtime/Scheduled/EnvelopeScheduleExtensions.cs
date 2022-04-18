@@ -12,7 +12,7 @@ namespace Jasper.Runtime.Scheduled
             {
                 Message = envelope,
                 MessageType = TransportConstants.ScheduledEnvelope,
-                ExecutionTime = envelope.ExecutionTime,
+                ScheduledTime = envelope.ScheduledTime,
                 ContentType = TransportConstants.SerializedEnvelope,
                 Destination = TransportConstants.DurableLocalUri,
                 Status = EnvelopeStatus.Scheduled,

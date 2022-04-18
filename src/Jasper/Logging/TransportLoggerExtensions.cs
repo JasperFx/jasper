@@ -109,7 +109,7 @@ public static class TransportLoggerExtensions
     {
         foreach (var envelope in envelopes)
         {
-            _scheduledJobsQueued(logger, envelope, envelope.ExecutionTime ?? DateTimeOffset.UtcNow, null);
+            _scheduledJobsQueued(logger, envelope, envelope.ScheduledTime ?? DateTimeOffset.UtcNow, null);
         }
     }
 

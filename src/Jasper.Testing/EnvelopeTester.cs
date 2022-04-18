@@ -51,7 +51,7 @@ namespace Jasper.Testing
         [Fact]
         public void execution_time_is_null_by_default()
         {
-            new Envelope().ExecutionTime.ShouldBeNull();
+            new Envelope().ScheduledTime.ShouldBeNull();
         }
 
 
@@ -164,7 +164,7 @@ namespace Jasper.Testing
         public void mark_received_when_not_delayed_execution()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.ExecutionTime = null;
+            envelope.ScheduledTime = null;
 
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
@@ -181,7 +181,7 @@ namespace Jasper.Testing
         public void mark_received_when_expired_execution()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.ExecutionTime = DateTime.UtcNow.AddDays(-1);
+            envelope.ScheduledTime = DateTime.UtcNow.AddDays(-1);
 
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
@@ -197,7 +197,7 @@ namespace Jasper.Testing
         public void mark_received_when_it_has_a_later_execution_time()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.ExecutionTime = DateTime.UtcNow.AddDays(1);
+            envelope.ScheduledTime = DateTime.UtcNow.AddDays(1);
 
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
@@ -219,7 +219,7 @@ namespace Jasper.Testing
             public when_building_an_envelope_for_scheduled_send()
             {
                 theOriginal = ObjectMother.Envelope();
-                theOriginal.ExecutionTime = DateTime.UtcNow.Date.AddDays(2);
+                theOriginal.ScheduledTime = DateTime.UtcNow.Date.AddDays(2);
                 theOriginal.Destination = "tcp://server3:2345".ToUri();
 
                 theSubscriber = Substitute.For<ISendingAgent>();
@@ -236,7 +236,7 @@ namespace Jasper.Testing
             [Fact]
             public void execution_time_is_copied()
             {
-                theScheduledEnvelope.ExecutionTime.ShouldBe(theOriginal.ExecutionTime);
+                theScheduledEnvelope.ScheduledTime.ShouldBe(theOriginal.ScheduledTime);
             }
 
             [Fact]

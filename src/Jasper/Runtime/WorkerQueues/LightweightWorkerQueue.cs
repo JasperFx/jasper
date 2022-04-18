@@ -62,9 +62,9 @@ namespace Jasper.Runtime.WorkerQueues
 
         public Task ScheduleExecutionAsync(Envelope envelope)
         {
-            if (!envelope.ExecutionTime.HasValue) throw new ArgumentOutOfRangeException(nameof(envelope), $"There is no {nameof(Envelope.ExecutionTime)} value");
+            if (!envelope.ScheduledTime.HasValue) throw new ArgumentOutOfRangeException(nameof(envelope), $"There is no {nameof(Envelope.ScheduledTime)} value");
 
-            _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
+            _scheduler.Enqueue(envelope.ScheduledTime.Value, envelope);
             return Task.CompletedTask;
         }
 
@@ -102,7 +102,7 @@ namespace Jasper.Runtime.WorkerQueues
 
             if (envelope.Status == EnvelopeStatus.Scheduled)
             {
-                _scheduler.Enqueue(envelope.ExecutionTime.Value, envelope);
+                _scheduler.Enqueue(envelope.ScheduledTime.Value, envelope);
             }
             else
             {
@@ -157,7 +157,7 @@ namespace Jasper.Runtime.WorkerQueues
 
         Task IHasNativeScheduling.MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
         {
-            envelope.ExecutionTime = time;
+            envelope.ScheduledTime = time;
             return ScheduleExecutionAsync(envelope);
         }
     }

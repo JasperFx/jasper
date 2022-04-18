@@ -85,7 +85,7 @@ namespace Jasper.Persistence.Database
                 builder.AddParameter(envelope.Id),
                 builder.AddParameter(envelope.Status.ToString()),
                 builder.AddParameter(envelope.OwnerId),
-                builder.AddParameter(envelope.ExecutionTime),
+                builder.AddParameter(envelope.ScheduledTime),
                 builder.AddParameter(envelope.Attempts),
                 builder.AddParameter(envelope.CausationId),
                 builder.AddParameter(envelope.CorrelationId),
@@ -118,7 +118,7 @@ namespace Jasper.Persistence.Database
 
             if (!(await reader.IsDBNullAsync(4, cancellation)))
             {
-                envelope.ExecutionTime = await reader.GetFieldValueAsync<DateTimeOffset>(4, cancellation);
+                envelope.ScheduledTime = await reader.GetFieldValueAsync<DateTimeOffset>(4, cancellation);
             }
 
             envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
@@ -144,7 +144,7 @@ namespace Jasper.Persistence.Database
                 var list = new List<DbParameter>();
 
                 list.Add(builder.AddParameter(error.Id));
-                list.Add(builder.AddParameter(error.Envelope.ExecutionTime));
+                list.Add(builder.AddParameter(error.Envelope.ScheduledTime));
                 list.Add(builder.AddParameter(error.Envelope.Attempts));
                 list.Add(builder.AddParameter(error.Envelope.Data));
                 list.Add(builder.AddParameter(error.Envelope.CausationId));

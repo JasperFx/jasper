@@ -65,7 +65,7 @@ namespace Jasper
         /// <param name="context"></param>
         /// <param name="response"></param>
         /// <returns></returns>
-        Task RespondToSender(object? response);
+        Task RespondToSender(object response);
 
         /// <summary>
         /// The active envelope persistence for the application. This is used
@@ -80,7 +80,7 @@ namespace Jasper
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task EnqueueCascading(object? message);
+        Task EnqueueCascading(object message);
 
 
         IMessageLogger Logger { get; }
@@ -102,7 +102,7 @@ namespace Jasper
         /// <returns></returns>
         Task Defer();
 
-        Task ReSchedule(DateTime scheduledTime);
+        Task ReSchedule(DateTimeOffset scheduledTime);
 
         Task MoveToDeadLetterQueue(Exception? exception);
 

@@ -37,7 +37,7 @@ namespace Jasper.Persistence.Marten.Persistence.Operations
                 builder.AddParameter(Envelope.Id),
                 builder.AddParameter(Envelope.Status.ToString()),
                 builder.AddParameter(Envelope.OwnerId),
-                builder.AddParameter(Envelope.ExecutionTime),
+                builder.AddParameter(Envelope.ScheduledTime),
                 builder.AddParameter(Envelope.Attempts),
                 builder.AddParameter(Envelope.CausationId),
                 builder.AddParameter(Envelope.CorrelationId),

@@ -93,7 +93,7 @@ namespace Jasper.Persistence.Database
 
             if (!await reader.IsDBNullAsync(1, _cancellation))
             {
-                envelope.ExecutionTime = await reader.GetFieldValueAsync<DateTimeOffset>(1, _cancellation);
+                envelope.ScheduledTime = await reader.GetFieldValueAsync<DateTimeOffset>(1, _cancellation);
             }
 
             envelope.Attempts = await reader.GetFieldValueAsync<int>(2, _cancellation);

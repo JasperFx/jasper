@@ -11,8 +11,8 @@ namespace Jasper.Runtime
     public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTransaction
     {
         private object? _sagaId;
-        private IChannelCallback _channel;
-        private readonly IList<Envelope?> _scheduled = new List<Envelope?>();
+        private IChannelCallback? _channel;
+        private readonly IList<Envelope> _scheduled = new List<Envelope>();
 
         public ExecutionContext(IJasperRuntime root) : base(root, Guid.NewGuid().ToString())
         {
@@ -171,7 +171,7 @@ namespace Jasper.Runtime
             {
                 foreach (var envelope in _scheduled)
                 {
-                    Root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                    Root.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
                 }
             }
             else
@@ -224,12 +224,12 @@ namespace Jasper.Runtime
             return _channel.DeferAsync(Envelope);
         }
 
-        public async Task ReSchedule(DateTime scheduledTime)
+        public async Task ReSchedule(DateTimeOffset scheduledTime)
         {
-            Envelope.ExecutionTime = scheduledTime;
+            Envelope.ScheduledTime = scheduledTime;
             if (_channel is IHasNativeScheduling c)
             {
-                await c.MoveToScheduledUntilAsync(Envelope, Envelope.ExecutionTime.Value);
+                await c.MoveToScheduledUntilAsync(Envelope, Envelope.ScheduledTime.Value);
             }
             else
             {

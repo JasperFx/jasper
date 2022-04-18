@@ -30,7 +30,7 @@ namespace Jasper.Runtime
         public string? CorrelationId { get; protected set; }
 
         public IJasperRuntime Root { get; }
-        public IEnvelopePersistence? Persistence { get; }
+        public IEnvelopePersistence Persistence { get; }
 
 
         public IMessageLogger Logger => Root.MessageLogger;
@@ -75,9 +75,9 @@ namespace Jasper.Runtime
             return persistOrSend(envelope);
         }
 
-        public Task Enqueue<T>(T? message, string workerQueue)
+        public Task Enqueue<T>(T? message, string workerQueueName)
         {
-            var envelope = Root.Router.RouteLocally(message, workerQueue);
+            var envelope = Root.Router.RouteLocally(message, workerQueueName);
 
             return persistOrSend(envelope);
         }
@@ -86,7 +86,7 @@ namespace Jasper.Runtime
         {
             var envelope = new Envelope(message)
             {
-                ExecutionTime = executionTime,
+                ScheduledTime = executionTime,
                 Destination = TransportConstants.DurableLocalUri
             };
 
@@ -114,7 +114,7 @@ namespace Jasper.Runtime
             if (envelope.Message == null)
                 throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
 
-            if (!envelope.ExecutionTime.HasValue)
+            if (!envelope.ScheduledTime.HasValue)
                 throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
 
 
@@ -128,7 +128,7 @@ namespace Jasper.Runtime
 
             if (Persistence is NulloEnvelopePersistence)
             {
-                Root.ScheduledJobs.Enqueue(envelope.ExecutionTime.Value, envelope);
+                Root.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
                 return Task.CompletedTask;
             }
 

@@ -16,7 +16,7 @@ namespace Jasper
 
         private DateTimeOffset? _deliverBy;
 
-        private DateTimeOffset? _executionTime;
+        private DateTimeOffset? _scheduledTime;
 
 
         private object? _message;
@@ -153,12 +153,12 @@ namespace Jasper
         public bool AckRequested { get; internal set; }
 
         /// <summary>
-        ///     Used by scheduled jobs to have this message processed by the receiving application at or after the designated time
+        /// Used by scheduled jobs or transports with a native scheduled send functionality to have this message processed by the receiving application at or after the designated time
         /// </summary>
-        public DateTimeOffset? ExecutionTime
+        public DateTimeOffset? ScheduledTime
         {
-            get => _executionTime;
-            set => _executionTime = value?.ToUniversalTime();
+            get => _scheduledTime;
+            set => _scheduledTime = value?.ToUniversalTime();
         }
 
 
@@ -225,7 +225,7 @@ namespace Jasper
         /// <returns></returns>
         public bool IsDelayed(DateTime utcNow)
         {
-            return ExecutionTime.HasValue && ExecutionTime.Value > utcNow;
+            return ScheduledTime.HasValue && ScheduledTime.Value > utcNow;
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace Jasper
         /// <returns></returns>
         public Envelope ScheduleDelayed(TimeSpan delay)
         {
-            ExecutionTime = DateTime.UtcNow.Add(delay);
+            ScheduledTime = DateTime.UtcNow.Add(delay);
             return this;
         }
 
@@ -264,7 +264,7 @@ namespace Jasper
         /// <returns></returns>
         public Envelope ScheduleAt(DateTime time)
         {
-            ExecutionTime = time.ToUniversalTime();
+            ScheduledTime = time.ToUniversalTime();
             return this;
         }
 

@@ -121,15 +121,15 @@ namespace Jasper.Testing.Serialization
         [Fact]
         public void execution_time_not_null()
         {
-            outgoing.ExecutionTime = DateTime.Today;
-            incoming.ExecutionTime.ShouldBe(DateTime.Today.ToUniversalTime());
+            outgoing.ScheduledTime = DateTime.Today;
+            incoming.ScheduledTime.ShouldBe(DateTime.Today.ToUniversalTime());
         }
 
         [Fact]
         public void execution_time_null()
         {
-            outgoing.ExecutionTime = null;
-            incoming.ExecutionTime.HasValue.ShouldBeFalse();
+            outgoing.ScheduledTime = null;
+            incoming.ScheduledTime.HasValue.ShouldBeFalse();
         }
 
         [Fact]

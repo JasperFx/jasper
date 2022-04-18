@@ -84,7 +84,7 @@ namespace Jasper.Runtime.Scheduled
             {
                 _parent = parent;
                 ExecutionTime = executionTime.ToUniversalTime();
-                envelope.ExecutionTime = null;
+                envelope.ScheduledTime = null;
 
                 Envelope = envelope;
 

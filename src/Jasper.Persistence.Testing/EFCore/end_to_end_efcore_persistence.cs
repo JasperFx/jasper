@@ -96,7 +96,7 @@ namespace Jasper.Persistence.Testing.EFCore
             {
                 Data = new byte[] {1, 2, 3, 4},
                 OwnerId = 5,
-                ExecutionTime = DateTime.Today.AddDays(1),
+                ScheduledTime = DateTime.Today.AddDays(1),
                 DeliverBy = new DateTimeOffset(DateTime.Today),
                 Status = EnvelopeStatus.Scheduled,
                 Attempts = 2,
@@ -120,7 +120,7 @@ namespace Jasper.Persistence.Testing.EFCore
             loadedEnvelope.Id.ShouldBe(envelope.Id);
 
             loadedEnvelope.Destination.ShouldBe(envelope.Destination);
-            loadedEnvelope.ExecutionTime.ShouldBe(envelope.ExecutionTime);
+            loadedEnvelope.ScheduledTime.ShouldBe(envelope.ScheduledTime);
             loadedEnvelope.Data.ShouldBe(envelope.Data);
             loadedEnvelope.OwnerId.ShouldBe(envelope.OwnerId);
             loadedEnvelope.Attempts.ShouldBe(envelope.Attempts);

@@ -100,7 +100,7 @@ namespace Jasper.Serialization
                         break;
 
                     case EnvelopeConstants.ExecutionTimeKey:
-                        env.ExecutionTime = XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.Utc);
+                        env.ScheduledTime = XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.Utc);
                         break;
 
                     case EnvelopeConstants.AttemptsKey:
@@ -229,9 +229,9 @@ namespace Jasper.Serialization
             dictionary.WriteProp(EnvelopeConstants.ReplyRequestedKey, env.ReplyRequested);
             dictionary.WriteProp(EnvelopeConstants.AckRequestedKey, env.AckRequested);
 
-            if (env.ExecutionTime.HasValue)
+            if (env.ScheduledTime.HasValue)
             {
-                var dateString = env.ExecutionTime.Value.ToUniversalTime()
+                var dateString = env.ScheduledTime.Value.ToUniversalTime()
                     .ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
                 dictionary.Add(EnvelopeConstants.ExecutionTimeKey, dateString);
             }
@@ -268,9 +268,9 @@ namespace Jasper.Serialization
             writer.WriteProp(ref count, EnvelopeConstants.ReplyRequestedKey, env.ReplyRequested);
             writer.WriteProp(ref count, EnvelopeConstants.AckRequestedKey, env.AckRequested);
 
-            if (env.ExecutionTime.HasValue)
+            if (env.ScheduledTime.HasValue)
             {
-                var dateString = env.ExecutionTime.Value.ToUniversalTime()
+                var dateString = env.ScheduledTime.Value.ToUniversalTime()
                     .ToString("yyyy-MM-ddTHH:mm:ss.fffffff", CultureInfo.InvariantCulture);
                 count++;
                 writer.Write(EnvelopeConstants.ExecutionTimeKey);

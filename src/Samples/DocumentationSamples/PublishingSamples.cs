@@ -52,7 +52,7 @@ namespace DocumentationSamples
                 Destination = new Uri("tcp://server1:2000"),
 
                 // Make this a scheduled message
-                ExecutionTime = DateTime.UtcNow.AddDays(1),
+                ScheduledTime = DateTime.UtcNow.AddDays(1),
 
                 // Direct the receiver that the sender is interested in any response
                 // with this message type

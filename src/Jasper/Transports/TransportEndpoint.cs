@@ -46,7 +46,7 @@ namespace Jasper.Transports
             MapPropertyToHeader(x => x.Source, EnvelopeConstants.SourceKey);
             MapPropertyToHeader(x => x.ReplyRequested, EnvelopeConstants.ReplyRequestedKey);
             MapPropertyToHeader(x => x.ReplyUri, EnvelopeConstants.ReplyUriKey);
-            MapPropertyToHeader(x => x.ExecutionTime, EnvelopeConstants.ExecutionTimeKey);
+            MapPropertyToHeader(x => x.ScheduledTime, EnvelopeConstants.ExecutionTimeKey);
 
             MapPropertyToHeader(x => x.AckRequested, EnvelopeConstants.AckRequestedKey);
             MapPropertyToHeader(x => x.MessageType, EnvelopeConstants.MessageTypeKey);

@@ -14,7 +14,7 @@ namespace Jasper
         ///     Error actions will not be executed and the message consumers will not be retried
         ///     if an error happens.
         /// </summary>
-        Task InvokeAsync(object? message);
+        Task InvokeAsync(object message);
 
         /// <summary>
         ///     Invoke consumers for the relevant messages managed by the current
@@ -26,7 +26,7 @@ namespace Jasper
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<T> InvokeAsync<T>(object? message);
+        Task<T> InvokeAsync<T>(object message);
 
         /// <summary>
         ///     Enqueues the message locally. Uses the message type to worker queue routing to determine
@@ -36,16 +36,16 @@ namespace Jasper
         /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task Enqueue<T>(T? message);
+        Task Enqueue<T>(T message);
 
         /// <summary>
         ///     Enqueues the message locally to a specific worker queue.
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
+        /// <param name="workerQueueName">Optionally designate the name of the local worker queue</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task Enqueue<T>(T? message, string workerQueue);
+        Task Enqueue<T>(T message, string workerQueueName);
 
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Jasper
         /// <param name="executionTime"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<Guid> Schedule<T>(T? message, DateTimeOffset executionTime);
+        Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime);
 
         /// <summary>
         ///     Schedule a message to be processed in this application at a specified time with a delay
@@ -64,6 +64,6 @@ namespace Jasper
         /// <param name="delay"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<Guid> Schedule<T>(T? message, TimeSpan delay);
+        Task<Guid> Schedule<T>(T message, TimeSpan delay);
     }
 }
