@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Baseline;
+using Baseline.Dates;
 using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
@@ -67,6 +68,12 @@ public sealed partial class JasperOptions : IExtensions
     /// </summary>
     public AdvancedSettings Advanced { get; }
 
+    /// <summary>
+    /// The default message execution timeout. This uses a CancellationTokenSource
+    /// behind the scenes, and the timeout enforcement is dependent on the usage within handlers
+    /// </summary>
+    public TimeSpan DefaultExecutionTimeout { get; set; } = 60.Seconds();
+
 
     /// <summary>
     ///     Register additional services to the underlying IoC container
@@ -85,12 +92,6 @@ public sealed partial class JasperOptions : IExtensions
     ///     handling, local worker queues, and other policies on message handling
     /// </summary>
     public IHandlerConfiguration Handlers => HandlerGraph;
-
-    /// <summary>
-    ///     Read only view of the extensions that have been applied to this
-    ///     JasperOptions
-    /// </summary>
-    public IReadOnlyList<IJasperExtension> AppliedExtensions => _appliedExtensions;
 
     /// <summary>
     ///     Get or set the logical Jasper service name. By default, this is

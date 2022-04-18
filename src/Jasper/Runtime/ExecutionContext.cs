@@ -179,11 +179,12 @@ namespace Jasper.Runtime
             _scheduled.Clear();
         }
 
+        // TODO -- evaluate whether this can be done without the GetResult() call
         public void UseInMemoryTransaction()
         {
             if (!ReferenceEquals(this, Transaction))
             {
-                EnlistInTransaction(this);
+                EnlistInTransaction(this).GetAwaiter().GetResult();
             }
         }
 

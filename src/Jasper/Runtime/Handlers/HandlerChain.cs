@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Baseline.Reflection;
 using Jasper.Attributes;
 using Jasper.Configuration;
@@ -207,6 +208,12 @@ namespace Jasper.Runtime.Handlers
 
         }
 
+        /// <summary>
+        /// The message execution timeout in seconds for this specific message type. This uses a CancellationTokenSource
+        /// behind the scenes, and the timeout enforcement is dependent on the usage within handlers
+        /// </summary>
+        public int? ExecutionTimeoutInSeconds { get; set; } = null;
+
         internal string SourceCode => _generatedType.SourceCode;
 
         Task<bool> ICodeFile.AttachTypes(GenerationRules rules, Assembly assembly, IServiceProvider services, string containingNamespace)
@@ -229,5 +236,12 @@ namespace Jasper.Runtime.Handlers
         }
 
         string ICodeFile.FileName => TypeName + ".cs";
+
+        internal TimeSpan DetermineMessageTimeout(JasperOptions options)
+        {
+            if (ExecutionTimeoutInSeconds.HasValue) return ExecutionTimeoutInSeconds.Value.Seconds();
+
+            return options.DefaultExecutionTimeout;
+        }
     }
 }

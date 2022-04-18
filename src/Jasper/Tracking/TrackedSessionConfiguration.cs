@@ -128,6 +128,17 @@ namespace Jasper.Tracking
             return ExecuteAndWait(c => c.SendAsync(message));
         }
 
+        /// <summary>
+        /// Enqueue a message locally from the current Jasper application and wait for
+        /// all cascading activity to complete
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public Task<ITrackedSession> EnqueueMessageAndWait(object? message)
+        {
+            return ExecuteAndWait(c => c.Enqueue(message));
+        }
+
 
 
     }

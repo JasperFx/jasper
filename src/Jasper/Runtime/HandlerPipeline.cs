@@ -153,9 +153,9 @@ namespace Jasper.Runtime
                 {
                     Logger.Received(envelope);
                 }
-        }
+            }
 
-        if (envelope.Message == null)
+            if (envelope.Message == null)
             {
                 throw new ArgumentNullException("envelope.Message");
             }
@@ -174,7 +174,7 @@ namespace Jasper.Runtime
             return continuation;
         }
 
-        public Func<IExecutionContext, Task<IContinuation>> ExecutorFor(Type messageType)
+        public Func<IExecutionContext, Task<IContinuation>>? ExecutorFor(Type messageType)
         {
             if (_executors.TryFind(messageType, out var executor))
             {
@@ -192,17 +192,22 @@ namespace Jasper.Runtime
 
             var policy = handler.Chain.Retries.BuildPolicy(_graph.Retries);
 
+            var timeoutSpan = handler.Chain.DetermineMessageTimeout(_root.Options);
+
             if (policy == null)
             {
                 executor = async messageContext =>
                 {
                     messageContext.Envelope.Attempts++;
 
+                    using var timeout = new CancellationTokenSource(timeoutSpan);
+                    using var combined = CancellationTokenSource.CreateLinkedTokenSource(timeout.Token, _cancellation);
+
                     try
                     {
                         try
                         {
-                            await handler.Handle(messageContext, _cancellation);
+                            await handler.Handle(messageContext, combined.Token);
                         }
                         catch (Exception? e)
                         {

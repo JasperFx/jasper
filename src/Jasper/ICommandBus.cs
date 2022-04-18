@@ -27,7 +27,7 @@ namespace Jasper
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<T> InvokeAsync<T>(object message, CancellationToken cancellation = default);
+        Task<T?> InvokeAsync<T>(object message, CancellationToken cancellation = default);
 
         /// <summary>
         ///     Enqueues the message locally. Uses the message type to worker queue routing to determine
