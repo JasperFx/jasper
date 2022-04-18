@@ -14,7 +14,18 @@ it's just one underlying concrete class and the interfaces just expose narrower 
 
 Using the `ICommandBus.Enqueue()` method, you can queue up messages to be executed asynchronously:
 
-snippet: sample_enqueue_locally
+<!-- snippet: sample_enqueue_locally -->
+<a id='snippet-sample_enqueue_locally'></a>
+```cs
+public static async Task enqueue_locally(ICommandBus bus)
+{
+    // Enqueue a message to the local worker queues
+    await bus.Enqueue(new Message1());
+
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/EnqueueSamples.cs#L8-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_enqueue_locally' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 This feature is useful for asynchronous processing in web applications or really any kind of application where you need some parallelization or concurrency.
 
@@ -42,11 +53,37 @@ In the absence of any kind of routing rules, any message enqueued with `ICommand
 *default* local queue. To override that choice on a message type by message type basis, you can use the `[LocalQueue]` attribute
 on a message type:
 
-snippet: sample_local_queue_routed_message
+<!-- snippet: sample_local_queue_routed_message -->
+<a id='snippet-sample_local_queue_routed_message'></a>
+```cs
+[LocalQueue("important")]
+public class ImportanceMessage
+{
+
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/LocalQueueMessage.cs#L5-L12' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_local_queue_routed_message' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Otherwise, you can take advantage of the routing rules on the `JasperOptions.Endpoints.Publish()` method like this:
 
-snippet: sample_LocalTransportApp
+<!-- snippet: sample_LocalTransportApp -->
+<a id='snippet-sample_localtransportapp'></a>
+```cs
+using var host = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        // Publish the message Message2 the "important"
+        // local queue
+        opts.Publish(x =>
+        {
+            x.Message<Message2>();
+            x.ToLocalQueue("important");
+        });
+    }).StartAsync();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessagingConfigurationExamples.cs#L104-L118' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localtransportapp' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 The routing rules and/or `[LocalQueue]` routing is also honored for cascading messages, meaning that any message that is handled inside a Jasper system could publish cascading messages to the local worker queues.
 
@@ -57,7 +94,22 @@ The local worker queues can optionally be designated as "durable," meaning that 
 
 Here is an example of configuring a local queue to be durable:
 
-snippet: sample_LocalDurableTransportApp
+<!-- snippet: sample_LocalDurableTransportApp -->
+<a id='snippet-sample_localdurabletransportapp'></a>
+```cs
+using var host = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        // Make the default local queue durable
+        opts.DefaultLocalQueue.DurablyPersistedLocally();
+
+        // Or do just this by name
+        opts.LocalQueue("important")
+            .DurablyPersistedLocally();
+    }).StartAsync();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessagingConfigurationExamples.cs#L127-L140' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localdurabletransportapp' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 See <[linkto:documentation/durability]> for more information.
@@ -67,21 +119,90 @@ See <[linkto:documentation/durability]> for more information.
 
 The "scheduled execution" feature can be used with local execution within the same application. See <[linkto:documentation/integration/scheduled]> for more information. Use the `ICommandBus.Schedule()` methods like this:
 
-snippet: sample_schedule_job_locally
+<!-- snippet: sample_schedule_job_locally -->
+<a id='snippet-sample_schedule_job_locally'></a>
+```cs
+public async Task ScheduleLocally(IExecutionContext bus, Guid invoiceId)
+{
+    var message = new ValidateInvoiceIsNotLate
+    {
+        InvoiceId = invoiceId
+    };
+
+    // Schedule the message to be processed in a certain amount
+    // of time
+    await bus.Schedule(message, 30.Days());
+
+    // Schedule the message to be processed at a certain time
+    await bus.Schedule(message, DateTime.UtcNow.AddDays(30));
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L140-L155' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_schedule_job_locally' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## Configuring Parallelization and Execution Properties
 
 The queues are built on top of the TPL Dataflow library, so it's pretty easy to configure parallelization (how many concurrent messages could be handled by a queue). Here's an example of how to establish this:
 
-snippet: sample_LocalQueuesApp
+<!-- snippet: sample_LocalQueuesApp -->
+<a id='snippet-sample_localqueuesapp'></a>
+```cs
+using var host = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        // Force a local queue to be
+        // strictly first in, first out
+        // with no more than a single
+        // thread handling messages enqueued
+        // here
+
+        // Use this option if message ordering is
+        // important
+        opts.LocalQueue("one")
+            .DurablyPersistedLocally()
+            .Sequential();
+
+        opts.LocalQueue("two")
+            .MaximumThreads(5);
+
+        // Or just edit the ActionBlock directly
+        opts.LocalQueue("three")
+            .ConfigureExecution(options =>
+            {
+                options.MaxDegreeOfParallelism = 5;
+                options.BoundedCapacity = 1000;
+            });
+    }).StartAsync();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L12-L42' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localqueuesapp' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## Explicitly Enqueue to a Specific Local Queue
 
 If you want to enqueue a message locally to a specific worker queue, you can use this syntax:
 
-snippet: sample_IServiceBus.Enqueue_to_specific_worker_queue
+<!-- snippet: sample_IServiceBus.Enqueue_to_specific_worker_queue -->
+<a id='snippet-sample_iservicebus.enqueue_to_specific_worker_queue'></a>
+```cs
+public Task EnqueueToQueue(IExecutionContext bus)
+{
+    var @event = new InvoiceCreated
+    {
+        Time = DateTime.UtcNow,
+        Purchaser = "Guy Fieri",
+        Amount = 112.34,
+        Item = "Cookbook"
+    };
+
+    // Put this message in a local worker
+    // queue named 'highpriority'
+    return bus.Enqueue(@event, "highpriority");
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L106-L121' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_iservicebus.enqueue_to_specific_worker_queue' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## Local Queues as a Messaging Transport
@@ -94,6 +215,22 @@ locally enqueued messages or scheduled messages that may have initially failed.
 
 In the sample Jasper configuration shown below:
 
-snippet: sample_LocalTransportApp
+<!-- snippet: sample_LocalTransportApp -->
+<a id='snippet-sample_localtransportapp'></a>
+```cs
+using var host = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        // Publish the message Message2 the "important"
+        // local queue
+        opts.Publish(x =>
+        {
+            x.Message<Message2>();
+            x.ToLocalQueue("important");
+        });
+    }).StartAsync();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessagingConfigurationExamples.cs#L104-L118' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localtransportapp' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
-Calling `IMessagePublisher.Send(new Message2())` would publish the message to the local "important" queue. 
+Calling `IMessagePublisher.Send(new Message2())` would publish the message to the local "important" queue.
