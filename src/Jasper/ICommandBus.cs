@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jasper
@@ -14,7 +15,7 @@ namespace Jasper
         ///     Error actions will not be executed and the message consumers will not be retried
         ///     if an error happens.
         /// </summary>
-        Task InvokeAsync(object message);
+        Task InvokeAsync(object message, CancellationToken cancellation = default);
 
         /// <summary>
         ///     Invoke consumers for the relevant messages managed by the current
@@ -26,7 +27,7 @@ namespace Jasper
         /// <param name="message"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<T> InvokeAsync<T>(object message);
+        Task<T> InvokeAsync<T>(object message, CancellationToken cancellation = default);
 
         /// <summary>
         ///     Enqueues the message locally. Uses the message type to worker queue routing to determine

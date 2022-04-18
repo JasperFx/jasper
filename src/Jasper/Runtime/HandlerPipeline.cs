@@ -45,14 +45,14 @@ namespace Jasper.Runtime
 
         public IMessageLogger Logger { get; }
 
-        public Task Invoke(Envelope? envelope, IChannelCallback channel)
+        public Task Invoke(Envelope envelope, IChannelCallback channel)
         {
             using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryProcessSpanName, envelope, ActivityKind.Internal);
 
             return Invoke(envelope, channel, activity);
         }
 
-        public async Task Invoke(Envelope? envelope, IChannelCallback channel, Activity activity)
+        public async Task Invoke(Envelope envelope, IChannelCallback channel, Activity activity)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace Jasper.Runtime
         }
 
 
-        public async Task InvokeNow(Envelope? envelope)
+        public async Task InvokeNow(Envelope envelope, CancellationToken cancellation = default)
         {
             if (envelope.Message == null)
             {
@@ -107,7 +107,7 @@ namespace Jasper.Runtime
 
             try
             {
-                await handler.Handle(context, _cancellation);
+                await handler.Handle(context, cancellation);
 
                 await context.SendAllQueuedOutgoingMessages();
             }
@@ -122,7 +122,7 @@ namespace Jasper.Runtime
             }
         }
 
-        private async Task<IContinuation> execute(IExecutionContext context, Envelope? envelope)
+        private async Task<IContinuation> execute(IExecutionContext context, Envelope envelope)
         {
             if (envelope.IsExpired())
             {

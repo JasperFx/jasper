@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Logging;
@@ -38,16 +39,16 @@ namespace Jasper.Runtime
         public IEnumerable<Envelope?> Outstanding => _outstanding;
 
 
-        public Task InvokeAsync(object? message)
+        public Task InvokeAsync(object? message, CancellationToken cancellation = default)
         {
             return Runtime.Pipeline.InvokeNow(new Envelope(message)
             {
                 ReplyUri = TransportConstants.RepliesUri,
                 CorrelationId = CorrelationId
-            });
+            }, cancellation);
         }
 
-        public async Task<T> InvokeAsync<T>(object? message)
+        public async Task<T> InvokeAsync<T>(object? message, CancellationToken cancellation = default)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -59,7 +60,7 @@ namespace Jasper.Runtime
                 CorrelationId = CorrelationId
             };
 
-            await Runtime.Pipeline.InvokeNow(envelope);
+            await Runtime.Pipeline.InvokeNow(envelope, cancellation);
 
             if (envelope.Response == null)
             {
