@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace EFPlusSqlServerConsole.Items
+namespace InMemoryMediator
 {
-    #region sample_ItemsDbContext
+    // SAMPLE: ItemsDbContext
     public class ItemsDbContext : DbContext
     {
         public ItemsDbContext(DbContextOptions<ItemsDbContext> options) : base(options)
@@ -20,7 +20,8 @@ namespace EFPlusSqlServerConsole.Items
                 map.HasKey(x => x.Id);
                 map.Property(x => x.Name);
             });
+
         }
     }
-    #endregion
+    // ENDSAMPLE
 }

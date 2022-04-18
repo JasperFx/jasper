@@ -1,7 +1,9 @@
 using Jasper.Attributes;
 
-namespace EFPlusSqlServerConsole.Items
+namespace InMemoryMediator
 {
+    #region sample_InMemoryMediator_Items
+
     public class ItemHandler
     {
         // This attribute applies Jasper's EF Core transactional
@@ -34,4 +36,6 @@ namespace EFPlusSqlServerConsole.Items
             };
         }
     }
+
+    #endregion
 }

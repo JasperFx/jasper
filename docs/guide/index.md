@@ -45,16 +45,81 @@ a POST from the client that...
 
 The two *commands* for the POST endpoints are below:
 
-snippet: sample_Quickstart_commands
+<!-- snippet: sample_Quickstart_commands -->
+<a id='snippet-sample_quickstart_commands'></a>
+```cs
+public record CreateIssue(Guid OriginatorId, string Title, string Description);
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/KitchenSink/MartenAndRabbitMessages/CreateIssue.cs#L3-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_commands' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-sample_quickstart_commands-1'></a>
+```cs
+public record CreateIssue(Guid OriginatorId, string Title, string Description);
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/CreateIssue.cs#L3-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_commands-1' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 To keep things dirt simple, all the issue and user storage is just in memory right now
 with singleton scoped repository classes like this:
 
-snippet: sample_Quickstart_IssueRepository
+<!-- snippet: sample_Quickstart_IssueRepository -->
+<a id='snippet-sample_quickstart_issuerepository'></a>
+```cs
+public class IssueRepository
+{
+    private readonly Dictionary<Guid, Issue> _issues = new Dictionary<Guid, Issue>();
+
+    public void Store(Issue issue)
+    {
+        _issues[issue.Id] = issue;
+    }
+
+    public Issue Get(Guid id)
+    {
+        if (_issues.TryGetValue(id, out var issue))
+        {
+            return issue;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(id), "Issue does not exist");
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/IssueRepository.cs#L3-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_issuerepository' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Let's jump right into the `Program.cs` file of our new web service:
 
-snippet: sample_Quickstart_Program
+<!-- snippet: sample_Quickstart_Program -->
+<a id='snippet-sample_quickstart_program'></a>
+```cs
+using Jasper;
+using Quickstart;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// For now, this is enough to integrate Jasper into
+// your application, but there'll be *much* more
+// options later of course :-)
+builder.Host.UseJasper();
+
+// Some in memory services for our application, the
+// only thing that matters for now is that these are
+// systems built by the application's IoC container
+builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<IssueRepository>();
+
+var app = builder.Build();
+
+// An endpoint to create a new issue
+app.MapPost("/issues/create", (CreateIssue body, ICommandBus bus) => bus.InvokeAsync(body));
+
+// An endpoint to assign an issue to an existing user
+app.MapPost("/issues/assign", (AssignIssue body, ICommandBus bus) => bus.InvokeAsync(body));
+
+app.Run();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/Program.cs#L1-L30' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_program' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Alright, let's talk about what's going on up above:
 
@@ -69,7 +134,39 @@ In that method, Jasper will direct the command to the correct handler and invoke
 inline. In a simplistic form, here is the entire handler file for the `CreateIssue`
 command:
 
-snippet: sample_Quickstart_CreateIssueHandler
+<!-- snippet: sample_Quickstart_CreateIssueHandler -->
+<a id='snippet-sample_quickstart_createissuehandler'></a>
+```cs
+namespace Quickstart;
+
+public class CreateIssueHandler
+{
+    private readonly IssueRepository _repository;
+
+    public CreateIssueHandler(IssueRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public IssueCreated Handle(CreateIssue command)
+    {
+        var issue = new Issue
+        {
+            Title = command.Title,
+            Description = command.Description,
+            IsOpen = true,
+            Opened = DateTimeOffset.Now,
+            OriginatorId = command.OriginatorId
+        };
+
+        _repository.Store(issue);
+
+        return new IssueCreated(issue.Id);
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/CreateIssueHandler.cs#L1-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_createissuehandler' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Hopefully that code is simple enough, but let's talk what you do not see in this code or
 the initial `Program` code up above.
@@ -96,7 +193,33 @@ the initial web service call.
 
 The `IssueHandled` event message will be handled by this code:
 
-snippet: sample_Quickstart_IssueCreatedHandler
+<!-- snippet: sample_Quickstart_IssueCreatedHandler -->
+<a id='snippet-sample_quickstart_issuecreatedhandler'></a>
+```cs
+public static class IssueCreatedHandler
+{
+    public static async Task Handle(IssueCreated created, IssueRepository repository)
+    {
+        var issue = repository.Get(created.Id);
+        var message = await BuildEmailMessage(issue);
+        using var client = new SmtpClient();
+        client.Send(message);
+    }
+
+    // This is a little helper method I made public
+    // Jasper will not expose this as a message handler
+    internal static Task<MailMessage> BuildEmailMessage(Issue issue)
+    {
+        // Build up a templated email message, with
+        // some sort of async method to look up additional
+        // data just so we can show off an async
+        // Jasper Handler
+        return Task.FromResult(new MailMessage());
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/IssueCreatedHandler.cs#L5-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_issuecreatedhandler' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Now, you'll notice that Jasper is happy to allow you to use static methods as
 handler actions. And also notice that the `Handle()` method takes in an argument

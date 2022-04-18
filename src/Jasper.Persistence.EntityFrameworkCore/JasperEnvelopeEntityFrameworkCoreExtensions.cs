@@ -60,10 +60,12 @@ namespace Jasper.Persistence.EntityFrameworkCore
         /// <param name="messaging"></param>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static Task EnlistInTransaction(this IExecutionContext messaging, DbContext dbContext)
+        public static Task EnlistInTransaction(this IMessagePublisher messaging, DbContext dbContext)
         {
-            var transaction = new EFCoreEnvelopeTransaction(dbContext, messaging);
-            return messaging.EnlistInTransaction(transaction);
+            var executionContext = messaging.As<IExecutionContext>();
+            var transaction = new EFCoreEnvelopeTransaction(dbContext, executionContext);
+
+            return executionContext.EnlistInTransaction(transaction);
         }
 
 

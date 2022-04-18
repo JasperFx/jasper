@@ -1,6 +1,4 @@
-using System;
-
-namespace EFPlusSqlServerConsole.Items
+namespace InMemoryMediator
 {
     public class ItemCreated
     {

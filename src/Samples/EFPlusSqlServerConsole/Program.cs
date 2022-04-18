@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using InMemoryMediator.Items;
+using EFPlusSqlServerConsole.Items;
 using Jasper;
 using Jasper.Persistence.EntityFrameworkCore;
 using Jasper.Persistence.SqlServer;
