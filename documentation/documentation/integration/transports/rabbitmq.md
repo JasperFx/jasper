@@ -1,6 +1,6 @@
 <!--title:RabbitMQ Transport-->
 
-::: tip warning
+::: tip
 Jasper uses the [Rabbit MQ .Net Client](https://www.rabbitmq.com/dotnet.html) to connect to Rabbit MQ. 
 :::
 
