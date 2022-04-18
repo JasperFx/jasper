@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Jasper.Tracking
@@ -76,6 +77,13 @@ namespace Jasper.Tracking
         /// </summary>
         /// <returns></returns>
         EnvelopeRecord[] AllRecordsInOrder(EventType eventType);
+
+        /// <summary>
+        /// All exceptions thrown during the lifetime of this
+        /// tracked session
+        /// </summary>
+        /// <returns></returns>
+        IReadOnlyList<Exception> AllExceptions();
     }
     #endregion
 }

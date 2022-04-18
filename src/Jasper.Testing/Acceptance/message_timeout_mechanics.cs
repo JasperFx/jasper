@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline.Dates;
@@ -52,7 +53,9 @@ namespace Jasper.Testing.Acceptance
                 .DoNotAssertOnExceptionsDetected()
                 .EnqueueMessageAndWait(new DurationMessage { DurationInMilliseconds = 500 });
 
-            PotentiallySlowMessageHandler.DidTimeout.ShouldBeTrue();
+            var exceptions = session.AllExceptions();
+            exceptions.Single().ShouldBeOfType<TaskCanceledException>();
+
         }
 
         [Fact]
@@ -65,9 +68,13 @@ namespace Jasper.Testing.Acceptance
                 opts.Extensions.UseMessageTrackingTestingSupport();
             });
 
-            await host.TrackActivity().EnqueueMessageAndWait(new PotentiallySlowMessage() { DurationInMilliseconds = 2500 });
+            var session = await host
+                .TrackActivity()
+                .DoNotAssertOnExceptionsDetected()
+                .EnqueueMessageAndWait(new PotentiallySlowMessage() { DurationInMilliseconds = 2500 });
 
-            PotentiallySlowMessageHandler.DidTimeout.ShouldBeTrue();
+            var exceptions = session.AllExceptions();
+            exceptions.Single().ShouldBeOfType<TaskCanceledException>();
         }
     }
 

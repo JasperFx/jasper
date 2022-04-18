@@ -192,6 +192,13 @@ namespace Jasper.Tracking
                 .ToArray();
         }
 
+        public IReadOnlyList<Exception> AllExceptions()
+        {
+            return _envelopes.SelectMany(x => x.Records)
+                .Select(x => x.Exception).Where(x => x != null)
+                .Distinct().ToList();
+        }
+
         private void setActiveSession(TrackedSession session)
         {
             _primaryLogger.ActiveSession = session;
