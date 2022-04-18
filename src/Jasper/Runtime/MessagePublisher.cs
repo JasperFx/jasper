@@ -11,17 +11,17 @@ namespace Jasper.Runtime
     public class MessagePublisher : CommandBus, IMessagePublisher
     {
         [DefaultConstructor]
-        public MessagePublisher(IJasperRuntime root) : base(root)
+        public MessagePublisher(IJasperRuntime runtime) : base(runtime)
         {
         }
 
-        public MessagePublisher(IJasperRuntime root, string? correlationId) : base(root, correlationId)
+        public MessagePublisher(IJasperRuntime runtime, string? correlationId) : base(runtime, correlationId)
         {
         }
 
         public Task SendAsync<T>(T? message)
         {
-            var outgoing = Root.Router.RouteOutgoingByMessage(message);
+            var outgoing = Runtime.Router.RouteOutgoingByMessage(message);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
@@ -37,12 +37,12 @@ namespace Jasper.Runtime
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = Root.Router.RouteOutgoingByEnvelope(envelope);
+            var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
-                Root.MessageLogger.NoRoutesFor(envelope);
+                Runtime.MessageLogger.NoRoutesFor(envelope);
                 return Task.CompletedTask;
             }
 
@@ -59,13 +59,13 @@ namespace Jasper.Runtime
         {
             if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
 
-            var outgoing = Root.Router.RouteOutgoingByEnvelope(envelope);
+            var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
 
             trackEnvelopeCorrelation(outgoing);
 
             if (!outgoing.Any())
             {
-                Root.MessageLogger.NoRoutesFor(envelope);
+                Runtime.MessageLogger.NoRoutesFor(envelope);
 
                 throw new NoRoutesException(envelope);
             }
@@ -101,7 +101,7 @@ namespace Jasper.Runtime
                 TopicName = topicName
             };
 
-            var outgoing = Root.Router.RouteToTopic(topicName, envelope);
+            var outgoing = Runtime.Router.RouteToTopic(topicName, envelope);
             return persistOrSend(outgoing);
         }
 
@@ -116,7 +116,7 @@ namespace Jasper.Runtime
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 
             var envelope = new Envelope {Message = message, Destination = destination};
-            Root.Router.RouteToDestination(destination, envelope);
+            Runtime.Router.RouteToDestination(destination, envelope);
 
             trackEnvelopeCorrelation(envelope);
 
@@ -160,7 +160,7 @@ namespace Jasper.Runtime
 
         protected virtual void trackEnvelopeCorrelation(Envelope? outbound)
         {
-            outbound.Source = Root.Settings.ServiceName;
+            outbound.Source = Runtime.Settings.ServiceName;
             outbound.CorrelationId = CorrelationId;
         }
 
@@ -198,7 +198,7 @@ namespace Jasper.Runtime
         {
             if (envelope.Sender != null) return envelope.Sender.IsDurable;
 
-            if (envelope.Destination != null) return Root.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
+            if (envelope.Destination != null) return Runtime.Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
 
             return false;
         }

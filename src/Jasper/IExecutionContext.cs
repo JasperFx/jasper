@@ -85,8 +85,6 @@ namespace Jasper
 
         IMessageLogger Logger { get; }
 
-        IMessagePublisher NewPublisher();
-
 
         /// <summary>
         /// Mark the message as having been successfully received and processed

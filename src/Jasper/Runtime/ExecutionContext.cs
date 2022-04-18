@@ -14,7 +14,7 @@ namespace Jasper.Runtime
         private IChannelCallback? _channel;
         private readonly IList<Envelope> _scheduled = new List<Envelope>();
 
-        public ExecutionContext(IJasperRuntime root) : base(root, Guid.NewGuid().ToString())
+        public ExecutionContext(IJasperRuntime runtime) : base(runtime, Guid.NewGuid().ToString())
         {
         }
 
@@ -39,7 +39,7 @@ namespace Jasper.Runtime
 
             if (Envelope.AckRequested)
             {
-                var ack = Root.Acknowledgements.BuildAcknowledgement(Envelope);
+                var ack = Runtime.Acknowledgements.BuildAcknowledgement(Envelope);
 
                 _outstanding.Add(ack);
             }
@@ -132,12 +132,6 @@ namespace Jasper.Runtime
             await PublishAsync(message);
         }
 
-
-        IMessagePublisher IExecutionContext.NewPublisher()
-        {
-            return Root.NewContext();
-        }
-
         public Envelope Envelope { get; protected set; }
 
 
@@ -171,7 +165,7 @@ namespace Jasper.Runtime
             {
                 foreach (var envelope in _scheduled)
                 {
-                    Root.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
+                    Runtime.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
                 }
             }
             else
@@ -201,17 +195,17 @@ namespace Jasper.Runtime
 
         Envelope? IAcknowledgementSender.BuildAcknowledgement(Envelope? envelope)
         {
-            return Root.Acknowledgements.BuildAcknowledgement(envelope);
+            return Runtime.Acknowledgements.BuildAcknowledgement(envelope);
         }
 
         Task IAcknowledgementSender.SendAcknowledgement(Envelope? envelope)
         {
-            return Root.Acknowledgements.SendAcknowledgement(envelope);
+            return Runtime.Acknowledgements.SendAcknowledgement(envelope);
         }
 
         Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope? original, string message)
         {
-            return Root.Acknowledgements.SendFailureAcknowledgement(original, message);
+            return Runtime.Acknowledgements.SendFailureAcknowledgement(original, message);
         }
 
         public Task Complete()
@@ -252,7 +246,7 @@ namespace Jasper.Runtime
 
         public Task RetryExecutionNow()
         {
-            return Root.Pipeline.Invoke(Envelope, _channel);
+            return Runtime.Pipeline.Invoke(Envelope, _channel);
         }
 
         protected override void trackEnvelopeCorrelation(Envelope? outbound)

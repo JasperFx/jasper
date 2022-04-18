@@ -228,7 +228,7 @@ namespace Jasper.Testing.Runtime.Samples
             DateTime utcNow)
         {
             // Raise a separate "alert" event message
-            var session = execution.NewPublisher();
+            var session = new ExecutionContext(execution.As<ExecutionContext>().Runtime);
             await session.Schedule(execution.Envelope.Message, utcNow.AddHours(1));
             await session.SendAsync(new RescheduledAlert
             {

@@ -126,9 +126,9 @@ namespace Jasper
                 services.AddOptions();
                 services.AddLogging();
 
-                services.AddScoped<IExecutionContext>(c => c.GetRequiredService<IJasperRuntime>().NewContext());
                 services.AddScoped<ICommandBus, CommandBus>();
                 services.AddScoped<IMessagePublisher, MessagePublisher>();
+                services.AddScoped<IExecutionContext, ExecutionContext>();
 
                 services.AddSingleton<ObjectPoolProvider>(new DefaultObjectPoolProvider());
 

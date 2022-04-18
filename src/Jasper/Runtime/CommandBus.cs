@@ -16,31 +16,31 @@ namespace Jasper.Runtime
         protected readonly List<Envelope?> _outstanding = new List<Envelope?>();
 
         [DefaultConstructor]
-        public CommandBus(IJasperRuntime root) : this(root, Guid.NewGuid().ToString())
+        public CommandBus(IJasperRuntime runtime) : this(runtime, Guid.NewGuid().ToString())
         {
         }
 
-        public CommandBus(IJasperRuntime root, string? correlationId)
+        public CommandBus(IJasperRuntime runtime, string? correlationId)
         {
-            Root = root;
-            Persistence = root.Persistence;
+            Runtime = runtime;
+            Persistence = runtime.Persistence;
             CorrelationId = correlationId;
         }
 
         public string? CorrelationId { get; protected set; }
 
-        public IJasperRuntime Root { get; }
+        public IJasperRuntime Runtime { get; }
         public IEnvelopePersistence Persistence { get; }
 
 
-        public IMessageLogger Logger => Root.MessageLogger;
+        public IMessageLogger Logger => Runtime.MessageLogger;
 
         public IEnumerable<Envelope?> Outstanding => _outstanding;
 
 
         public Task InvokeAsync(object? message)
         {
-            return Root.Pipeline.InvokeNow(new Envelope(message)
+            return Runtime.Pipeline.InvokeNow(new Envelope(message)
             {
                 ReplyUri = TransportConstants.RepliesUri,
                 CorrelationId = CorrelationId
@@ -59,7 +59,7 @@ namespace Jasper.Runtime
                 CorrelationId = CorrelationId
             };
 
-            await Root.Pipeline.InvokeNow(envelope);
+            await Runtime.Pipeline.InvokeNow(envelope);
 
             if (envelope.Response == null)
             {
@@ -71,13 +71,13 @@ namespace Jasper.Runtime
 
         public Task Enqueue<T>(T? message)
         {
-            var envelope = Root.Router.RouteLocally(message);
+            var envelope = Runtime.Router.RouteLocally(message);
             return persistOrSend(envelope);
         }
 
         public Task Enqueue<T>(T? message, string workerQueueName)
         {
-            var envelope = Root.Router.RouteLocally(message, workerQueueName);
+            var envelope = Runtime.Router.RouteLocally(message, workerQueueName);
 
             return persistOrSend(envelope);
         }
@@ -90,7 +90,7 @@ namespace Jasper.Runtime
                 Destination = TransportConstants.DurableLocalUri
             };
 
-            var endpoint = Root.Runtime.EndpointFor(TransportConstants.DurableLocalUri);
+            var endpoint = Runtime.Runtime.EndpointFor(TransportConstants.DurableLocalUri);
 
             var writer = endpoint.DefaultSerializer;
             envelope.Data = writer.Write(message);
@@ -128,7 +128,7 @@ namespace Jasper.Runtime
 
             if (Persistence is NulloEnvelopePersistence)
             {
-                Root.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
+                Runtime.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
                 return Task.CompletedTask;
             }
 

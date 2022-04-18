@@ -1,12 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
+using ExecutionContext = Jasper.Runtime.ExecutionContext;
 
 namespace Jasper.Testing.Compilation
 {
@@ -51,7 +53,8 @@ namespace Jasper.Testing.Compilation
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);
-            var context = _host.Get<IJasperRuntime>().ContextFor(theEnvelope);
+            var context = new ExecutionContext(_host.Get<IJasperRuntime>());
+            context.ReadEnvelope(theEnvelope, InvocationCallback.Instance);
 
             await handler.Handle(context, default(CancellationToken));
 

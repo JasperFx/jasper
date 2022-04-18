@@ -17,9 +17,6 @@ namespace Jasper.Runtime
         IMessageLogger MessageLogger { get; }
         JasperOptions Options { get; }
 
-        IExecutionContext NewContext();
-        IExecutionContext ContextFor(Envelope? envelope);
-
         IEnvelopePersistence? Persistence { get; }
         ILogger Logger { get; }
         AdvancedSettings Settings { get; }
