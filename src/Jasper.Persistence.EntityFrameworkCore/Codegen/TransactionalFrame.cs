@@ -63,7 +63,7 @@ namespace Jasper.Persistence.EntityFrameworkCore.Codegen
 
             writer.BlankLine();
             writer.WriteComment("Commit the unit of work");
-            writer.Write($"await {Context.Usage}.{nameof(DbContext.SaveChangesAsync)}().ConfigureAwait(false);");
+            writer.Write($"await {Context.Usage}.{nameof(DbContext.SaveChangesAsync)}(cancellation).ConfigureAwait(false);");
 
         }
 

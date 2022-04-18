@@ -62,7 +62,7 @@ namespace Jasper.Persistence.Testing.Marten
                 .SourceCode;
 
             sourceCode.ShouldContain("using var documentSession = _sessionFactory.OpenSession();");
-            sourceCode.ShouldContain("await documentSession.SaveChangesAsync().ConfigureAwait(false)");
+            sourceCode.ShouldContain("await documentSession.SaveChangesAsync(cancellation).ConfigureAwait(false)");
         }
     }
 

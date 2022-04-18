@@ -83,7 +83,7 @@ namespace Jasper.Persistence.Marten.Codegen
 
             writer.BlankLine();
             writer.WriteComment("Commit the unit of work");
-            writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}().ConfigureAwait(false);");
+            writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}(cancellation).ConfigureAwait(false);");
 
             if (_createsSession) writer.FinishBlock();
         }
