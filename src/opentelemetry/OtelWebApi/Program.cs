@@ -26,7 +26,7 @@ namespace OtelWebApi
                 .UseJasper(opts =>
                 {
                     opts.ServiceName = "OtelWebApi";
-                    opts.ConfigureRabbitMq(rabbit =>
+                    opts.UseRabbitMq(rabbit =>
                     {
                         rabbit.AutoProvision = true;
                         rabbit.AutoPurgeOnStartup = true;

@@ -22,7 +22,7 @@ namespace PerformanceTests
             startTheSender(opts =>
             {
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(outboundName);
@@ -48,7 +48,7 @@ namespace PerformanceTests
             startTheSender(opts =>
             {
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(outboundName);
@@ -67,7 +67,7 @@ namespace PerformanceTests
             {
                 startTheReceiver(opts =>
                 {
-                    opts.ConfigureRabbitMq(x =>
+                    opts.UseRabbitMq(x =>
                     {
                         x.ConnectionFactory.HostName = "localhost";
                     });

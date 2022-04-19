@@ -29,7 +29,7 @@ namespace InteroperabilityTests
             {
                 // application/vnd.masstransit+json
 
-                opts.ConfigureRabbitMq(t =>
+                opts.UseRabbitMq(t =>
                 {
                     t.AutoProvision = true;
                     t.AutoPurgeOnStartup = true;

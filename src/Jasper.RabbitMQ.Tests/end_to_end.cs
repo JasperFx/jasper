@@ -44,7 +44,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -79,7 +79,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -106,7 +106,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -152,7 +152,7 @@ namespace Jasper.RabbitMQ.Tests
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName1);
@@ -182,7 +182,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName1);
@@ -224,7 +224,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -246,7 +246,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(RabbitTesting.NextQueueName());
@@ -296,7 +296,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -325,7 +325,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.ConfigureRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
 
                 opts.ListenToRabbitQueue(queueName);
                 opts.Services.AddSingleton<ColorHistory>();
@@ -370,7 +370,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var publisher = JasperHost.For(opts =>
             {
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareExchange(exchangeName, ex => ex.ExchangeType = ExchangeType.Fanout);
@@ -408,7 +408,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver1 = JasperHost.For(opts =>
             {
-                opts.ConfigureRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
                 opts.ListenToRabbitQueue(queueName1);
@@ -417,7 +417,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver2 = JasperHost.For(opts =>
             {
-                opts.ConfigureRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
 
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
@@ -427,7 +427,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver3 = JasperHost.For(opts =>
             {
-                opts.ConfigureRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
 
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
@@ -467,7 +467,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var publisher = JasperHost.For(opts =>
             {
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareExchange("topics", ex => { ex.ExchangeType = ExchangeType.Topic; });
@@ -492,7 +492,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver = JasperHost.For(opts =>
             {
-                opts.ConnectToRabbitMqLocally();
+                opts.UseRabbitMq();
 
                 opts.ListenToRabbitQueue(queueName);
 

@@ -21,7 +21,7 @@ namespace Jasper.RabbitMQ.Tests
             _host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.ConfigureRabbitMq(rabbit =>
+                    opts.UseRabbitMq(rabbit =>
                     {
                         rabbit.ConnectionFactory.HostName = "localhost";
                         rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
@@ -154,7 +154,7 @@ namespace Jasper.RabbitMQ.Tests
             using var host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.ConfigureRabbitMq(rabbit =>
+                    opts.UseRabbitMq(rabbit =>
                     {
                         rabbit.ConnectionFactory.HostName = "localhost";
                         rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);

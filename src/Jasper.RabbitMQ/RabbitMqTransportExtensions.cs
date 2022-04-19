@@ -33,7 +33,7 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="endpoints"></param>
         /// <param name="configure"></param>
-        public static void ConfigureRabbitMq(this IEndpoints endpoints, Action<IRabbitMqTransport> configure)
+        public static void UseRabbitMq(this IEndpoints endpoints, Action<IRabbitMqTransport> configure)
         {
             configure(endpoints.RabbitMqTransport());
         }
@@ -43,9 +43,9 @@ namespace Jasper.RabbitMQ
         /// Rabbit MQ client options
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void ConnectToRabbitMqLocally(this IEndpoints endpoints)
+        public static void UseRabbitMq(this IEndpoints endpoints)
         {
-            endpoints.ConfigureRabbitMq(t => {});
+            endpoints.UseRabbitMq(t => {});
         }
 
         /// <summary>

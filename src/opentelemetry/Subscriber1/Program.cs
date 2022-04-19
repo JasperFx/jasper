@@ -20,7 +20,7 @@ namespace Subscriber1
                 .UseJasper(opts =>
                 {
                     opts.ServiceName = "subscriber1";
-                    opts.ConnectToRabbitMqLocally();
+                    opts.UseRabbitMq();
 
                     opts.ListenToRabbitQueue("subscriber1");
 

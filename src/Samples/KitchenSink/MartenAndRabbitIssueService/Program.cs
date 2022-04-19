@@ -15,7 +15,7 @@ builder.Host.UseJasper(opts =>
     opts.PublishAllMessages()
         .ToRabbit("issue_events");
 
-    opts.ConfigureRabbitMq(rabbit =>
+    opts.UseRabbitMq(rabbit =>
     {
         // TODO -- let's do this a little cleaner
         rabbit.ConnectionFactory.HostName = "localhost";

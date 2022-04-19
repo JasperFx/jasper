@@ -51,7 +51,7 @@ namespace Benchmarks
 
                 var queueName = RabbitTesting.NextQueueName();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);

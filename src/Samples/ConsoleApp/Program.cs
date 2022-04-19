@@ -25,7 +25,7 @@ namespace MyApp
 
                 opts.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.AutoProvision = true;
                     x.AutoPurgeOnStartup = true;

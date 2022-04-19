@@ -23,7 +23,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 var listener = RabbitTesting.NextQueueName();
 
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                     x.DeclareQueue(queueName);
@@ -39,7 +39,7 @@ namespace Jasper.RabbitMQ.Tests
 
             await ReceiverIs(opts =>
             {
-                opts.ConfigureRabbitMq(x =>
+                opts.UseRabbitMq(x =>
                 {
                     x.ConnectionFactory.HostName = "localhost";
                 });
