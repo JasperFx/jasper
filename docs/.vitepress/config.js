@@ -62,13 +62,14 @@ function tableOfContents() {
       },
       {
         text: "Messages and Message Handlers",
-        link: '/guide/messaging/',
+        link: '/guide/messages/',
         children: [
-          {text: "Discovery", link: '/guide/messaging/discovery'},
-          {text: "Middleware", link: '/guide/messaging/middleware'},
-          {text: "Versioning", link: '/guide/messaging/versioning'},
-          {text: "Serialization", link: '/guide/messaging/serialization'},
-          {text: "Error Handling", link: '/guide/messaging/error-handling'},
+          {text: "Handlers", link: '/guide/messages/handlers'},
+          {text: "Discovery", link: '/guide/messages/discovery'},
+          {text: "Middleware", link: '/guide/messages/middleware'},
+          {text: "Versioning", link: '/guide/messages/versioning'},
+          {text: "Serialization", link: '/guide/messages/serialization'},
+          {text: "Error Handling", link: '/guide/messages/error-handling'},
 
         ]
       },

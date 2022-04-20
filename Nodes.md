@@ -6,7 +6,7 @@
 * Add message discovery. `[JasperMessages]` for discovery???
 * Log the listeners starting up
 * Maybe do something like Marten's separate store registration for senders for very specific endpoints. Bypass the named endpoint or routing 
-* Register some kind of health checks?
+* Register some kind of health checks? Research `IServiceCollection.AddHealthChecks()`
 * Standardize on some kind of `Use[TransportName]()` extension method directly on `JasperOptions`. Be consistent across the board.
 * *Might* consider using a connection string approach for Rabbit MQ. Shamelessly rip off the one from NServiceBus
 * MT lets you limit the concurrency on a single message type regardless of endpoint. Don't think we want that one
@@ -14,6 +14,9 @@
 * Go back to the idea of an admin endpoint. Automatic "fan out" to each. Maybe make "FanOutToEachNode()" as part of routing so that it can imply 
   that semantics. 
 * Think the saga and transactional code generation needs to be a bit more flexible. Like it needs to "see" what the dependencies are first and adapt
+* May have to use pluggable message type name rules to work with MassTransit. Might just steal their code.
+* For Rabbit MQ, assume a routing rule where everything is sent to a routing key & fan out exchange with the message type name. Routing rule will need to 
+  be able to alter an `ITransport` on the JasperOptions
 
 
 ### Jasper on HTTP 
