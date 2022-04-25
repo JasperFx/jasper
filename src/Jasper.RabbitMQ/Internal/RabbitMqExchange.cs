@@ -21,7 +21,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public string DeclaredName { get; }
 
-        public ExchangeType ExchangeType { get; set; } = ExchangeType.Direct;
+        public ExchangeType ExchangeType { get; set; } = ExchangeType.Fanout;
 
 
         public bool AutoDelete { get; set; } = false;

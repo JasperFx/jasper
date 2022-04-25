@@ -26,17 +26,12 @@ namespace OtelWebApi
                 .UseJasper(opts =>
                 {
                     opts.ServiceName = "OtelWebApi";
-                    opts.UseRabbitMq(rabbit =>
-                    {
-                        rabbit.AutoProvision = true;
-                        rabbit.AutoPurgeOnStartup = true;
-                        rabbit.DeclareQueue("subscriber1");
-                    });
-
+                    opts.UseRabbitMq().AutoProvision()
+                        .AutoPurgeOnStartup();
 
                     opts.Publish(x =>
                     {
-                        x.Message<InlineMessage>().ToRabbit("subscriber1");
+                        x.Message<InlineMessage>().ToRabbitQueue("subscriber1");
                     });
 
 

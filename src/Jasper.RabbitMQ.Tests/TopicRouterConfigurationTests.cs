@@ -53,7 +53,7 @@ namespace Jasper.RabbitMQ.Tests
         public void configure_topic_subscribers()
         {
             var options = new JasperOptions();
-            options.UseRabbitMq(rabbit => { rabbit.ConnectionFactory.HostName = "localhost"; });
+            options.UseRabbitMq();
 
             options.PublishAllMessages().ToRabbitTopics("numbers")
                 .ConfigureTopicConfiguration("one", topic => { topic.SendInline(); });

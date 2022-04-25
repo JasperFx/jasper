@@ -17,23 +17,18 @@ return await Host.CreateDefaultBuilder(args)
             .UseForReplies();
 
         // Publish messages to the pings queue
-        opts.PublishAllMessages().ToRabbit("pings");
+        opts.PublishAllMessages().ToRabbitQueue("pings");
 
-        // Configure Rabbit MQ connections and optionally declare Rabbit MQ
-        // objects through an extension method on JasperOptions.Endpoints
+        // Configure Rabbit MQ connection properties programmatically
+        // against a ConnectionFactory
         opts.UseRabbitMq(rabbit =>
         {
             // Using a local installation of Rabbit MQ
             // via a running Docker image
-            rabbit.ConnectionFactory.HostName = "localhost";
-
-            // This just tells Jasper that it might have to create
-            // these queues in Rabbit MQ itself
-            rabbit.DeclareQueue("pongs");
-            rabbit.DeclareQueue("pings");
+            rabbit.HostName = "localhost";
         });
 
-        opts.PublishAllMessages().ToRabbit("pings");
+        opts.PublishAllMessages().ToRabbitQueue("pings");
 
         // This will send ping messages on a continuous
         // loop

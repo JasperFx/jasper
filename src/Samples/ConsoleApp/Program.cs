@@ -25,34 +25,14 @@ namespace MyApp
 
                 opts.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.AutoProvision = true;
-                    x.AutoPurgeOnStartup = true;
-                    x.DeclareQueue("rabbit1");
-                    x.DeclareQueue("rabbit2");
-                    x.DeclareExchange("Main");
-                    x.DeclareBinding(new Binding
-                    {
-                        BindingKey = "BKey",
-                        QueueName = "queue1",
-                        ExchangeName = "Main"
-
-                    });
-
-                });
+                opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup()
+                    .BindExchange("Main")
+                    .ToQueue("queue1", "BKey");
 
                 opts.ListenToRabbitQueue("rabbit1");
-                opts.PublishAllMessages().ToRabbit("rabbit2");
+                opts.PublishAllMessages().ToRabbitQueue("rabbit2");
             });
 
-            // The code above is shorthand for the following:
-            /*
-            return Host
-                .CreateDefaultBuilder()
-                .UseJasper<MyAppOptions>()
-                .RunOaktonCommands(args);
-            */
         }
     }
 }

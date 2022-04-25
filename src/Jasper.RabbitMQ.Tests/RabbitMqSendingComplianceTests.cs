@@ -21,28 +21,19 @@ namespace Jasper.RabbitMQ.Tests
 
             await SenderIs(opts =>
             {
-
                 var listener = $"listener{RabbitTesting.Number}";
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName);
-                    x.DeclareQueue(listener);
-                    x.AutoProvision = true;
-                    x.AutoPurgeOnStartup = true;
-                });
+                opts.UseRabbitMq()
+                    .AutoProvision()
+                    .AutoPurgeOnStartup()
+                    .DeclareQueue(queueName);
 
                 opts.ListenToRabbitQueue(listener).UseForReplies();
             });
 
             await ReceiverIs(opts =>
             {
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                });
-
+                opts.UseRabbitMq();
                 opts.ListenToRabbitQueue(queueName);
             });
         }

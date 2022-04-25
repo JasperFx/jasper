@@ -14,14 +14,9 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         // Configure Rabbit MQ connections and optionally declare Rabbit MQ
         // objects through an extension method on JasperOptions.Endpoints
-        opts.UseRabbitMq(rabbit =>
-        {
-            // Using a local installation of Rabbit MQ
-            // via a running Docker image
-            rabbit.ConnectionFactory.HostName = "localhost";
-            rabbit.AutoProvision = true;
-            rabbit.DeclareQueue("pings");
-        });
+        opts.UseRabbitMq().AutoProvision();
+
+        opts.UseRabbitMq();
     })
     .Build();
 

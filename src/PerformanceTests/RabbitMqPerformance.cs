@@ -21,19 +21,12 @@ namespace PerformanceTests
 
             startTheSender(opts =>
             {
-
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(outboundName);
-                    x.DeclareQueue(replyName);
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision();
 
                 opts.ListenToRabbitQueue(replyName)
                     .ProcessInline().ListenerCount(3);
 
-                opts.PublishAllMessages().ToRabbit(outboundName);
+                opts.PublishAllMessages().ToRabbitQueue(outboundName);
             });
 
             await time(() => sendMessages(100, 10));
@@ -47,18 +40,11 @@ namespace PerformanceTests
 
             startTheSender(opts =>
             {
-
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(outboundName);
-                    x.DeclareQueue(replyName);
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision();
 
                 opts.ListenToRabbitQueue(replyName).UseForReplies();
 
-                opts.PublishAllMessages().ToRabbit(outboundName);
+                opts.PublishAllMessages().ToRabbitQueue(outboundName);
             });
 
             await sendMessages(100, 10);
@@ -67,10 +53,7 @@ namespace PerformanceTests
             {
                 startTheReceiver(opts =>
                 {
-                    opts.UseRabbitMq(x =>
-                    {
-                        x.ConnectionFactory.HostName = "localhost";
-                    });
+                    opts.UseRabbitMq();
 
                     opts.ListenToRabbitQueue(outboundName)
                         .ProcessInline()

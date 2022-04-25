@@ -21,12 +21,8 @@ namespace Jasper.RabbitMQ.Tests
             _host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.UseRabbitMq(rabbit =>
-                    {
-                        rabbit.ConnectionFactory.HostName = "localhost";
-                        rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
-                        rabbit.AutoProvision = true;
-                    });
+                    opts.UseRabbitMq().AutoProvision()
+                        .DeclareExchange("numbers", ExchangeType.Topic);
 
                     // This directs Jasper to send all messages
                     // to the "numbers" exchange in Rabbit MQ with
@@ -154,12 +150,10 @@ namespace Jasper.RabbitMQ.Tests
             using var host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.UseRabbitMq(rabbit =>
-                    {
-                        rabbit.ConnectionFactory.HostName = "localhost";
-                        rabbit.DeclareExchange("numbers", e => e.ExchangeType = ExchangeType.Topic);
-                        rabbit.AutoProvision = true;
-                    });
+                    opts.UseRabbitMq()
+                        .AutoProvision()
+                        .DeclareExchange("numbers", ExchangeType.Topic);
+
 
                     // This directs Jasper to send all messages
                     // to the "numbers" exchange in Rabbit MQ with

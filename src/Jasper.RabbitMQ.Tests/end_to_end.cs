@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Baseline.ImTools;
 using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Persistence;
@@ -37,23 +38,17 @@ namespace Jasper.RabbitMQ.Tests
     public class end_to_end
     {
         [Fact]
-        public async Task rabbitmq_transport_is_exposed_as_a_resource()
+        public void rabbitmq_transport_is_exposed_as_a_resource()
         {
             var queueName = RabbitTesting.NextQueueName();
             using var publisher = JasperHost.For(opts =>
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName);
-                    x.AutoProvision = true;
-                    x.AutoPurgeOnStartup = true;
-                });
+                opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
                 opts.PublishAllMessages()
-                    .ToRabbit(queueName)
+                    .ToRabbitQueue(queueName)
                     .Durably();
 
                 opts.Services.AddMarten(x =>
@@ -79,16 +74,10 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName);
-                    x.AutoProvision = true;
-                    x.AutoPurgeOnStartup = true;
-                });
+                opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
                 opts.PublishAllMessages()
-                    .ToRabbit(queueName)
+                    .ToRabbitQueue(queueName)
                     .Durably();
 
                 opts.Services.AddMarten(x =>
@@ -106,12 +95,7 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName);
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision();
 
                 opts.ListenToRabbitQueue(queueName);
                 opts.Services.AddSingleton<ColorHistory>();
@@ -152,16 +136,10 @@ namespace Jasper.RabbitMQ.Tests
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName1);
-                    x.DeclareQueue(queueName2);
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision();
 
                 opts.PublishAllMessages()
-                    .ToRabbit(queueName1)
+                    .ToRabbitQueue(queueName1)
                     .Durably();
 
                 opts.ListenToRabbitQueue(queueName2).UseForReplies();
@@ -182,12 +160,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName1);
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision();
 
                 opts.ListenToRabbitQueue(queueName1);
                 opts.Services.AddSingleton<ColorHistory>();
@@ -224,20 +197,10 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName);
-                    x.DeclareExchange(exchangeName);
-                    x.DeclareBinding(new Binding
-                    {
-                        ExchangeName = exchangeName,
-                        BindingKey = "key2",
-                        QueueName = queueName
-                    });
-
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq()
+                    .AutoProvision()
+                    .BindExchange(exchangeName)
+                    .ToQueue(queueName, "key2");
 
                 opts.PublishAllMessages().ToRabbit("key2", exchangeName);
             });
@@ -246,20 +209,10 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(RabbitTesting.NextQueueName());
-                    x.DeclareExchange(exchangeName);
-                    x.DeclareBinding(new Binding
-                    {
-                        ExchangeName = exchangeName,
-                        BindingKey = "key2",
-                        QueueName = queueName
-                    });
-
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq()
+                    .AutoProvision()
+                    .DeclareQueue(RabbitTesting.NextQueueName())
+                    .BindExchange(exchangeName).ToQueue(queueName, "key2");
 
                 opts.Services.AddSingleton<ColorHistory>();
 
@@ -296,18 +249,9 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareQueue(queueName);
+                opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
-                    x.AutoPurgeOnStartup = true;
-                    x.AutoProvision = true;
-                });
-
-
-                opts.PublishAllMessages().ToRabbit(queueName).Durably();
-
+                opts.PublishAllMessages().ToRabbitQueue(queueName).Durably();
 
                 opts.Services.AddMarten(x =>
                 {
@@ -325,7 +269,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq();
 
                 opts.ListenToRabbitQueue(queueName);
                 opts.Services.AddSingleton<ColorHistory>();
@@ -370,45 +314,19 @@ namespace Jasper.RabbitMQ.Tests
 
             var publisher = JasperHost.For(opts =>
             {
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareExchange(exchangeName, ex => ex.ExchangeType = ExchangeType.Fanout);
-                    x.DeclareQueue(queueName1);
-                    x.DeclareQueue(queueName2);
-                    x.DeclareQueue(queueName3);
-                    x.DeclareBinding(new Binding
-                    {
-                        BindingKey = "key1",
-                        QueueName = queueName1,
-                        ExchangeName = exchangeName
-                    });
-
-                    x.DeclareBinding(new Binding
-                    {
-                        BindingKey = "key1",
-                        QueueName = queueName2,
-                        ExchangeName = exchangeName
-                    });
-
-                    x.DeclareBinding(new Binding
-                    {
-                        BindingKey = "key1",
-                        QueueName = queueName3,
-                        ExchangeName = exchangeName
-                    });
-
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision()
+                    .BindExchange(exchangeName).ToQueue(queueName1)
+                    .BindExchange(exchangeName).ToQueue(queueName2)
+                    .BindExchange(exchangeName).ToQueue(queueName3);
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
 
-                opts.PublishAllMessages().ToRabbitExchange("fanout");
+                opts.PublishAllMessages().ToRabbitExchange(exchangeName);
             });
 
             var receiver1 = JasperHost.For(opts =>
             {
-                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq();
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
                 opts.ListenToRabbitQueue(queueName1);
@@ -417,7 +335,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver2 = JasperHost.For(opts =>
             {
-                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq();
 
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
@@ -427,7 +345,7 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver3 = JasperHost.For(opts =>
             {
-                opts.UseRabbitMq(x => { x.ConnectionFactory.HostName = "localhost"; });
+                opts.UseRabbitMq();
 
 
                 opts.Extensions.UseMessageTrackingTestingSupport();
@@ -467,21 +385,9 @@ namespace Jasper.RabbitMQ.Tests
 
             var publisher = JasperHost.For(opts =>
             {
-                opts.UseRabbitMq(x =>
-                {
-                    x.ConnectionFactory.HostName = "localhost";
-                    x.DeclareExchange("topics", ex => { ex.ExchangeType = ExchangeType.Topic; });
-
-                    x.DeclareQueue(queueName);
-                    x.DeclareBinding(new Binding
-                    {
-                        BindingKey = "special",
-                        ExchangeName = "topics",
-                        QueueName = queueName
-                    });
-
-                    x.AutoProvision = true;
-                });
+                opts.UseRabbitMq().AutoProvision()
+                    .BindExchange("topics", ExchangeType.Topic)
+                    .ToQueue(queueName, "special");
 
                 opts.PublishAllMessages().ToRabbit("special", "topics");
 

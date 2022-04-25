@@ -8,6 +8,7 @@ using Baseline;
 using Baseline.Dates;
 using Lamar;
 using LamarCodeGeneration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Tracking
@@ -110,19 +111,23 @@ namespace Jasper.Tracking
 
         public T FindSingleTrackedMessageOfType<T>()
         {
-            try
-            {
-                return AllRecordsInOrder()
+            var messages = AllRecordsInOrder()
                     .Select(x => x.Envelope.Message)
                     .OfType<T>()
-                    .Distinct()
-                    .Single();
-            }
-            catch (Exception)
+                    .Distinct().ToArray();
+
+            if (messages.Length == 0)
+                throw new InvalidOperationException(
+                    $"No message of type {typeof(T).FullNameInCode()} was detected");
+
+            if (messages.Length > 1)
             {
                 throw new InvalidOperationException(
-                    buildActivityMessage($"No single message exists for {typeof(T).FullNameInCode()}"));
+                    $"Expected one message of type {typeof(T).FullNameInCode()}, but detected {messages.Length}: {messages.Select(x => x.ToString()).Join(", ")}");
             }
+
+            return messages
+                .Single();
         }
 
         public IEnumerable<object> UniqueMessages()
@@ -139,20 +144,24 @@ namespace Jasper.Tracking
 
         public T FindSingleTrackedMessageOfType<T>(EventType eventType)
         {
-            try
-            {
-                return AllRecordsInOrder()
-                    .Where(x => x.EventType == eventType)
-                    .Select(x => x.Envelope.Message)
-                    .OfType<T>()
-                    .Distinct()
-                    .Single();
-            }
-            catch (Exception)
+            var messages = AllRecordsInOrder()
+                .Where(x => x.EventType == eventType)
+                .Select(x => x.Envelope.Message)
+                .OfType<T>()
+                .Distinct().ToArray();
+
+            if (messages.Length == 0)
+                throw new InvalidOperationException(
+                    $"No message of type {typeof(T).FullNameInCode()} was detected");
+
+            if (messages.Length > 1)
             {
                 throw new InvalidOperationException(
-                    buildActivityMessage($"No single message exists for {typeof(T).FullNameInCode()}"));
+                    $"Expected one message of type {typeof(T).FullNameInCode()}, but detected {messages.Length}: {messages.Select(x => x.ToString()).Join(", ")}");
             }
+
+            return messages
+                .Single();
         }
 
         public EnvelopeRecord[] FindEnvelopesWithMessageType<T>(EventType eventType)

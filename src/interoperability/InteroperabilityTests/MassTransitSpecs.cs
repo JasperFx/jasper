@@ -29,31 +29,12 @@ namespace InteroperabilityTests
             {
                 // application/vnd.masstransit+json
 
-                opts.UseRabbitMq(t =>
-                {
-                    t.AutoProvision = true;
-                    t.AutoPurgeOnStartup = true;
-                    t.DeclareQueue("jasper"); // TODO -- make this inferred
-                    t.DeclareQueue("masstransit"); // TODO -- make this inferred
+                opts.UseRabbitMq()
+                    .AutoProvision().AutoPurgeOnStartup()
+                    .BindExchange("jasper").ToQueue("jasper")
+                    .BindExchange("masstransit").ToQueue("masstransit");
 
-                    t.DeclareExchange("jasper", x => x.ExchangeType = ExchangeType.Fanout);
-                    t.DeclareBinding(new Binding
-                    {
-                        QueueName = "jasper",
-                        ExchangeName = "jasper",
-                        BindingKey = "jasper"
-                    });
-
-                    t.DeclareExchange("masstransit", x => x.ExchangeType = ExchangeType.Fanout);
-                    t.DeclareBinding(new Binding
-                    {
-                        QueueName = "masstransit",
-                        ExchangeName = "masstransit",
-                        BindingKey = "masstransit"
-                    });
-                });
-
-                opts.PublishAllMessages().ToRabbit("masstransit")
+                opts.PublishAllMessages().ToRabbitExchange("masstransit")
                     .Advanced(endpoint =>
                     {
                         // TODO -- will need access to the RabbitMqTransport to get the reply endpoint, then
@@ -62,7 +43,6 @@ namespace InteroperabilityTests
                         {
                             // TODO -- this will need to be cached somehow
                             p.Headers[MassTransitHeaders.ResponseAddress] = "rabbitmq://localhost/jasper";
-
                         });
                     });
 

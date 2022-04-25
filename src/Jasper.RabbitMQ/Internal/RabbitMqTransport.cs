@@ -8,7 +8,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public partial class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IRabbitMqTransport
+    public partial class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
     {
         public const string ProtocolName = "rabbitmq";
 
@@ -40,6 +40,7 @@ namespace Jasper.RabbitMQ.Internal
             return _endpoints[uri];
         }
 
+        // TODO -- this surely needs to be ValueTask or Task
         public override void Initialize(IJasperRuntime root)
         {
             if (AutoProvision)
@@ -67,26 +68,53 @@ namespace Jasper.RabbitMQ.Internal
 
         public IList<Binding> Bindings { get; } = new List<Binding>();
 
-        public void DeclareBinding(Binding binding)
+        internal class BindingExpression : IBindingExpression
         {
-            binding.AssertValid();
+            private readonly string _exchangeName;
+            private readonly RabbitMqTransport _parent;
 
-            DeclareExchange(binding.ExchangeName);
-            DeclareExchange(binding.QueueName);
+            internal BindingExpression(string exchangeName, RabbitMqTransport parent)
+            {
+                _exchangeName = exchangeName;
+                _parent = parent;
+            }
 
-            Bindings.Add(binding);
+            public IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null)
+            {
+                _parent.DeclareQueue(queueName, configure);
+                ToQueue(queueName, $"{_exchangeName}_{queueName}");
+
+                return _parent;
+            }
+
+            public IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null)
+            {
+                _parent.DeclareQueue(queueName, configure);
+
+                var binding = new Binding
+                {
+                    ExchangeName = _exchangeName,
+                    BindingKey = bindingKey,
+                    QueueName = queueName
+                };
+
+                if (arguments != null)
+                {
+                    binding.Arguments = arguments;
+                }
+
+                binding.AssertValid();
+
+                _parent.Bindings.Add(binding);
+
+                return _parent;
+            }
         }
 
-        public void DeclareExchange(string exchangeName, Action<RabbitMqExchange> configure = null)
+        public IBindingExpression BindExchange(string exchangeName, Action<RabbitMqExchange>? configure = null)
         {
-            var exchange = Exchanges[exchangeName];
-            configure?.Invoke(exchange);
-        }
-
-        public void DeclareQueue(string queueName, Action<RabbitMqQueue> configure = null)
-        {
-            var queue = Queues[queueName];
-            configure?.Invoke(queue);
+            DeclareExchange(exchangeName, configure);
+            return new BindingExpression(exchangeName, this);
         }
 
         internal IConnection BuildConnection()
@@ -95,12 +123,6 @@ namespace Jasper.RabbitMQ.Internal
                 ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
                 : ConnectionFactory.CreateConnection();
         }
-
-
-
-
-
-
 
         public RabbitMqEndpoint EndpointForQueue(string queueName)
         {
@@ -128,5 +150,26 @@ namespace Jasper.RabbitMQ.Internal
         }
 
 
+    }
+
+    public interface IBindingExpression
+    {
+        /// <summary>
+        /// Bind the named exchange to a queue. The routing key will be
+        /// [exchange name]_[queue name]
+        /// </summary>
+        /// <param name="queueName"></param>
+        /// <param name="configure">Optional configuration of the Rabbit MQ queue</param>
+        /// <param name="arguments">Optional configuration for arguments to the Rabbit MQ binding</param>
+        IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null);
+
+        /// <summary>
+        /// Bind the named exchange to a queue with a user supplied binding key
+        /// </summary>
+        /// <param name="queueName"></param>
+        /// <param name="bindingKey"></param>
+        /// <param name="configure">Optional configuration of the Rabbit MQ queue</param>
+        /// <param name="arguments">Optional configuration for arguments to the Rabbit MQ binding</param>
+        IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null);
     }
 }

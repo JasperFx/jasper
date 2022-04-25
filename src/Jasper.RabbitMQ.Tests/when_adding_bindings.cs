@@ -21,14 +21,14 @@ namespace Jasper.RabbitMQ.Tests
                 QueueName = "queue3"
             };
 
-            theTransport.DeclareBinding(theBinding);
+            theTransport.BindExchange("exchange3").ToQueue("queue3", "key3");
         }
 
         [Fact]
         public void should_add_the_binding()
         {
             theTransport.Bindings.Single()
-                .ShouldBeSameAs(theBinding);
+                .ShouldBe(theBinding);
         }
 
         [Fact]
@@ -42,46 +42,6 @@ namespace Jasper.RabbitMQ.Tests
         {
             theTransport.Queues.Has(theBinding.QueueName);
         }
-
-        [Fact]
-        public void sad_path_binding_key_missing()
-        {
-            Should.Throw<InvalidOperationException>(() =>
-            {
-                theTransport.DeclareBinding(new Binding
-                {
-                    QueueName = "a",
-                    ExchangeName = "b"
-                });
-            });
-        }
-
-        [Fact]
-        public void sad_path_queue_name_missing()
-        {
-            Should.Throw<InvalidOperationException>(() =>
-            {
-                theTransport.DeclareBinding(new Binding
-                {
-                    BindingKey = "a",
-                    ExchangeName = "b"
-                });
-            });
-        }
-
-        [Fact]
-        public void sad_path_exchange_name_missing()
-        {
-            Should.Throw<InvalidOperationException>(() =>
-            {
-                theTransport.DeclareBinding(new Binding
-                {
-                    BindingKey = "a",
-                    QueueName = "b"
-                });
-            });
-        }
-
 
     }
 }

@@ -31,6 +31,36 @@ namespace Jasper.RabbitMQ
             }
         }
 
+        protected bool Equals(Binding other)
+        {
+            return BindingKey == other.BindingKey && QueueName == other.QueueName && ExchangeName == other.ExchangeName;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return Equals((Binding)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(BindingKey, QueueName, ExchangeName);
+        }
+
         public override string ToString()
         {
             return $"{nameof(BindingKey)}: {BindingKey}, {nameof(QueueName)}: {QueueName}, {nameof(ExchangeName)}: {ExchangeName}";

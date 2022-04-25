@@ -13,16 +13,12 @@ builder.Host.ApplyOaktonExtensions();
 builder.Host.UseJasper(opts =>
 {
     opts.PublishAllMessages()
-        .ToRabbit("issue_events");
+        .ToRabbitQueue("issue_events");
 
-    opts.UseRabbitMq(rabbit =>
-    {
-        // TODO -- let's do this a little cleaner
-        rabbit.ConnectionFactory.HostName = "localhost";
-        rabbit.AutoProvision = true;
-        rabbit.AutoPurgeOnStartup = true;
-        rabbit.DeclareQueue("issue_events");
-    });
+    opts.UseRabbitMq()
+        .AutoProvision()
+        .AutoPurgeOnStartup();
+
 });
 
 builder.Services.AddResourceSetupOnStartup();
