@@ -201,9 +201,8 @@ namespace Jasper.Runtime
                 await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
             }
 
-
             // Start all the listeners and senders
-            Runtime.As<TransportRuntime>().Initialize();
+            await Runtime.As<TransportRuntime>().Initialize();
 
             ScheduledJobs =
                 new InMemoryScheduledJobProcessor((IWorkerQueue) Runtime.AgentForLocalQueue(TransportConstants.Replies));

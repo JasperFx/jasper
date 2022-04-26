@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
@@ -249,7 +250,7 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public void Initialize(IJasperRuntime root)
+            public Task Initialize(IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }

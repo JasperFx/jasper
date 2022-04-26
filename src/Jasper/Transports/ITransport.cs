@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Runtime;
 
@@ -20,7 +21,7 @@ namespace Jasper.Transports
         Endpoint TryGetEndpoint(Uri? uri);
 
         IEnumerable<Endpoint> Endpoints();
-        void Initialize(IJasperRuntime root);
+        Task Initialize(IJasperRuntime root);
 
 
         /// <summary>

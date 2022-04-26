@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime;
 using Jasper.Transports;
@@ -41,7 +42,7 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         // TODO -- this surely needs to be ValueTask or Task
-        public override void Initialize(IJasperRuntime root)
+        public override Task Initialize(IJasperRuntime root)
         {
             if (AutoProvision)
             {
@@ -52,6 +53,8 @@ namespace Jasper.RabbitMQ.Internal
             {
                 PurgeAllQueues();
             }
+
+            return Task.CompletedTask;
         }
 
         public bool AutoProvision { get; set; } = false;

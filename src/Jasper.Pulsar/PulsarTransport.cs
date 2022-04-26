@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Baseline;
 using DotPulsar;
 using DotPulsar.Abstractions;
@@ -36,10 +37,10 @@ namespace Jasper.Pulsar
             return _endpoints[uri];
         }
 
-        public override void Initialize(IJasperRuntime root)
+        public override Task Initialize(IJasperRuntime root)
         {
             Client = Builder.Build();
-            base.Initialize(root);
+            return Task.CompletedTask;
         }
 
         internal IPulsarClient Client { get; private set; }

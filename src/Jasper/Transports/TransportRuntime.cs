@@ -35,11 +35,11 @@ namespace Jasper.Transports
             _transports = root.Options;
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
             foreach (var transport in _transports)
             {
-                transport.Initialize(_root);
+                await transport.Initialize(_root).ConfigureAwait(false);
                 foreach (var endpoint in transport.Endpoints())
                 {
                     endpoint.Root = _root; // necessary to locate serialization

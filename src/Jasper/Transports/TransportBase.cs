@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Util;
@@ -34,9 +35,10 @@ namespace Jasper.Transports
             return endpoints();
         }
 
-        public virtual void Initialize(IJasperRuntime root)
+        public virtual Task Initialize(IJasperRuntime root)
         {
             // Nothing
+            return Task.CompletedTask;
         }
 
         public Endpoint ReplyEndpoint()

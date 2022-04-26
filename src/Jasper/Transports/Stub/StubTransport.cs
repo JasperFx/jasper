@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
@@ -48,12 +49,14 @@ namespace Jasper.Transports.Stub
             return Endpoints[uri];
         }
 
-        public override void Initialize(IJasperRuntime root)
+        public override Task Initialize(IJasperRuntime root)
         {
             foreach (var endpoint in Endpoints)
             {
                 endpoint.Start(root.Pipeline, root.MessageLogger);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

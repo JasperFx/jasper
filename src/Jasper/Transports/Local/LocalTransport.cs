@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
@@ -45,9 +46,10 @@ namespace Jasper.Transports.Local
             return _queues;
         }
 
-        public void Initialize(IJasperRuntime root)
+        public Task Initialize(IJasperRuntime root)
         {
             // Nothing
+            return Task.CompletedTask;
         }
 
         public string Name => "Local (In Memory)";
