@@ -31,7 +31,7 @@ namespace Jasper.Serialization
         public JsonSerializerSettings Settings { get; }
 
         public string ContentType { get; } = EnvelopeConstants.JsonContentType;
-        public byte[] Write(object? message)
+        public byte[] Write(object message)
         {
             var bytes = _bytePool.Rent(_bufferSize); // TODO -- should this be configurable?
             var stream = new MemoryStream(bytes);

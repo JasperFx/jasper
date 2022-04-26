@@ -17,7 +17,7 @@ public class SystemTextJsonSerializer : IMessageSerializer
 
     public string ContentType { get; } = EnvelopeConstants.JsonContentType;
 
-    public byte[] Write(object? message)
+    public byte[] Write(object message)
     {
         return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(message, _options);
     }

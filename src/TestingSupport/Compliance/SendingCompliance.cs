@@ -477,7 +477,7 @@ namespace TestingSupport.Compliance
         }
 
         public string ContentType { get; } = "text/plain";
-        public byte[]? Write(object? message)
+        public byte[] Write(object message)
         {
             throw new NotImplementedException();
         }
@@ -510,7 +510,7 @@ namespace TestingSupport.Compliance
                 throw new NotImplementedException();
             }
 
-            public byte[]? Write(object? model)
+            public byte[] Write(object model)
             {
                 if (model is GreenMessage green) return Encoding.UTF8.GetBytes(green.Name);
 

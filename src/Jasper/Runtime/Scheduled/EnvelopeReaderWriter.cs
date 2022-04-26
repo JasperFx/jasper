@@ -24,7 +24,7 @@ namespace Jasper.Runtime.Scheduled
             return envelope;
         }
 
-        public byte[] Write(object? model)
+        public byte[] Write(object model)
         {
             return EnvelopeSerializer.Serialize(model.As<Envelope>());
         }

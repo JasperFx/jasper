@@ -20,7 +20,7 @@ namespace Jasper.Runtime.Routing
             _durableLocalQueue = root.Runtime.GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
         }
 
-        public Envelope[] RouteOutgoingByMessage(object? message)
+        public Envelope[] RouteOutgoingByMessage(object message)
         {
             var envelopes = routingFor(message.GetType()).RouteByMessage(message);
             adjustForScheduledSend(envelopes);
@@ -64,7 +64,7 @@ namespace Jasper.Runtime.Routing
             }
         }
 
-        public Envelope[] RouteOutgoingByEnvelope(Envelope? original)
+        public Envelope[] RouteOutgoingByEnvelope(Envelope original)
         {
             var messageType = _root.DetermineMessageType(original);
 
@@ -80,7 +80,7 @@ namespace Jasper.Runtime.Routing
         }
 
 
-        public void RouteToDestination(Uri? destination, Envelope? envelope)
+        public void RouteToDestination(Uri destination, Envelope envelope)
         {
             routingFor(envelope).RouteToDestination(envelope);
         }

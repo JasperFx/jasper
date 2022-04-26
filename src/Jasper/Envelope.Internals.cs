@@ -22,7 +22,7 @@ namespace Jasper
     // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
-        internal void MarkReceived(Uri? uri, DateTime now, int currentNodeId)
+        internal void MarkReceived(Uri uri, DateTime now, int currentNodeId)
         {
             if (IsDelayed(now))
             {
@@ -39,8 +39,6 @@ namespace Jasper
 
         public IMessageSerializer? Serializer { get; set; }
 
-
-
         /// <summary>
         ///     Used by IMessageContext.Invoke<T> to denote the response type
         /// </summary>
@@ -51,7 +49,6 @@ namespace Jasper
         /// </summary>
         internal object? Response { get; set; }
 
-
         /// <summary>
         ///     Status according to the message persistence
         /// </summary>
@@ -61,7 +58,6 @@ namespace Jasper
         ///     Node owner of this message. 0 denotes that no node owns this message
         /// </summary>
         internal int OwnerId { get; set; }
-
 
         /// <summary>
         ///     Create a new Envelope that is a response to the current
@@ -95,7 +91,7 @@ namespace Jasper
             };
         }
 
-        internal Envelope? CloneForWriter(IMessageSerializer? writer)
+        internal Envelope CloneForWriter(IMessageSerializer writer)
         {
             var envelope = (Envelope)MemberwiseClone();
             envelope.Headers = new Dictionary<string, string?>(Headers);
@@ -105,7 +101,7 @@ namespace Jasper
             return envelope;
         }
 
-        internal Envelope(object? message, IMessageSerializer? writer)
+        internal Envelope(object message, IMessageSerializer writer)
         {
             Message = message;
             Serializer = writer ?? throw new ArgumentNullException(nameof(writer));
@@ -148,10 +144,7 @@ namespace Jasper
             return MessageType == PingMessageType;
         }
 
-
-
-
-        internal static Envelope? ForPing(Uri? destination)
+        internal static Envelope ForPing(Uri destination)
         {
             return new Envelope
             {

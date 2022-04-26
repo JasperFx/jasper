@@ -59,7 +59,7 @@ namespace Jasper.Testing.Serialization
         public class FooSerializer : IMessageSerializer
         {
             public string? ContentType { get; } = "text/foo";
-            public byte[]? Write(object? message)
+            public byte[] Write(object message)
             {
                 throw new NotImplementedException();
             }
