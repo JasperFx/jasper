@@ -16,7 +16,7 @@ namespace Jasper.Runtime.Routing
     public interface IMessageTypeRouteCollection
     {
         IEnumerable<IMessageRoute> Routes { get; }
-        void AddStaticRoute(ISendingAgent? agent);
+        void AddStaticRoute(ISendingAgent agent);
         void AddTopicRoute(ITopicRule rule, ITopicRouter router);
     }
 
