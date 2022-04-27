@@ -198,7 +198,8 @@ namespace Jasper.Runtime
         {
             if (envelope.Sender != null) return envelope.Sender.IsDurable;
 
-            if (envelope.Destination != null) return Runtime.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
+            // TODO -- should this be memoized?
+            if (envelope.Destination != null) return Runtime.Endpoints.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
 
             return false;
         }

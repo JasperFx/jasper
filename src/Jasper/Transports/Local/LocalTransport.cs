@@ -90,8 +90,8 @@ namespace Jasper.Transports.Local
             queue.Agent = buildAgent(queue, runtime);
             _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, runtime));
 
-            runtime.AddSendingAgent(buildAgent(queue, runtime));
-            runtime.AddSubscriber(queue);
+            runtime.Endpoints.AddSendingAgent(buildAgent(queue, runtime));
+            runtime.Endpoints.AddSubscriber(queue);
 
             return queue.Agent;
         }

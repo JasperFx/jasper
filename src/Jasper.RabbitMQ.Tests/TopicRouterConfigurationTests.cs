@@ -60,7 +60,7 @@ namespace Jasper.RabbitMQ.Tests
 
             using var host = JasperHost.For(options);
             var one = host.Get<IJasperRuntime>()
-                .GetOrBuildSendingAgent("rabbitmq://exchange/numbers/routing/one".ToUri())
+                .Endpoints.GetOrBuildSendingAgent("rabbitmq://exchange/numbers/routing/one".ToUri())
                 .Endpoint.As<RabbitMqEndpoint>();
 
             one.Mode.ShouldBe(EndpointMode.Inline);

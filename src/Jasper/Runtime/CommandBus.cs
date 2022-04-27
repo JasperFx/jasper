@@ -91,7 +91,7 @@ namespace Jasper.Runtime
                 Destination = TransportConstants.DurableLocalUri
             };
 
-            var endpoint = Runtime.EndpointFor(TransportConstants.DurableLocalUri);
+            var endpoint = Runtime.Endpoints.For(TransportConstants.DurableLocalUri);
 
             var writer = endpoint.DefaultSerializer;
             envelope.Data = writer.Write(message);

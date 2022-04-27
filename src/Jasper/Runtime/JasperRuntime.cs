@@ -53,6 +53,7 @@ public partial class JasperRuntime : IJasperRuntime, IHostedService
         Cancellation = Advanced.Cancellation;
     }
 
+    public IJasperEndpoints Endpoints => this;
 
     public DurabilityAgent Durability { get; private set; }
 

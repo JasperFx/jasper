@@ -43,7 +43,7 @@ namespace Jasper.Runtime.Routing
             {
                 var topicName = DetermineTopicName(messageType);
                 var uri = BuildUriForTopic(topicName);
-                var agent = runtime.GetOrBuildSendingAgent(uri);
+                var agent = runtime.Endpoints.GetOrBuildSendingAgent(uri);
                 agent.Endpoint.AddRoute(routing, runtime);
             }
             else

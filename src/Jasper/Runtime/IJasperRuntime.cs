@@ -27,25 +27,23 @@ namespace Jasper.Runtime
 
         IAcknowledgementSender Acknowledgements { get; }
 
+        IJasperEndpoints Endpoints { get; }
 
-        // TODO -- can this be hidden from the public interface?
-        Type DetermineMessageType(Envelope envelope);
 
-        // TODO -- can this be hidden from the public interface?
-        void RegisterMessageType(Type messageType);
 
+    }
+
+    public interface IJasperEndpoints
+    {
         ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint);
 
         ISendingAgent GetOrBuildSendingAgent(Uri address);
         void AddListener(IListener listener, Endpoint settings);
 
-        IEnumerable<ISubscriber> Subscribers { get; }
-
         void AddSendingAgent(ISendingAgent sendingAgent);
 
         void AddSubscriber(ISubscriber subscriber);
 
-        ISendingAgent AgentForLocalQueue(string queueName);
-        Endpoint? EndpointFor(Uri uri);
+        Endpoint? For(Uri uri);
     }
 }

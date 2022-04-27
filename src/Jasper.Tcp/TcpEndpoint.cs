@@ -74,7 +74,7 @@ namespace Jasper.Tcp
             if (!IsListener) return;
 
             var listener = createListener(runtime);
-            runtime.AddListener(listener, this);
+            runtime.Endpoints.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IJasperRuntime root)

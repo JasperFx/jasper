@@ -144,7 +144,7 @@ namespace Jasper.Configuration
             Uri? replyUri)
         {
             var sender = runtime.Advanced.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(runtime);
-            return runtime.AddSubscriber(replyUri, sender, this);
+            return runtime.Endpoints.AddSubscriber(replyUri, sender, this);
         }
 
         protected abstract ISender CreateSender(IJasperRuntime root);

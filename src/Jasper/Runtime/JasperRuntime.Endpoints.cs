@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
@@ -14,7 +13,7 @@ using Jasper.Util;
 
 namespace Jasper.Runtime;
 
-public partial class JasperRuntime
+public partial class JasperRuntime : IJasperEndpoints
 {
         private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private readonly List<ISubscriber> _subscribers = new List<ISubscriber>();
@@ -158,7 +157,7 @@ public partial class JasperRuntime
             return Options.SelectMany(x => x.Endpoints());
         }
 
-        public Endpoint? EndpointFor(Uri uri)
+        public Endpoint? For(Uri uri)
         {
             return endpoints().FirstOrDefault(x => x.Uri == uri);
         }

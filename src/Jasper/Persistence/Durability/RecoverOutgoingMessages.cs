@@ -59,7 +59,7 @@ namespace Jasper.Persistence.Durability
                 Envelope?[] filtered = null;
                 IReadOnlyList<Envelope?> outgoing = null;
 
-                if (_runtime.GetOrBuildSendingAgent(destination).Latched) return 0;
+                if (_runtime.Endpoints.GetOrBuildSendingAgent(destination).Latched) return 0;
 
                 await storage.Session.Begin();
 
@@ -77,7 +77,7 @@ namespace Jasper.Persistence.Durability
                     // Might easily try to do this in the time between starting
                     // and having the data fetched. Was able to make that happen in
                     // (contrived) testing
-                    if (_runtime.GetOrBuildSendingAgent(destination).Latched || !filtered.Any())
+                    if (_runtime.Endpoints.GetOrBuildSendingAgent(destination).Latched || !filtered.Any())
                     {
                         await storage.Session.Rollback();
                         return 0;
@@ -99,7 +99,7 @@ namespace Jasper.Persistence.Durability
                 foreach (var envelope in filtered)
                     try
                     {
-                        await _runtime.GetOrBuildSendingAgent(destination).EnqueueOutgoing(envelope);
+                        await _runtime.Endpoints.GetOrBuildSendingAgent(destination).EnqueueOutgoing(envelope);
                     }
                     catch (Exception? e)
                     {

@@ -35,6 +35,8 @@ namespace Jasper.Testing.Runtime
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 
         public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
+        public IJasperEndpoints Endpoints { get; } = Substitute.For<IJasperEndpoints>();
+
         public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
             throw new NotSupportedException();

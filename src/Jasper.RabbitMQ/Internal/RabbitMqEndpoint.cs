@@ -164,7 +164,7 @@ namespace Jasper.RabbitMQ.Internal
                 _listener = new RabbitMqListener(runtime.Logger, this, Parent);
             }
 
-            runtime.AddListener(_listener, this);
+            runtime.Endpoints.AddListener(_listener, this);
         }
 
         protected override ISender CreateSender(IJasperRuntime root)
