@@ -16,7 +16,7 @@ namespace Jasper.ErrorHandling
 
         public Exception? Exception { get; }
 
-        public async Task Execute(IExecutionContext execution,
+        public async ValueTask Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             await execution.SendFailureAcknowledgement(execution.Envelope,

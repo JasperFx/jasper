@@ -12,8 +12,8 @@ namespace Jasper.Transports.Sending
     public interface ISender : IDisposable
     {
         bool SupportsNativeScheduledSend { get; }
-        Uri? Destination { get; }
+        Uri Destination { get; }
         Task<bool> Ping(CancellationToken cancellationToken);
-        Task Send(Envelope? envelope);
+        ValueTask Send(Envelope envelope);
     }
 }

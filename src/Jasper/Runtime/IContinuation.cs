@@ -17,7 +17,7 @@ namespace Jasper.Runtime
         /// <param name="execution"></param>
         /// <param name="utcNow">The current time</param>
         /// <returns></returns>
-        Task Execute(IExecutionContext execution, DateTime utcNow);
+        ValueTask Execute(IExecutionContext execution, DateTime utcNow);
     }
 
     #endregion

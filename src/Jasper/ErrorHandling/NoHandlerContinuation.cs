@@ -16,7 +16,7 @@ namespace Jasper.ErrorHandling
             _root = root;
         }
 
-        public async Task Execute(IExecutionContext execution,
+        public async ValueTask Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             execution.Logger.NoHandlerFor(execution.Envelope);

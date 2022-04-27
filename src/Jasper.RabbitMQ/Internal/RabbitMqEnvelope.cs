@@ -20,7 +20,7 @@ namespace Jasper.RabbitMQ.Internal
             Acked = true;
         }
 
-        internal Task Defer()
+        internal ValueTask Defer()
         {
             Acked = true;
             return Listener.Requeue(this);

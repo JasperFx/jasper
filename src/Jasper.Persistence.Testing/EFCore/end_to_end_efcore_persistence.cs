@@ -31,7 +31,7 @@ namespace Jasper.Persistence.Testing.EFCore
             {
                 options.Services.AddSingleton<PassRecorder>();
                 options.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-                options.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                options.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             });
         }
     }

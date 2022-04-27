@@ -12,9 +12,9 @@ namespace Jasper.Runtime
         {
         }
 
-        public Task CompleteAsync(Envelope envelope)
+        public ValueTask CompleteAsync(Envelope envelope)
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public Task MoveToErrorsAsync(Envelope envelope, Exception exception)
@@ -22,9 +22,9 @@ namespace Jasper.Runtime
             return Task.CompletedTask;
         }
 
-        public Task DeferAsync(Envelope envelope)
+        public ValueTask DeferAsync(Envelope envelope)
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public Task MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)

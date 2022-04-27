@@ -88,7 +88,7 @@ namespace Jasper.Transports.Sending
             }, _cancellation);
         }
 
-        public Uri? Destination { get; }
+        public Uri Destination { get; }
 
         public int QueuedCount => _queued + _batching.ItemCount + _serializing.InputCount;
 
@@ -125,14 +125,13 @@ namespace Jasper.Transports.Sending
 
         public bool SupportsNativeScheduledSend { get; } = false;
 
-        public Task Send(Envelope? message)
+        public ValueTask Send(Envelope message)
         {
             if (_batching == null) throw new InvalidOperationException("This agent has not been started");
 
-            return _serializing.SendAsync(message, _cancellation).ContinueWith(x =>
-            {
-                if (x.IsCompleted && !x.Result) Console.WriteLine("SendAsync rejected an outgoing message");
-            }, _cancellation);
+            _serializing.Post(message);
+
+            return ValueTask.CompletedTask;
         }
 
         public void Dispose()

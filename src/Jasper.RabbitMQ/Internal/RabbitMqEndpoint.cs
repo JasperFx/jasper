@@ -64,7 +64,7 @@ namespace Jasper.RabbitMQ.Internal
 
         internal RabbitMqTransport Parent { get; set; }
 
-        public override Uri? Uri
+        public override Uri Uri
         {
             get
             {

@@ -91,14 +91,14 @@ namespace Jasper
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task Complete();
+        ValueTask Complete();
 
         /// <summary>
         /// Requeue the message for later processing
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task Defer();
+        ValueTask Defer();
 
         Task ReSchedule(DateTimeOffset scheduledTime);
 

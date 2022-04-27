@@ -16,8 +16,8 @@ namespace Jasper.Transports.Sending
         }
 
         public bool SupportsNativeScheduledSend { get; } = false;
-        public Uri? Destination { get; }
-        public Task Send(Envelope? envelope) => Task.CompletedTask;
+        public Uri Destination { get; }
+        public ValueTask Send(Envelope envelope) => new ValueTask();
         public Task<bool> Ping(CancellationToken cancellationToken) => Task.FromResult(true);
     }
 }

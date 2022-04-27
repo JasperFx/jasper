@@ -51,18 +51,18 @@ namespace Jasper.Tcp
 
                 while (!_cancellationToken.IsCancellationRequested)
                 {
-                    var socket = await _listener.AcceptSocketAsync();
+                    var socket = await _listener.AcceptSocketAsync(_cancellationToken);
                     await _socketHandling.SendAsync(socket, _cancellationToken);
                 }
             }, _cancellationToken);
         }
 
-        public Task<bool> TryRequeue(Envelope? envelope)
+        public Task<bool> TryRequeue(Envelope envelope)
         {
             return Task.FromResult(false);
         }
 
-        public Uri? Address { get; }
+        public Uri Address { get; }
 
         public void Dispose()
         {
@@ -80,14 +80,14 @@ namespace Jasper.Tcp
                 : WireProtocol.Receive(_logger, stream, callback, Address);
         }
 
-        public Task CompleteAsync(Envelope envelope)
+        public ValueTask CompleteAsync(Envelope envelope)
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        public Task DeferAsync(Envelope envelope)
+        public ValueTask DeferAsync(Envelope envelope)
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
     }
 }

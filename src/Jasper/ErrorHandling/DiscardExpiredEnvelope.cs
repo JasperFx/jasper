@@ -13,7 +13,7 @@ namespace Jasper.ErrorHandling
 
         private DiscardExpiredEnvelope(){}
 
-        public async Task Execute(IExecutionContext execution,
+        public async ValueTask Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             try

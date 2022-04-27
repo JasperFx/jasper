@@ -14,7 +14,7 @@ namespace Jasper.ErrorHandling
         {
         }
 
-        public Task Execute(IExecutionContext execution, DateTime utcNow)
+        public ValueTask Execute(IExecutionContext execution, DateTime utcNow)
         {
             return execution.Defer();
         }

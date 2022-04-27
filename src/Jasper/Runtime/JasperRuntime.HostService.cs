@@ -14,32 +14,6 @@ namespace Jasper.Runtime;
 
 public partial class JasperRuntime
 {
-    private async Task bootstrap()
-    {
-        // Build up the message handlers
-        await Handlers.CompileAsync(Options, _container);
-
-        await startMessagingTransports();
-
-        startInMemoryScheduledJobs();
-
-        // TODO -- eliminate this in favor of Oakton equivalents
-        switch (Advanced.StorageProvisioning)
-        {
-            case StorageProvisioning.Rebuild:
-                await Persistence.Admin.RebuildStorage();
-                break;
-
-            case StorageProvisioning.Clear:
-                await Persistence.Admin.ClearAllPersistedEnvelopes();
-                break;
-        }
-
-        _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
-
-        await startDurabilityAgent();
-    }
-
     private void startInMemoryScheduledJobs()
     {
         ScheduledJobs =
@@ -102,7 +76,17 @@ public partial class JasperRuntime
     {
         try
         {
-            await bootstrap();
+            Task ret;
+            // Build up the message handlers
+            await Handlers.CompileAsync(Options, _container);
+
+            await startMessagingTransports();
+
+            startInMemoryScheduledJobs();
+
+            _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
+
+            await startDurabilityAgent();
         }
         catch (Exception? e)
         {

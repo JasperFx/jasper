@@ -6,11 +6,11 @@ namespace Jasper.Transports
 {
     public interface IListener : IChannelCallback, IDisposable
     {
-        Uri? Address { get; }
+        Uri Address { get; }
         ListeningStatus Status { get; set; }
         void Start(IListeningWorkerQueue callback, CancellationToken cancellation);
 
-        Task<bool> TryRequeue(Envelope? envelope);
+        Task<bool> TryRequeue(Envelope envelope);
     }
 
 }

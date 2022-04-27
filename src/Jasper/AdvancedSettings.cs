@@ -9,26 +9,6 @@ using Newtonsoft.Json;
 
 namespace Jasper
 {
-    public enum StorageProvisioning
-    {
-        /// <summary>
-        /// Production mode and the default. Do not rebuild or clear envelope
-        /// storage upon system start
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// Drop and rebuild the message storage on application startup. Only suitable
-        /// for development or testing
-        /// </summary>
-        Rebuild,
-
-        /// <summary>
-        /// Clear all the persisted message storage on application startup. Only suitable
-        /// for development or testing
-        /// </summary>
-        Clear
-    }
 
     public class AdvancedSettings
     {
@@ -63,9 +43,6 @@ namespace Jasper
         /// The default is true.
         /// </summary>
         public bool DurabilityAgentEnabled { get; set; } = true;
-
-        [Obsolete("Use Oakton resource support")]
-        public StorageProvisioning StorageProvisioning { get; set; } = StorageProvisioning.None;
 
         /// <summary>
         /// Default is false. Turn this on to see when every polling DurablityAgent

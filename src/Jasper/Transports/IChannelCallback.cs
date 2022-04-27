@@ -35,7 +35,7 @@ namespace Jasper.Transports
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task CompleteAsync(Envelope envelope);
+        ValueTask CompleteAsync(Envelope envelope);
 
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Jasper.Transports
         /// </summary>
         /// <param name="envelope"></param>
         /// <returns></returns>
-        Task DeferAsync(Envelope envelope);
+        ValueTask DeferAsync(Envelope envelope);
     }
 
 }

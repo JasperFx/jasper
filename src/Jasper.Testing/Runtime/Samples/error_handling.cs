@@ -224,7 +224,7 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async Task Execute(IExecutionContext execution,
+        public async ValueTask Execute(IExecutionContext execution,
             DateTime utcNow)
         {
             // Raise a separate "alert" event message

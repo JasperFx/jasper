@@ -11,6 +11,7 @@ using Jasper.Tracking;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -61,7 +62,7 @@ namespace Jasper.Persistence.Testing
         {
             if (initial)
             {
-                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             }
 
             opts.PublishAllMessages()

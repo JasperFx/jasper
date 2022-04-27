@@ -135,12 +135,12 @@ namespace Jasper.Runtime.WorkerQueues
 
         }
 
-        Task IChannelCallback.CompleteAsync(Envelope envelope)
+        ValueTask IChannelCallback.CompleteAsync(Envelope envelope)
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        async Task IChannelCallback.DeferAsync(Envelope envelope)
+        async ValueTask IChannelCallback.DeferAsync(Envelope envelope)
         {
             if (_listener == null)
             {

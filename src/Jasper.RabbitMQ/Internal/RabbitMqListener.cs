@@ -75,7 +75,7 @@ namespace Jasper.RabbitMQ.Internal
             Channel.BasicConsume(_consumer, _routingKey);
         }
 
-        public Task<bool> TryRequeue(Envelope? envelope)
+        public Task<bool> TryRequeue(Envelope envelope)
         {
             if (envelope is RabbitMqEnvelope e)
             {
@@ -86,18 +86,18 @@ namespace Jasper.RabbitMQ.Internal
             return Task.FromResult(false);
         }
 
-        public Uri? Address { get; }
-        public Task CompleteAsync(Envelope envelope)
+        public Uri Address { get; }
+        public ValueTask CompleteAsync(Envelope envelope)
         {
             return RabbitMqChannelCallback.Instance.CompleteAsync(envelope);
         }
 
-        public Task DeferAsync(Envelope envelope)
+        public ValueTask DeferAsync(Envelope envelope)
         {
             return RabbitMqChannelCallback.Instance.DeferAsync(envelope);
         }
 
-        public Task Requeue(RabbitMqEnvelope envelope)
+        public ValueTask Requeue(RabbitMqEnvelope envelope)
         {
             if (!envelope.Acked)
             {

@@ -17,12 +17,12 @@ namespace Jasper.Transports.Stub
         private readonly StubTransport _stubTransport;
         public readonly IList<StubChannelCallback> Callbacks = new List<StubChannelCallback>();
 
-        public readonly IList<Envelope?> Sent = new List<Envelope?>();
+        public readonly IList<Envelope> Sent = new List<Envelope>();
         private IMessageLogger _logger;
-        private IHandlerPipeline _pipeline;
+        private IHandlerPipeline? _pipeline;
 
 
-        public StubEndpoint(Uri? destination, StubTransport stubTransport) : base(destination)
+        public StubEndpoint(Uri destination, StubTransport stubTransport) : base(destination)
         {
             _stubTransport = stubTransport;
             Destination = destination;
@@ -36,10 +36,13 @@ namespace Jasper.Transports.Stub
 
         public override Uri? Uri => $"stub://{Name}".ToUri();
 
-        public Task Send(Envelope? envelope)
+        public async ValueTask Send(Envelope envelope)
         {
             Sent.Add(envelope);
-            return _pipeline?.Invoke(envelope, new StubChannelCallback(this, envelope)) ?? Task.CompletedTask;
+            if (_pipeline != null)
+            {
+                await _pipeline.Invoke(envelope, new StubChannelCallback(this, envelope));
+            }
         }
 
         public Task<bool> Ping(CancellationToken cancellationToken) => Task.FromResult(true);
@@ -48,7 +51,7 @@ namespace Jasper.Transports.Stub
         {
         }
 
-        public Uri? Destination { get; }
+        public Uri Destination { get; }
 
         Uri? ISendingAgent.ReplyUri
         {

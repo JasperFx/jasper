@@ -28,10 +28,10 @@ namespace Jasper.Transports.Stub
 
         public bool Requeued { get; set; }
 
-        public Task CompleteAsync(Envelope envelope)
+        public ValueTask CompleteAsync(Envelope envelope)
         {
             MarkedSucessful = true;
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public Task MoveToErrors(Exception exception)
@@ -40,12 +40,10 @@ namespace Jasper.Transports.Stub
             return Task.CompletedTask;
         }
 
-        public Task DeferAsync(Envelope envelope)
+        public async ValueTask DeferAsync(Envelope envelope)
         {
             Requeued = true;
-
-
-            return _endpoint.EnqueueOutgoing(_envelope);
+            await _endpoint.EnqueueOutgoing(_envelope);
         }
 
         public Task MoveToScheduledUntil(DateTimeOffset time)

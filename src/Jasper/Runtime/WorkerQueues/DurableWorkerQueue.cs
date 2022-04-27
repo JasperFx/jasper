@@ -133,9 +133,9 @@ namespace Jasper.Runtime.WorkerQueues
             _logger.IncomingBatchReceived(envelopes);
         }
 
-        public Task CompleteAsync(Envelope envelope)
+        public async ValueTask CompleteAsync(Envelope envelope)
         {
-            return _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelopeAsync(envelope));
+            await _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelopeAsync(envelope));
         }
 
         public Task MoveToErrorsAsync(Envelope envelope, Exception exception)
@@ -145,7 +145,7 @@ namespace Jasper.Runtime.WorkerQueues
             return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorageAsync(new[] {errorReport}));
         }
 
-        public async Task DeferAsync(Envelope envelope)
+        public async ValueTask DeferAsync(Envelope envelope)
         {
             envelope.Attempts++;
 

@@ -58,7 +58,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.DatabaseSchemaName = "sender";
                 }).IntegrateWithJasper();
 
-                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             });
 
             publisher.Services.GetServices<IStatefulResourceSource>().SelectMany(x => x.FindResources())
@@ -87,7 +87,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.DatabaseSchemaName = "sender";
                 }).IntegrateWithJasper();
 
-                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             });
 
 
@@ -107,7 +107,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.DatabaseSchemaName = "receiver";
                 }).IntegrateWithJasper();
 
-                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             });
 
             await receiver.ResetResourceState();
@@ -151,7 +151,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.DatabaseSchemaName = "sender";
                 }).IntegrateWithJasper();
 
-                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             });
 
             using var receiver = JasperHost.For(opts =>
@@ -172,7 +172,7 @@ namespace Jasper.RabbitMQ.Tests
                     x.DatabaseSchemaName = "receiver";
                 }).IntegrateWithJasper();
 
-                opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
+                opts.Services.AddResourceSetupOnStartup(StartupAction.ResetState);
             });
 
             var session = await publisher

@@ -6,6 +6,7 @@ using Jasper.Persistence.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Oakton.Resources;
 
 namespace EFPlusSqlServerConsole
 {
@@ -16,8 +17,6 @@ namespace EFPlusSqlServerConsole
             return Host.CreateDefaultBuilder(args)
                 .UseJasper(opts =>
                 {
-                    opts.Advanced.StorageProvisioning = StorageProvisioning.Rebuild;
-
                     // Just the normal work to get the connection string out of
                     // application configuration
                     var connectionString = "Server=localhost,1435;User Id=sa;Password=P@55w0rd;Timeout=5;Encrypt=false";
@@ -40,6 +39,9 @@ namespace EFPlusSqlServerConsole
                         // use this DbContext type
                         optionsLifetime: ServiceLifetime.Singleton);
                 })
+                // This is rebuilding the persistent storage database schema on startup
+                // and also clearing any persisted envelope state
+                .UseResourceSetupOnStartup(StartupAction.ResetState)
                 .RunJasper(args);
         }
     }

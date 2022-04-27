@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ.Internal
         private readonly string _key;
         private readonly bool _isDurable;
         public bool SupportsNativeScheduledSend { get; } = false;
-        public Uri? Destination { get; }
+        public Uri Destination { get; }
 
         public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
         {
@@ -29,9 +29,7 @@ namespace Jasper.RabbitMQ.Internal
             _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 
-#pragma warning disable 1998
-        public async Task Send(Envelope? envelope)
-#pragma warning restore 1998
+        public ValueTask Send(Envelope envelope)
         {
             EnsureConnected();
 
@@ -45,6 +43,8 @@ namespace Jasper.RabbitMQ.Internal
             _endpoint.MapEnvelopeToOutgoing(envelope, props);
 
             Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
+
+            return ValueTask.CompletedTask;
         }
 
         public Task<bool> Ping(CancellationToken cancellationToken)

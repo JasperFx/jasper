@@ -209,13 +209,15 @@ namespace Jasper.Runtime
             return Runtime.Acknowledgements.SendFailureAcknowledgement(original, message);
         }
 
-        public Task Complete()
+        public ValueTask Complete()
         {
+            if (_channel == null) throw new InvalidOperationException("No Envelope is active for this context");
             return _channel.CompleteAsync(Envelope);
         }
 
-        public Task Defer()
+        public ValueTask Defer()
         {
+            if (_channel == null) throw new InvalidOperationException("No Envelope is active for this context");
             return _channel.DeferAsync(Envelope);
         }
 

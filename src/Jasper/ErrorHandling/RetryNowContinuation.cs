@@ -13,9 +13,9 @@ namespace Jasper.ErrorHandling
         {
         }
 
-        public Task Execute(IExecutionContext execution, DateTime utcNow)
+        public async ValueTask Execute(IExecutionContext execution, DateTime utcNow)
         {
-            return execution.RetryExecutionNow();
+            await execution.RetryExecutionNow();
         }
 
         public override string ToString()
