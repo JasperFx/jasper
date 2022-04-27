@@ -1,0 +1,101 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Baseline;
+using Jasper.Persistence.Durability;
+using Jasper.Runtime.Scheduled;
+using Jasper.Runtime.WorkerQueues;
+using Jasper.Transports;
+using Jasper.Transports.Local;
+using Lamar;
+using LamarCodeGeneration;
+using Microsoft.Extensions.Logging;
+
+namespace Jasper.Runtime;
+
+public partial class JasperRuntime
+{
+    private async Task bootstrap()
+    {
+        // Build up the message handlers
+        await Handlers.CompileAsync(Options, _container);
+
+        // If set, use pre-generated message handlers for quicker starts
+        if (Options.Advanced.CodeGeneration.TypeLoadMode == TypeLoadMode.Static)
+        {
+            await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
+        }
+
+        // Start all the listeners and senders
+        await Runtime.As<TransportRuntime>().Initialize();
+
+        ScheduledJobs =
+            new InMemoryScheduledJobProcessor((IWorkerQueue)Runtime.AgentForLocalQueue(TransportConstants.Replies));
+
+        // Bit of a hack, but it's necessary. Came up in compliance tests
+        if (Persistence is NulloEnvelopePersistence p)
+        {
+            p.ScheduledJobs = ScheduledJobs;
+        }
+
+        switch (Advanced.StorageProvisioning)
+        {
+            case StorageProvisioning.Rebuild:
+                await Persistence.Admin.RebuildStorage();
+                break;
+
+            case StorageProvisioning.Clear:
+                await Persistence.Admin.ClearAllPersistedEnvelopes();
+                break;
+        }
+
+        await startDurabilityAgent();
+    }
+
+    private async Task startDurabilityAgent()
+    {
+        // HOKEY, BUT IT WORKS
+        if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence) &&
+            Options.Advanced.DurabilityAgentEnabled)
+        {
+            var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
+
+            // TODO -- use the worker queue for Retries?
+            var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Advanced, Persistence,
+                Logger);
+
+            Durability = new DurabilityAgent(Logger, durabilityLogger, worker, Persistence, Runtime,
+                Options.Advanced);
+
+            await Durability.StartAsync(Options.Advanced.Cancellation);
+        }
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await bootstrap();
+        }
+        catch (Exception? e)
+        {
+            MessageLogger.LogException(e, message: "Failed to start the Jasper messaging");
+            throw;
+        }
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_hasStopped) return;
+
+        _hasStopped = true;
+
+        // This is important!
+        _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
+
+
+        if (Durability != null) await Durability.StopAsync(cancellationToken);
+
+        Advanced.Cancel();
+    }
+}
