@@ -219,12 +219,12 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public void StartSenders(IJasperRuntime root, ITransportRuntime runtime)
+            public void StartSenders(IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }
 
-            public void StartListeners(IJasperRuntime root, ITransportRuntime runtime)
+            public void StartListeners(IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }

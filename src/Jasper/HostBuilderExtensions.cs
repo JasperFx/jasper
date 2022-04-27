@@ -121,7 +121,6 @@ namespace Jasper
                 services.MessagingRootService(x => x.Pipeline);
                 services.MessagingRootService(x => x.Router);
                 services.MessagingRootService(x => x.ScheduledJobs);
-                services.MessagingRootService(x => x.Runtime);
 
                 services.AddOptions();
                 services.AddLogging();

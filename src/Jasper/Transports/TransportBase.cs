@@ -60,19 +60,19 @@ namespace Jasper.Transports
 
         }
 
-        public void StartSenders(IJasperRuntime root, ITransportRuntime runtime)
+        public void StartSenders(IJasperRuntime root)
         {
             var replyUri = ReplyEndpoint()?.ReplyUri();
 
             foreach (var endpoint in endpoints().Where(x => x.Subscriptions.Any()))
             {
-                endpoint.StartSending(root, runtime, replyUri);
+                endpoint.StartSending(root, replyUri);
             }
         }
 
-        public void StartListeners(IJasperRuntime root, ITransportRuntime runtime)
+        public void StartListeners(IJasperRuntime root)
         {
-            foreach (var endpoint in endpoints()) endpoint.StartListening(root, runtime);
+            foreach (var endpoint in endpoints()) endpoint.StartListening(root);
         }
 
         public Endpoint ListenTo(Uri? uri)

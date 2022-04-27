@@ -27,10 +27,32 @@ public partial class JasperRuntime
         }
 
         // Start all the listeners and senders
-        await Runtime.As<TransportRuntime>().Initialize();
+        foreach (var transport in Options)
+        {
+            await transport.InitializeAsync(this).ConfigureAwait(false);
+            foreach (var endpoint in transport.Endpoints())
+            {
+                endpoint.Root = this; // necessary to locate serialization
+            }
+        }
+
+        foreach (var transport in Options)
+        {
+            transport.StartSenders(this);
+        }
+
+        foreach (var transport in Options)
+        {
+            transport.StartListeners(this);
+        }
+
+        foreach (var subscriber in Options.Subscribers)
+        {
+            _subscribers.Fill(subscriber);
+        }
 
         ScheduledJobs =
-            new InMemoryScheduledJobProcessor((IWorkerQueue)Runtime.AgentForLocalQueue(TransportConstants.Replies));
+            new InMemoryScheduledJobProcessor((IWorkerQueue)AgentForLocalQueue(TransportConstants.Replies));
 
         // Bit of a hack, but it's necessary. Came up in compliance tests
         if (Persistence is NulloEnvelopePersistence p)
@@ -64,7 +86,7 @@ public partial class JasperRuntime
             var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Advanced, Persistence,
                 Logger);
 
-            Durability = new DurabilityAgent(Logger, durabilityLogger, worker, Persistence, Runtime,
+            Durability = new DurabilityAgent(this, Logger, durabilityLogger, worker, Persistence,
                 Options.Advanced);
 
             await Durability.StartAsync(Options.Advanced.Cancellation);

@@ -22,21 +22,21 @@ namespace Jasper.Runtime.Routing
     public class MessageTypeRouting : IMessageTypeRouteCollection
     {
         private readonly IList<Action<Envelope>> _customizations = new List<Action<Envelope>>();
-        private readonly IJasperRuntime _root;
+        private readonly IJasperRuntime _runtime;
 
         private readonly IList<IMessageRoute> _routes = new List<IMessageRoute>();
 
         public Type MessageType { get; }
 
-        public MessageTypeRouting(Type messageType, IJasperRuntime root)
+        public MessageTypeRouting(Type messageType, IJasperRuntime runtime)
         {
             MessageType = messageType;
             MessageTypeName = messageType.ToMessageTypeName();
             _customizations = _customizations.AddRange(findMessageTypeCustomizations(messageType));
 
-            LocalQueue = determineLocalSendingAgent(messageType, root);
+            LocalQueue = determineLocalSendingAgent(messageType, runtime);
 
-            _root = root;
+            _runtime = runtime;
         }
 
         public IEnumerable<IMessageRoute> Routes => _routes;
@@ -49,26 +49,26 @@ namespace Jasper.Runtime.Routing
 
         public void AddTopicRoute(ITopicRule rule, ITopicRouter router)
         {
-            var route = new TopicRoute(rule, router, _root, this);
+            var route = new TopicRoute(rule, router, _runtime, this);
             _routes.Add(route);
         }
 
         public IList<Action<Envelope>> Customizations => _customizations;
 
-        private static ISendingAgent determineLocalSendingAgent(Type messageType, IJasperRuntime root)
+        private static ISendingAgent determineLocalSendingAgent(Type messageType, IJasperRuntime runtime)
         {
             if (messageType.HasAttribute<LocalQueueAttribute>())
             {
                 var queueName = messageType.GetAttribute<LocalQueueAttribute>()!.QueueName;
-                return root.Runtime.AgentForLocalQueue(queueName);
+                return runtime.AgentForLocalQueue(queueName);
             }
 
-            var subscribers = root.Runtime.Subscribers.OfType<LocalQueueSettings>()
+            var subscribers = runtime.Subscribers.OfType<LocalQueueSettings>()
                 .Where(x => x.ShouldSendMessage(messageType))
                 .Select(x => x.Agent)
                 .ToArray()!;
 
-            return subscribers.FirstOrDefault() ?? root.Runtime.GetOrBuildSendingAgent(TransportConstants.LocalUri);
+            return subscribers.FirstOrDefault() ?? runtime.GetOrBuildSendingAgent(TransportConstants.LocalUri);
         }
 
         public string MessageTypeName { get; }
@@ -120,7 +120,7 @@ namespace Jasper.Runtime.Routing
 
         public StaticRoute DetermineDestinationRoute(Uri destination)
         {
-            var agent = _root.Runtime.GetOrBuildSendingAgent(destination);
+            var agent = _runtime.GetOrBuildSendingAgent(destination);
 
             return new StaticRoute(agent, this);
         }
@@ -131,7 +131,7 @@ namespace Jasper.Runtime.Routing
 
             if (!_topicRoutes.TryFind(envelope.TopicName, out var routes))
             {
-                var routers = _root.Runtime.Subscribers.OfType<ITopicRouter>()
+                var routers = _runtime.Subscribers.OfType<ITopicRouter>()
                     .ToArray();
 
                 var matching = routers.Where(x => x.ShouldSendMessage(messageType)).ToArray();
@@ -149,7 +149,7 @@ namespace Jasper.Runtime.Routing
                 routes = routers.Select(x =>
                 {
                     var uri = x.BuildUriForTopic(envelope.TopicName);
-                    var agent = _root.Runtime.GetOrBuildSendingAgent(uri);
+                    var agent = _runtime.GetOrBuildSendingAgent(uri);
                     return new StaticRoute(agent, this);
                 }).ToArray();
 

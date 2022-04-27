@@ -34,7 +34,7 @@ namespace Jasper.Runtime.Routing
         public abstract TSubscriberConfiguration FindConfigurationForTopic(string topicName, IEndpoints endpoints);
 
 
-        public override void AddRoute(MessageTypeRouting routing, IJasperRuntime root)
+        public override void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime)
         {
             var messageType = routing.MessageType;
             var rule = TopicRules.FirstOrDefault(x => x.Matches(messageType));
@@ -43,8 +43,8 @@ namespace Jasper.Runtime.Routing
             {
                 var topicName = DetermineTopicName(messageType);
                 var uri = BuildUriForTopic(topicName);
-                var agent = root.Runtime.GetOrBuildSendingAgent(uri);
-                agent.Endpoint.AddRoute(routing, root);
+                var agent = runtime.GetOrBuildSendingAgent(uri);
+                agent.Endpoint.AddRoute(routing, runtime);
             }
             else
             {

@@ -39,7 +39,7 @@ namespace Jasper.Testing.Transports
             throw new NotImplementedException();
         }
 
-        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime runtime)
         {
             throw new NotImplementedException();
         }

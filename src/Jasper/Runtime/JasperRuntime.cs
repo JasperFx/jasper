@@ -43,8 +43,6 @@ public partial class JasperRuntime : IJasperRuntime, IHostedService
             new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
             this, pool);
 
-        Runtime = new TransportRuntime(this);
-
         _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
         Router = new EnvelopeRouter(this);
@@ -63,8 +61,6 @@ public partial class JasperRuntime : IJasperRuntime, IHostedService
 
     public IAcknowledgementSender Acknowledgements { get; }
 
-
-    public ITransportRuntime Runtime { get; }
     public CancellationToken Cancellation { get; }
 
     public AdvancedSettings Advanced { get; }

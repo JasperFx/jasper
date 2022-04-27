@@ -45,11 +45,10 @@ namespace Jasper.Persistence.Durability
         private bool _hasStarted;
 
 
-        public DurabilityAgent(ILogger logger,
-            ILogger<DurabilityAgent>? trace,
+        public DurabilityAgent(IJasperRuntime runtime, ILogger logger,
+            ILogger<DurabilityAgent> trace,
             IWorkerQueue? workers,
             IEnvelopePersistence? storage,
-            ITransportRuntime runtime,
             AdvancedSettings? settings)
         {
             if (storage is NulloEnvelopePersistence)

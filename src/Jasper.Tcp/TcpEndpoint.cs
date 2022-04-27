@@ -69,11 +69,11 @@ namespace Jasper.Tcp
             }
         }
 
-        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime runtime)
         {
             if (!IsListener) return;
 
-            var listener = createListener(root);
+            var listener = createListener(runtime);
             runtime.AddListener(listener, this);
         }
 

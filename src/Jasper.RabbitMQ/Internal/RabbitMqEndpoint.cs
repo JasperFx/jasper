@@ -151,17 +151,17 @@ namespace Jasper.RabbitMQ.Internal
 
         }
 
-        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime runtime)
         {
             if (!IsListener) return;
 
             if (ListenerCount > 1)
             {
-                _listener = new ParallelRabbitMqListener(root.Logger, this, Parent);
+                _listener = new ParallelRabbitMqListener(runtime.Logger, this, Parent);
             }
             else
             {
-                _listener = new RabbitMqListener(root.Logger, this, Parent);
+                _listener = new RabbitMqListener(runtime.Logger, this, Parent);
             }
 
             runtime.AddListener(_listener, this);

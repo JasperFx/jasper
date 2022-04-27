@@ -97,7 +97,7 @@ namespace Jasper.Transports.Stub
             Name = uri.Host;
         }
 
-        public override void StartListening(IJasperRuntime root, ITransportRuntime runtime)
+        public override void StartListening(IJasperRuntime runtime)
         {
             // Nothing
         }

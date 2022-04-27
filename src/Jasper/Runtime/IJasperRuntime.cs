@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
+using Jasper.Transports;
+using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime
@@ -20,13 +23,29 @@ namespace Jasper.Runtime
         IEnvelopePersistence Persistence { get; }
         ILogger Logger { get; }
         AdvancedSettings Advanced { get; }
-        ITransportRuntime Runtime { get; }
         CancellationToken Cancellation { get; }
 
         IAcknowledgementSender Acknowledgements { get; }
 
+
+        // TODO -- can this be hidden from the public interface?
         Type DetermineMessageType(Envelope envelope);
 
+        // TODO -- can this be hidden from the public interface?
         void RegisterMessageType(Type messageType);
+
+        ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint);
+
+        ISendingAgent GetOrBuildSendingAgent(Uri address);
+        void AddListener(IListener listener, Endpoint settings);
+
+        IEnumerable<ISubscriber> Subscribers { get; }
+
+        void AddSendingAgent(ISendingAgent sendingAgent);
+
+        void AddSubscriber(ISubscriber subscriber);
+
+        ISendingAgent AgentForLocalQueue(string queueName);
+        Endpoint? EndpointFor(Uri uri);
     }
 }

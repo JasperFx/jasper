@@ -57,12 +57,12 @@ namespace Jasper.Transports.Local
 
         public ICollection<string> Protocols { get; } = new []{ TransportConstants.Local };
 
-        void ITransport.StartSenders(IJasperRuntime root, ITransportRuntime runtime)
+        void ITransport.StartSenders(IJasperRuntime root)
         {
-            foreach (var queue in _queues) addQueue(root, runtime, queue);
+            foreach (var queue in _queues) addQueue(root, queue);
         }
 
-        void ITransport.StartListeners(IJasperRuntime root, ITransportRuntime runtime)
+        void ITransport.StartListeners(IJasperRuntime root)
         {
             // Nothing
         }
@@ -85,12 +85,12 @@ namespace Jasper.Transports.Local
             return findByUri(uri);
         }
 
-        private ISendingAgent addQueue(IJasperRuntime root, ITransportRuntime runtime, LocalQueueSettings queue)
+        private ISendingAgent addQueue(IJasperRuntime runtime, LocalQueueSettings queue)
         {
-            queue.Agent = buildAgent(queue, root);
-            _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, root));
+            queue.Agent = buildAgent(queue, runtime);
+            _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, runtime));
 
-            runtime.AddSendingAgent(buildAgent(queue, root));
+            runtime.AddSendingAgent(buildAgent(queue, runtime));
             runtime.AddSubscriber(queue);
 
             return queue.Agent;
@@ -157,7 +157,7 @@ namespace Jasper.Transports.Local
             return new Uri(uri, queueName);
         }
 
-        internal ISendingAgent AddSenderForDestination(Uri? uri, IJasperRuntime root, TransportRuntime runtime)
+        internal ISendingAgent AddSenderForDestination(Uri uri, IJasperRuntime runtime)
         {
             var queueName = QueueName(uri);
             var queue = _queues[queueName];
@@ -167,7 +167,7 @@ namespace Jasper.Transports.Local
                 queue.Mode = EndpointMode.Durable;
             }
 
-            return addQueue(root, runtime, queue);
+            return addQueue(runtime, queue);
         }
 
     }

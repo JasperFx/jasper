@@ -14,18 +14,18 @@ namespace Jasper.Persistence.Testing.Marten
         [Fact]
         public void channels_that_are_or_are_not_durable()
         {
-            using var runtime = JasperHost.For(opts =>
+            using var host = JasperHost.For(opts =>
             {
                 opts.Services.AddMarten(Servers.PostgresConnectionString)
                     .IntegrateWithJasper();
             });
 
-            var root = runtime.Get<IJasperRuntime>();
-            root.Runtime.GetOrBuildSendingAgent("local://one".ToUri()).IsDurable.ShouldBeFalse();
-            root.Runtime.GetOrBuildSendingAgent("local://durable/two".ToUri()).IsDurable.ShouldBeTrue();
+            var runtime = host.Get<IJasperRuntime>();
+            runtime.GetOrBuildSendingAgent("local://one".ToUri()).IsDurable.ShouldBeFalse();
+            runtime.GetOrBuildSendingAgent("local://durable/two".ToUri()).IsDurable.ShouldBeTrue();
 
-            root.Runtime.GetOrBuildSendingAgent("tcp://server1:2000".ToUri()).IsDurable.ShouldBeFalse();
-            root.Runtime.GetOrBuildSendingAgent("tcp://server2:3000/durable".ToUri()).IsDurable.ShouldBeTrue();
+            runtime.GetOrBuildSendingAgent("tcp://server1:2000".ToUri()).IsDurable.ShouldBeFalse();
+            runtime.GetOrBuildSendingAgent("tcp://server2:3000/durable".ToUri()).IsDurable.ShouldBeTrue();
         }
     }
 }

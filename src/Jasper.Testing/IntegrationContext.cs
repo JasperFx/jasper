@@ -57,8 +57,6 @@ namespace Jasper.Testing
         public IExecutionContext Publisher => Host.Get<IExecutionContext>();
         public ICommandBus Bus => Host.Get<ICommandBus>();
 
-        public ITransportRuntime Runtime => Host.Get<IJasperRuntime>().Runtime;
-
         public HandlerGraph Handlers => Host.Get<HandlerGraph>();
 
         public virtual void Dispose()

@@ -20,8 +20,6 @@ public partial class JasperRuntime : IAsyncDisposable
 
         Advanced.Cancel();
 
-        Runtime.Dispose();
-
         ScheduledJobs?.Dispose();
     }
 }

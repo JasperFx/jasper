@@ -61,13 +61,29 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
+        public ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISendingAgent GetOrBuildSendingAgent(Uri address)
+        {
+            return Substitute.For<ISendingAgent>();
+        }
+
+        public void AddListener(IListener listener, Endpoint settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<ISubscriber> Subscribers => SubscriberDictionary.Values;
+
         public IExecutionContext NewContext()
         {
             return new ExecutionContext(this);
         }
 
         public AdvancedSettings? Advanced { get; } = new AdvancedSettings(null);
-        public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
         public CancellationToken Cancellation { get; } = default(CancellationToken);
 
 
@@ -99,7 +115,7 @@ namespace Jasper.Testing.Runtime
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 
-        public readonly Dictionary<Uri, ISubscriber> Subscribers = new Dictionary<Uri,ISubscriber>();
+        public readonly Dictionary<Uri, ISubscriber> SubscriberDictionary = new Dictionary<Uri,ISubscriber>();
 
         public ISendingAgent GetOrBuild(Uri address)
         {
@@ -112,12 +128,22 @@ namespace Jasper.Testing.Runtime
 //            return null;
         }
 
-        public ISubscriber[] AllKnown()
+        public void AddSendingAgent(ISendingAgent sendingAgent)
         {
-            return Subscribers.Values.ToArray();
+            throw new NotImplementedException();
         }
 
         public void AddSubscriber(ISubscriber subscriber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISendingAgent AgentForLocalQueue(string queueName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Endpoint? EndpointFor(Uri uri)
         {
             throw new NotImplementedException();
         }

@@ -138,12 +138,12 @@ namespace Jasper.Configuration
         public abstract void Parse(Uri? uri);
 
 
-        public abstract void StartListening(IJasperRuntime root, ITransportRuntime runtime);
+        public abstract void StartListening(IJasperRuntime runtime);
 
-        protected internal ISendingAgent StartSending(IJasperRuntime root, ITransportRuntime runtime,
+        protected internal ISendingAgent StartSending(IJasperRuntime runtime,
             Uri? replyUri)
         {
-            var sender = root.Advanced.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(root);
+            var sender = runtime.Advanced.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(runtime);
             return runtime.AddSubscriber(replyUri, sender, this);
         }
 
@@ -154,7 +154,7 @@ namespace Jasper.Configuration
             foreach (var modification in Customizations) modification(envelope);
         }
 
-        public override void AddRoute(MessageTypeRouting routing, IJasperRuntime root)
+        public override void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime)
         {
             if (Agent == null) throw new InvalidOperationException($"The agent has not been initialized for this endpoint");
 

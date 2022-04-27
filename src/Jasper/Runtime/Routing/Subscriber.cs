@@ -40,6 +40,6 @@ namespace Jasper.Runtime.Routing
             return Subscriptions.Any(x => x.Matches(messageType));
         }
 
-        public abstract void AddRoute(MessageTypeRouting routing, IJasperRuntime root);
+        public abstract void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime);
     }
 }

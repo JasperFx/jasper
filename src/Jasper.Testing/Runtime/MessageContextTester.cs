@@ -47,7 +47,7 @@ namespace Jasper.Testing.Runtime
                 var subscriber = Substitute.For<ISubscriber>();
                 subscriber.ShouldSendMessage(null).ReturnsForAnyArgs(false);
 
-                theRuntime.Subscribers.Add(env.Destination, subscriber);
+                theRuntime.SubscriberDictionary.Add(env.Destination, subscriber);
 
             }
 

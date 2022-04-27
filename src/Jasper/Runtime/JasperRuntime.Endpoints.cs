@@ -6,61 +6,22 @@ using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.Persistence.Durability;
-using Jasper.Runtime;
-using Jasper.Runtime.Routing;
 using Jasper.Runtime.WorkerQueues;
+using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Transports.Sending;
 using Jasper.Util;
 
-namespace Jasper.Transports
-{
-    public class TransportRuntime : ITransportRuntime
-    {
+namespace Jasper.Runtime;
 
+public partial class JasperRuntime
+{
         private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private readonly List<ISubscriber> _subscribers = new List<ISubscriber>();
 
         private readonly object _channelLock = new object();
 
         private ImHashMap<Uri?, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty!;
-
-
-        private readonly IJasperRuntime _root;
-        private readonly JasperOptions _options;
-
-        public TransportRuntime(IJasperRuntime root)
-        {
-            _root = root;
-            _options = root.Options;
-        }
-
-        public async Task Initialize()
-        {
-            foreach (var transport in _options)
-            {
-                await transport.InitializeAsync(_root).ConfigureAwait(false);
-                foreach (var endpoint in transport.Endpoints())
-                {
-                    endpoint.Root = _root; // necessary to locate serialization
-                }
-            }
-
-            foreach (var transport in _options)
-            {
-                transport.StartSenders(_root, this);
-            }
-
-            foreach (var transport in _options)
-            {
-                transport.StartListeners(_root, this);
-            }
-
-            foreach (var subscriber in _options.Subscribers)
-            {
-                _subscribers.Fill(subscriber);
-            }
-        }
 
         public ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
         {
@@ -96,14 +57,14 @@ namespace Jasper.Transports
             switch (endpoint.Mode)
             {
                 case EndpointMode.Durable:
-                    return new DurableSendingAgent(sender, _root.Advanced, _root.Logger, _root.MessageLogger,
-                        _root.Persistence, endpoint);
+                    return new DurableSendingAgent(sender, Advanced, Logger, MessageLogger,
+                        Persistence, endpoint);
 
                 case EndpointMode.BufferedInMemory:
-                    return new LightweightSendingAgent(_root.Logger, _root.MessageLogger, sender, _root.Advanced, endpoint);
+                    return new LightweightSendingAgent(Logger, MessageLogger, sender, Advanced, endpoint);
 
                 case EndpointMode.Inline:
-                    return new InlineSendingAgent(sender, endpoint, _root.MessageLogger, _root.Advanced);
+                    return new InlineSendingAgent(sender, endpoint, MessageLogger, Advanced);
             }
 
             throw new InvalidOperationException();
@@ -152,7 +113,7 @@ namespace Jasper.Transports
 
         private ISendingAgent buildSendingAgent(Uri uri)
         {
-            var transport = _options.TransportForScheme(uri.Scheme);
+            var transport = Options.TransportForScheme(uri.Scheme);
             if (transport == null)
             {
                 throw new InvalidOperationException($"There is no known transport type that can send to the Destination {uri}");
@@ -161,8 +122,8 @@ namespace Jasper.Transports
             if (uri.Scheme == TransportConstants.Local)
             {
                 var local = (LocalTransport)transport;
-                var agent = local.AddSenderForDestination(uri, _root, this);
-                agent.Endpoint.Root = _root; // This is important for serialization
+                var agent = local.AddSenderForDestination(uri, this);
+                agent.Endpoint.Root = this; // This is important for serialization
 
                 AddSendingAgent(agent);
 
@@ -170,19 +131,19 @@ namespace Jasper.Transports
             }
 
             var endpoint = transport.GetOrCreateEndpoint(uri);
-            endpoint.Root ??= _root; // This is important for serialization
-            return endpoint.StartSending(_root, _root.Runtime, transport.ReplyEndpoint()?.ReplyUri());
+            endpoint.Root ??= this; // This is important for serialization
+            return endpoint.StartSending(this, transport.ReplyEndpoint()?.ReplyUri());
         }
 
         public void AddListener(IListener listener, Endpoint settings)
         {
             IDisposable? worker = settings.Mode switch
             {
-                EndpointMode.Durable => new DurableWorkerQueue(settings, _root.Pipeline, _root.Advanced,
-                    _root.Persistence, _root.Logger),
-                EndpointMode.BufferedInMemory => new LightweightWorkerQueue(settings, _root.Logger, _root.Pipeline,
-                    _root.Advanced),
-                EndpointMode.Inline => new InlineWorkerQueue(_root.Pipeline, _root.Logger, listener, _root.Advanced),
+                EndpointMode.Durable => new DurableWorkerQueue(settings, Pipeline, Advanced,
+                    Persistence, Logger),
+                EndpointMode.BufferedInMemory => new LightweightWorkerQueue(settings, Logger, Pipeline,
+                    Advanced),
+                EndpointMode.Inline => new InlineWorkerQueue(Pipeline, Logger, listener, Advanced),
                 _ => null
             };
 
@@ -194,7 +155,7 @@ namespace Jasper.Transports
 
         private IEnumerable<Endpoint> endpoints()
         {
-            return _options.SelectMany(x => x.Endpoints());
+            return Options.SelectMany(x => x.Endpoints());
         }
 
         public Endpoint? EndpointFor(Uri uri)
@@ -214,11 +175,10 @@ namespace Jasper.Transports
                 listener.SafeDispose();
             }
 
-            foreach (var transport in _options.OfType<IDisposable>())
+            foreach (var transport in Options.OfType<IDisposable>())
             {
                 transport.Dispose();
             }
         }
 
-    }
 }

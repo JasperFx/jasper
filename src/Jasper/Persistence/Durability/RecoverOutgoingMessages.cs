@@ -11,11 +11,11 @@ namespace Jasper.Persistence.Durability
 {
     public class RecoverOutgoingMessages : IMessagingAction
     {
-        private readonly ITransportRuntime _runtime;
+        private readonly IJasperRuntime _runtime;
         private readonly AdvancedSettings? _settings;
         private readonly ILogger _logger;
 
-        public RecoverOutgoingMessages(ITransportRuntime runtime, AdvancedSettings? settings, ILogger logger)
+        public RecoverOutgoingMessages(IJasperRuntime runtime, AdvancedSettings? settings, ILogger logger)
         {
             _runtime = runtime;
             _settings = settings;

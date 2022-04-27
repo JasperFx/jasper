@@ -9,6 +9,6 @@ namespace Jasper.Transports
     {
         bool ShouldSendMessage(Type messageType);
 
-        void AddRoute(MessageTypeRouting routing, IJasperRuntime root);
+        void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime);
     }
 }
