@@ -6,7 +6,7 @@ namespace Jasper.Util
 {
     public static class StringExtensions
     {
-        public static Uri? ToUri(this string uriString)
+        public static Uri ToUri(this string uriString)
         {
             if (uriString.Contains("://*"))
             {
@@ -20,7 +20,10 @@ namespace Jasper.Util
                 return new Uri(uri);
             }
 
-            return uriString.IsEmpty() ? null : new Uri(uriString);
+            if (uriString.IsEmpty())
+                throw new ArgumentOutOfRangeException(nameof(uriString), $"'{uriString}' is not a valid Uri");
+
+            return new Uri(uriString);
         }
 
         public static bool IsIn(this string text, params string[] values)

@@ -40,7 +40,7 @@ namespace Jasper.Testing.Runtime
             throw new NotSupportedException();
         }
 
-        public Type DetermineMessageType(Envelope? envelope)
+        public Type DetermineMessageType(Envelope envelope)
         {
             if (envelope.Message == null)
             {
@@ -66,7 +66,7 @@ namespace Jasper.Testing.Runtime
             return new ExecutionContext(this);
         }
 
-        public AdvancedSettings? Settings { get; } = new AdvancedSettings(null);
+        public AdvancedSettings? Advanced { get; } = new AdvancedSettings(null);
         public ITransportRuntime Runtime { get; } = Substitute.For<ITransportRuntime>();
         public CancellationToken Cancellation { get; } = default(CancellationToken);
 
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Runtime
             return context;
         }
 
-        public IEnvelopePersistence? Persistence { get; } = Substitute.For<IEnvelopePersistence>();
+        public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
         public ILogger Logger { get; } = Substitute.For<ILogger>();
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();

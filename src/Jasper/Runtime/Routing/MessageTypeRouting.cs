@@ -5,9 +5,8 @@ using Baseline;
 using Baseline.ImTools;
 using Baseline.Reflection;
 using Jasper.Attributes;
-using Jasper.Configuration;
-using Jasper.Serialization;
 using Jasper.Transports;
+using Jasper.Transports.Local;
 using Jasper.Transports.Sending;
 using Jasper.Util;
 
@@ -56,19 +55,23 @@ namespace Jasper.Runtime.Routing
 
         public IList<Action<Envelope>> Customizations => _customizations;
 
-        private static ISendingAgent? determineLocalSendingAgent(Type messageType, IJasperRuntime root)
+        private static ISendingAgent determineLocalSendingAgent(Type messageType, IJasperRuntime root)
         {
             if (messageType.HasAttribute<LocalQueueAttribute>())
             {
-                var queueName = messageType.GetAttribute<LocalQueueAttribute>().QueueName;
+                var queueName = messageType.GetAttribute<LocalQueueAttribute>()!.QueueName;
                 return root.Runtime.AgentForLocalQueue(queueName);
             }
 
-            var subscribers = root.Runtime.FindLocalSubscribers(messageType);
+            var subscribers = root.Runtime.Subscribers.OfType<LocalQueueSettings>()
+                .Where(x => x.ShouldSendMessage(messageType))
+                .Select(x => x.Agent)
+                .ToArray()!;
+
             return subscribers.FirstOrDefault() ?? root.Runtime.GetOrBuildSendingAgent(TransportConstants.LocalUri);
         }
 
-        public string? MessageTypeName { get; }
+        public string MessageTypeName { get; }
 
         public ISendingAgent? LocalQueue { get; }
 
@@ -79,40 +82,35 @@ namespace Jasper.Runtime.Routing
         }
 
 
-        private ImHashMap<Uri?, StaticRoute> _destinations = ImHashMap<Uri, StaticRoute>.Empty;
+        private ImHashMap<Uri, StaticRoute> _destinations = ImHashMap<Uri, StaticRoute>.Empty;
 
 
-        public void RouteToDestination(Envelope? envelope)
+        public void RouteToDestination(Envelope envelope)
         {
-            if (!_destinations.TryFind(envelope.Destination, out var route))
+            if (!_destinations!.TryFind(envelope.Destination, out var route))
             {
-                route = DetermineDestinationRoute(envelope.Destination);
-                _destinations = _destinations.AddOrUpdate(envelope.Destination, route);
+                route = DetermineDestinationRoute(envelope.Destination!);
+                _destinations = _destinations!.AddOrUpdate(envelope.Destination, route)!;
             }
 
             route.Configure(envelope);
 
         }
 
-        public Envelope?[] RouteByMessage(object? message)
+        public Envelope[] RouteByMessage(object message)
         {
-            if (_routes.Count == 1)
-            {
-                return new Envelope?[]{_routes[0].BuildForSending(message)};
-            }
-            else
-            {
-                return _routes.Select(x => x.BuildForSending(message)).ToArray();
-            }
+            return _routes.Count == 1
+                ? new []{_routes[0].BuildForSending(message)}
+                : _routes.Select(x => x.BuildForSending(message)).ToArray();
         }
 
-        public Envelope?[] RouteByEnvelope(Type messageType, Envelope? envelope)
+        public Envelope[] RouteByEnvelope(Type messageType, Envelope envelope)
         {
             if (_routes.Count == 1)
             {
                 _routes[0].Configure(envelope);
 
-                return new Envelope?[]{envelope};
+                return new []{envelope};
             }
             else
             {
@@ -120,28 +118,34 @@ namespace Jasper.Runtime.Routing
             }
         }
 
-        public StaticRoute DetermineDestinationRoute(Uri? destination)
+        public StaticRoute DetermineDestinationRoute(Uri destination)
         {
             var agent = _root.Runtime.GetOrBuildSendingAgent(destination);
 
             return new StaticRoute(agent, this);
         }
 
-        public Envelope?[] RouteToTopic(Type messageType, Envelope? envelope)
+        public Envelope[] RouteToTopic(Type messageType, Envelope envelope)
         {
             if (envelope.TopicName.IsEmpty()) throw new ArgumentNullException(nameof(envelope), "There is no topic name for this envelope");
 
             if (!_topicRoutes.TryFind(envelope.TopicName, out var routes))
             {
-                var routers = _root
-                    .Runtime
-                    .FindTopicRoutersForMessageType(messageType);
+                var routers = _root.Runtime.Subscribers.OfType<ITopicRouter>()
+                    .ToArray();
 
-                if (!routers.Any())
+                var matching = routers.Where(x => x.ShouldSendMessage(messageType)).ToArray();
+
+                if (matching.Any())
+                {
+                    routers = matching;
+                }
+                else if (!routers.Any())
                 {
                     throw new InvalidOperationException("There are no topic routers registered for this application");
                 }
 
+                // ReSharper disable once CoVariantArrayConversion
                 routes = routers.Select(x =>
                 {
                     var uri = x.BuildUriForTopic(envelope.TopicName);
@@ -152,18 +156,17 @@ namespace Jasper.Runtime.Routing
                 _topicRoutes = _topicRoutes.AddOrUpdate(envelope.TopicName, routes);
             }
 
-            if (routes.Length == 1)
-            {
-                routes[0].Configure(envelope);
-                return new Envelope?[]{envelope};
-            }
-            else
+            if (routes.Length != 1)
             {
                 return routes.Select(x => x.CloneForSending(envelope)).ToArray();
             }
+
+            routes[0].Configure(envelope);
+            return new []{envelope};
+
         }
 
-        private ImHashMap<string?, IMessageRoute[]> _topicRoutes = ImHashMap<string, IMessageRoute[]>.Empty;
+        private ImHashMap<string, IMessageRoute[]> _topicRoutes = ImHashMap<string, IMessageRoute[]>.Empty;
 
         public void UseLocalQueueAsRoute()
         {

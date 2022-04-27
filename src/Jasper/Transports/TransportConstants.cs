@@ -20,12 +20,12 @@ namespace Jasper.Transports
         public const string Replies = "replies";
         public const string Retries = "retries";
 
-        public static readonly Uri? RetryUri = "local://retries".ToUri();
-        public static readonly Uri? RepliesUri = "local://replies".ToUri();
-        public static readonly Uri? ScheduledUri = "local://delayed".ToUri();
+        public static readonly Uri RetryUri = "local://retries".ToUri();
+        public static readonly Uri RepliesUri = "local://replies".ToUri();
+        public static readonly Uri ScheduledUri = "local://delayed".ToUri();
 
-        public static readonly Uri? DurableLocalUri = "local://durable".ToUri();
-        public static readonly Uri? LocalUri = "local://".ToUri();
+        public static readonly Uri DurableLocalUri = "local://durable".ToUri();
+        public static readonly Uri LocalUri = "local://".ToUri();
 
         public static readonly int AnyNode = 0;
     }

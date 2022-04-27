@@ -42,7 +42,7 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         // TODO -- this surely needs to be ValueTask or Task
-        public override Task Initialize(IJasperRuntime root)
+        public override Task InitializeAsync(IJasperRuntime root)
         {
             if (AutoProvision)
             {

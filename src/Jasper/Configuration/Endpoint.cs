@@ -140,10 +140,10 @@ namespace Jasper.Configuration
 
         public abstract void StartListening(IJasperRuntime root, ITransportRuntime runtime);
 
-        protected internal ISendingAgent? StartSending(IJasperRuntime root, ITransportRuntime runtime,
+        protected internal ISendingAgent StartSending(IJasperRuntime root, ITransportRuntime runtime,
             Uri? replyUri)
         {
-            var sender = root.Settings.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(root);
+            var sender = root.Advanced.StubAllOutgoingExternalSenders ? new NulloSender(Uri) : CreateSender(root);
             return runtime.AddSubscriber(replyUri, sender, this);
         }
 

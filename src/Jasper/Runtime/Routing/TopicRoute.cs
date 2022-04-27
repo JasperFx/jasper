@@ -21,12 +21,12 @@ namespace Jasper.Runtime.Routing
             _messageTypeRouting = messageTypeRouting;
         }
 
-        public void Configure(Envelope? envelope)
+        public void Configure(Envelope envelope)
         {
             routeFor(envelope.Message).Configure(envelope);
         }
 
-        public Envelope? CloneForSending(Envelope? envelope)
+        public Envelope CloneForSending(Envelope? envelope)
         {
             return routeFor(envelope.Message).CloneForSending(envelope);
         }
@@ -46,14 +46,14 @@ namespace Jasper.Runtime.Routing
             return route;
         }
 
-        public Envelope? BuildForSending(object? message)
+        public Envelope BuildForSending(object message)
         {
             return routeFor(message).BuildForSending(message);
         }
 
         private ImHashMap<string?, IMessageRoute> _routeForTopics = ImHashMap<string, IMessageRoute>.Empty;
 
-        public Uri? Destination { get; }
-        public string? ContentType { get; }
+        public Uri Destination { get; }
+        public string ContentType { get; }
     }
 }

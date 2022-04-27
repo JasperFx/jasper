@@ -10,21 +10,17 @@ namespace Jasper.Runtime
 {
     public interface ITransportRuntime : IDisposable
     {
-        ISendingAgent? AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint);
-        ISendingAgent? GetOrBuildSendingAgent(Uri? address);
+        ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint);
+        ISendingAgent GetOrBuildSendingAgent(Uri address);
         void AddListener(IListener listener, Endpoint settings);
-        Task Stop();
-        ISubscriber[] FindSubscribersForMessageType(Type messageType);
 
+        IEnumerable<ISubscriber> Subscribers { get; }
 
-        void AddSendingAgent(ISendingAgent? sendingAgent);
+        void AddSendingAgent(ISendingAgent sendingAgent);
 
         void AddSubscriber(ISubscriber subscriber);
 
-        ISendingAgent? AgentForLocalQueue(string queueName);
-        ISendingAgent[] FindLocalSubscribers(Type messageType);
-        ITopicRouter[] FindTopicRoutersForMessageType(Type messageType);
-        IEnumerable<Endpoint> AllEndpoints();
-        Endpoint EndpointFor(Uri? uri);
+        ISendingAgent AgentForLocalQueue(string queueName);
+        Endpoint? EndpointFor(Uri uri);
     }
 }

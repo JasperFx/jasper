@@ -33,7 +33,7 @@ namespace Jasper.RabbitMQ.Tests
 
             await ReceiverIs(opts =>
             {
-                opts.UseRabbitMq().AutoProvision();
+                opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
                 opts.ListenToRabbitQueue(queueName).ProcessInline();
             });

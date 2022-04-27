@@ -17,11 +17,11 @@ namespace Jasper.Transports
         void StartSenders(IJasperRuntime root, ITransportRuntime runtime);
         void StartListeners(IJasperRuntime root, ITransportRuntime runtime);
 
-        Endpoint GetOrCreateEndpoint(Uri? uri);
-        Endpoint TryGetEndpoint(Uri? uri);
+        Endpoint GetOrCreateEndpoint(Uri uri);
+        Endpoint TryGetEndpoint(Uri uri);
 
         IEnumerable<Endpoint> Endpoints();
-        Task Initialize(IJasperRuntime root);
+        Task InitializeAsync(IJasperRuntime root);
 
 
         /// <summary>

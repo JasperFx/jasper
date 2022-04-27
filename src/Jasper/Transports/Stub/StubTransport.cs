@@ -49,7 +49,7 @@ namespace Jasper.Transports.Stub
             return Endpoints[uri];
         }
 
-        public override Task Initialize(IJasperRuntime root)
+        public override Task InitializeAsync(IJasperRuntime root)
         {
             foreach (var endpoint in Endpoints)
             {

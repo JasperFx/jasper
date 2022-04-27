@@ -17,17 +17,15 @@ namespace Jasper.Runtime
         IMessageLogger MessageLogger { get; }
         JasperOptions Options { get; }
 
-        IEnvelopePersistence? Persistence { get; }
+        IEnvelopePersistence Persistence { get; }
         ILogger Logger { get; }
-        AdvancedSettings Settings { get; }
+        AdvancedSettings Advanced { get; }
         ITransportRuntime Runtime { get; }
         CancellationToken Cancellation { get; }
 
         IAcknowledgementSender Acknowledgements { get; }
 
-        bool TryFindMessageType(string? messageTypeName, out Type messageType);
-
-        Type DetermineMessageType(Envelope? envelope);
+        Type DetermineMessageType(Envelope envelope);
 
         void RegisterMessageType(Type messageType);
     }

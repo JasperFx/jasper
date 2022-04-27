@@ -235,12 +235,12 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public Endpoint GetOrCreateEndpoint(Uri? uri)
+            public Endpoint GetOrCreateEndpoint(Uri uri)
             {
                 throw new NotImplementedException();
             }
 
-            public Endpoint TryGetEndpoint(Uri? uri)
+            public Endpoint TryGetEndpoint(Uri uri)
             {
                 throw new NotImplementedException();
             }
@@ -250,7 +250,7 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public Task Initialize(IJasperRuntime root)
+            public Task InitializeAsync(IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }

@@ -35,7 +35,7 @@ namespace Jasper.Transports
             return endpoints();
         }
 
-        public virtual Task Initialize(IJasperRuntime root)
+        public virtual Task InitializeAsync(IJasperRuntime root)
         {
             // Nothing
             return Task.CompletedTask;
@@ -95,7 +95,7 @@ namespace Jasper.Transports
             }
         }
 
-        public Endpoint GetOrCreateEndpoint(Uri? uri)
+        public Endpoint GetOrCreateEndpoint(Uri uri)
         {
             var shouldBeDurable = uri.IsDurable();
 
@@ -108,7 +108,7 @@ namespace Jasper.Transports
             return endpoint;
         }
 
-        public Endpoint TryGetEndpoint(Uri? uri)
+        public Endpoint TryGetEndpoint(Uri uri)
         {
             return findEndpointByUri(canonicizeUri(uri));
         }

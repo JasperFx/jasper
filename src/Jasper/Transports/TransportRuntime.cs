@@ -19,50 +19,50 @@ namespace Jasper.Transports
     {
 
         private readonly IList<IDisposable> _disposables = new List<IDisposable>();
-        private readonly IList<ISubscriber> _subscribers = new List<ISubscriber>();
+        private readonly List<ISubscriber> _subscribers = new List<ISubscriber>();
 
         private readonly object _channelLock = new object();
 
-        private ImHashMap<Uri?, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty;
+        private ImHashMap<Uri?, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty!;
 
 
         private readonly IJasperRuntime _root;
-        private JasperOptions _transports;
+        private readonly JasperOptions _options;
 
         public TransportRuntime(IJasperRuntime root)
         {
             _root = root;
-            _transports = root.Options;
+            _options = root.Options;
         }
 
         public async Task Initialize()
         {
-            foreach (var transport in _transports)
+            foreach (var transport in _options)
             {
-                await transport.Initialize(_root).ConfigureAwait(false);
+                await transport.InitializeAsync(_root).ConfigureAwait(false);
                 foreach (var endpoint in transport.Endpoints())
                 {
                     endpoint.Root = _root; // necessary to locate serialization
                 }
             }
 
-            foreach (var transport in _transports)
+            foreach (var transport in _options)
             {
                 transport.StartSenders(_root, this);
             }
 
-            foreach (var transport in _transports)
+            foreach (var transport in _options)
             {
                 transport.StartListeners(_root, this);
             }
 
-            foreach (var subscriber in _transports.Subscribers)
+            foreach (var subscriber in _options.Subscribers)
             {
                 _subscribers.Fill(subscriber);
             }
         }
 
-        public ISendingAgent? AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
+        public ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Jasper.Transports
             }
         }
 
-        private ISendingAgent? buildSendingAgent(ISender sender, Endpoint endpoint)
+        private ISendingAgent buildSendingAgent(ISender sender, Endpoint endpoint)
         {
             // This is for the stub transport in the Storyteller specs
             if (sender is ISendingAgent a) return a;
@@ -96,20 +96,20 @@ namespace Jasper.Transports
             switch (endpoint.Mode)
             {
                 case EndpointMode.Durable:
-                    return new DurableSendingAgent(sender, _root.Settings, _root.Logger, _root.MessageLogger,
+                    return new DurableSendingAgent(sender, _root.Advanced, _root.Logger, _root.MessageLogger,
                         _root.Persistence, endpoint);
 
                 case EndpointMode.BufferedInMemory:
-                    return new LightweightSendingAgent(_root.Logger, _root.MessageLogger, sender, _root.Settings, endpoint);
+                    return new LightweightSendingAgent(_root.Logger, _root.MessageLogger, sender, _root.Advanced, endpoint);
 
                 case EndpointMode.Inline:
-                    return new InlineSendingAgent(sender, endpoint, _root.MessageLogger, _root.Settings);
+                    return new InlineSendingAgent(sender, endpoint, _root.MessageLogger, _root.Advanced);
             }
 
             throw new InvalidOperationException();
         }
 
-        public void AddSendingAgent(ISendingAgent? sendingAgent)
+        public void AddSendingAgent(ISendingAgent sendingAgent)
         {
             _senders = _senders.AddOrUpdate(sendingAgent.Destination, sendingAgent);
         }
@@ -121,9 +121,8 @@ namespace Jasper.Transports
 
         private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
-        public ISendingAgent? AgentForLocalQueue(string queueName)
+        public ISendingAgent AgentForLocalQueue(string queueName)
         {
-            queueName = queueName ?? TransportConstants.Default;
             if (_localSenders.TryFind(queueName, out var agent))
             {
                 return agent;
@@ -137,7 +136,7 @@ namespace Jasper.Transports
 
 
 
-        public ISendingAgent? GetOrBuildSendingAgent(Uri? address)
+        public ISendingAgent GetOrBuildSendingAgent(Uri address)
         {
             if (address == null) throw new ArgumentNullException(nameof(address));
 
@@ -151,9 +150,9 @@ namespace Jasper.Transports
             }
         }
 
-        private ISendingAgent? buildSendingAgent(Uri? uri)
+        private ISendingAgent buildSendingAgent(Uri uri)
         {
-            var transport = _transports.TransportForScheme(uri.Scheme);
+            var transport = _options.TransportForScheme(uri.Scheme);
             if (transport == null)
             {
                 throw new InvalidOperationException($"There is no known transport type that can send to the Destination {uri}");
@@ -169,78 +168,38 @@ namespace Jasper.Transports
 
                 return agent;
             }
-            else
-            {
-                var endpoint = transport.GetOrCreateEndpoint(uri);
-                endpoint.Root ??= _root; // This is important for serialization
-                return endpoint.StartSending(_root, _root.Runtime, transport.ReplyEndpoint()?.ReplyUri());
-            }
 
-
+            var endpoint = transport.GetOrCreateEndpoint(uri);
+            endpoint.Root ??= _root; // This is important for serialization
+            return endpoint.StartSending(_root, _root.Runtime, transport.ReplyEndpoint()?.ReplyUri());
         }
 
         public void AddListener(IListener listener, Endpoint settings)
         {
-
-            IDisposable worker = null;
-            switch (settings.Mode)
+            IDisposable? worker = settings.Mode switch
             {
-                case EndpointMode.Durable:
-                    worker = new DurableWorkerQueue(settings, _root.Pipeline, _root.Settings, _root.Persistence,
-                        _root.Logger);
-                    break;
-
-                case EndpointMode.BufferedInMemory:
-                    worker = new LightweightWorkerQueue(settings, _root.Logger, _root.Pipeline, _root.Settings);
-                    break;
-
-                case EndpointMode.Inline:
-                    worker = new InlineWorkerQueue(_root.Pipeline, _root.Logger, listener, _root.Settings);
-                    break;
-            }
+                EndpointMode.Durable => new DurableWorkerQueue(settings, _root.Pipeline, _root.Advanced,
+                    _root.Persistence, _root.Logger),
+                EndpointMode.BufferedInMemory => new LightweightWorkerQueue(settings, _root.Logger, _root.Pipeline,
+                    _root.Advanced),
+                EndpointMode.Inline => new InlineWorkerQueue(_root.Pipeline, _root.Logger, listener, _root.Advanced),
+                _ => null
+            };
 
             if (worker is IWorkerQueue q) q.StartListening(listener);
-            _disposables.Add(worker);
+            _disposables.Add(worker!);
         }
 
-        public Task Stop()
+        public IEnumerable<ISubscriber> Subscribers => _subscribers;
+
+        private IEnumerable<Endpoint> endpoints()
         {
-            // TODO -- this needs to be draining the senders and listeners
-            throw new NotImplementedException();
+            return _options.SelectMany(x => x.Endpoints());
         }
 
-        public ISubscriber[] FindSubscribersForMessageType(Type messageType)
+        public Endpoint? EndpointFor(Uri uri)
         {
-            return _subscribers
-                .Where(x => x.ShouldSendMessage(messageType))
-                .ToArray();
-        }
-
-
-        public ISendingAgent[] FindLocalSubscribers(Type messageType)
-        {
-            return _subscribers
-                .OfType<LocalQueueSettings>()
-                .Where(x => x.ShouldSendMessage(messageType))
-                .Select(x => x.Agent)
-                .ToArray();
-
-        }
-
-        public ITopicRouter[] FindTopicRoutersForMessageType(Type messageType)
-        {
-            var routers = FindSubscribersForMessageType(messageType).OfType<ITopicRouter>().ToArray();
-            return routers.Any() ? routers : _subscribers.OfType<ITopicRouter>().ToArray();
-        }
-
-        public IEnumerable<Endpoint> AllEndpoints()
-        {
-            return _transports.SelectMany(x => x.Endpoints());
-        }
-
-        public Endpoint EndpointFor(Uri? uri)
-        {
-            return AllEndpoints().FirstOrDefault(x => x.Uri == uri);
+            return endpoints().FirstOrDefault(x => x.Uri == uri);
         }
 
         public void Dispose()
@@ -255,7 +214,7 @@ namespace Jasper.Transports
                 listener.SafeDispose();
             }
 
-            foreach (var transport in _transports.OfType<IDisposable>())
+            foreach (var transport in _options.OfType<IDisposable>())
             {
                 transport.Dispose();
             }

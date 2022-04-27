@@ -37,7 +37,7 @@ namespace Jasper.Pulsar
             return _endpoints[uri];
         }
 
-        public override Task Initialize(IJasperRuntime root)
+        public override Task InitializeAsync(IJasperRuntime root)
         {
             Client = Builder.Build();
             return Task.CompletedTask;

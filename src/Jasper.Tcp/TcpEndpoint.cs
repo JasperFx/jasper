@@ -79,13 +79,13 @@ namespace Jasper.Tcp
 
         protected override ISender CreateSender(IJasperRuntime root)
         {
-            return new BatchedSender(Uri, new SocketSenderProtocol(), root.Settings.Cancellation, root.Logger);
+            return new BatchedSender(Uri, new SocketSenderProtocol(), root.Advanced.Cancellation, root.Logger);
         }
 
         private IListener createListener(IJasperRuntime root)
         {
             // check the uri for an ip address to bind to
-            var cancellation = root.Settings.Cancellation;
+            var cancellation = root.Advanced.Cancellation;
 
             var hostNameType = Uri.CheckHostName(HostName);
 

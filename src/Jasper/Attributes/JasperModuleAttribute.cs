@@ -15,13 +15,13 @@ namespace Jasper.Attributes
         ///     Specify the IJasperExtension type that should be automatically loaded
         ///     and applied when this assembly is present
         /// </summary>
-        /// <param name="extensionType"></param>
+        /// <param name="jasperExtensionType"></param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public JasperModuleAttribute(Type extensionType)
+        public JasperModuleAttribute(Type jasperExtensionType)
         {
-            ExtensionType = extensionType;
-            if (!extensionType.CanBeCastTo<IJasperExtension>())
-                throw new ArgumentOutOfRangeException(nameof(extensionType),
+            JasperExtensionType = jasperExtensionType;
+            if (!jasperExtensionType.CanBeCastTo<IJasperExtension>())
+                throw new ArgumentOutOfRangeException(nameof(jasperExtensionType),
                     $"Has to be of type {nameof(IJasperExtension)}");
         }
 
@@ -29,6 +29,6 @@ namespace Jasper.Attributes
         {
         }
 
-        public Type? ExtensionType { get; }
+        public Type? JasperExtensionType { get; }
     }
 }

@@ -28,7 +28,7 @@ namespace Jasper.Runtime
     {
         private readonly IContainer _container;
 
-        private readonly Lazy<IEnvelopePersistence?> _persistence;
+        private readonly Lazy<IEnvelopePersistence> _persistence;
         private bool _hasStopped;
 
 
@@ -37,7 +37,7 @@ namespace Jasper.Runtime
             IContainer container,
             ILogger<JasperRuntime> logger)
         {
-            Settings = options.Advanced;
+            Advanced = options.Advanced;
             Options = options;
             Handlers = options.HandlerGraph;
             Logger = logger;
@@ -54,7 +54,7 @@ namespace Jasper.Runtime
 
             Runtime = new TransportRuntime(this);
 
-            _persistence = new Lazy<IEnvelopePersistence?>(container.GetInstance<IEnvelopePersistence>);
+            _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
             Router = new EnvelopeRouter(this);
 
@@ -62,7 +62,7 @@ namespace Jasper.Runtime
 
             _container = container;
 
-            Cancellation = Settings.Cancellation;
+            Cancellation = Advanced.Cancellation;
 
 
         }
@@ -84,17 +84,14 @@ namespace Jasper.Runtime
         {
             if (_hasStopped)
             {
-                StopAsync(Settings.Cancellation).GetAwaiter().GetResult();
+                StopAsync(Advanced.Cancellation).GetAwaiter().GetResult();
             }
 
-            Settings.Cancel();
+            Advanced.Cancel();
 
             Runtime.Dispose();
 
-            if (ScheduledJobs != null)
-            {
-                ScheduledJobs.Dispose();
-            }
+            ScheduledJobs?.Dispose();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -124,7 +121,7 @@ namespace Jasper.Runtime
 
             if (Durability != null) await Durability.StopAsync(cancellationToken);
 
-            Settings.Cancel();
+            Advanced.Cancel();
         }
 
         public IAcknowledgementSender Acknowledgements { get; }
@@ -133,7 +130,7 @@ namespace Jasper.Runtime
             return Handlers.TryFindMessageType(messageTypeName, out messageType);
         }
 
-        public Type DetermineMessageType(Envelope? envelope)
+        public Type DetermineMessageType(Envelope envelope)
         {
             if (envelope.Message == null)
             {
@@ -157,7 +154,7 @@ namespace Jasper.Runtime
         public ITransportRuntime Runtime { get; }
         public CancellationToken Cancellation { get; }
 
-        public AdvancedSettings? Settings { get; }
+        public AdvancedSettings Advanced { get; }
 
         public ILogger Logger { get; }
 
@@ -172,21 +169,7 @@ namespace Jasper.Runtime
         public IMessageLogger MessageLogger { get; }
 
 
-        public IEnvelopePersistence? Persistence => _persistence.Value;
-
-        public IExecutionContext NewContext()
-        {
-            return new ExecutionContext(this);
-        }
-
-        public IExecutionContext ContextFor(Envelope? envelope)
-        {
-            var context =  new ExecutionContext(this);
-            context.ReadEnvelope(envelope, InvocationCallback.Instance);
-
-            return context;
-        }
-
+        public IEnvelopePersistence Persistence => _persistence.Value;
 
         public HandlerGraph Handlers { get; }
 
@@ -210,7 +193,7 @@ namespace Jasper.Runtime
             // Bit of a hack, but it's necessary. Came up in compliance tests
             if (Persistence is NulloEnvelopePersistence p) p.ScheduledJobs = ScheduledJobs;
 
-            switch (Settings.StorageProvisioning)
+            switch (Advanced.StorageProvisioning)
             {
                 case StorageProvisioning.Rebuild:
                     await Persistence.Admin.RebuildStorage();
@@ -232,7 +215,7 @@ namespace Jasper.Runtime
                 var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
                 // TODO -- use the worker queue for Retries?
-                var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Settings, Persistence,
+                var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Advanced, Persistence,
                     Logger);
                 Durability = new DurabilityAgent(Logger, durabilityLogger, worker, Persistence, Runtime,
                     Options.Advanced);

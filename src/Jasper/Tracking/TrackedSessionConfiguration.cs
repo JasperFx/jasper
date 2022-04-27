@@ -78,7 +78,7 @@ namespace Jasper.Tracking
         {
             var condition = new WaitForMessage<T>
             {
-                UniqueNodeId = host.Services.GetRequiredService<IJasperRuntime>().Settings.UniqueNodeId
+                UniqueNodeId = host.Services.GetRequiredService<IJasperRuntime>().Advanced.UniqueNodeId
             };
 
             _session.AddCondition(condition);

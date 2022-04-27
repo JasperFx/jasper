@@ -46,7 +46,7 @@ namespace Jasper.Transports.Local
             return _queues;
         }
 
-        public Task Initialize(IJasperRuntime root)
+        public Task InitializeAsync(IJasperRuntime root)
         {
             // Nothing
             return Task.CompletedTask;
@@ -68,12 +68,12 @@ namespace Jasper.Transports.Local
         }
 
 
-        public Endpoint GetOrCreateEndpoint(Uri? uri)
+        public Endpoint GetOrCreateEndpoint(Uri uri)
         {
             return findByUri(uri);
         }
 
-        public Endpoint TryGetEndpoint(Uri? uri)
+        public Endpoint TryGetEndpoint(Uri uri)
         {
             var queueName = QueueName(uri);
             return _queues.TryFind(queueName, out var settings) ? settings : null;
@@ -85,7 +85,7 @@ namespace Jasper.Transports.Local
             return findByUri(uri);
         }
 
-        private ISendingAgent? addQueue(IJasperRuntime root, ITransportRuntime runtime, LocalQueueSettings queue)
+        private ISendingAgent addQueue(IJasperRuntime root, ITransportRuntime runtime, LocalQueueSettings queue)
         {
             queue.Agent = buildAgent(queue, root);
             _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, root));
@@ -96,27 +96,22 @@ namespace Jasper.Transports.Local
             return queue.Agent;
         }
 
-        private ISendingAgent? buildAgent(LocalQueueSettings queue, IJasperRuntime root)
+        private ISendingAgent buildAgent(LocalQueueSettings queue, IJasperRuntime root)
         {
-            switch (queue.Mode)
+            return queue.Mode switch
             {
-                case EndpointMode.BufferedInMemory:
-                    return new LightweightLocalSendingAgent(queue, root.Logger, root.Pipeline, root.Settings,
-                        root.MessageLogger);
+                EndpointMode.BufferedInMemory => new LightweightLocalSendingAgent(queue, root.Logger, root.Pipeline,
+                    root.Advanced, root.MessageLogger),
 
-                case EndpointMode.Durable:
-                    return new DurableLocalSendingAgent(queue, root.Pipeline, root.Settings, root.Persistence,
-                        root.Logger, root.MessageLogger);
+                EndpointMode.Durable => new DurableLocalSendingAgent(queue, root.Pipeline, root.Advanced,
+                    root.Persistence, root.Logger, root.MessageLogger),
 
-                case EndpointMode.Inline:
-                    throw new NotImplementedException();
-
-                default:
-                    throw new InvalidOperationException();
-            }
+                EndpointMode.Inline => throw new NotImplementedException(),
+                _ => throw new InvalidOperationException()
+            };
         }
 
-        private LocalQueueSettings findByUri(Uri? uri)
+        private LocalQueueSettings findByUri(Uri uri)
         {
             var queueName = QueueName(uri);
             var settings = _queues[queueName];
@@ -162,7 +157,7 @@ namespace Jasper.Transports.Local
             return new Uri(uri, queueName);
         }
 
-        internal ISendingAgent? AddSenderForDestination(Uri? uri, IJasperRuntime root, TransportRuntime runtime)
+        internal ISendingAgent AddSenderForDestination(Uri? uri, IJasperRuntime root, TransportRuntime runtime)
         {
             var queueName = QueueName(uri);
             var queue = _queues[queueName];

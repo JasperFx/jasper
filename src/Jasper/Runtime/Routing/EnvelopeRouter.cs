@@ -33,9 +33,9 @@ namespace Jasper.Runtime.Routing
             _root.RegisterMessageType(messageType);
             var routing = new MessageTypeRouting(messageType, _root);
 
-            var subscribers = _root.Runtime
-                .FindSubscribersForMessageType(messageType);
-
+            var subscribers = _root.Runtime.Subscribers
+                .Where(x => x.ShouldSendMessage(messageType))
+                .ToArray();
 
             if (subscribers.Any())
             {
@@ -52,12 +52,12 @@ namespace Jasper.Runtime.Routing
             return routing;
         }
 
-        private void adjustForScheduledSend(Envelope?[] outgoing)
+        private void adjustForScheduledSend(Envelope[] outgoing)
         {
             var now = DateTime.UtcNow;
             for (int i = 0; i < outgoing.Length; i++)
             {
-                if (outgoing[i].IsDelayed(now) && !outgoing[i].Sender.SupportsNativeScheduledSend)
+                if (outgoing[i].IsDelayed(now) && !outgoing[i].Sender!.SupportsNativeScheduledSend)
                 {
                     outgoing[i] = outgoing[i].ForScheduledSend(_durableLocalQueue);
                 }
@@ -70,7 +70,7 @@ namespace Jasper.Runtime.Routing
 
             var messageTypeRouting = routingFor(messageType);
 
-            Envelope?[] envelopes = original.TopicName.IsEmpty()
+            Envelope[] envelopes = original.TopicName.IsEmpty()
                 ? messageTypeRouting.RouteByEnvelope(messageType, original)
                 : messageTypeRouting.RouteToTopic(messageType, original);
 
@@ -82,10 +82,11 @@ namespace Jasper.Runtime.Routing
 
         public void RouteToDestination(Uri destination, Envelope envelope)
         {
+            envelope.Destination = destination;
             routingFor(envelope).RouteToDestination(envelope);
         }
 
-        private MessageTypeRouting routingFor(Envelope? envelope)
+        private MessageTypeRouting routingFor(Envelope envelope)
         {
             return routingFor(_root.DetermineMessageType(envelope));
         }
@@ -107,7 +108,7 @@ namespace Jasper.Runtime.Routing
 
             return new Envelope(message)
             {
-                Destination = agent.Destination,
+                Destination = agent!.Destination,
                 ContentType = EnvelopeConstants.JsonContentType,
                 Sender = agent,
                 Serializer = agent.Endpoint.DefaultSerializer

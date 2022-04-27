@@ -40,7 +40,7 @@ namespace Jasper.Runtime
 
             Logger = logger;
 
-            _settings = root.Settings;
+            _settings = root.Advanced;
         }
 
         public IMessageLogger Logger { get; }

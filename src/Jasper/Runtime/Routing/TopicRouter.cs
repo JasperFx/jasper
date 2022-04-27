@@ -16,7 +16,7 @@ namespace Jasper.Runtime.Routing
 
         public readonly IList<ITopicRule> TopicRules = new List<ITopicRule>();
 
-        public abstract Uri? BuildUriForTopic(string? topicName);
+        public abstract Uri BuildUriForTopic(string topicName);
 
         public static string? DetermineTopicName(Type messageType)
         {

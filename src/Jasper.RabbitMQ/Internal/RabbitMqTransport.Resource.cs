@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Oakton.Resources;
+using RabbitMQ.Client.Exceptions;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
@@ -69,7 +70,17 @@ namespace Jasper.RabbitMQ.Internal
             foreach (var other in others)
             {
                 Console.WriteLine($"Purging Rabbit MQ queue '{other}'");
-                channel.QueuePurge(other);
+                try
+                {
+                    channel.QueuePurge(other);
+                }
+                catch (OperationInterruptedException e)
+                {
+                    if (!e.Message.Contains("NOT_FOUND"))
+                    {
+                        throw;
+                    }
+                }
             }
 
             channel.Close();

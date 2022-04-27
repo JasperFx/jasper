@@ -160,7 +160,7 @@ namespace Jasper.Runtime
 
         protected virtual void trackEnvelopeCorrelation(Envelope? outbound)
         {
-            outbound.Source = Runtime.Settings.ServiceName;
+            outbound.Source = Runtime.Advanced.ServiceName;
             outbound.CorrelationId = CorrelationId;
         }
 
