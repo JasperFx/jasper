@@ -7,7 +7,6 @@ using Jasper.Persistence.Durability;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
-using Jasper.Transports;
 using Lamar;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,7 +44,7 @@ public partial class JasperRuntime : IJasperRuntime, IHostedService
 
         _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
-        Router = new EnvelopeRouter(this);
+        Router = this;
 
         Acknowledgements = new AcknowledgementSender(Router, this);
 

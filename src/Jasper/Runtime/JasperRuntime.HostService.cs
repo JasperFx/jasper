@@ -71,6 +71,8 @@ public partial class JasperRuntime
                 break;
         }
 
+        _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
+
         await startDurabilityAgent();
     }
 
