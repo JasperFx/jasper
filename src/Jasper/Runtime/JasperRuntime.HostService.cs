@@ -19,7 +19,41 @@ public partial class JasperRuntime
         // Build up the message handlers
         await Handlers.CompileAsync(Options, _container);
 
-        // Start all the listeners and senders
+        await startMessagingTransports();
+
+        startInMemoryScheduledJobs();
+
+        // TODO -- eliminate this in favor of Oakton equivalents
+        switch (Advanced.StorageProvisioning)
+        {
+            case StorageProvisioning.Rebuild:
+                await Persistence.Admin.RebuildStorage();
+                break;
+
+            case StorageProvisioning.Clear:
+                await Persistence.Admin.ClearAllPersistedEnvelopes();
+                break;
+        }
+
+        _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
+
+        await startDurabilityAgent();
+    }
+
+    private void startInMemoryScheduledJobs()
+    {
+        ScheduledJobs =
+            new InMemoryScheduledJobProcessor((IWorkerQueue)AgentForLocalQueue(TransportConstants.Replies));
+
+        // Bit of a hack, but it's necessary. Came up in compliance tests
+        if (Persistence is NulloEnvelopePersistence p)
+        {
+            p.ScheduledJobs = ScheduledJobs;
+        }
+    }
+
+    private async Task startMessagingTransports()
+    {
         foreach (var transport in Options)
         {
             await transport.InitializeAsync(this).ConfigureAwait(false);
@@ -43,31 +77,6 @@ public partial class JasperRuntime
         {
             _subscribers.Fill(subscriber);
         }
-
-        ScheduledJobs =
-            new InMemoryScheduledJobProcessor((IWorkerQueue)AgentForLocalQueue(TransportConstants.Replies));
-
-        // Bit of a hack, but it's necessary. Came up in compliance tests
-        if (Persistence is NulloEnvelopePersistence p)
-        {
-            p.ScheduledJobs = ScheduledJobs;
-        }
-
-        // TODO -- eliminate this in favor of Oakton equivalents
-        switch (Advanced.StorageProvisioning)
-        {
-            case StorageProvisioning.Rebuild:
-                await Persistence.Admin.RebuildStorage();
-                break;
-
-            case StorageProvisioning.Clear:
-                await Persistence.Admin.ClearAllPersistedEnvelopes();
-                break;
-        }
-
-        _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
-
-        await startDurabilityAgent();
     }
 
     private async Task startDurabilityAgent()
