@@ -194,17 +194,17 @@ namespace Jasper.Runtime
             foreach (var envelope in _outstanding) envelope.SagaId = sagaId.ToString();
         }
 
-        Envelope? IAcknowledgementSender.BuildAcknowledgement(Envelope? envelope)
+        Envelope IAcknowledgementSender.BuildAcknowledgement(Envelope envelope)
         {
             return Runtime.Acknowledgements.BuildAcknowledgement(envelope);
         }
 
-        Task IAcknowledgementSender.SendAcknowledgement(Envelope? envelope)
+        Task IAcknowledgementSender.SendAcknowledgement(Envelope envelope)
         {
             return Runtime.Acknowledgements.SendAcknowledgement(envelope);
         }
 
-        Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope? original, string message)
+        Task IAcknowledgementSender.SendFailureAcknowledgement(Envelope original, string message)
         {
             return Runtime.Acknowledgements.SendFailureAcknowledgement(original, message);
         }

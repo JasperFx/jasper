@@ -29,8 +29,6 @@ namespace Jasper.Runtime
 
         IJasperEndpoints Endpoints { get; }
 
-
-
     }
 
     public interface IJasperEndpoints

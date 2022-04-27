@@ -18,7 +18,7 @@ namespace Jasper.Runtime
             _writer = root.Options.FindSerializer(EnvelopeConstants.JsonContentType);
         }
 
-        public Envelope? BuildAcknowledgement(Envelope? envelope)
+        public Envelope BuildAcknowledgement(Envelope envelope)
         {
             var ack = new Envelope(new Acknowledgement {CorrelationId = envelope.Id}, _writer)
             {
@@ -34,7 +34,7 @@ namespace Jasper.Runtime
         ///     Sends an acknowledgement back to the original sender
         /// </summary>
         /// <returns></returns>
-        public Task SendAcknowledgement(Envelope? original)
+        public Task SendAcknowledgement(Envelope original)
         {
             if (!original.AckRequested && !original.ReplyRequested.IsNotEmpty()) return Task.CompletedTask;
 
@@ -56,9 +56,10 @@ namespace Jasper.Runtime
         ///     Send a failure acknowledgement back to the original
         ///     sending service
         /// </summary>
+        /// <param name="original"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task SendFailureAcknowledgement(Envelope? original, string message)
+        public Task SendFailureAcknowledgement(Envelope original, string message)
         {
             if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
             {

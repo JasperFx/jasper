@@ -8,7 +8,6 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Lamar;
-using LamarCodeGeneration;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
@@ -19,12 +18,6 @@ public partial class JasperRuntime
     {
         // Build up the message handlers
         await Handlers.CompileAsync(Options, _container);
-
-        // If set, use pre-generated message handlers for quicker starts
-        if (Options.Advanced.CodeGeneration.TypeLoadMode == TypeLoadMode.Static)
-        {
-            await _container.GetInstance<DynamicCodeBuilder>().LoadPrebuiltTypes();
-        }
 
         // Start all the listeners and senders
         foreach (var transport in Options)
@@ -60,6 +53,7 @@ public partial class JasperRuntime
             p.ScheduledJobs = ScheduledJobs;
         }
 
+        // TODO -- eliminate this in favor of Oakton equivalents
         switch (Advanced.StorageProvisioning)
         {
             case StorageProvisioning.Rebuild:
