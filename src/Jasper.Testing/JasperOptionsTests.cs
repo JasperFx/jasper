@@ -250,7 +250,7 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public Task InitializeAsync(IJasperRuntime root)
+            public ValueTask InitializeAsync(IJasperRuntime root)
             {
                 throw new NotImplementedException();
             }

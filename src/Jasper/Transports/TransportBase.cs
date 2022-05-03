@@ -35,10 +35,10 @@ namespace Jasper.Transports
             return endpoints();
         }
 
-        public virtual Task InitializeAsync(IJasperRuntime root)
+        public virtual ValueTask InitializeAsync(IJasperRuntime root)
         {
             // Nothing
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public Endpoint ReplyEndpoint()

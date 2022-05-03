@@ -21,7 +21,7 @@ namespace Jasper.Transports
         Endpoint TryGetEndpoint(Uri uri);
 
         IEnumerable<Endpoint> Endpoints();
-        Task InitializeAsync(IJasperRuntime root);
+        ValueTask InitializeAsync(IJasperRuntime root);
 
 
         /// <summary>

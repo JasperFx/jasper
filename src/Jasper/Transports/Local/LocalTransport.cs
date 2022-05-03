@@ -46,10 +46,10 @@ namespace Jasper.Transports.Local
             return _queues;
         }
 
-        public Task InitializeAsync(IJasperRuntime root)
+        public ValueTask InitializeAsync(IJasperRuntime root)
         {
             // Nothing
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public string Name => "Local (In Memory)";

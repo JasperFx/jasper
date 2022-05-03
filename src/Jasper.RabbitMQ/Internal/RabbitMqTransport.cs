@@ -44,7 +44,7 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         // TODO -- this surely needs to be ValueTask or Task
-        public override Task InitializeAsync(IJasperRuntime root)
+        public override ValueTask InitializeAsync(IJasperRuntime root)
         {
             if (AutoProvision)
             {
@@ -56,7 +56,7 @@ namespace Jasper.RabbitMQ.Internal
                 PurgeAllQueues();
             }
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         public bool AutoProvision { get; set; } = false;
