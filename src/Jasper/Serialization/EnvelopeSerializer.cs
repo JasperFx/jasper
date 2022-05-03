@@ -182,7 +182,7 @@ namespace Jasper.Serialization
 
         private static void writeSingle(BinaryWriter writer, Envelope? env)
         {
-            writer.Write(env.SentAt.ToBinary());
+            writer.Write(env.SentAt.UtcDateTime.ToBinary());
 
             writer.Flush();
 

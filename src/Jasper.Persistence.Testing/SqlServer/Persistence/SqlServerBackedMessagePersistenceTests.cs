@@ -49,7 +49,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             var persistor = theHost.Get<SqlServerEnvelopePersistence>();
 
-            persisted = (await persistor.Admin.AllIncomingEnvelopes())
+            persisted = (await persistor.Admin.AllIncomingAsync())
                 .FirstOrDefault(x => x.Id == theEnvelope.Id);
         }
 

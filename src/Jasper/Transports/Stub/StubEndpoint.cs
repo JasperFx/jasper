@@ -59,7 +59,7 @@ namespace Jasper.Transports.Stub
             set => Debug.WriteLine(value);
         }
 
-        public Task EnqueueOutgoing(Envelope? envelope)
+        public Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.ReplyUri ??= ReplyUri();
 
@@ -75,7 +75,7 @@ namespace Jasper.Transports.Stub
             return Task.CompletedTask;
         }
 
-        public Task StoreAndForward(Envelope? envelope)
+        public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
         }

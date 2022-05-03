@@ -13,9 +13,9 @@ namespace Jasper.ErrorHandling
 
         public TimeSpan Delay { get; }
 
-        public async ValueTask Execute(IExecutionContext execution, DateTime utcNow)
+        public async ValueTask Execute(IExecutionContext execution, DateTimeOffset now)
         {
-            var scheduledTime = utcNow.Add(Delay);
+            var scheduledTime = now.Add(Delay);
 
             await execution.ReSchedule(scheduledTime);
         }

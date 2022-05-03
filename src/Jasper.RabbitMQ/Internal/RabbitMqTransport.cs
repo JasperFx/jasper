@@ -17,6 +17,8 @@ namespace Jasper.RabbitMQ.Internal
 
         public RabbitMqTransport() : base(ProtocolName, "Rabbit MQ")
         {
+            ConnectionFactory.AutomaticRecoveryEnabled = true;
+
             _endpoints =
                 new LightweightCache<Uri, RabbitMqEndpoint>(uri =>
                 {

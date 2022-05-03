@@ -10,31 +10,34 @@ namespace Jasper.Persistence.Durability
 {
     internal class RunScheduledJobs : IMessagingAction
     {
-        private readonly AdvancedSettings? _settings;
+        private readonly AdvancedSettings _settings;
         private readonly ILogger _logger;
 
-        public RunScheduledJobs(AdvancedSettings? settings, ILogger logger)
+        public RunScheduledJobs(AdvancedSettings settings, ILogger logger)
         {
             _settings = settings;
             _logger = logger;
         }
 
-        public Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
+        public Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             var utcNow = DateTimeOffset.UtcNow;
-            return ExecuteAtTime(storage, agent, utcNow);
+            return ExecuteAtTimeAsync(storage, agent, utcNow);
         }
 
-        public async Task<IReadOnlyList<Envelope?>> ExecuteAtTime(IEnvelopePersistence? storage, IDurabilityAgent agent, DateTimeOffset utcNow)
+        public async Task ExecuteAtTimeAsync(IEnvelopePersistence storage, IDurabilityAgent agent,
+            DateTimeOffset utcNow)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.ScheduledJobLockId);
-            if (!hasLock) return null;
+            if (!hasLock) return;
 
-            await storage.Session.Begin();
+            await storage.Session.BeginAsync();
 
             try
             {
-                IReadOnlyList<Envelope?> readyToExecute = null;
+#pragma warning disable CS8600
+                IReadOnlyList<Envelope> readyToExecute = null;
+#pragma warning restore CS8600
 
                 try
                 {
@@ -42,17 +45,17 @@ namespace Jasper.Persistence.Durability
 
                     if (!readyToExecute.Any())
                     {
-                        await storage.Session.Rollback();
-                        return readyToExecute;
+                        await storage.Session.RollbackAsync();
+                        return;
                     }
 
                     await storage.ReassignIncomingAsync(_settings.UniqueNodeId, readyToExecute);
 
-                    await storage.Session.Commit();
+                    await storage.Session.CommitAsync();
                 }
                 catch (Exception)
                 {
-                    await storage.Session.Rollback();
+                    await storage.Session.RollbackAsync();
                     throw;
                 }
 
@@ -60,12 +63,8 @@ namespace Jasper.Persistence.Durability
 
                 foreach (var envelope in readyToExecute)
                 {
-                    await agent.EnqueueLocally(envelope);
-
-
+                    await agent.EnqueueLocallyAsync(envelope);
                 }
-
-                return readyToExecute;
             }
             finally
             {

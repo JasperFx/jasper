@@ -17,7 +17,7 @@ namespace Jasper.Persistence.Testing.SqlServer
         [Fact]
         public async Task smoke_test_clear_all()
         {
-            await thePersistence.ClearAllPersistedEnvelopes();
+            await thePersistence.ClearAllAsync();
         }
 
     }

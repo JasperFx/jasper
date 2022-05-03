@@ -34,7 +34,7 @@ namespace Jasper.Transports.Local
             Address = Destination;
         }
 
-        public Uri? Destination { get; }
+        public Uri Destination { get; }
 
         public Endpoint Endpoint { get; }
 
@@ -44,20 +44,20 @@ namespace Jasper.Transports.Local
 
         public bool IsDurable => true;
 
-        public Task EnqueueOutgoing(Envelope? envelope)
+        public Task EnqueueOutgoing(Envelope envelope)
         {
             _messageLogger.Sent(envelope);
 
             return EnqueueAsync(envelope);
         }
 
-        public async Task StoreAndForward(Envelope? envelope)
+        public async Task StoreAndForward(Envelope envelope)
         {
             _messageLogger.Sent(envelope);
             writeMessageData(envelope);
 
             // TODO -- have to watch this one
-            envelope.Status = envelope.IsDelayed(DateTime.UtcNow)
+            envelope.Status = envelope.IsScheduledForLater(DateTime.UtcNow)
                 ? EnvelopeStatus.Scheduled
                 : EnvelopeStatus.Incoming;
 

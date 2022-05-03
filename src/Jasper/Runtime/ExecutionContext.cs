@@ -45,31 +45,31 @@ namespace Jasper.Runtime
             }
         }
 
-        Task IEnvelopeTransaction.Persist(Envelope? envelope)
+        Task IEnvelopeTransaction.PersistAsync(Envelope envelope)
         {
             _outstanding.Fill(envelope);
             return Task.CompletedTask;
         }
 
-        Task IEnvelopeTransaction.Persist(Envelope?[] envelopes)
+        Task IEnvelopeTransaction.PersistAsync(Envelope[] envelopes)
         {
             _outstanding.Fill(envelopes);
             return Task.CompletedTask;
         }
 
-        Task IEnvelopeTransaction.ScheduleJob(Envelope? envelope)
+        Task IEnvelopeTransaction.ScheduleJobAsync(Envelope envelope)
         {
             _scheduled.Fill(envelope);
             return Task.CompletedTask;
         }
 
-        async Task IEnvelopeTransaction.CopyTo(IEnvelopeTransaction other)
+        async Task IEnvelopeTransaction.CopyToAsync(IEnvelopeTransaction other)
         {
-            await other.Persist(_outstanding.ToArray());
+            await other.PersistAsync(_outstanding.ToArray());
 
             foreach (var envelope in _scheduled)
             {
-                await other.ScheduleJob(envelope);
+                await other.ScheduleJobAsync(envelope);
             }
         }
 
@@ -143,7 +143,7 @@ namespace Jasper.Runtime
                 {
                     await envelope.QuickSend();
                 }
-                catch (Exception? e)
+                catch (Exception e)
                 {
                     Logger.LogException(e, envelope.CorrelationId,
                         "Unable to send an outgoing message, most likely due to serialization issues");

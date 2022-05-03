@@ -9,15 +9,10 @@ namespace Jasper
     [MessageIdentity("envelope")]
     public partial class Envelope
     {
-
         public static readonly string PingMessageType = "jasper-ping";
 
-
-
         private DateTimeOffset? _deliverBy;
-
         private DateTimeOffset? _scheduledTime;
-
 
         private object? _message;
         private byte[]? _data;
@@ -31,26 +26,26 @@ namespace Jasper
             Message = message;
         }
 
-
         public Dictionary<string, string?> Headers { get; internal set; } = new Dictionary<string, string?>();
 
         /// <summary>
         ///     The raw, serialized message data
         /// </summary>
-        [Obsolete("Deleting this soon")]
         public byte[]? Data
         {
             get
             {
-                if (_data == null)
+                if (_data != null)
                 {
-                    if (_message == null)
-                        throw new InvalidOperationException("Cannot ensure data is present when there is no message");
-
-                    if (Serializer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
-
-                    _data = Serializer.Write(_message);
+                    return _data;
                 }
+
+                if (_message == null)
+                    throw new InvalidOperationException("Cannot ensure data is present when there is no message");
+
+                if (Serializer == null) throw new InvalidOperationException("No data or writer is known for this envelope");
+
+                _data = Serializer.Write(_message);
 
                 return _data;
 
@@ -78,7 +73,7 @@ namespace Jasper
         public int Attempts { get; internal set; }
 
 
-        public DateTime SentAt { get; internal set; } = DateTime.UtcNow;
+        public DateTimeOffset SentAt { get; internal set; } = DateTimeOffset.Now;
 
         /// <summary>
         ///     Instruct Jasper to throw away this message if it is not successfully sent and processed
@@ -130,7 +125,7 @@ namespace Jasper
         /// <summary>
         ///     Location that this message should be sent
         /// </summary>
-        public Uri? Destination { get; set; }
+        public Uri Destination { get; set; }
 
         /// <summary>
         ///     Specifies the accepted content types for the requested reply
@@ -185,7 +180,7 @@ namespace Jasper
         /// <param name="span"></param>
         public void DeliverWithin(TimeSpan span)
         {
-            DeliverBy = DateTime.UtcNow.Add(span);
+            DeliverBy = DateTimeOffset.Now.Add(span);
         }
 
         protected bool Equals(Envelope other)
@@ -223,7 +218,7 @@ namespace Jasper
         /// </summary>
         /// <param name="utcNow"></param>
         /// <returns></returns>
-        public bool IsDelayed(DateTime utcNow)
+        public bool IsScheduledForLater(DateTimeOffset utcNow)
         {
             return ScheduledTime.HasValue && ScheduledTime.Value > utcNow;
         }

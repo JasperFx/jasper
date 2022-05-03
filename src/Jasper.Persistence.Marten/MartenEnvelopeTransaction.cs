@@ -32,26 +32,26 @@ namespace Jasper.Persistence.Marten
 
         }
 
-        public Task Persist(Envelope? envelope)
+        public Task PersistAsync(Envelope envelope)
         {
             _session.StoreOutgoing(_settings, envelope, _nodeId);
             return Task.CompletedTask;
         }
 
-        public Task Persist(Envelope?[] envelopes)
+        public Task PersistAsync(Envelope[] envelopes)
         {
             foreach (var envelope in envelopes) _session.StoreOutgoing(_settings, envelope, _nodeId);
 
             return Task.CompletedTask;
         }
 
-        public Task ScheduleJob(Envelope? envelope)
+        public Task ScheduleJobAsync(Envelope envelope)
         {
             _session.StoreIncoming(_settings, envelope);
             return Task.CompletedTask;
         }
 
-        public Task CopyTo(IEnvelopeTransaction other)
+        public Task CopyToAsync(IEnvelopeTransaction other)
         {
             throw new NotSupportedException();
         }

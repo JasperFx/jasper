@@ -76,7 +76,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theSettings = new AdvancedSettings(null);
 
 
-            await EnvelopeStorageAdmin.RebuildStorage();
+            await EnvelopeStorageAdmin.RebuildAsync();
 
             var persistence =
                 new PostgresqlEnvelopePersistence(
@@ -149,7 +149,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
-            return await EnvelopeStorageAdmin.AllIncomingEnvelopes();
+            return await EnvelopeStorageAdmin.AllIncomingAsync();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)

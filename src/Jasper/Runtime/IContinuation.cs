@@ -15,9 +15,9 @@ namespace Jasper.Runtime
         /// Post-message handling action
         /// </summary>
         /// <param name="execution"></param>
-        /// <param name="utcNow">The current time</param>
+        /// <param name="now"></param>
         /// <returns></returns>
-        ValueTask Execute(IExecutionContext execution, DateTime utcNow);
+        ValueTask Execute(IExecutionContext execution, DateTimeOffset now);
     }
 
     #endregion

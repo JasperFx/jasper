@@ -17,12 +17,12 @@ namespace Jasper.Persistence.Durability
     public class DurableSendingAgent : SendingAgent
     {
         private readonly ILogger _logger;
-        private readonly IEnvelopePersistence? _persistence;
+        private readonly IEnvelopePersistence _persistence;
         private readonly AsyncRetryPolicy _policy;
 
-        public DurableSendingAgent(ISender sender, AdvancedSettings? settings, ILogger logger,
+        public DurableSendingAgent(ISender sender, AdvancedSettings settings, ILogger logger,
             IMessageLogger messageLogger,
-            IEnvelopePersistence? persistence, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
+            IEnvelopePersistence persistence, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
         {
             _logger = logger;
 
@@ -31,49 +31,47 @@ namespace Jasper.Persistence.Durability
             _policy = Policy
                 .Handle<Exception>()
                 .WaitAndRetryForeverAsync(i => (i*100).Milliseconds()
-                    , (e, timeSpan) => {
+                    , (e, _) => {
                         _logger.LogError(e, message: "Failed while trying to enqueue a message batch for retries");
                     });
         }
 
-        public IList<Envelope?> Queued { get; private set; } = new List<Envelope?>();
+        private IList<Envelope> _queued = new List<Envelope>();
 
-        public override Task EnqueueForRetry(OutgoingMessageBatch batch)
+        public override Task EnqueueForRetryAsync(OutgoingMessageBatch batch)
         {
-            Task execute(CancellationToken c) => enqueueForRetry(batch);
-
-            return _policy.ExecuteAsync(execute, _settings.Cancellation);
+            return _policy.ExecuteAsync(_ => enqueueForRetryAsync(batch), _settings.Cancellation);
         }
 
-        private async Task enqueueForRetry(OutgoingMessageBatch batch)
+        private async Task enqueueForRetryAsync(OutgoingMessageBatch batch)
         {
             if (_settings.Cancellation.IsCancellationRequested) return;
 
-            var expiredInQueue = Queued.Where(x => x.IsExpired()).ToArray();
+            var expiredInQueue = _queued.Where(x => x.IsExpired()).ToArray();
             var expiredInBatch = batch.Messages.Where(x => x.IsExpired()).ToArray();
 
             var expired = expiredInBatch.Concat(expiredInQueue).ToArray();
-            var all = Queued.Where(x => !expiredInQueue.Contains(x))
+            var all = _queued.Where(x => !expiredInQueue.Contains(x))
                 .Concat(batch.Messages.Where(x => !expiredInBatch.Contains(x)))
                 .ToList();
 
-            var reassigned = new Envelope?[0];
+            var reassigned = Array.Empty<Envelope>();
             if (all.Count > Endpoint.MaximumEnvelopeRetryStorage)
                 reassigned = all.Skip(Endpoint.MaximumEnvelopeRetryStorage).ToArray();
 
             await _persistence.DiscardAndReassignOutgoingAsync(expired, reassigned, TransportConstants.AnyNode);
             _logger.DiscardedExpired(expired);
 
-            Queued = all.Take(Endpoint.MaximumEnvelopeRetryStorage).ToList();
+            _queued = all.Take(Endpoint.MaximumEnvelopeRetryStorage).ToList();
         }
 
-        protected override async Task afterRestarting(ISender sender)
+        protected override async Task afterRestartingAsync(ISender sender)
         {
-            var expired = Queued.Where(x => x.IsExpired()).ToArray();
+            var expired = _queued.Where(x => x.IsExpired()).ToArray();
             if (expired.Any()) await _persistence.DeleteIncomingEnvelopesAsync(expired);
 
-            var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
-            Queued = new List<Envelope?>();
+            var toRetry = _queued.Where(x => !x.IsExpired()).ToArray();
+            _queued = new List<Envelope>();
 
             foreach (var envelope in toRetry)
             {
@@ -82,17 +80,17 @@ namespace Jasper.Persistence.Durability
         }
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
-            return _policy.ExecuteAsync(c => _persistence.DeleteOutgoingAsync(outgoing.Messages.ToArray()), _settings.Cancellation);
+            return _policy.ExecuteAsync(_ => _persistence.DeleteOutgoingAsync(outgoing.Messages.ToArray()), _settings.Cancellation);
         }
 
-        public override Task Successful(Envelope? outgoing)
+        public override Task Successful(Envelope outgoing)
         {
-            return _policy.ExecuteAsync(c => _persistence.DeleteOutgoingAsync(outgoing), _settings.Cancellation);
+            return _policy.ExecuteAsync(_ => _persistence.DeleteOutgoingAsync(outgoing), _settings.Cancellation);
         }
 
         public override bool IsDurable { get; } = true;
 
-        protected override async Task storeAndForward(Envelope? envelope)
+        protected override async Task storeAndForwardAsync(Envelope envelope)
         {
             await _persistence.StoreOutgoingAsync(envelope, _settings.UniqueNodeId);
 

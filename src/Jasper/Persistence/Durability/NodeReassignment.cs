@@ -7,23 +7,23 @@ namespace Jasper.Persistence.Durability
 {
     public class NodeReassignment : IMessagingAction
     {
-        private readonly AdvancedSettings? _settings;
+        private readonly AdvancedSettings _settings;
 
-        public NodeReassignment(AdvancedSettings? settings)
+        public NodeReassignment(AdvancedSettings settings)
         {
             _settings = settings;
         }
 
         public string Description { get; } = "Dormant node reassignment";
 
-        public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
+        public async Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
-            await storage.Session.Begin();
+            await storage.Session.BeginAsync();
 
             var gotLock = await storage.Session.TryGetGlobalLock(TransportConstants.ReassignmentLockId);
             if (!gotLock)
             {
-                await storage.Session.Rollback();
+                await storage.Session.RollbackAsync();
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace Jasper.Persistence.Durability
             }
             catch (Exception)
             {
-                await storage.Session.Rollback();
+                await storage.Session.RollbackAsync();
                 throw;
             }
             finally
@@ -51,7 +51,7 @@ namespace Jasper.Persistence.Durability
                 await storage.Session.ReleaseGlobalLock(TransportConstants.ReassignmentLockId);
             }
 
-            await storage.Session.Commit();
+            await storage.Session.CommitAsync();
         }
 
 

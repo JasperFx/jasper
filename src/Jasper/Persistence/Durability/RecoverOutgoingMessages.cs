@@ -12,10 +12,10 @@ namespace Jasper.Persistence.Durability
     public class RecoverOutgoingMessages : IMessagingAction
     {
         private readonly IJasperRuntime _runtime;
-        private readonly AdvancedSettings? _settings;
+        private readonly AdvancedSettings _settings;
         private readonly ILogger _logger;
 
-        public RecoverOutgoingMessages(IJasperRuntime runtime, AdvancedSettings? settings, ILogger logger)
+        public RecoverOutgoingMessages(IJasperRuntime runtime, AdvancedSettings settings, ILogger logger)
         {
             _runtime = runtime;
             _settings = settings;
@@ -23,7 +23,7 @@ namespace Jasper.Persistence.Durability
         }
 
         public string Description { get; } = "Recover persisted outgoing messages";
-        public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
+        public async Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
         {
             var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.OutgoingMessageLockId);
             if (!hasLock) return;
@@ -35,7 +35,7 @@ namespace Jasper.Persistence.Durability
                 var count = 0;
                 foreach (var destination in destinations)
                 {
-                    var found = await recoverFrom(destination, storage);
+                    var found = await recoverFromAsync(destination, storage);
 
                     count += found;
                 }
@@ -52,16 +52,17 @@ namespace Jasper.Persistence.Durability
 
 
 
-        private async Task<int> recoverFrom(Uri? destination, IEnvelopePersistence? storage)
+        private async Task<int> recoverFromAsync(Uri destination, IEnvelopePersistence storage)
         {
             try
             {
-                Envelope?[] filtered = null;
-                IReadOnlyList<Envelope?> outgoing = null;
-
+#pragma warning disable CS8600
+                Envelope[] filtered = null;
+                IReadOnlyList<Envelope> outgoing = null;
+#pragma warning restore CS8600
                 if (_runtime.Endpoints.GetOrBuildSendingAgent(destination).Latched) return 0;
 
-                await storage.Session.Begin();
+                await storage.Session.BeginAsync();
 
                 try
                 {
@@ -79,18 +80,18 @@ namespace Jasper.Persistence.Durability
                     // (contrived) testing
                     if (_runtime.Endpoints.GetOrBuildSendingAgent(destination).Latched || !filtered.Any())
                     {
-                        await storage.Session.Rollback();
+                        await storage.Session.RollbackAsync();
                         return 0;
                     }
 
                     await storage.ReassignOutgoingAsync(_settings.UniqueNodeId, filtered);
 
 
-                    await storage.Session.Commit();
+                    await storage.Session.CommitAsync();
                 }
                 catch (Exception)
                 {
-                    await storage.Session.Rollback();
+                    await storage.Session.RollbackAsync();
                     throw;
                 }
 
@@ -103,19 +104,19 @@ namespace Jasper.Persistence.Durability
                     }
                     catch (Exception? e)
                     {
-                        _logger.LogError(e, message: $"Unable to enqueue {envelope} for sending");
+                        _logger.LogError(e, message: "Unable to enqueue {Envelope} for sending", envelope);
                     }
 
                 return outgoing.Count();
             }
             catch (UnknownTransportException? e)
             {
-                _logger.LogError(e, message: $"Could not resolve a channel for {destination}");
+                _logger.LogError(e, message: "Could not resolve a channel for {Destination}", destination);
 
-                await storage.Session.Begin();
+                await storage.Session.BeginAsync();
 
                 await storage.DeleteByDestinationAsync(destination);
-                await storage.Session.Commit();
+                await storage.Session.CommitAsync();
 
                 return 0;
             }

@@ -106,7 +106,7 @@ public partial class JasperRuntime : IEnvelopeRouter
         var now = DateTime.UtcNow;
         for (var i = 0; i < outgoing.Length; i++)
         {
-            if (outgoing[i].IsDelayed(now) && !outgoing[i].Sender!.SupportsNativeScheduledSend)
+            if (outgoing[i].IsScheduledForLater(now) && !outgoing[i].Sender!.SupportsNativeScheduledSend)
             {
                 outgoing[i] = outgoing[i].ForScheduledSend(_durableLocalQueue);
             }

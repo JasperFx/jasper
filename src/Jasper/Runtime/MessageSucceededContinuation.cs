@@ -14,7 +14,7 @@ namespace Jasper.Runtime
         }
 
         public async ValueTask Execute(IExecutionContext execution,
-            DateTime utcNow)
+            DateTimeOffset now)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace Jasper.Runtime
                 execution.Logger.LogException(ex, execution.Envelope.Id, ex.Message);
                 execution.Logger.MessageFailed(execution.Envelope, ex);
 
-                await new MoveToErrorQueue(ex).Execute(execution, utcNow);
+                await new MoveToErrorQueue(ex).Execute(execution, now);
             }
         }
     }

@@ -8,11 +8,11 @@ namespace Jasper.Persistence.Durability
 {
     public interface IDurableStorageSession : IDisposable
     {
-        Task ReleaseNodeLock(int lockId);
-        Task GetNodeLock(int lockId);
-        Task Begin();
-        Task Commit();
-        Task Rollback();
+        Task ReleaseNodeLockAsync(int lockId);
+        Task GetNodeLockAsync(int lockId);
+        Task BeginAsync();
+        Task CommitAsync();
+        Task RollbackAsync();
 
         Task<bool> TryGetGlobalTxLock(int lockId);
         Task<bool> TryGetGlobalLock(int lockId);

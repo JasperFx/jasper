@@ -153,7 +153,7 @@ namespace DocumentationSamples
         public void Handle(InvoiceCreated message, Envelope envelope)
         {
             var howOldIsThisMessage =
-                DateTime.UtcNow.Subtract(envelope.SentAt);
+                DateTimeOffset.Now.Subtract(envelope.SentAt);
         }
     }
     #endregion

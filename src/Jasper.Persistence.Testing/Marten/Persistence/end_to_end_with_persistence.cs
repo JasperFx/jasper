@@ -99,13 +99,13 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             var persistor = theSender.Get<IEnvelopePersistence>();
 
-            var counts = await persistor.Admin.GetPersistedCounts();
+            var counts = await persistor.Admin.FetchCountsAsync();
 
             counts.Scheduled.ShouldBe(1);
 
-            await persistor.Admin.ClearAllPersistedEnvelopes();
+            await persistor.Admin.ClearAllAsync();
 
-            (await persistor.Admin.GetPersistedCounts()).Scheduled.ShouldBe(0);
+            (await persistor.Admin.FetchCountsAsync()).Scheduled.ShouldBe(0);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 item2.Name.ShouldBe("Shoe");
             }
 
-            var incoming = await theReceiver.Get<IEnvelopePersistence>().Admin.AllIncomingEnvelopes();
+            var incoming = await theReceiver.Get<IEnvelopePersistence>().Admin.AllIncomingAsync();
             incoming.Any().ShouldBeFalse();
         }
 

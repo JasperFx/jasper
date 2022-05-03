@@ -15,12 +15,12 @@ namespace Jasper.Persistence.Database
         private readonly string _deleteIncomingEnvelopeById;
         private readonly string _incrementIncominEnvelopeAttempts;
         public abstract Task MoveToDeadLetterStorageAsync(ErrorReport[] errors);
-        public abstract Task DeleteIncomingEnvelopesAsync(Envelope?[] envelopes);
+        public abstract Task DeleteIncomingEnvelopesAsync(Envelope[] envelopes);
 
-        public abstract Task<IReadOnlyList<Envelope?>> LoadPageOfGloballyOwnedIncomingAsync();
-        public abstract Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope?> incoming);
+        public abstract Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncomingAsync();
+        public abstract Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope> incoming);
 
-        public Task DeleteIncomingEnvelopeAsync(Envelope? envelope)
+        public Task DeleteIncomingEnvelopeAsync(Envelope envelope)
         {
             return DatabaseSettings
                 .CreateCommand(_deleteIncomingEnvelopeById)
@@ -39,12 +39,12 @@ namespace Jasper.Persistence.Database
         }
 
 
-        public Task MoveToDeadLetterStorageAsync(Envelope? envelope, Exception? ex)
+        public Task MoveToDeadLetterStorageAsync(Envelope envelope, Exception? ex)
         {
             return MoveToDeadLetterStorageAsync(new[] {new ErrorReport(envelope, ex)});
         }
 
-        public Task IncrementIncomingEnvelopeAttemptsAsync(Envelope? envelope)
+        public Task IncrementIncomingEnvelopeAttemptsAsync(Envelope envelope)
         {
             return DatabaseSettings.CreateCommand(_incrementIncominEnvelopeAttempts)
                 .With("attempts", envelope.Attempts)
@@ -52,7 +52,7 @@ namespace Jasper.Persistence.Database
                 .ExecuteOnce(_cancellation);
         }
 
-        public Task StoreIncomingAsync(Envelope? envelope)
+        public Task StoreIncomingAsync(Envelope envelope)
         {
             var builder = DatabaseSettings.ToCommandBuilder();
             DatabasePersistence.BuildIncomingStorageCommand(DatabaseSettings, builder, envelope);
@@ -62,7 +62,7 @@ namespace Jasper.Persistence.Database
 
         }
 
-        public async Task StoreIncomingAsync(Envelope?[] envelopes)
+        public async Task StoreIncomingAsync(Envelope[] envelopes)
         {
             var cmd = DatabasePersistence.BuildIncomingStorageCommand(envelopes, DatabaseSettings);
 

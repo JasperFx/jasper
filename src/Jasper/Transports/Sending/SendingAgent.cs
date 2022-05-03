@@ -15,14 +15,14 @@ namespace Jasper.Transports.Sending
         private readonly ILogger _logger;
         private readonly IMessageLogger _messageLogger;
         protected readonly ISender _sender;
-        protected readonly AdvancedSettings? _settings;
+        protected readonly AdvancedSettings _settings;
         private int _failureCount;
-        private CircuitWatcher _circuitWatcher;
+        private CircuitWatcher? _circuitWatcher;
 
-        protected Func<Envelope, Task> _senderDelegate;
+        protected readonly Func<Envelope, Task> _senderDelegate;
 
 
-        public SendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings? settings, Endpoint endpoint)
+        public SendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender, AdvancedSettings settings, Endpoint endpoint)
         {
             _logger = logger;
             _messageLogger = messageLogger;
@@ -30,26 +30,21 @@ namespace Jasper.Transports.Sending
             _settings = settings;
             Endpoint = endpoint;
 
-            _senderDelegate = sendWithExplicitHandling;
+            _senderDelegate = sendWithExplicitHandlingAsync;
             if (_sender is ISenderRequiresCallback)
             {
-                _senderDelegate = sendWithCallbackHandling;
+                _senderDelegate = sendWithCallbackHandlingAsync;
             }
 
 
-            _sending = new ActionBlock<Envelope?>(_senderDelegate, Endpoint.ExecutionOptions);
-
-            _sending.Completion.ContinueWith(t =>
-            {
-                Console.WriteLine(t.Exception?.ToString());
-            });
+            _sending = new ActionBlock<Envelope>(_senderDelegate, Endpoint.ExecutionOptions);
         }
 
         public Endpoint Endpoint { get; }
 
         public Uri? ReplyUri { get; set; }
 
-        public Uri? Destination => _sender.Destination;
+        public Uri Destination => _sender.Destination;
 
         public void Dispose()
         {
@@ -59,14 +54,14 @@ namespace Jasper.Transports.Sending
         public bool Latched { get; private set; }
         public abstract bool IsDurable { get; }
 
-        private void setDefaults(Envelope? envelope)
+        private void setDefaults(Envelope envelope)
         {
             envelope.Status = EnvelopeStatus.Outgoing;
             envelope.OwnerId = _settings.UniqueNodeId;
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
         }
 
-        public Task EnqueueOutgoing(Envelope? envelope)
+        public Task EnqueueOutgoing(Envelope envelope)
         {
             setDefaults(envelope);
            _sending.Post(envelope);
@@ -75,16 +70,16 @@ namespace Jasper.Transports.Sending
            return Task.CompletedTask;
         }
 
-        public async Task StoreAndForward(Envelope? envelope)
+        public async Task StoreAndForward(Envelope envelope)
         {
             setDefaults(envelope);
 
-            await storeAndForward(envelope);
+            await storeAndForwardAsync(envelope);
 
             _messageLogger.Sent(envelope);
         }
 
-        protected abstract Task storeAndForward(Envelope? envelope);
+        protected abstract Task storeAndForwardAsync(Envelope envelope);
 
         public Task<bool> TryToResume(CancellationToken cancellationToken)
         {
@@ -98,15 +93,15 @@ namespace Jasper.Transports.Sending
 
             Unlatch();
 
-            return afterRestarting(_sender);
+            return afterRestartingAsync(_sender);
         }
 
-        protected abstract Task afterRestarting(ISender sender);
+        protected abstract Task afterRestartingAsync(ISender sender);
 
-        public abstract Task Successful(Envelope? outgoing);
+        public abstract Task Successful(Envelope outgoing);
 
-        private ActionBlock<Envelope?> _sending;
-        public virtual Task LatchAndDrain()
+        private ActionBlock<Envelope> _sending;
+        public Task LatchAndDrainAsync()
         {
             Latched = true;
 
@@ -117,20 +112,20 @@ namespace Jasper.Transports.Sending
             return Task.CompletedTask;
         }
 
-        public virtual void Unlatch()
+        public void Unlatch()
         {
             _logger.CircuitResumed(Destination);
 
             Latched = false;
         }
 
-        private async Task sendWithCallbackHandling(Envelope? envelope)
+        private async Task sendWithCallbackHandlingAsync(Envelope envelope)
         {
             try
             {
                 await _sender.Send(envelope);
             }
-            catch (Exception? e)
+            catch (Exception e)
             {
                 try
                 {
@@ -143,7 +138,7 @@ namespace Jasper.Transports.Sending
             }
         }
 
-        private async Task sendWithExplicitHandling(Envelope? envelope)
+        private async Task sendWithExplicitHandlingAsync(Envelope envelope)
         {
             try
             {
@@ -151,25 +146,25 @@ namespace Jasper.Transports.Sending
 
                 await Successful(envelope);
             }
-            catch (Exception? e)
+            catch (Exception e)
             {
                 try
                 {
                     await ProcessingFailure(envelope, e);
                 }
-                catch (Exception? exception)
+                catch (Exception exception)
                 {
                     _logger.LogError(exception, "Error while trying to process a batch send failure");
                 }
             }
         }
 
-        public async Task MarkFailed(OutgoingMessageBatch batch)
+        private async Task markFailedAsync(OutgoingMessageBatch batch)
         {
             // If it's already latched, just enqueue again
             if (Latched)
             {
-                await EnqueueForRetry(batch);
+                await EnqueueForRetryAsync(batch);
                 return;
             }
 
@@ -177,8 +172,8 @@ namespace Jasper.Transports.Sending
 
             if (_failureCount >= Endpoint.FailuresBeforeCircuitBreaks)
             {
-                await LatchAndDrain();
-                await EnqueueForRetry(batch);
+                await LatchAndDrainAsync();
+                await EnqueueForRetryAsync(batch);
 
                 _circuitWatcher = new CircuitWatcher(this, _settings.Cancellation);
             }
@@ -194,10 +189,10 @@ namespace Jasper.Transports.Sending
         }
 
 
-        public abstract Task EnqueueForRetry(OutgoingMessageBatch batch);
+        public abstract Task EnqueueForRetryAsync(OutgoingMessageBatch batch);
 
 
-        public Task MarkSuccess()
+        public Task MarkSuccessAsync()
         {
             _failureCount = 0;
             Unlatch();
@@ -210,7 +205,7 @@ namespace Jasper.Transports.Sending
         Task ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
-            return MarkFailed(outgoing);
+            return markFailedAsync(outgoing);
         }
 
         Task ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
@@ -234,27 +229,27 @@ namespace Jasper.Transports.Sending
         Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
         {
             _logger.OutgoingBatchFailed(outgoing);
-            return MarkFailed(outgoing);
+            return markFailedAsync(outgoing);
         }
 
-        public Task ProcessingFailure(Envelope? outgoing, Exception? exception)
+        public Task ProcessingFailure(Envelope outgoing, Exception? exception)
         {
             var batch = new OutgoingMessageBatch(outgoing.Destination, new[] { outgoing });
             _logger.OutgoingBatchFailed(batch, exception);
-            return MarkFailed(batch);
+            return markFailedAsync(batch);
         }
 
         public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception? exception)
         {
             _logger.LogError(exception,
-                message: $"Failure trying to send a message batch to {outgoing.Destination}");
+                message: "Failure trying to send a message batch to {Destination}", outgoing.Destination);
             _logger.OutgoingBatchFailed(outgoing, exception);
-            return MarkFailed(outgoing);
+            return markFailedAsync(outgoing);
         }
 
         Task ISenderCallback.SenderIsLatched(OutgoingMessageBatch outgoing)
         {
-            return MarkFailed(outgoing);
+            return markFailedAsync(outgoing);
         }
 
         public abstract Task Successful(OutgoingMessageBatch outgoing);

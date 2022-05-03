@@ -17,7 +17,7 @@ namespace Jasper.Transports.Sending
 
         public IList<Envelope?> Queued { get; private set; } = new List<Envelope?>();
 
-        public override Task EnqueueForRetry(OutgoingMessageBatch batch)
+        public override Task EnqueueForRetryAsync(OutgoingMessageBatch batch)
         {
             Queued.AddRange(batch.Messages);
             Queued.RemoveAll(e => e.IsExpired());
@@ -31,7 +31,7 @@ namespace Jasper.Transports.Sending
             return Task.CompletedTask;
         }
 
-        protected override Task afterRestarting(ISender sender)
+        protected override Task afterRestartingAsync(ISender sender)
         {
             var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
             Queued.Clear();
@@ -47,15 +47,15 @@ namespace Jasper.Transports.Sending
 
         public override Task Successful(OutgoingMessageBatch outgoing)
         {
-            return MarkSuccess();
+            return MarkSuccessAsync();
         }
 
-        public override Task Successful(Envelope? outgoing)
+        public override Task Successful(Envelope outgoing)
         {
-            return MarkSuccess();
+            return MarkSuccessAsync();
         }
 
-        protected override Task storeAndForward(Envelope? envelope)
+        protected override Task storeAndForwardAsync(Envelope envelope)
         {
             return _senderDelegate(envelope);
         }

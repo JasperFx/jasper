@@ -26,7 +26,7 @@ namespace Jasper.Runtime.Routing
             routeFor(envelope.Message).Configure(envelope);
         }
 
-        public Envelope CloneForSending(Envelope? envelope)
+        public Envelope CloneForSending(Envelope envelope)
         {
             return routeFor(envelope.Message).CloneForSending(envelope);
         }

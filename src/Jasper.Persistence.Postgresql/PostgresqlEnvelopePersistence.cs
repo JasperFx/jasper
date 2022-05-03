@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Postgresql
                                              $";update {DatabaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} set owner_id = @node where id = ANY(@rids)";
         }
 
-        public override async Task<PersistedCounts> GetPersistedCounts()
+        public override async Task<PersistedCounts> FetchCountsAsync()
         {
             var counts = new PersistedCounts();
 
@@ -107,7 +107,7 @@ namespace Jasper.Persistence.Postgresql
         }
 
 
-        public override Task DeleteIncomingEnvelopesAsync(Envelope?[] envelopes)
+        public override Task DeleteIncomingEnvelopesAsync(Envelope[] envelopes)
         {
             return DatabaseSettings.CreateCommand(_deleteIncomingEnvelopesSql)
                 .With("ids", envelopes)
@@ -121,7 +121,7 @@ namespace Jasper.Persistence.Postgresql
             writer.WriteLine($"Persistent Envelope storage using Postgresql in schema '{DatabaseSettings.SchemaName}'");
         }
 
-        public override Task DiscardAndReassignOutgoingAsync(Envelope?[] discards, Envelope?[] reassigned, int nodeId)
+        public override Task DiscardAndReassignOutgoingAsync(Envelope[] discards, Envelope[] reassigned, int nodeId)
         {
             return DatabaseSettings.CreateCommand(_discardAndReassignOutgoingSql)
                 .With("ids", discards)
@@ -130,7 +130,7 @@ namespace Jasper.Persistence.Postgresql
                 .ExecuteOnce(_cancellation);
         }
 
-        public override Task DeleteOutgoingAsync(Envelope?[] envelopes)
+        public override Task DeleteOutgoingAsync(Envelope[] envelopes)
         {
             return DatabaseSettings.CreateCommand(_deleteOutgoingEnvelopesSql)
                 .With("ids", envelopes)
@@ -143,7 +143,7 @@ namespace Jasper.Persistence.Postgresql
             return $"select {DatabaseConstants.OutgoingFields} from {databaseSettings.SchemaName}.{DatabaseConstants.OutgoingTable} where owner_id = {TransportConstants.AnyNode} and destination = @destination LIMIT {settings.RecoveryBatchSize}";
         }
 
-        public override Task ReassignOutgoingAsync(int ownerId, Envelope?[] outgoing)
+        public override Task ReassignOutgoingAsync(int ownerId, Envelope[] outgoing)
         {
             return Session.Transaction.CreateCommand(_reassignOutgoingSql)
                 .With("owner", ownerId)
@@ -151,14 +151,14 @@ namespace Jasper.Persistence.Postgresql
                 .ExecuteNonQueryAsync(_cancellation);
         }
 
-        public override Task<IReadOnlyList<Envelope?>> LoadPageOfGloballyOwnedIncomingAsync()
+        public override Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncomingAsync()
         {
             return Session
                 .CreateCommand(_findAtLargeEnvelopesSql)
                 .FetchList(r => DatabasePersistence.ReadIncoming(r));
         }
 
-        public override Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope?> incoming)
+        public override Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope> incoming)
         {
             return Session.CreateCommand(_reassignIncomingSql)
                 .With("owner", ownerId)

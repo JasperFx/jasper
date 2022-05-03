@@ -17,7 +17,7 @@ namespace Jasper.ErrorHandling
         public Exception? Exception { get; }
 
         public async ValueTask Execute(IExecutionContext execution,
-            DateTime utcNow)
+            DateTimeOffset now)
         {
             await execution.SendFailureAcknowledgement(execution.Envelope,
                 $"Moved message {execution.Envelope.Id} to the Error Queue.\n{Exception}");

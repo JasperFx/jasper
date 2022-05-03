@@ -43,31 +43,31 @@ namespace Jasper.Persistence.Database
 
 
 
-        public Task Begin()
+        public Task BeginAsync()
         {
             Transaction = Connection.BeginTransaction();
             return Task.CompletedTask;
         }
 
-        public Task Commit()
+        public Task CommitAsync()
         {
             Transaction.Commit();
             Transaction = null;
             return Task.CompletedTask;
         }
 
-        public Task Rollback()
+        public Task RollbackAsync()
         {
             Transaction.Rollback();
             return Task.CompletedTask;
         }
 
-        public Task ReleaseNodeLock(int lockId)
+        public Task ReleaseNodeLockAsync(int lockId)
         {
             return _settings.ReleaseGlobalLock(Connection, lockId, _cancellation);
         }
 
-        public Task GetNodeLock(int lockId)
+        public Task GetNodeLockAsync(int lockId)
         {
             return _settings.GetGlobalLock(Connection, lockId, _cancellation);
         }

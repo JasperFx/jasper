@@ -97,7 +97,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             await thePersistor.StoreOutgoingAsync(list.ToArray(), 0);
 
-            var counts = await thePersistor.Admin.GetPersistedCounts();
+            var counts = await thePersistor.Admin.FetchCountsAsync();
 
             counts.Incoming.ShouldBe(10);
             counts.Scheduled.ShouldBe(7);

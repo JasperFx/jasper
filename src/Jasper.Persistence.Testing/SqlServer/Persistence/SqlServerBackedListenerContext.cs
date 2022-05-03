@@ -97,7 +97,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         {
             await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
-            return await thePersistence.Admin.AllIncomingEnvelopes();
+            return await thePersistence.Admin.AllIncomingAsync();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)

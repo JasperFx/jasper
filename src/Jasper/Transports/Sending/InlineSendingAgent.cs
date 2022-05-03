@@ -24,19 +24,19 @@ namespace Jasper.Transports.Sending
             // nothing
         }
 
-        public Uri? Destination => _sender.Destination;
+        public Uri Destination => _sender.Destination;
         public Uri? ReplyUri { get; set; }
         public bool Latched { get; } = false;
         public bool IsDurable { get; } = false;
         public bool SupportsNativeScheduledSend => _sender.SupportsNativeScheduledSend;
-        public async Task EnqueueOutgoing(Envelope? envelope)
+        public async Task EnqueueOutgoing(Envelope envelope)
         {
             setDefaults(envelope);
             await _sender.Send(envelope);
             _logger.Sent(envelope);
         }
 
-        public Task StoreAndForward(Envelope? envelope)
+        public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
         }

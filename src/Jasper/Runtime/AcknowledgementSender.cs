@@ -48,7 +48,7 @@ namespace Jasper.Runtime
             };
 
             _router.RouteToDestination(original.ReplyUri, envelope);
-            return envelope.Send();
+            return envelope.StoreAndForward();
 
         }
 
@@ -75,7 +75,7 @@ namespace Jasper.Runtime
                 };
 
                 _router.RouteToDestination(original.ReplyUri, envelope);
-                return envelope.Send();
+                return envelope.StoreAndForward();
 
             }
 

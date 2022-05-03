@@ -15,7 +15,7 @@ namespace Jasper.Runtime.Routing
         private readonly Endpoint _endpoint;
         private readonly IMessageSerializer? _writer;
 
-        public StaticRoute(ISendingAgent? agent,
+        public StaticRoute(ISendingAgent agent,
             MessageTypeRouting routing)
         {
             _agent = agent;
@@ -54,7 +54,7 @@ namespace Jasper.Runtime.Routing
             }
         }
 
-        public Envelope CloneForSending(Envelope? envelope)
+        public Envelope CloneForSending(Envelope envelope)
         {
             if (envelope.Message == null && envelope.Data == null)
                 throw new ArgumentNullException(nameof(envelope.Message), "Envelope.Message cannot be null");

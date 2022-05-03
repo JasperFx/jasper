@@ -28,7 +28,7 @@ namespace Jasper.Persistence.Testing
             {
                 await host1.Send(new ReceivedMessage());
 
-                var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                var counts = await host1.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
 
                 await host1.StopAsync();
 
@@ -38,13 +38,13 @@ namespace Jasper.Persistence.Testing
             // Don't use JasperHost here because you need the existing persisted state!!!!
             using (var host1 = Host.CreateDefaultBuilder().UseJasper(opts => opts.ConfigureDurableSender(true, false)).Start())
             {
-                var counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                var counts = await host1.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
 
                 var i = 0;
                 while (counts.Incoming != 1 && i < 10)
                 {
                     await Task.Delay(100.Milliseconds());
-                    counts = await host1.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                    counts = await host1.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
                     i++;
                 }
 

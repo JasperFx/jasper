@@ -6,7 +6,6 @@ namespace Jasper.Runtime.Routing
     public interface IEnvelopeRouter
     {
         Envelope[] RouteOutgoingByMessage(object message);
-        MessageTypeRouting RouteByType(Type messageType);
         Envelope[] RouteOutgoingByEnvelope(Envelope original);
         void RouteToDestination(Uri destination, Envelope envelope);
         Envelope[] RouteToTopic(string topicName, Envelope envelope);

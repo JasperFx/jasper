@@ -4,10 +4,10 @@ namespace Jasper.Persistence.Durability
 {
     public interface IEnvelopeTransaction
     {
-        Task Persist(Envelope? envelope);
-        Task Persist(Envelope?[] envelopes);
-        Task ScheduleJob(Envelope? envelope);
+        Task PersistAsync(Envelope envelope);
+        Task PersistAsync(Envelope[] envelopes);
+        Task ScheduleJobAsync(Envelope envelope);
 
-        Task CopyTo(IEnvelopeTransaction other);
+        Task CopyToAsync(IEnvelopeTransaction other);
     }
 }

@@ -3,53 +3,39 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
-using Jasper.Logging;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
-using Jasper.Transports;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Durability
 {
-
-
-    public class DurabilityAgent : IHostedService, IDurabilityAgent, IDisposable
+    public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposable
     {
-        /// <summary>
-        /// Strictly a testing helper
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static DurabilityAgent ForHost(IHost host)
-        {
-            return host.Services.GetRequiredService<IJasperRuntime>().As<JasperRuntime>().Durability;
-        }
+        private readonly IMessagingAction _incomingMessages;
+        private readonly IMessagingAction _outgoingMessages;
+        private readonly IMessagingAction _scheduledJobs;
+        private readonly IMessagingAction _nodeReassignment;
 
-        private readonly IMessagingAction? IncomingMessages;
-        private readonly IMessagingAction? OutgoingMessages;
-        private readonly IMessagingAction? ScheduledJobs;
-        private readonly IMessagingAction? NodeReassignment;
+        private readonly IEnvelopePersistence _storage;
+        private readonly AdvancedSettings _settings;
+        private readonly ILogger<DurabilityAgent> _trace;
+        private readonly IWorkerQueue _workers;
 
-        private readonly IEnvelopePersistence? _storage;
-        private readonly AdvancedSettings? _settings;
-        private readonly ILogger<DurabilityAgent>? _trace;
-        private readonly IWorkerQueue? _workers;
-
-        private readonly ActionBlock<IMessagingAction?>? _worker;
+        private readonly ActionBlock<IMessagingAction> _worker;
 
         private Timer? _nodeReassignmentTimer;
         private Timer? _scheduledJobTimer;
         private readonly bool _disabled;
-        private bool _hasStarted;
+        private readonly ILogger _logger;
 
-
+#pragma warning disable CS8618
         public DurabilityAgent(IJasperRuntime runtime, ILogger logger,
+#pragma warning restore CS8618
             ILogger<DurabilityAgent> trace,
-            IWorkerQueue? workers,
-            IEnvelopePersistence? storage,
-            AdvancedSettings? settings)
+            IWorkerQueue workers,
+            IEnvelopePersistence storage,
+            AdvancedSettings settings)
         {
             if (storage is NulloEnvelopePersistence)
             {
@@ -57,116 +43,58 @@ namespace Jasper.Persistence.Durability
                 return;
             }
 
-            Logger = logger;
+            _logger = logger;
             _trace = trace;
             _workers = workers;
             _storage = storage;
             _settings = settings;
 
 
-            _worker = new ActionBlock<IMessagingAction?>(processAction, new ExecutionDataflowBlockOptions
+            _worker = new ActionBlock<IMessagingAction>(processActionAsync, new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = 1,
                 CancellationToken = _settings.Cancellation
             });
 
-            NodeId = _settings.UniqueNodeId;
-
-            IncomingMessages = new RecoverIncomingMessages(storage, workers, settings, logger);
-            OutgoingMessages = new RecoverOutgoingMessages(runtime, settings, logger);
-            NodeReassignment = new NodeReassignment(settings);
-            ScheduledJobs = new RunScheduledJobs(settings, logger);
+            _incomingMessages = new RecoverIncomingMessages(workers, settings, logger);
+            _outgoingMessages = new RecoverOutgoingMessages(runtime, settings, logger);
+            _nodeReassignment = new NodeReassignment(settings);
+            _scheduledJobs = new RunScheduledJobs(settings, logger);
         }
 
-        public ILogger Logger { get; }
-
-        public int NodeId { get; }
-
-        // This was built mostly for testing
-        public Task Execute(IMessagingAction action)
-        {
-            // this is a side effect of the agent being shut down
-            if (action == null) return Task.CompletedTask;
-
-            if (_hasStarted)
-            {
-                var wrapper = new MessageActionWrapper(action);
-                _worker.Post(wrapper);
-
-                return wrapper.Completion;
-            }
-            else
-            {
-                return processAction(action);
-            }
-        }
-
-        public class MessageActionWrapper : IMessagingAction
-        {
-            private readonly IMessagingAction _inner;
-            private readonly TaskCompletionSource<bool> _completion;
-
-            public MessageActionWrapper(IMessagingAction inner)
-            {
-                _inner = inner;
-                _completion = new TaskCompletionSource<bool>();
-            }
-
-            public string Description => _inner.Description;
-
-            public Task Completion => _completion.Task;
-
-            public async Task Execute(IEnvelopePersistence? storage, IDurabilityAgent agent)
-            {
-                try
-                {
-                    await _inner.Execute(storage, agent);
-                    _completion.SetResult(true);
-                }
-                catch (Exception e)
-                {
-                    _completion.SetException(e);
-                }
-            }
-        }
-
-        public Task EnqueueLocally(Envelope? envelope)
+        public Task EnqueueLocallyAsync(Envelope envelope)
         {
             return _workers.EnqueueAsync(envelope);
         }
 
         public void RescheduleIncomingRecovery()
         {
-            _worker.Post(IncomingMessages);
+            _worker.Post(_incomingMessages);
         }
 
         public void RescheduleOutgoingRecovery()
         {
-            _worker.Post(OutgoingMessages);
+            _worker.Post(_outgoingMessages);
         }
 
         public async Task StartAsync(CancellationToken stoppingToken)
         {
             if (_disabled) return;
 
-
-
-            _hasStarted = true;
-
             await tryRestartConnectionAsync();
 
-            _scheduledJobTimer = new Timer(s =>
+            _scheduledJobTimer = new Timer(_ =>
             {
-                _worker.Post(ScheduledJobs);
-                _worker.Post(IncomingMessages);
-                _worker.Post(OutgoingMessages);
+                _worker.Post(_scheduledJobs);
+                _worker.Post(_incomingMessages);
+                _worker.Post(_outgoingMessages);
             }, _settings, _settings.ScheduledJobFirstExecution, _settings.ScheduledJobPollingTime);
 
-            _nodeReassignmentTimer = new Timer(s => { _worker.Post(NodeReassignment); }, _settings,
+            _nodeReassignmentTimer = new Timer(_ => _worker.Post(_nodeReassignment), _settings,
                 _settings.FirstNodeReassignmentExecution, _settings.NodeReassignmentPollingTime);
         }
 
-        private async Task processAction(IMessagingAction action)
+        private async Task processActionAsync(IMessagingAction action)
         {
             if (_settings.Cancellation.IsCancellationRequested) return;
 
@@ -182,22 +110,22 @@ namespace Jasper.Persistence.Durability
 
                     if (_settings.VerboseDurabilityAgentLogging)
                     {
-                        _trace.LogDebug("Running " + action.Description);
+                        _trace.LogDebug("Running action {Action}", action.Description);
                     }
-                    await action.Execute(_storage, this);
+                    await action.ExecuteAsync(_storage, this);
                 }
                 catch (Exception? e)
                 {
-                    Logger.LogError(e, "Running " + action.Description);
+                    _logger.LogError(e, "Error while running {Action}", action.Description);
                 }
             }
             catch (Exception? e)
             {
-                Logger.LogError(e, "Error trying to run " + action);
-                await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
+                _logger.LogError(e, "Error trying to run {Action}", action);
+                await _storage.Session.ReleaseNodeLockAsync(_settings.UniqueNodeId);
             }
 
-            await _storage.Session.GetNodeLock(_settings.UniqueNodeId);
+            await _storage.Session.GetNodeLockAsync(_settings.UniqueNodeId);
         }
 
         private async Task tryRestartConnectionAsync()
@@ -206,11 +134,11 @@ namespace Jasper.Persistence.Durability
 
             try
             {
-                await _storage.Session.ConnectAndLockCurrentNodeAsync(Logger, _settings.UniqueNodeId);
+                await _storage.Session.ConnectAndLockCurrentNodeAsync(_logger, _settings.UniqueNodeId);
             }
             catch (Exception? e)
             {
-                Logger.LogError(e, message: "Failure trying to restart the connection in DurabilityAgent");
+                _logger.LogError(e, message: "Failure trying to restart the connection in DurabilityAgent");
             }
         }
 
@@ -219,8 +147,15 @@ namespace Jasper.Persistence.Durability
         {
             if (_disabled) return;
 
-            await _nodeReassignmentTimer.DisposeAsync();
-            await _scheduledJobTimer.DisposeAsync();
+            if (_nodeReassignmentTimer != null)
+            {
+                await _nodeReassignmentTimer.DisposeAsync();
+            }
+
+            if (_scheduledJobTimer != null)
+            {
+                await _scheduledJobTimer.DisposeAsync();
+            }
 
             _worker.Complete();
 
@@ -228,29 +163,36 @@ namespace Jasper.Persistence.Durability
             {
                 await _worker.Completion;
 
-                await _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId);
+                await _storage.Session.ReleaseNodeLockAsync(_settings.UniqueNodeId);
 
                 // Release all envelopes tagged to this node in message persistence to any node
                 await _storage.ReassignDormantNodeToAnyNodeAsync(_settings.UniqueNodeId);
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Error while trying to stop DurabilityAgent");
+                _logger.LogError(e, "Error while trying to stop DurabilityAgent");
             }
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
             if (_disabled) return;
 
             if (_storage.Session.IsConnected())
             {
-                _storage.Session.ReleaseNodeLock(_settings.UniqueNodeId).GetAwaiter().GetResult();
+                await _storage.Session.ReleaseNodeLockAsync(_settings.UniqueNodeId);
                 _storage.SafeDispose();
             }
 
-            _scheduledJobTimer?.Dispose();
-            _nodeReassignmentTimer?.Dispose();
+            if (_scheduledJobTimer != null)
+            {
+                await _scheduledJobTimer.DisposeAsync();
+            }
+
+            if (_nodeReassignmentTimer != null)
+            {
+                await _nodeReassignmentTimer.DisposeAsync();
+            }
         }
     }
 }

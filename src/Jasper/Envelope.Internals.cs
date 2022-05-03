@@ -22,9 +22,9 @@ namespace Jasper
     // inside the Jasper runtime so we can keep it out of the WireProtocol
     public partial class Envelope
     {
-        internal void MarkReceived(Uri uri, DateTime now, int currentNodeId)
+        internal void MarkReceived(Uri uri, DateTimeOffset now, int currentNodeId)
         {
-            if (IsDelayed(now))
+            if (IsScheduledForLater(now))
             {
                 Status = EnvelopeStatus.Scheduled;
                 OwnerId = TransportConstants.AnyNode;
@@ -111,7 +111,7 @@ namespace Jasper
 
         internal ISendingAgent? Sender { get; set; }
 
-        internal Task Send()
+        internal Task StoreAndForward()
         {
             if (_enqueued) throw new InvalidOperationException("This envelope has already been enqueued");
 

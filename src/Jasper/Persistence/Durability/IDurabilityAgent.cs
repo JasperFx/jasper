@@ -4,7 +4,7 @@ namespace Jasper.Persistence.Durability
 {
     public interface IDurabilityAgent
     {
-        Task EnqueueLocally(Envelope? envelope);
+        Task EnqueueLocallyAsync(Envelope envelope);
         void RescheduleIncomingRecovery();
         void RescheduleOutgoingRecovery();
     }

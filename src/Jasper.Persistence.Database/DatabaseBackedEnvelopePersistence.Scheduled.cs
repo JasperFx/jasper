@@ -8,7 +8,7 @@ namespace Jasper.Persistence.Database
 {
     public abstract partial class DatabaseBackedEnvelopePersistence<T>
     {
-        public Task ScheduleExecutionAsync(Envelope?[] envelopes)
+        public Task ScheduleExecutionAsync(Envelope[] envelopes)
         {
             var builder = DatabaseSettings.ToCommandBuilder();
 
@@ -26,7 +26,7 @@ namespace Jasper.Persistence.Database
         }
 
 
-        public Task ScheduleJobAsync(Envelope? envelope)
+        public Task ScheduleJobAsync(Envelope envelope)
         {
             envelope.Status = EnvelopeStatus.Scheduled;
             envelope.OwnerId = TransportConstants.AnyNode;
@@ -35,7 +35,7 @@ namespace Jasper.Persistence.Database
         }
 
 
-        public Task<IReadOnlyList<Envelope?>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow)
+        public Task<IReadOnlyList<Envelope>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow)
         {
             return Session.Transaction
                 .CreateCommand($"select {DatabaseConstants.IncomingFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")

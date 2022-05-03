@@ -25,19 +25,19 @@ namespace Jasper.Persistence.Database
             _tx?.Dispose();
         }
 
-        public Task Persist(Envelope? envelope)
+        public Task PersistAsync(Envelope envelope)
         {
-            return Persist(new[] {envelope});
+            return PersistAsync(new[] {envelope});
         }
 
-        public Task Persist(Envelope?[] envelopes)
+        public Task PersistAsync(Envelope[] envelopes)
         {
             if (!envelopes.Any()) return Task.CompletedTask;
 
             return _persistence.StoreOutgoing(_tx, envelopes);
         }
 
-        public Task ScheduleJob(Envelope? envelope)
+        public Task ScheduleJobAsync(Envelope envelope)
         {
             envelope.OwnerId = TransportConstants.AnyNode;
             envelope.Status = EnvelopeStatus.Scheduled;
@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Database
             return _persistence.StoreIncoming(_tx, new[] {envelope});
         }
 
-        public Task CopyTo(IEnvelopeTransaction other)
+        public Task CopyToAsync(IEnvelopeTransaction other)
         {
             throw new NotSupportedException(
                 $"Cannot copy data from an existing Sql Server envelope transaction to {other}. You may have erroneously enlisted an IMessageContext in a transaction twice.");

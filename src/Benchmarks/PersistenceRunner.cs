@@ -105,7 +105,7 @@ namespace Benchmarks
         [Benchmark]
         public Task LoadIncoming()
         {
-            return theDriver.Persistence.Admin.AllIncomingEnvelopes();
+            return theDriver.Persistence.Admin.AllIncomingAsync();
         }
 
         [IterationSetup(Target = nameof(LoadOutgoing))]
@@ -118,7 +118,7 @@ namespace Benchmarks
         [Benchmark]
         public Task LoadOutgoing()
         {
-            return theDriver.Persistence.Admin.AllOutgoingEnvelopes();
+            return theDriver.Persistence.Admin.AllOutgoingAsync();
         }
     }
 

@@ -7,16 +7,30 @@ namespace Jasper.Persistence.Durability
 {
     public interface IEnvelopeStorageAdmin
     {
-        Task ClearAllPersistedEnvelopes();
+        /// <summary>
+        /// Clears out all persisted envelopes
+        /// </summary>
+        /// <returns></returns>
+        Task ClearAllAsync();
 
-        Task RebuildStorage();
-        Task<PersistedCounts> GetPersistedCounts();
+        /// <summary>
+        /// Rebuilds the envelope storage and clears out any
+        /// persisted state
+        /// </summary>
+        /// <returns></returns>
+        Task RebuildAsync();
 
-        Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes();
-        Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes();
+        /// <summary>
+        /// Access the current count of persisted envelopes
+        /// </summary>
+        /// <returns></returns>
+        Task<PersistedCounts> FetchCountsAsync();
+
+        Task<IReadOnlyList<Envelope>> AllIncomingAsync();
+        Task<IReadOnlyList<Envelope>> AllOutgoingAsync();
 
 
-        Task ReleaseAllOwnership();
+        Task ReleaseAllOwnershipAsync();
 
         public Task CheckAsync(CancellationToken token);
     }

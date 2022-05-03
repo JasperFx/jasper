@@ -52,6 +52,7 @@ namespace Jasper.Runtime
         public Task PublishAsync<T>(T? message)
         {
             var envelope = new Envelope(message);
+
             return PublishEnvelopeAsync(envelope);
         }
 
@@ -169,11 +170,11 @@ namespace Jasper.Runtime
             if (EnlistedInTransaction)
             {
                 _outstanding.Fill(envelope);
-                return envelope.Sender.IsDurable ? Transaction.Persist(envelope) : Task.CompletedTask;
+                return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
             }
             else
             {
-                return envelope.Send();
+                return envelope.StoreAndForward();
             }
         }
 
@@ -181,7 +182,7 @@ namespace Jasper.Runtime
         {
             if (EnlistedInTransaction)
             {
-                await Transaction.Persist(outgoing.Where(isDurable).ToArray());
+                await Transaction.PersistAsync(outgoing.Where(isDurable).ToArray());
 
                 _outstanding.Fill(outgoing);
             }
@@ -189,7 +190,7 @@ namespace Jasper.Runtime
             {
                 foreach (var outgoingEnvelope in outgoing)
                 {
-                    await outgoingEnvelope.Send();
+                    await outgoingEnvelope.StoreAndForward();
                 }
             }
         }

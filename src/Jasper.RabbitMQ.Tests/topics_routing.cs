@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Attributes;
+using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 using Jasper.Tracking;
 using Jasper.Util;
@@ -99,7 +101,7 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public void route_to_topics_by_type()
         {
-            var router = _host.Get<IEnvelopeRouter>();
+            var router = _host.Get<IEnvelopeRouter>().As<JasperRuntime>();
 
             router.RouteByType(typeof(Topic1))
                 .Routes

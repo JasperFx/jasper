@@ -41,13 +41,13 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         {
             var persistence = theHost.Get<IEnvelopePersistence>();
 
-            await persistence.Admin.RebuildStorage();
+            await persistence.Admin.RebuildAsync();
 
 
             persistence.ScheduleJobAsync(theEnvelope).Wait(3.Seconds());
 
             persisted = (await persistence.Admin
-                .AllIncomingEnvelopes())
+                .AllIncomingAsync())
 
                 .FirstOrDefault(x => x.Id == theEnvelope.Id);
         }

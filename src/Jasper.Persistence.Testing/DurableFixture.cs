@@ -157,11 +157,11 @@ namespace Jasper.Persistence.Testing
 
         private async Task<PersistedCounts> assertNoPersistedOutgoingEnvelopes()
         {
-            var senderCounts = await theSender.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+            var senderCounts = await theSender.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
             if (senderCounts.Outgoing > 0)
             {
                 await Task.Delay(500.Milliseconds());
-                senderCounts = await theSender.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                senderCounts = await theSender.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
             }
 
             return senderCounts;
@@ -178,11 +178,11 @@ namespace Jasper.Persistence.Testing
 
         private async Task assertIncomingEnvelopesIsZero()
         {
-            var receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+            var receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
             if (receiverCounts.Incoming > 0)
             {
                 await Task.Delay(500.Milliseconds());
-                receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.GetPersistedCounts();
+                receiverCounts = await theReceiver.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
             }
 
             receiverCounts.Incoming.ShouldBe(0, "There are still persisted, incoming messages");
@@ -202,7 +202,7 @@ namespace Jasper.Persistence.Testing
             await send(async c => { await c.Schedule(item, 1.Hours()); });
 
             var persistor = theSender.Get<IEnvelopePersistence>();
-            var counts = await persistor.Admin.GetPersistedCounts();
+            var counts = await persistor.Admin.FetchCountsAsync();
 
             counts.Scheduled.ShouldBe(1, $"counts.Scheduled = {counts.Scheduled}, should be 1");
         }

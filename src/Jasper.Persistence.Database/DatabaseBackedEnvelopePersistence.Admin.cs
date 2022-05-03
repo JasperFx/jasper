@@ -10,14 +10,14 @@ namespace Jasper.Persistence.Database
 {
     public abstract partial class DatabaseBackedEnvelopePersistence<T>
     {
-        public async Task ClearAllPersistedEnvelopes()
+        public async Task ClearAllAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
             await truncateEnvelopeDataAsync(conn);
         }
 
-        public async Task RebuildStorage()
+        public async Task RebuildAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
@@ -50,9 +50,9 @@ namespace Jasper.Persistence.Database
             }
         }
 
-        public abstract Task<PersistedCounts> GetPersistedCounts();
+        public abstract Task<PersistedCounts> FetchCountsAsync();
 
-        public async Task<IReadOnlyList<Envelope>> AllIncomingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllIncomingAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
@@ -63,7 +63,7 @@ namespace Jasper.Persistence.Database
                 .FetchList(r => DatabasePersistence.ReadIncoming(r, _cancellation), cancellation: _cancellation);
         }
 
-        public async Task<IReadOnlyList<Envelope>> AllOutgoingEnvelopes()
+        public async Task<IReadOnlyList<Envelope>> AllOutgoingAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);
@@ -74,7 +74,7 @@ namespace Jasper.Persistence.Database
                 .FetchList(r => DatabasePersistence.ReadOutgoing(r, _cancellation), cancellation: _cancellation);
         }
 
-        public async Task ReleaseAllOwnership()
+        public async Task ReleaseAllOwnershipAsync()
         {
             await using var conn = DatabaseSettings.CreateConnection();
             await conn.OpenAsync(_cancellation);

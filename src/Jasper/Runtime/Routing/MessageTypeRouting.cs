@@ -99,9 +99,13 @@ namespace Jasper.Runtime.Routing
 
         public Envelope[] RouteByMessage(object message)
         {
-            return _routes.Count == 1
-                ? new []{_routes[0].BuildForSending(message)}
-                : _routes.Select(x => x.BuildForSending(message)).ToArray();
+            var envelopes = new Envelope[_routes.Count];
+            for (var i = 0; i < _routes.Count; i++)
+            {
+                envelopes[i] = _routes[i].BuildForSending(message);
+            }
+
+            return envelopes;
         }
 
         public Envelope[] RouteByEnvelope(Type messageType, Envelope envelope)
@@ -112,10 +116,14 @@ namespace Jasper.Runtime.Routing
 
                 return new []{envelope};
             }
-            else
+
+            var envelopes = new Envelope[_routes.Count];
+            for (int i = 0; i < _routes.Count; i++)
             {
-                return _routes.Select(x => x.CloneForSending(envelope)).ToArray();
+                envelopes[i] = _routes[i].CloneForSending(envelope);
             }
+
+            return envelopes;
         }
 
         public StaticRoute DetermineDestinationRoute(Uri destination)
@@ -127,33 +135,14 @@ namespace Jasper.Runtime.Routing
 
         public Envelope[] RouteToTopic(Type messageType, Envelope envelope)
         {
-            if (envelope.TopicName.IsEmpty()) throw new ArgumentNullException(nameof(envelope), "There is no topic name for this envelope");
+            var topicName = envelope.TopicName;
+            if (topicName.IsEmpty()) throw new ArgumentNullException(nameof(envelope), "There is no topic name for this envelope");
 
-            if (!_topicRoutes.TryFind(envelope.TopicName, out var routes))
+            if (!_topicRoutes.TryFind(topicName, out var routes))
             {
-                var routers = _runtime.Subscribers.OfType<ITopicRouter>()
-                    .ToArray();
+                routes = determineTopicRoutes(messageType, topicName);
 
-                var matching = routers.Where(x => x.ShouldSendMessage(messageType)).ToArray();
-
-                if (matching.Any())
-                {
-                    routers = matching;
-                }
-                else if (!routers.Any())
-                {
-                    throw new InvalidOperationException("There are no topic routers registered for this application");
-                }
-
-                // ReSharper disable once CoVariantArrayConversion
-                routes = routers.Select(x =>
-                {
-                    var uri = x.BuildUriForTopic(envelope.TopicName);
-                    var agent = _runtime.GetOrBuildSendingAgent(uri);
-                    return new StaticRoute(agent, this);
-                }).ToArray();
-
-                _topicRoutes = _topicRoutes.AddOrUpdate(envelope.TopicName, routes);
+                _topicRoutes = _topicRoutes.AddOrUpdate(topicName, routes);
             }
 
             if (routes.Length != 1)
@@ -164,6 +153,33 @@ namespace Jasper.Runtime.Routing
             routes[0].Configure(envelope);
             return new []{envelope};
 
+        }
+
+        private IMessageRoute[] determineTopicRoutes(Type messageType, string topicName)
+        {
+            IMessageRoute[] routes;
+            var routers = _runtime.Subscribers.OfType<ITopicRouter>()
+                .ToArray();
+
+            var matching = routers.Where(x => x.ShouldSendMessage(messageType)).ToArray();
+
+            if (matching.Any())
+            {
+                routers = matching;
+            }
+            else if (!routers.Any())
+            {
+                throw new InvalidOperationException("There are no topic routers registered for this application");
+            }
+
+            // ReSharper disable once CoVariantArrayConversion
+            routes = routers.Select(x =>
+            {
+                var uri = x.BuildUriForTopic(topicName);
+                var agent = _runtime.GetOrBuildSendingAgent(uri);
+                return new StaticRoute(agent, this);
+            }).ToArray();
+            return routes;
         }
 
         private ImHashMap<string, IMessageRoute[]> _topicRoutes = ImHashMap<string, IMessageRoute[]>.Empty;

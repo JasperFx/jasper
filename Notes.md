@@ -21,6 +21,19 @@
 * Really need the circuit breaker
 * Inbox/outbox should guard against duplicate. Enforce idempotency especially at the incoming side of things
 
+### Rabbit MQ
+
+* Tie the Envelope.DeliverBy prop to Rabbit MQ's TTL???
+* More queues for throughput
+* Use temporary queue for control messages. Also make auto-delete and exclusive (later)
+* Surface priority in rabbit mq config within jasper?
+* Share a connection, but not the channels. Channels cannot be shared between threads, not that we do. One connection for incoming, and one for outgoing?
+* do a little more research on `x-dead-letter-exchange` and `x-dead-letter-routing-key` for dead lettering messages in rabbit mq
+* Enable prefetch count and size configuration on Rabbit Mq endpoint. You set it w/ Channel.BasicQos() 
+* See the [retry queue idea](https://nordvpn.com/blog/rabbitmq-use-cases/). Maybe a better way of doing delayed retries. Also really important to get a circuit breaker in place.
+* The buffered listener approach will need backpressure to shut off the listener when the in memory count gets too high
+* Might invest some time in strong typed helpers on queue arguments for things like `"x-queue-mode", "lazy"`
+
 ### Doc Notes
 
 * Play up the concurrency support, sample producer/consumer model would be nice

@@ -24,24 +24,24 @@ namespace Jasper.Transports.Local
 
         public Endpoint Endpoint { get; }
 
-        public Uri? Destination { get; }
+        public Uri Destination { get; }
         public Uri? ReplyUri { get; set; } = TransportConstants.RepliesUri;
 
         public bool Latched { get; } = false;
 
         public bool IsDurable => Destination.IsDurable();
 
-        public Task EnqueueOutgoing(Envelope? envelope)
+        public Task EnqueueOutgoing(Envelope envelope)
         {
             _messageLogger.Sent(envelope);
             envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
 
-            return envelope.IsDelayed(DateTime.UtcNow)
+            return envelope.IsScheduledForLater(DateTime.UtcNow)
                 ? ScheduleExecutionAsync(envelope)
                 : EnqueueAsync(envelope);
         }
 
-        public Task StoreAndForward(Envelope? envelope)
+        public Task StoreAndForward(Envelope envelope)
         {
             return EnqueueOutgoing(envelope);
         }

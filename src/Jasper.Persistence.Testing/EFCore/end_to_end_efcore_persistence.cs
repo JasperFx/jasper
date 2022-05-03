@@ -68,11 +68,11 @@ namespace Jasper.Persistence.Testing.EFCore
 
             var transaction = new EFCoreEnvelopeTransaction(context, messaging);
 
-            await transaction.Persist(envelope);
+            await transaction.PersistAsync(envelope);
             await context.SaveChangesAndFlushMessages(messaging);
 
             var persisted = await Host.Services.GetRequiredService<IEnvelopePersistence>()
-                .Admin.AllOutgoingEnvelopes();
+                .Admin.AllOutgoingAsync();
 
             var loadedEnvelope = persisted.Single();
 
@@ -109,11 +109,11 @@ namespace Jasper.Persistence.Testing.EFCore
 
             var transaction = new EFCoreEnvelopeTransaction(context, messaging);
 
-            await transaction.ScheduleJob(envelope);
+            await transaction.ScheduleJobAsync(envelope);
             await context.SaveChangesAndFlushMessages(messaging);
 
             var persisted = await Host.Services.GetRequiredService<IEnvelopePersistence>()
-                .Admin.AllIncomingEnvelopes();
+                .Admin.AllIncomingAsync();
 
             var loadedEnvelope = persisted.Single();
 

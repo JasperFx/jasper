@@ -36,7 +36,7 @@ namespace Jasper.Runtime
 
         public IMessageLogger Logger => Runtime.MessageLogger;
 
-        public IEnumerable<Envelope?> Outstanding => _outstanding;
+        public IEnumerable<Envelope> Outstanding => _outstanding;
 
 
         public Task InvokeAsync(object message, CancellationToken cancellation = default)
@@ -124,7 +124,7 @@ namespace Jasper.Runtime
 
             if (EnlistedInTransaction)
             {
-                return Transaction.ScheduleJob(envelope);
+                return Transaction.ScheduleJobAsync(envelope);
             }
 
             if (Persistence is NulloEnvelopePersistence)
@@ -141,10 +141,10 @@ namespace Jasper.Runtime
             if (EnlistedInTransaction)
             {
                 _outstanding.Fill(envelope);
-                return envelope.Sender.IsDurable ? Transaction.Persist(envelope) : Task.CompletedTask;
+                return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
             }
 
-            return envelope.Send();
+            return envelope.StoreAndForward();
         }
 
         public bool EnlistedInTransaction { get; protected set; }
@@ -155,7 +155,7 @@ namespace Jasper.Runtime
             Transaction = transaction;
             EnlistedInTransaction = true;
 
-            return original?.CopyTo(transaction) ?? Task.CompletedTask;
+            return original?.CopyToAsync(transaction) ?? Task.CompletedTask;
         }
 
         public IEnvelopeTransaction Transaction { get; protected set; }

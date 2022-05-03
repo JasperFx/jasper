@@ -33,7 +33,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
             _messaging = messaging;
         }
 
-        public async Task Persist(Envelope? envelope)
+        public async Task PersistAsync(Envelope envelope)
         {
             if (_db.Database.CurrentTransaction == null)
             {
@@ -49,7 +49,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task Persist(Envelope?[] envelopes)
+        public async Task PersistAsync(Envelope[] envelopes)
         {
             if (!envelopes.Any())
             {
@@ -70,7 +70,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task ScheduleJob(Envelope? envelope)
+        public async Task ScheduleJobAsync(Envelope envelope)
         {
             if (_db.Database.CurrentTransaction == null)
             {
@@ -85,7 +85,7 @@ namespace Jasper.Persistence.EntityFrameworkCore
 
         }
 
-        public Task CopyTo(IEnvelopeTransaction other)
+        public Task CopyToAsync(IEnvelopeTransaction other)
         {
             throw new NotSupportedException();
         }

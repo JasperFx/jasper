@@ -137,7 +137,7 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task Successful(Envelope? outgoing)
+        public Task Successful(Envelope outgoing)
         {
             Succeeded = true;
             return Task.CompletedTask;
@@ -167,7 +167,7 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task ProcessingFailure(Envelope? outgoing, Exception? exception)
+        public Task ProcessingFailure(Envelope outgoing, Exception? exception)
         {
             ProcessingFailed = true;
             return Task.CompletedTask;

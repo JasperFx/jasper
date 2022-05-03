@@ -74,7 +74,7 @@ public static class TransportLoggerExtensions
         _listeningStatusChanged = LoggerMessage.Define<ListeningStatus>(LogLevel.Information,
             ListeningStatusChangedEventId, "ListeningStatus changed to {status}");
     }
-        
+
     public static void OutgoingBatchSucceeded(this ILogger logger, OutgoingMessageBatch batch)
     {
         _outgoingBatchSucceeded(logger, batch.Messages.Count, batch.Destination, null);
@@ -113,7 +113,7 @@ public static class TransportLoggerExtensions
         }
     }
 
-    public static void RecoveredIncoming(this ILogger logger, IEnumerable<Envelope?> envelopes)
+    public static void RecoveredIncoming(this ILogger logger, IEnumerable<Envelope> envelopes)
     {
         _recoveredIncoming(logger, envelopes.Count(), null);
     }
@@ -137,5 +137,5 @@ public static class TransportLoggerExtensions
     {
         _listeningStatusChanged(logger, status, null);
     }
-        
+
 }

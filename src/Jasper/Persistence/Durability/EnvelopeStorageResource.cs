@@ -22,7 +22,7 @@ internal class EnvelopeStorageResource : IStatefulResource
 
     public Task ClearState(CancellationToken token)
     {
-        return _persistence.Admin.ClearAllPersistedEnvelopes();
+        return _persistence.Admin.ClearAllAsync();
     }
 
     public Task Teardown(CancellationToken token)
@@ -32,12 +32,12 @@ internal class EnvelopeStorageResource : IStatefulResource
 
     public Task Setup(CancellationToken token)
     {
-        return _persistence.Admin.RebuildStorage();
+        return _persistence.Admin.RebuildAsync();
     }
 
     public async Task<IRenderable> DetermineStatus(CancellationToken token)
     {
-        var counts = await _persistence.Admin.GetPersistedCounts();
+        var counts = await _persistence.Admin.FetchCountsAsync();
         var table = new Table();
         table.AddColumns("Envelope Category", "Number");
         table.AddRow("Incoming", counts.Incoming.ToString());

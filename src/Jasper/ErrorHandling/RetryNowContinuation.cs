@@ -13,7 +13,7 @@ namespace Jasper.ErrorHandling
         {
         }
 
-        public async ValueTask Execute(IExecutionContext execution, DateTime utcNow)
+        public async ValueTask Execute(IExecutionContext execution, DateTimeOffset now)
         {
             await execution.RetryExecutionNow();
         }

@@ -17,7 +17,7 @@ namespace Jasper.ErrorHandling
         }
 
         public async ValueTask Execute(IExecutionContext execution,
-            DateTime utcNow)
+            DateTimeOffset now)
         {
             execution.Logger.NoHandlerFor(execution.Envelope);
 
