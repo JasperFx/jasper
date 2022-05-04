@@ -9,11 +9,13 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public partial class RabbitMqTransport : TransportBase<RabbitMqEndpoint>
+    public partial class RabbitMqTransport : TransportBase<RabbitMqEndpoint>, IDisposable
     {
         public const string ProtocolName = "rabbitmq";
 
         private readonly LightweightCache<Uri, RabbitMqEndpoint> _endpoints;
+        private IConnection? _listenerConnection;
+        private IConnection? _sendingConnection;
 
         public RabbitMqTransport() : base(ProtocolName, "Rabbit MQ")
         {
@@ -31,6 +33,43 @@ namespace Jasper.RabbitMQ.Internal
                 });
 
             Exchanges = new LightweightCache<string, RabbitMqExchange>(name => new RabbitMqExchange(name, this));
+        }
+
+        public void Dispose()
+        {
+            foreach (var endpoint in _endpoints)
+            {
+                endpoint.Dispose();
+            }
+
+            _listenerConnection?.SafeDispose();
+            _sendingConnection?.SafeDispose();
+        }
+
+        internal IConnection ListeningConnection
+        {
+            get
+            {
+                if (_listenerConnection == null)
+                {
+                    _listenerConnection = BuildConnection();
+                }
+
+                return _listenerConnection;
+            }
+        }
+
+        internal IConnection SendingConnection
+        {
+            get
+            {
+                if (_sendingConnection == null)
+                {
+                    _sendingConnection = BuildConnection();
+                }
+
+                return _sendingConnection;
+            }
         }
 
         protected override IEnumerable<RabbitMqEndpoint> endpoints()

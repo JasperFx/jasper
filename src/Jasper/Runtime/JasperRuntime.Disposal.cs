@@ -10,10 +10,11 @@ public partial class JasperRuntime : IAsyncDisposable
 {
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        if (_hasStopped)
+        if (!_hasStopped)
         {
             await StopAsync(CancellationToken.None);
         }
+
         foreach (var kv in _senders.Enumerate())
         {
             kv.Value.SafeDispose();
@@ -23,6 +24,7 @@ public partial class JasperRuntime : IAsyncDisposable
         {
             listener.SafeDispose();
         }
+
         Advanced.Cancel();
 
         ScheduledJobs?.Dispose();

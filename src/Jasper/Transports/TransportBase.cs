@@ -79,15 +79,6 @@ namespace Jasper.Transports
             return endpoint;
         }
 
-
-        public virtual void Dispose()
-        {
-            foreach (var endpoint in endpoints().OfType<IDisposable>())
-            {
-                endpoint.Dispose();
-            }
-        }
-
         public Endpoint GetOrCreateEndpoint(Uri uri)
         {
             var shouldBeDurable = uri.IsDurable();

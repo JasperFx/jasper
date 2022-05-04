@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Baseline.Dates;
 using Jasper.Tracking;
 using Shouldly;
 using TestMessages;
@@ -34,7 +35,7 @@ namespace Jasper.Testing.Transports.Local
             configure();
 
             var message1 = new Message1();
-            var session = await Host.SendMessageAndWaitAsync(message1);
+            var session = await Host.SendMessageAndWaitAsync(message1, 15000);
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)

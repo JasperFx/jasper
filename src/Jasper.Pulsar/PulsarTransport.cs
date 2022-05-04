@@ -47,7 +47,10 @@ namespace Jasper.Pulsar
 
         public ValueTask DisposeAsync()
         {
-            base.Dispose();
+            foreach (var endpoint in _endpoints)
+            {
+                endpoint.Dispose();
+            }
 
             if (Client != null) return Client.DisposeAsync();
 
