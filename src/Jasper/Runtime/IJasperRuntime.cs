@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime
 {
-    public interface IJasperRuntime : IDisposable
+    public interface IJasperRuntime
     {
         IScheduledJobProcessor ScheduledJobs { get; }
         IEnvelopeRouter Router { get; }

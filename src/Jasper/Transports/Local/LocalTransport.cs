@@ -13,10 +13,10 @@ namespace Jasper.Transports.Local
 {
     public class LocalTransport : ITransport
     {
-        private readonly Cache<string, LocalQueueSettings> _queues = new Cache<string, LocalQueueSettings>(name =>
+        private readonly Cache<string, LocalQueueSettings> _queues = new (name =>
             new LocalQueueSettings(name));
 
-        private ImHashMap<string, ISendingAgent?> _agents = ImHashMap<string, ISendingAgent>.Empty;
+        private ImHashMap<string, ISendingAgent> _agents = ImHashMap<string, ISendingAgent>.Empty;
 
         public LocalTransport()
         {
@@ -34,11 +34,6 @@ namespace Jasper.Transports.Local
         public Endpoint ReplyEndpoint()
         {
             return _queues[TransportConstants.Replies];
-        }
-
-        public void Dispose()
-        {
-            // Nothing really
         }
 
         public IEnumerable<Endpoint> Endpoints()
@@ -73,14 +68,14 @@ namespace Jasper.Transports.Local
             return findByUri(uri);
         }
 
-        public Endpoint TryGetEndpoint(Uri uri)
+        public Endpoint? TryGetEndpoint(Uri uri)
         {
             var queueName = QueueName(uri);
             return _queues.TryFind(queueName, out var settings) ? settings : null;
         }
 
 
-        Endpoint ITransport.ListenTo(Uri? uri)
+        Endpoint ITransport.ListenTo(Uri uri)
         {
             return findByUri(uri);
         }
@@ -131,10 +126,8 @@ namespace Jasper.Transports.Local
             return _queues[queueName.ToLowerInvariant()];
         }
 
-        public static string QueueName(Uri? uri)
+        public static string QueueName(Uri uri)
         {
-            if (uri == null) return null;
-
             if (uri == TransportConstants.LocalUri) return TransportConstants.Default;
 
             if (uri == TransportConstants.DurableLocalUri) return TransportConstants.Durable;
@@ -147,7 +140,7 @@ namespace Jasper.Transports.Local
             return lastSegment ?? TransportConstants.Default;
         }
 
-        public static Uri? AtQueue(Uri? uri, string queueName)
+        public static Uri AtQueue(Uri uri, string queueName)
         {
             if (queueName.IsEmpty()) return uri;
 

@@ -17,6 +17,6 @@ namespace Jasper
         /// <typeparam name="T"></typeparam>
         void Include<T>(Action<T>? configure = null) where T : IJasperExtension, new();
 
-        T GetRegisteredExtension<T>();
+        T? GetRegisteredExtension<T>();
     }
 }

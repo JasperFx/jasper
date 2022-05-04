@@ -59,8 +59,8 @@ namespace Jasper.RabbitMQ.Internal
             return ValueTask.CompletedTask;
         }
 
-        public bool AutoProvision { get; set; } = false;
-        public bool AutoPurgeOnStartup { get; set; } = false;
+        public bool AutoProvision { get; set; }
+        public bool AutoPurgeOnStartup { get; set; }
 
         public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
 

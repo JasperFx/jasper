@@ -31,7 +31,7 @@ namespace Jasper.Tcp
             return mode != EndpointMode.Inline;
         }
 
-        public override Uri? Uri => ToUri(Port, HostName);
+        public override Uri Uri => ToUri(Port, HostName);
 
         public static Uri ToUri(int port, string hostName = "localhost")
         {

@@ -9,7 +9,7 @@ using Jasper.Transports;
 
 namespace Jasper.Pulsar
 {
-    public class PulsarTransport : TransportBase<PulsarEndpoint>
+    public class PulsarTransport : TransportBase<PulsarEndpoint>, IAsyncDisposable
     {
         public const string ProtocolName = "pulsar";
 
@@ -43,14 +43,15 @@ namespace Jasper.Pulsar
             return ValueTask.CompletedTask;
         }
 
-        internal IPulsarClient Client { get; private set; }
+        internal IPulsarClient? Client { get; private set; }
 
-        public override void Dispose()
+        public ValueTask DisposeAsync()
         {
             base.Dispose();
 
-            // TODO -- don't like this!
-            Client?.DisposeAsync().GetAwaiter().GetResult();
+            if (Client != null) return Client.DisposeAsync();
+
+            return ValueTask.CompletedTask;
         }
 
         public PulsarEndpoint EndpointFor(string topicPath)

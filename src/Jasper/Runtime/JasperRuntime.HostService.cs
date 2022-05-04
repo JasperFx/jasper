@@ -26,7 +26,7 @@ public partial class JasperRuntime
         }
     }
 
-    private async Task startMessagingTransports()
+    private async Task startMessagingTransportsAsync()
     {
         foreach (var transport in Options)
         {
@@ -53,7 +53,7 @@ public partial class JasperRuntime
         }
     }
 
-    private async Task startDurabilityAgent()
+    private async Task startDurabilityAgentAsync()
     {
         // HOKEY, BUT IT WORKS
         if (_container.Model.DefaultTypeFor<IEnvelopePersistence>() != typeof(NulloEnvelopePersistence) &&
@@ -76,17 +76,16 @@ public partial class JasperRuntime
     {
         try
         {
-            Task ret;
             // Build up the message handlers
             await Handlers.CompileAsync(Options, _container);
 
-            await startMessagingTransports();
+            await startMessagingTransportsAsync();
 
             startInMemoryScheduledJobs();
 
             _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
 
-            await startDurabilityAgent();
+            await startDurabilityAgentAsync();
         }
         catch (Exception? e)
         {
@@ -103,7 +102,6 @@ public partial class JasperRuntime
 
         // This is important!
         _container.As<Container>().DisposalLock = DisposalLock.Unlocked;
-
 
         if (Durability != null) await Durability.StopAsync(cancellationToken);
 

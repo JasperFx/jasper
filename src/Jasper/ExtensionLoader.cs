@@ -13,7 +13,7 @@ namespace Jasper
     {
         private static Assembly[] _extensions;
 
-        internal static Assembly[] FindExtensionAssemblies(Assembly applicationAssembly)
+        internal static Assembly[] FindExtensionAssemblies(Assembly? applicationAssembly)
         {
             if (_extensions != null) return _extensions;
 

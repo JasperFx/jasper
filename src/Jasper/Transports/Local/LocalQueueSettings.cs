@@ -13,20 +13,20 @@ namespace Jasper.Transports.Local
             Name = name.ToLowerInvariant();
         }
 
-        public LocalQueueSettings(Uri? uri) : base(uri)
+        public LocalQueueSettings(Uri uri) : base(uri)
         {
 
         }
 
-        public override Uri? Uri => $"local://{Name}".ToUri();
+        public override Uri Uri => $"local://{Name}".ToUri();
 
-        public override void Parse(Uri? uri)
+        public override void Parse(Uri uri)
         {
             Name = LocalTransport.QueueName(uri);
             Mode = uri.IsDurable() ? EndpointMode.Durable : EndpointMode.BufferedInMemory;
         }
 
-        public override Uri? ReplyUri()
+        public override Uri ReplyUri()
         {
             return Mode == EndpointMode.Durable ? $"local://durable/{Name}".ToUri() : $"local://{Name}".ToUri();
         }

@@ -214,7 +214,7 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public Endpoint ListenTo(Uri? uri)
+            public Endpoint ListenTo(Uri uri)
             {
                 throw new NotImplementedException();
             }
@@ -240,7 +240,7 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public Endpoint TryGetEndpoint(Uri uri)
+            public Endpoint? TryGetEndpoint(Uri uri)
             {
                 throw new NotImplementedException();
             }

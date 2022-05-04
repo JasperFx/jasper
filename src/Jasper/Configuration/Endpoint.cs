@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Baseline.Dates;
@@ -10,7 +9,6 @@ using Jasper.Runtime.Routing;
 using Jasper.Serialization;
 using Jasper.Transports.Sending;
 using Oakton.Descriptions;
-using Spectre.Console;
 
 #nullable enable
 
@@ -28,15 +26,16 @@ namespace Jasper.Configuration
     /// </summary>
     public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesProperties
     {
-        private ImHashMap<string, IMessageSerializer>? _serializers = ImHashMap<string, IMessageSerializer>.Empty;
-        private string _name;
+        private ImHashMap<string, IMessageSerializer> _serializers = ImHashMap<string, IMessageSerializer>.Empty;
+        private string? _name;
 
         protected Endpoint()
         {
         }
 
-        protected Endpoint(Uri? uri)
+        protected Endpoint(Uri uri)
         {
+            // ReSharper disable once VirtualMemberCallInConstructor
             Parse(uri);
         }
 
@@ -51,12 +50,12 @@ namespace Jasper.Configuration
             }
 
             serializer = Root?.Options.FindSerializer(contentType);
-            _serializers = _serializers.AddOrUpdate(contentType, serializer);
+            _serializers = _serializers!.AddOrUpdate(contentType, serializer)!;
 
             return serializer;
         }
 
-        public void RegisterSerializer(IMessageSerializer? serializer)
+        public void RegisterSerializer(IMessageSerializer serializer)
         {
             _serializers = _serializers.AddOrUpdate(serializer.ContentType, serializer);
         }
@@ -88,14 +87,14 @@ namespace Jasper.Configuration
         /// </summary>
         public string Name
         {
-            get => _name ?? Uri?.ToString() ?? "Unknown";
+            get => _name ?? Uri.ToString();
             set => _name = value;
         }
 
         /// <summary>
         ///     The actual address of the listener, including the transport scheme
         /// </summary>
-        public abstract Uri? Uri { get; }
+        public abstract Uri Uri { get; }
 
         public ExecutionDataflowBlockOptions ExecutionOptions { get; set; } = new ExecutionDataflowBlockOptions();
 
@@ -134,9 +133,7 @@ namespace Jasper.Configuration
         /// </summary>
         public abstract Uri? ReplyUri();
 
-
-        public abstract void Parse(Uri? uri);
-
+        public abstract void Parse(Uri uri);
 
         public abstract void StartListening(IJasperRuntime runtime);
 
@@ -149,7 +146,7 @@ namespace Jasper.Configuration
 
         protected abstract ISender CreateSender(IJasperRuntime root);
 
-        internal void Customize(Envelope? envelope)
+        internal void Customize(Envelope envelope)
         {
             foreach (var modification in Customizations) modification(envelope);
         }

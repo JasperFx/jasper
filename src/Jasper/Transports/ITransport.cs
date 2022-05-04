@@ -6,19 +6,19 @@ using Jasper.Runtime;
 
 namespace Jasper.Transports
 {
-    public interface ITransport : IDisposable
+    public interface ITransport
     {
         ICollection<string> Protocols { get; }
 
-        Endpoint ReplyEndpoint();
+        Endpoint? ReplyEndpoint();
 
-        Endpoint ListenTo(Uri? uri);
+        Endpoint ListenTo(Uri uri);
 
         void StartSenders(IJasperRuntime root);
         void StartListeners(IJasperRuntime root);
 
         Endpoint GetOrCreateEndpoint(Uri uri);
-        Endpoint TryGetEndpoint(Uri uri);
+        Endpoint? TryGetEndpoint(Uri uri);
 
         IEnumerable<Endpoint> Endpoints();
         ValueTask InitializeAsync(IJasperRuntime root);

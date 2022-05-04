@@ -27,7 +27,7 @@ namespace Jasper;
 /// </summary>
 public sealed partial class JasperOptions : IExtensions
 {
-    protected static Assembly _rememberedCallingAssembly;
+    private static Assembly? _rememberedCallingAssembly;
     private readonly List<IJasperExtension> _appliedExtensions = new();
     private readonly IList<Type> _extensionTypes = new List<Type>();
     private IMessageSerializer? _defaultSerializer;
@@ -40,7 +40,7 @@ public sealed partial class JasperOptions : IExtensions
     {
     }
 
-    public JasperOptions(string assemblyName)
+    public JasperOptions(string? assemblyName)
     {
         _serializers.Add(EnvelopeReaderWriter.Instance.ContentType, EnvelopeReaderWriter.Instance);
 
@@ -83,7 +83,7 @@ public sealed partial class JasperOptions : IExtensions
     /// <summary>
     ///     The main application assembly for this Jasper system
     /// </summary>
-    public Assembly ApplicationAssembly { get; internal set; }
+    public Assembly? ApplicationAssembly { get; internal set; }
 
     internal HandlerGraph HandlerGraph { get; } = new();
 
@@ -103,16 +103,7 @@ public sealed partial class JasperOptions : IExtensions
         set => Advanced.ServiceName = value;
     }
 
-    // /// <summary>
-    // ///     Default message serializers for the application
-    // /// </summary>
-    // public IDictionary<string, IMessageSerializer> Serializers { get; } =
-    //     new Dictionary<string, IMessageSerializer>()
-    //     new List<IMessageSerializer?> { EnvelopeReaderWriter.Instance };
-
-
-
-    public IMessageSerializer DefaultSerializer
+    public IMessageSerializer? DefaultSerializer
     {
         get
         {
@@ -122,7 +113,11 @@ public sealed partial class JasperOptions : IExtensions
         }
         set
         {
-            _serializers[value.ContentType] = value;
+            if (value != null)
+            {
+                _serializers[value.ContentType] = value;
+            }
+
             _defaultSerializer = value;
         }
     }
@@ -150,7 +145,7 @@ public sealed partial class JasperOptions : IExtensions
         ApplyExtensions(new IJasperExtension[] { extension });
     }
 
-    T IExtensions.GetRegisteredExtension<T>()
+    T? IExtensions.GetRegisteredExtension<T>() where T : default
     {
         return _appliedExtensions.OfType<T>().FirstOrDefault();
     }
@@ -168,9 +163,8 @@ public sealed partial class JasperOptions : IExtensions
         }
     }
 
-    private void establishApplicationAssembly(string assemblyName)
+    private void establishApplicationAssembly(string? assemblyName)
     {
-        // TODO -- just use Assembly.GetEntryAssembly()
         if (assemblyName.IsNotEmpty())
         {
             ApplicationAssembly = Assembly.Load(assemblyName);
@@ -215,7 +209,7 @@ public sealed partial class JasperOptions : IExtensions
         services.AddRange(Services);
     }
 
-    internal IMessageSerializer DetermineSerializer(Envelope envelope)
+    internal IMessageSerializer? DetermineSerializer(Envelope envelope)
     {
         if (envelope.ContentType.IsEmpty()) return DefaultSerializer;
 

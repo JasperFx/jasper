@@ -51,7 +51,7 @@ namespace Jasper.Pulsar
             return dict;
         }
 
-        public override Uri? Uri { get; }
+        public override Uri Uri { get; }
         public override Uri? ReplyUri()
         {
             return Uri;

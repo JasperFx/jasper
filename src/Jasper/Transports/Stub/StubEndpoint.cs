@@ -34,7 +34,7 @@ namespace Jasper.Transports.Stub
         public bool Latched { get; set; }
         public bool IsDurable => Mode == EndpointMode.Durable;
 
-        public override Uri? Uri => $"stub://{Name}".ToUri();
+        public override Uri Uri => $"stub://{Name}".ToUri();
 
         public async ValueTask Send(Envelope envelope)
         {
@@ -55,11 +55,11 @@ namespace Jasper.Transports.Stub
 
         Uri? ISendingAgent.ReplyUri
         {
-            get => _stubTransport.ReplyEndpoint().Uri;
+            get => _stubTransport.ReplyEndpoint()?.Uri;
             set => Debug.WriteLine(value);
         }
 
-        public Task EnqueueOutgoing(Envelope envelope)
+        public async Task EnqueueOutgoing(Envelope envelope)
         {
             envelope.ReplyUri ??= ReplyUri();
 
@@ -68,11 +68,12 @@ namespace Jasper.Transports.Stub
 
             Sent.Add(envelope);
 
-            _logger?.Sent(envelope);
+            _logger.Sent(envelope);
 
-            _pipeline?.Invoke(envelope, callback).Wait();
-
-            return Task.CompletedTask;
+            if (_pipeline != null)
+            {
+                await _pipeline.Invoke(envelope, callback);
+            }
         }
 
         public Task StoreAndForward(Envelope envelope)
@@ -95,7 +96,7 @@ namespace Jasper.Transports.Stub
             return _stubTransport.ReplyEndpoint()?.Uri;
         }
 
-        public override void Parse(Uri? uri)
+        public override void Parse(Uri uri)
         {
             Name = uri.Host;
         }

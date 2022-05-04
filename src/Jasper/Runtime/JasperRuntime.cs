@@ -14,7 +14,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime;
 
-public partial class JasperRuntime : IJasperRuntime, IHostedService
+public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 {
     private readonly IContainer _container;
 
@@ -55,7 +55,7 @@ public partial class JasperRuntime : IJasperRuntime, IHostedService
 
     public IJasperEndpoints Endpoints => this;
 
-    public DurabilityAgent Durability { get; private set; }
+    public DurabilityAgent? Durability { get; private set; }
 
     internal HandlerGraph Handlers { get; }
 
@@ -67,7 +67,7 @@ public partial class JasperRuntime : IJasperRuntime, IHostedService
 
     public ILogger Logger { get; }
 
-    public IScheduledJobProcessor ScheduledJobs { get; set; }
+    public IScheduledJobProcessor ScheduledJobs { get; private set; } = null!;
 
     public JasperOptions Options { get; }
 

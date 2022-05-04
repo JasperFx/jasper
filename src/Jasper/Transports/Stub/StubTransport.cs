@@ -1,62 +1,35 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Configuration;
 using Jasper.Runtime;
-using Jasper.Util;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
-namespace Jasper.Transports.Stub
+namespace Jasper.Transports.Stub;
+
+public class StubTransport : TransportBase<StubEndpoint>
 {
-    public static class StubTransportExtensions
+    public StubTransport() : base("stub", "Stub")
     {
-        /// <summary>
-        ///     Retrieves the instance of the StubTransport within this application
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static StubTransport GetStubTransport(this IHost host)
-        {
-            return host
-                .Services
-                .GetRequiredService<IJasperRuntime>()
-                .Options
-                .Get<StubTransport>();
-        }
+        Endpoints =
+            new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
     }
 
-    public class StubTransport : TransportBase<StubEndpoint>
+    public new LightweightCache<Uri, StubEndpoint> Endpoints { get; }
+
+    protected override IEnumerable<StubEndpoint> endpoints()
     {
-        public new LightweightCache<Uri, StubEndpoint> Endpoints { get; }
+        return Endpoints.GetAll();
+    }
 
-        public StubTransport() : base("stub", "Stub")
-        {
-            Endpoints =
-                new LightweightCache<Uri, StubEndpoint>(u => new StubEndpoint(u, this));
-        }
+    protected override StubEndpoint findEndpointByUri(Uri uri)
+    {
+        return Endpoints[uri];
+    }
 
-        protected override IEnumerable<StubEndpoint> endpoints()
-        {
-            return Endpoints.GetAll();
-        }
+    public override ValueTask InitializeAsync(IJasperRuntime root)
+    {
+        foreach (var endpoint in Endpoints) endpoint.Start(root.Pipeline, root.MessageLogger);
 
-        protected override StubEndpoint findEndpointByUri(Uri uri)
-        {
-            return Endpoints[uri];
-        }
-
-        public override ValueTask InitializeAsync(IJasperRuntime root)
-        {
-            foreach (var endpoint in Endpoints)
-            {
-                endpoint.Start(root.Pipeline, root.MessageLogger);
-            }
-
-            return ValueTask.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

@@ -18,7 +18,7 @@ namespace Jasper
         private string? _serviceName;
 
 
-        public AdvancedSettings(Assembly applicationAssembly)
+        public AdvancedSettings(Assembly? applicationAssembly)
         {
             var name = applicationAssembly?.GetName().Name ?? "JasperApplication";
             CodeGeneration = new GenerationRules("Internal.Generated");

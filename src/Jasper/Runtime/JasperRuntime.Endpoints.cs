@@ -162,22 +162,6 @@ public partial class JasperRuntime : IJasperEndpoints
             return endpoints().FirstOrDefault(x => x.Uri == uri);
         }
 
-        public void Dispose()
-        {
-            foreach (var kv in _senders.Enumerate())
-            {
-                kv.Value.SafeDispose();
-            }
 
-            foreach (var listener in _disposables)
-            {
-                listener.SafeDispose();
-            }
-
-            foreach (var transport in Options.OfType<IDisposable>())
-            {
-                transport.Dispose();
-            }
-        }
 
 }

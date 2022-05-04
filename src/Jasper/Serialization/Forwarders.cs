@@ -30,7 +30,7 @@ namespace Jasper.Serialization
             }
         }
 
-        public async Task FindForwards(Assembly assembly)
+        public async Task FindForwards(Assembly? assembly)
         {
             var candidates = await TypeRepository.ForAssembly(assembly);
             foreach (var type in candidates.ClosedTypes.Concretes.Where(t => t.Closes(typeof(IForwardsTo<>))))

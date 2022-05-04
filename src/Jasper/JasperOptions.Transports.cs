@@ -13,7 +13,7 @@ using Spectre.Console;
 
 namespace Jasper
 {
-    public partial class JasperOptions : IEnumerable<ITransport>, IEndpoints, IDescribedSystemPart, IWriteToConsole
+    public partial class JasperOptions : IEnumerable<ITransport>, IEndpoints, IDescribedSystemPart, IWriteToConsole, IAsyncDisposable
     {
         private readonly Dictionary<string, ITransport> _transports = new Dictionary<string, ITransport>();
 
@@ -57,12 +57,12 @@ namespace Jasper
             return GetEnumerator();
         }
 
-        public Endpoint TryGetEndpoint(Uri? uri)
+        public Endpoint? TryGetEndpoint(Uri uri)
         {
             return findTransport(uri).TryGetEndpoint(uri);
         }
 
-        private ITransport findTransport(Uri? uri)
+        private ITransport findTransport(Uri uri)
         {
             var transport = TransportForScheme(uri.Scheme);
             if (transport == null)
@@ -73,7 +73,7 @@ namespace Jasper
             return transport;
         }
 
-        public Endpoint GetOrCreateEndpoint(Uri? uri)
+        public Endpoint GetOrCreateEndpoint(Uri uri)
         {
             return findTransport(uri).GetOrCreateEndpoint(uri);
         }
@@ -83,7 +83,7 @@ namespace Jasper
         ///     Directs Jasper to set up an incoming listener for the given Uri
         /// </summary>
         /// <param name="uri"></param>
-        public IListenerConfiguration ListenForMessagesFrom(Uri? uri)
+        public IListenerConfiguration ListenForMessagesFrom(Uri uri)
         {
             var settings = findTransport(uri).ListenTo(uri);
             return new ListenerConfiguration(settings);
@@ -221,6 +221,21 @@ namespace Jasper
             }
 
             return table;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var transport in _transports.Values)
+            {
+                if (transport is IAsyncDisposable ad)
+                {
+                    await ad.DisposeAsync();
+                }
+                else if (transport is IDisposable d)
+                {
+                    d.Dispose();
+                }
+            }
         }
     }
 }

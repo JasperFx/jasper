@@ -41,23 +41,16 @@ namespace Jasper.Transports
             return ValueTask.CompletedTask;
         }
 
-        public Endpoint ReplyEndpoint()
+        public Endpoint? ReplyEndpoint()
         {
             var listeners = endpoints().Where(x => x.IsListener).ToArray();
 
-
-            switch (listeners.Length)
+            return listeners.Length switch
             {
-                case 0:
-                    return null;
-
-                case 1:
-                    return listeners.Single();
-
-                default:
-                    return listeners.FirstOrDefault(x => x.IsUsedForReplies) ?? listeners.First();
-            }
-
+                0 => null,
+                1 => listeners.Single(),
+                _ => listeners.FirstOrDefault(x => x.IsUsedForReplies) ?? listeners.First()
+            };
         }
 
         public void StartSenders(IJasperRuntime root)
@@ -75,7 +68,7 @@ namespace Jasper.Transports
             foreach (var endpoint in endpoints()) endpoint.StartListening(root);
         }
 
-        public Endpoint ListenTo(Uri? uri)
+        public Endpoint ListenTo(Uri uri)
         {
             uri = canonicizeUri(uri);
             var endpoint = findEndpointByUri(uri);
@@ -108,7 +101,7 @@ namespace Jasper.Transports
             return endpoint;
         }
 
-        public Endpoint TryGetEndpoint(Uri uri)
+        public Endpoint? TryGetEndpoint(Uri uri)
         {
             return findEndpointByUri(canonicizeUri(uri));
         }
@@ -121,7 +114,7 @@ namespace Jasper.Transports
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        protected virtual Uri? canonicizeUri(Uri? uri)
+        protected virtual Uri canonicizeUri(Uri uri)
         {
             return uri;
         }
