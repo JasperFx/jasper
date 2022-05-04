@@ -18,7 +18,7 @@ namespace Jasper.RabbitMQ.Internal
         public bool SupportsNativeScheduledSend { get; } = false;
         public Uri Destination { get; }
 
-        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
+        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.SendingConnection)
         {
             _endpoint = endpoint;
             Destination = endpoint.Uri;
@@ -53,7 +53,7 @@ namespace Jasper.RabbitMQ.Internal
             {
                 if (State == AgentState.Connected) return Task.FromResult(true);
 
-                startNewConnection();
+                startNewChannel();
 
                 if (Channel.IsOpen)
                 {
@@ -61,7 +61,7 @@ namespace Jasper.RabbitMQ.Internal
                 }
                 else
                 {
-                    teardownConnection();
+                    teardownChannel();
                     return Task.FromResult(false);
                 }
             }

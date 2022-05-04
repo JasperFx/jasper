@@ -42,35 +42,15 @@ namespace Jasper.RabbitMQ.Internal
                 endpoint.Dispose();
             }
 
+            _listenerConnection?.Close();
             _listenerConnection?.SafeDispose();
+
+            _sendingConnection?.Close();
             _sendingConnection?.SafeDispose();
         }
 
-        internal IConnection ListeningConnection
-        {
-            get
-            {
-                if (_listenerConnection == null)
-                {
-                    _listenerConnection = BuildConnection();
-                }
-
-                return _listenerConnection;
-            }
-        }
-
-        internal IConnection SendingConnection
-        {
-            get
-            {
-                if (_sendingConnection == null)
-                {
-                    _sendingConnection = BuildConnection();
-                }
-
-                return _sendingConnection;
-            }
-        }
+        internal IConnection ListeningConnection => _listenerConnection ??= BuildConnection();
+        internal IConnection SendingConnection => _sendingConnection ??= BuildConnection();
 
         protected override IEnumerable<RabbitMqEndpoint> endpoints()
         {

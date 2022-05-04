@@ -21,7 +21,7 @@ namespace Jasper.RabbitMQ.Internal
         private CancellationToken _cancellation = CancellationToken.None;
 
         public RabbitMqListener(ILogger logger,
-            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport)
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection)
         {
             _logger = logger;
             _endpoint = endpoint;
@@ -65,7 +65,7 @@ namespace Jasper.RabbitMQ.Internal
             if (callback == null) return;
 
             _cancellation = cancellation;
-            _cancellation.Register(teardownConnection);
+            _cancellation.Register(teardownChannel);
 
             EnsureConnected();
 
