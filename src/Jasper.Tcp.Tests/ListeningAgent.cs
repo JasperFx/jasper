@@ -36,7 +36,7 @@ namespace Jasper.Tcp.Tests
             _socketHandling = new ActionBlock<Socket>(async s =>
             {
                 await using var stream = new NetworkStream(s, true);
-                await WireProtocol.Receive(NullLogger.Instance, stream, _callback, _uri);
+                await WireProtocol.ReceiveAsync(NullLogger.Instance, stream, _callback, _uri);
             }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
 
             _uri = $"{protocol}://{ipaddr}:{port}/".ToUri();

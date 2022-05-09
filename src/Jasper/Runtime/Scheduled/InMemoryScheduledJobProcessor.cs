@@ -4,131 +4,124 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime.WorkerQueues;
-using Jasper.Transports;
 
-namespace Jasper.Runtime.Scheduled
+namespace Jasper.Runtime.Scheduled;
+
+public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
 {
-    public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
-         {
-        private readonly Cache<Guid, InMemoryScheduledJob> _outstandingJobs
-            = new Cache<Guid, InMemoryScheduledJob>();
+    private readonly Cache<Guid, InMemoryScheduledJob> _outstandingJobs = new();
 
-        public readonly IWorkerQueue _queue;
+    private readonly IWorkerQueue _queue;
 
-        public InMemoryScheduledJobProcessor(IWorkerQueue queue)
+    public InMemoryScheduledJobProcessor(IWorkerQueue queue)
+    {
+        _queue = queue;
+    }
+
+    public void Enqueue(DateTimeOffset executionTime, Envelope envelope)
+    {
+        _outstandingJobs[envelope.Id] = new InMemoryScheduledJob(this, envelope, executionTime);
+    }
+
+    public async Task PlayAllAsync()
+    {
+        var outstanding = _outstandingJobs.ToArray();
+        foreach (var job in outstanding) await job.EnqueueAsync();
+    }
+
+    public async Task PlayAtAsync(DateTime executionTime)
+    {
+        var outstanding = _outstandingJobs.Where(x => x.ExecutionTime <= executionTime).ToArray();
+        foreach (var job in outstanding) await job.EnqueueAsync();
+    }
+
+    public Task EmptyAllAsync()
+    {
+        var outstanding = _outstandingJobs.ToArray();
+        foreach (var job in outstanding) job.Cancel();
+
+        return Task.CompletedTask;
+    }
+
+    public int Count()
+    {
+        return _outstandingJobs.Count;
+    }
+
+    public ScheduledJob[] QueuedJobs()
+    {
+        return _outstandingJobs.ToArray().Select(x => x.ToReport()).ToArray();
+    }
+
+    public void Dispose()
+    {
+        var outstanding = _outstandingJobs.ToArray();
+        foreach (var job in outstanding)
+            job.Cancel();
+
+        _outstandingJobs.ClearAll();
+    }
+
+    public class InMemoryScheduledJob : IDisposable
+    {
+        private readonly CancellationTokenSource _cancellation;
+        private readonly InMemoryScheduledJobProcessor _parent;
+        private Task _task;
+
+        public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope envelope,
+            DateTimeOffset executionTime)
         {
-            _queue = queue;
+            _parent = parent;
+            ExecutionTime = executionTime.ToUniversalTime();
+            envelope.ScheduledTime = null;
+
+            Envelope = envelope;
+
+            _cancellation = new CancellationTokenSource();
+            var delayTime = ExecutionTime.Subtract(DateTime.UtcNow);
+            _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(publishAsync, TaskScheduler.Default);
+
+            ReceivedAt = DateTime.UtcNow;
         }
 
-        public void Enqueue(DateTimeOffset executionTime, Envelope? envelope)
+        public DateTimeOffset ExecutionTime { get; }
+
+        public DateTime ReceivedAt { get; }
+
+        public Envelope Envelope { get; }
+
+        private Task publishAsync(Task obj)
         {
-            _outstandingJobs[envelope.Id] = new InMemoryScheduledJob(this, envelope, executionTime);
+            return _cancellation.IsCancellationRequested
+                ? Task.CompletedTask
+                : EnqueueAsync();
         }
 
-        public async Task PlayAll()
+        public void Cancel()
         {
-            var outstanding = _outstandingJobs.ToArray();
-            foreach (var job in outstanding)
+            _cancellation.Cancel();
+            _parent._outstandingJobs.Remove(Envelope.Id);
+        }
+
+        public ScheduledJob ToReport()
+        {
+            return new ScheduledJob(Envelope.Id)
             {
-                await job.Enqueue();
-            }
+                ExecutionTime = ExecutionTime,
+                ReceivedAt = ReceivedAt,
+                MessageType = Envelope.MessageType
+            };
         }
 
-        public async Task PlayAt(DateTime executionTime)
+        public async Task EnqueueAsync()
         {
-            var outstanding = _outstandingJobs.Where(x => x.ExecutionTime <= executionTime).ToArray();
-            foreach (var job in outstanding)
-            {
-                await job.Enqueue();
-            }
-        }
-
-        public Task EmptyAll()
-        {
-            var outstanding = _outstandingJobs.ToArray();
-            foreach (var job in outstanding)
-            {
-                job.Cancel();
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public int Count()
-        {
-            return _outstandingJobs.Count;
-        }
-
-        public ScheduledJob[] QueuedJobs()
-        {
-            return _outstandingJobs.ToArray().Select(x => x.ToReport()).ToArray();
+            await _parent._queue.EnqueueAsync(Envelope);
+            Cancel();
         }
 
         public void Dispose()
         {
-            var outstanding = _outstandingJobs.ToArray();
-            foreach (var job in outstanding)
-                job.Cancel();
-
-            _outstandingJobs.ClearAll();
-        }
-
-        public class InMemoryScheduledJob
-        {
-            private readonly CancellationTokenSource _cancellation;
-            private readonly InMemoryScheduledJobProcessor _parent;
-            private Task _task;
-
-            public InMemoryScheduledJob(InMemoryScheduledJobProcessor parent, Envelope? envelope,
-                DateTimeOffset executionTime)
-            {
-                _parent = parent;
-                ExecutionTime = executionTime.ToUniversalTime();
-                envelope.ScheduledTime = null;
-
-                Envelope = envelope;
-
-                _cancellation = new CancellationTokenSource();
-                var delayTime = ExecutionTime.Subtract(DateTime.UtcNow);
-                _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(publish);
-
-                ReceivedAt = DateTime.UtcNow;
-            }
-
-            public DateTimeOffset ExecutionTime { get; }
-
-            public DateTime ReceivedAt { get; }
-
-            public Envelope? Envelope { get; }
-
-            private Task publish(Task obj)
-            {
-                return _cancellation.IsCancellationRequested
-                    ? Task.CompletedTask
-                    : Enqueue();
-            }
-
-            public void Cancel()
-            {
-                _cancellation.Cancel();
-                _parent._outstandingJobs.Remove(Envelope.Id);
-            }
-
-            public ScheduledJob ToReport()
-            {
-                return new ScheduledJob(Envelope.Id)
-                {
-                    ExecutionTime = ExecutionTime,
-                    ReceivedAt = ReceivedAt,
-                    MessageType = Envelope.MessageType
-                };
-            }
-
-            public async Task Enqueue()
-            {
-                await _parent._queue.EnqueueAsync(Envelope);
-                Cancel();
-            }
+            _task.Dispose();
         }
     }
 }

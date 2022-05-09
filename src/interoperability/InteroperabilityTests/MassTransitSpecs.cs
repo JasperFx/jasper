@@ -49,7 +49,6 @@ namespace InteroperabilityTests
                 opts.ListenToRabbitQueue("jasper")
                     .DefaultIncomingMessage<ResponseMessage>();
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
             }).StartAsync();
 
             _massTransit = await MassTransitService.Program.CreateHostBuilder(Array.Empty<string>())
@@ -107,7 +106,7 @@ namespace InteroperabilityTests
 
             var session = await theFixture.Jasper.TrackActivity()
                 .WaitForMessageToBeReceivedAt<ResponseMessage>(theFixture.Jasper)
-                .SendMessageAndWait(new InitialMessage {Id = id});
+                .SendMessageAndWaitAsync(new InitialMessage {Id = id});
 
             ResponseHandler.Received
                 .Select(x => x.Message)

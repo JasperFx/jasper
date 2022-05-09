@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 
-namespace Jasper.Persistence.Durability
+namespace Jasper.Persistence.Durability;
+
+public interface IMessagingAction
 {
-    public interface IMessagingAction
-    {
-        string Description { get; }
-        Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent);
-    }
+    string Description { get; }
+    Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent);
 }

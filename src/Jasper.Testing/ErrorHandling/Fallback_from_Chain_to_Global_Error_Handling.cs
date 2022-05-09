@@ -11,8 +11,6 @@ namespace Jasper.Testing.ErrorHandling
     {
         public Fallback_from_Chain_to_Global_Error_Handling()
         {
-            theOptions.Extensions.UseMessageTrackingTestingSupport();
-
             theOptions.Handlers.OnException<DivideByZeroException>().RetryNow();
             theOptions.Handlers.OnException<DataMisalignedException>().Requeue();
             theOptions.Handlers.OnException<DataMisalignedException>().MoveToErrorQueue();

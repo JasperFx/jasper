@@ -1,25 +1,25 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Runtime.Handlers;
 
-namespace Jasper.Runtime.Scheduled
+namespace Jasper.Runtime.Scheduled;
+
+public class ScheduledSendEnvelopeHandler : MessageHandler
 {
-
-    public class ScheduledSendEnvelopeHandler : MessageHandler
+    public ScheduledSendEnvelopeHandler(HandlerGraph parent)
     {
+        Chain = new HandlerChain(typeof(Envelope), parent);
+    }
 
-        public ScheduledSendEnvelopeHandler(HandlerGraph parent)
+    public override Task HandleAsync(IExecutionContext context, CancellationToken cancellation)
+    {
+        if (cancellation.IsCancellationRequested)
         {
-            Chain = new HandlerChain(typeof(Envelope), parent);
+            return Task.CompletedTask;
         }
 
-        public override Task Handle(IExecutionContext context, CancellationToken cancellation)
-        {
-            if (cancellation.IsCancellationRequested) return Task.CompletedTask;
-            var scheduled = (Envelope)context.Envelope.Message;
+        var scheduled = (Envelope)context.Envelope!.Message!;
 
-            return context.SendEnvelopeAsync(scheduled);
-        }
+        return context.SendEnvelopeAsync(scheduled);
     }
 }

@@ -1,10 +1,11 @@
 using System.Runtime.CompilerServices;
 using Jasper.Attributes;
 using Lamar;
+using Oakton;
 
 [assembly: IgnoreAssembly]
 [assembly: BaselineTypeDiscovery.IgnoreAssembly]
-[assembly: Oakton.OaktonCommandAssembly]
+[assembly: OaktonCommandAssembly]
 [assembly: JasperFeature]
 
 [assembly: InternalsVisibleTo("Jasper.Testing")]

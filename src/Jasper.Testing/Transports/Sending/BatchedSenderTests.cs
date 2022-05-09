@@ -42,10 +42,10 @@ namespace Jasper.Testing.Transports.Sending
         [Fact]
         public async Task call_send_batch_if_not_latched_and_not_cancelled()
         {
-            await theSender.SendBatch(theBatch);
+            await theSender.SendBatchAsync(theBatch);
 
 #pragma warning disable 4014
-            theProtocol.Received().SendBatch(theSenderCallback, theBatch);
+            theProtocol.Received().SendBatchAsync(theSenderCallback, theBatch);
 #pragma warning restore 4014
         }
 
@@ -54,24 +54,24 @@ namespace Jasper.Testing.Transports.Sending
         {
             theCancellation.Cancel();
 
-            await theSender.SendBatch(theBatch);
+            await theSender.SendBatchAsync(theBatch);
 
 #pragma warning disable 4014
-            theProtocol.DidNotReceive().SendBatch(theSenderCallback, theBatch);
+            theProtocol.DidNotReceive().SendBatchAsync(theSenderCallback, theBatch);
 #pragma warning restore 4014
         }
 
         [Fact]
         public async Task do_not_call_send_batch_if_latched()
         {
-            await theSender.LatchAndDrain();
+            await theSender.LatchAndDrainAsync();
 
-            await theSender.SendBatch(theBatch);
+            await theSender.SendBatchAsync(theBatch);
 
 #pragma warning disable 4014
-            theProtocol.DidNotReceive().SendBatch(theSenderCallback, theBatch);
+            theProtocol.DidNotReceive().SendBatchAsync(theSenderCallback, theBatch);
 
-            theSenderCallback.Received().SenderIsLatched(theBatch);
+            theSenderCallback.Received().MarkSenderIsLatchedAsync(theBatch);
 #pragma warning restore 4014
         }
     }

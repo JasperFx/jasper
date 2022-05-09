@@ -1,8 +1,7 @@
-﻿namespace Jasper.Persistence.Sagas
+﻿namespace Jasper.Persistence.Sagas;
+
+public enum SagaStateExistence
 {
-    public enum SagaStateExistence
-    {
-        New,
-        Existing
-    }
+    New,
+    Existing
 }

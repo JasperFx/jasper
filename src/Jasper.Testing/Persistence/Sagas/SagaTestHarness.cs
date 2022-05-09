@@ -25,8 +25,6 @@ namespace Jasper.Testing.Persistence.Sagas
             {
                 opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                opts.Extensions.Include<MessageTrackingExtension>();
-
                 opts.PublishAllMessages().To(TransportConstants.LocalUri);
 
                 configure(opts);

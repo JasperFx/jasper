@@ -68,7 +68,7 @@ namespace DocumentationSamples
 
             // Process the issue timeout logic 3 days from now
             // in *this* system
-            await context.Schedule(timeout, 3.Days());
+            await context.ScheduleAsync(timeout, 3.Days());
         }
         #endregion
 

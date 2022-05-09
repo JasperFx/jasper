@@ -72,7 +72,7 @@ namespace Jasper.Testing.Transports.Sending
             Latched = true;
         }
 
-        public Task<bool> TryToResume(CancellationToken cancellationToken)
+        public Task<bool> TryToResumeAsync(CancellationToken cancellationToken)
         {
             _count++;
 
@@ -83,7 +83,7 @@ namespace Jasper.Testing.Transports.Sending
             return Task.FromResult(true);
         }
 
-        public Task Resume(CancellationToken cancellationToken)
+        public Task ResumeAsync(CancellationToken cancellationToken)
         {
             _completed.Set();
             return Task.CompletedTask;

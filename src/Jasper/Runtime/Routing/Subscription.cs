@@ -6,131 +6,141 @@ using Jasper.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Jasper.Runtime.Routing
+namespace Jasper.Runtime.Routing;
+
+public class Subscription
 {
-    public class Subscription
+    private string[] _contentTypes = { EnvelopeConstants.JsonContentType };
+
+    public Subscription()
     {
-        private string?[] _contentTypes = {EnvelopeConstants.JsonContentType};
+    }
 
-        public Subscription()
+    public Subscription(Assembly assembly)
+    {
+        Scope = RoutingScope.Assembly;
+        Match = assembly.GetName().Name;
+    }
+
+    /// <summary>
+    ///     How does this rule apply? For all messages? By Namespace? By Assembly?
+    /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
+    public RoutingScope Scope { get; set; } = RoutingScope.All;
+
+
+    /// <summary>
+    ///     The legal, accepted content types for the receivers. The default is [EnvelopeConstants.JsonContentType]
+    /// </summary>
+    public string[] ContentTypes
+    {
+        get => _contentTypes;
+        set => _contentTypes = value.Distinct().ToArray() ;
+    }
+
+    /// <summary>
+    ///     A type name or namespace name if matching on type or namespace
+    /// </summary>
+    public string? Match { get; set; } = string.Empty;
+
+
+    /// <summary>
+    ///     Create a subscription for a specific message type
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static Subscription ForType(Type type)
+    {
+        return new Subscription
         {
+            Scope = RoutingScope.Type,
+            Match = type.FullName
+        };
+    }
+
+    /// <summary>
+    ///     Create a subscription for all messages published in this application
+    /// </summary>
+    /// <returns></returns>
+    public static Subscription All()
+    {
+        return new Subscription
+        {
+            Scope = RoutingScope.All
+        };
+    }
+
+    public bool Matches(Type type)
+    {
+        return Scope switch
+        {
+            RoutingScope.Assembly => type.Assembly.GetName().Name!.EqualsIgnoreCase(Match!),
+            RoutingScope.Namespace => type.IsInNamespace(Match!),
+            RoutingScope.Type => type.Name.EqualsIgnoreCase(Match!) || type.FullName!.EqualsIgnoreCase(Match!) ||
+                                 type.ToMessageTypeName().EqualsIgnoreCase(Match!),
+            RoutingScope.TypeName => type.ToMessageTypeName().EqualsIgnoreCase(Match!),
+            _ => true
+        };
+    }
+
+
+    protected bool Equals(Subscription other)
+    {
+        return Scope == other.Scope && ContentTypes.SequenceEqual(other.ContentTypes) &&
+               string.Equals(Match, other.Match);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+        {
+            return false;
         }
 
-        public Subscription(Assembly assembly)
+        if (ReferenceEquals(this, obj))
         {
-            Scope = RoutingScope.Assembly;
-            Match = assembly.GetName().Name;
+            return true;
         }
 
-        /// <summary>
-        /// How does this rule apply? For all messages? By Namespace? By Assembly?
-        /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public RoutingScope Scope { get; set; } = RoutingScope.All;
-
-
-        /// <summary>
-        /// The legal, accepted content types for the receivers. The default is [EnvelopeConstants.JsonContentType]
-        /// </summary>
-        public string?[] ContentTypes
+        if (obj.GetType() != GetType())
         {
-            get => _contentTypes;
-            set => _contentTypes = value?.Distinct().ToArray() ?? new[] {EnvelopeConstants.JsonContentType};
+            return false;
         }
 
-        /// <summary>
-        /// A type name or namespace name if matching on type or namespace
-        /// </summary>
-        public string? Match { get; set; } = string.Empty;
+        return Equals((Subscription)obj);
+    }
 
-
-
-        /// <summary>
-        /// Create a subscription for a specific message type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static Subscription ForType(Type type)
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return new Subscription
-            {
-                Scope = RoutingScope.Type,
-                Match = type.FullName,
-            };
+            var hashCode = (int)Scope;
+            hashCode = (hashCode * 397) ^ ContentTypes.GetHashCode();
+            hashCode = (hashCode * 397) ^ (Match != null ? Match.GetHashCode() : 0);
+            return hashCode;
+        }
+    }
+
+    public override string ToString()
+    {
+        switch (Scope)
+        {
+            case RoutingScope.All:
+                return "All Messages";
+
+            case RoutingScope.Assembly:
+                return $"Message assembly is {Match}";
+
+            case RoutingScope.Namespace:
+                return $"Message type is within namespace {Match}";
+
+            case RoutingScope.Type:
+                return $"Message type is {Match}";
+
+            case RoutingScope.TypeName:
+                return $"Message name is '{Match}'";
         }
 
-        /// <summary>
-        /// Create a subscription for all messages published in this application
-        /// </summary>
-        /// <returns></returns>
-        public static Subscription All()
-        {
-            return new Subscription
-            {
-                Scope = RoutingScope.All
-            };
-        }
-
-        public bool Matches(Type type)
-        {
-            return Scope switch
-            {
-                RoutingScope.Assembly => type.Assembly.GetName().Name.EqualsIgnoreCase(Match),
-                RoutingScope.Namespace => type.IsInNamespace(Match),
-                RoutingScope.Type => type.Name.EqualsIgnoreCase(Match) || type.FullName.EqualsIgnoreCase(Match) ||
-                                     type.ToMessageTypeName().EqualsIgnoreCase(Match),
-                RoutingScope.TypeName => type.ToMessageTypeName().EqualsIgnoreCase(Match),
-                _ => true
-            };
-        }
-
-
-        protected bool Equals(Subscription other)
-        {
-            return Scope == other.Scope && ContentTypes.SequenceEqual(other.ContentTypes) &&
-                   string.Equals(Match, other.Match);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Subscription) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (int) Scope;
-                hashCode = (hashCode * 397) ^ (ContentTypes != null ? ContentTypes.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Match != null ? Match.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
-
-        public override string ToString()
-        {
-            switch (Scope)
-            {
-                case RoutingScope.All:
-                    return "All Messages";
-
-                case RoutingScope.Assembly:
-                    return $"Message assembly is {Match}";
-
-                case RoutingScope.Namespace:
-                    return $"Message type is within namespace {Match}";
-
-                case RoutingScope.Type:
-                    return $"Message type is {Match}";
-
-                case RoutingScope.TypeName:
-                    return $"Message name is '{Match}'";
-            }
-
-            throw new ArgumentOutOfRangeException();
-        }
+        throw new ArgumentOutOfRangeException();
     }
 }

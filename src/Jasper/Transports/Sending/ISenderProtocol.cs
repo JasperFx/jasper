@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Jasper.Transports.Sending
+namespace Jasper.Transports.Sending;
+
+public interface ISenderProtocol
 {
-    public interface ISenderProtocol
-    {
-        Task SendBatch(ISenderCallback callback, OutgoingMessageBatch batch);
-    }
+    Task SendBatchAsync(ISenderCallback callback, OutgoingMessageBatch batch);
 }

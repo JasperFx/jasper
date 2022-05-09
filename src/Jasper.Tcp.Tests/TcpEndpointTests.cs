@@ -49,7 +49,7 @@ namespace Jasper.Tcp.Tests
             var endpoint = new TcpEndpoint(4444);
             endpoint.Mode = EndpointMode.Durable;
 
-            endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444/durable".ToUri());
+            endpoint.CorrectedUriForReplies().ShouldBe($"tcp://localhost:4444/durable".ToUri());
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Jasper.Tcp.Tests
             var endpoint = new TcpEndpoint(4444);
             endpoint.Mode = EndpointMode.BufferedInMemory;
 
-            endpoint.ReplyUri().ShouldBe($"tcp://localhost:4444".ToUri());
+            endpoint.CorrectedUriForReplies().ShouldBe($"tcp://localhost:4444".ToUri());
         }
     }
 }

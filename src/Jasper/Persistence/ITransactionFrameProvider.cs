@@ -1,10 +1,9 @@
 ﻿using Jasper.Configuration;
 using Lamar;
 
-namespace Jasper.Persistence
+namespace Jasper.Persistence;
+
+public interface ITransactionFrameProvider
 {
-    public interface ITransactionFrameProvider
-    {
-        void ApplyTransactionSupport(IChain chain, IContainer container);
-    }
+    void ApplyTransactionSupport(IChain chain, IContainer container);
 }

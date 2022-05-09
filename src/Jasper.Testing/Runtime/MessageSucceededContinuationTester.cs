@@ -19,7 +19,7 @@ namespace Jasper.Testing.Runtime
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theContext, DateTime.UtcNow);
+                .ExecuteAsync(theContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
@@ -29,13 +29,13 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public void should_mark_the_message_as_successful()
         {
-            theContext.Received().Complete();
+            theContext.Received().CompleteAsync();
         }
 
         [Fact]
         public void should_send_off_all_queued_up_cascaded_messages()
         {
-            theContext.Received().SendAllQueuedOutgoingMessages();
+            theContext.Received().FlushOutgoingMessagesAsync();
         }
     }
 
@@ -43,13 +43,13 @@ namespace Jasper.Testing.Runtime
     {
         public MessageSucceededContinuation_failure_handling_Tester()
         {
-            theContext.When(x => x.SendAllQueuedOutgoingMessages())
+            theContext.When(x => x.FlushOutgoingMessagesAsync())
                 .Throw(theException);
 
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .Execute(theContext, DateTime.UtcNow);
+                .ExecuteAsync(theContext, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
@@ -61,7 +61,7 @@ namespace Jasper.Testing.Runtime
         public void should_send_a_failure_ack()
         {
             var message = "Sending cascading message failed: " + theException.Message;
-            theContext.Received().SendFailureAcknowledgement(theEnvelope, message);
+            theContext.Received().SendFailureAcknowledgementAsync(theEnvelope, message);
         }
     }
 }

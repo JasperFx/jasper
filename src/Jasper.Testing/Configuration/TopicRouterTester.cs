@@ -44,9 +44,9 @@ namespace Jasper.Testing.Configuration
         public void determine_topic_name_by_type(Type messageType, string expected)
         {
             // Do it repeatedly just to hammer on the memoization a bit
-            TopicRouter<string>.DetermineTopicName(messageType).ShouldBe(expected);
-            TopicRouter<string>.DetermineTopicName(messageType).ShouldBe(expected);
-            TopicRouter<string>.DetermineTopicName(messageType).ShouldBe(expected);
+            TopicRouting.DetermineTopicName(messageType).ShouldBe(expected);
+            TopicRouting.DetermineTopicName(messageType).ShouldBe(expected);
+            TopicRouting.DetermineTopicName(messageType).ShouldBe(expected);
         }
 
     }

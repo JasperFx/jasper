@@ -21,27 +21,6 @@ public partial class JasperRuntime : IEnvelopeRouter
         return envelopes;
     }
 
-    public MessageTypeRouting RouteByType(Type messageType)
-    {
-        RegisterMessageType(messageType);
-        var routing = new MessageTypeRouting(messageType, this);
-
-        var subscribers = Subscribers
-            .Where(x => x.ShouldSendMessage(messageType))
-            .ToArray();
-
-        if (subscribers.Any())
-        {
-            foreach (var subscriber in subscribers) subscriber.AddRoute(routing, this);
-        }
-        else if (Options.HandlerGraph.CanHandle(messageType))
-        {
-            routing.UseLocalQueueAsRoute();
-        }
-
-        return routing;
-    }
-
     public Envelope[] RouteOutgoingByEnvelope(Envelope original)
     {
         var messageType = DetermineMessageType(original);
@@ -77,11 +56,16 @@ public partial class JasperRuntime : IEnvelopeRouter
 
     Envelope IEnvelopeRouter.RouteLocally<T>(T message) where T : default
     {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
         var agent = routingFor(typeof(T)).LocalQueue;
 
         return new Envelope(message)
         {
-            Destination = agent!.Destination,
+            Destination = agent.Destination,
             ContentType = EnvelopeConstants.JsonContentType,
             Sender = agent,
             Serializer = agent.Endpoint.DefaultSerializer
@@ -90,6 +74,16 @@ public partial class JasperRuntime : IEnvelopeRouter
 
     public Envelope RouteLocally<T>(T message, string workerQueue)
     {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        if (workerQueue == null)
+        {
+            throw new ArgumentNullException(nameof(workerQueue));
+        }
+
         var agent = AgentForLocalQueue(workerQueue);
 
         return new Envelope(message)
@@ -99,6 +93,27 @@ public partial class JasperRuntime : IEnvelopeRouter
             Sender = agent,
             Serializer = agent.Endpoint.DefaultSerializer
         };
+    }
+
+    public MessageTypeRouting RouteByType(Type messageType)
+    {
+        RegisterMessageType(messageType);
+        var routing = new MessageTypeRouting(messageType, this);
+
+        var subscribers = Subscribers
+            .Where(x => x.ShouldSendMessage(messageType))
+            .ToArray();
+
+        if (subscribers.Any())
+        {
+            foreach (var subscriber in subscribers) subscriber.AddRoute(routing, this);
+        }
+        else if (Options.HandlerGraph.CanHandle(messageType))
+        {
+            routing.UseLocalQueueAsRoute();
+        }
+
+        return routing;
     }
 
     private void adjustForScheduledSend(Envelope[] outgoing)

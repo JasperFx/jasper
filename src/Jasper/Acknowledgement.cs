@@ -1,27 +1,38 @@
 ﻿using System;
 
-namespace Jasper
+namespace Jasper;
+
+public class Acknowledgement
 {
-    public class Acknowledgement
+    public Guid CorrelationId { get; set; }
+
+    protected bool Equals(Acknowledgement other)
     {
-        public Guid CorrelationId { get; set; }
+        return Equals(CorrelationId, other.CorrelationId);
+    }
 
-        protected bool Equals(Acknowledgement other)
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
         {
-            return Equals(CorrelationId, other.CorrelationId);
+            return false;
         }
 
-        public override bool Equals(object? obj)
+        if (ReferenceEquals(this, obj))
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Acknowledgement) obj);
+            return true;
         }
 
-        public override int GetHashCode()
+        if (obj.GetType() != GetType())
         {
-            return CorrelationId.GetHashCode();
+            return false;
         }
+
+        return Equals((Acknowledgement)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return CorrelationId.GetHashCode();
     }
 }

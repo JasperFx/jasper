@@ -29,18 +29,18 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task should_send_a_failure_ack()
         {
-            await theContinuation.Execute(theContext, DateTime.UtcNow);
+            await theContinuation.ExecuteAsync(theContext, DateTime.UtcNow);
 
             await theContext
                 .Received()
-                .SendFailureAcknowledgement(theEnvelope,$"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}")
+                .SendFailureAcknowledgementAsync(theEnvelope,$"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}")
                 ;
         }
 
         [Fact]
         public async Task logging_calls()
         {
-            await theContinuation.Execute(theContext, DateTime.UtcNow);
+            await theContinuation.ExecuteAsync(theContext, DateTime.UtcNow);
 
             theContext.Logger.Received().MessageFailed(theEnvelope, theException);
             theContext.Logger.Received().MovedToErrorQueue(theEnvelope, theException);

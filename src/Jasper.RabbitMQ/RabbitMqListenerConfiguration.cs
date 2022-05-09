@@ -11,24 +11,27 @@ namespace Jasper.RabbitMQ
         }
 
         /// <summary>
-        /// To optimize the message listener throughput,
-        /// start up multiple listening endpoints. This is
-        /// most necessary when using inline processing
+        ///     To optimize the message listener throughput,
+        ///     start up multiple listening endpoints. This is
+        ///     most necessary when using inline processing
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
         public RabbitMqListenerConfiguration ListenerCount(int count)
         {
-            if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count), "Must be greater than zero");
+            if (count <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), "Must be greater than zero");
+            }
 
             endpoint.ListenerCount = count;
             return this;
         }
 
         /// <summary>
-        /// Assume that any unidentified, incoming message types is the
-        /// type "T". This is primarily for interoperability with non-Jasper
-        /// applications
+        ///     Assume that any unidentified, incoming message types is the
+        ///     type "T". This is primarily for interoperability with non-Jasper
+        ///     applications
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -38,9 +41,9 @@ namespace Jasper.RabbitMQ
         }
 
         /// <summary>
-        /// Assume that any unidentified, incoming message types is the
-        /// type "T". This is primarily for interoperability with non-Jasper
-        /// applications
+        ///     Assume that any unidentified, incoming message types is the
+        ///     type "T". This is primarily for interoperability with non-Jasper
+        ///     applications
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>

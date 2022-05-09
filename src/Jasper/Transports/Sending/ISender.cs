@@ -1,19 +1,17 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jasper.Transports.Sending
-{
-    public interface ISenderRequiresCallback : IDisposable
-    {
-        void RegisterCallback(ISenderCallback senderCallback);
-    }
+namespace Jasper.Transports.Sending;
 
-    public interface ISender : IDisposable
-    {
-        bool SupportsNativeScheduledSend { get; }
-        Uri Destination { get; }
-        Task<bool> Ping(CancellationToken cancellationToken);
-        ValueTask Send(Envelope envelope);
-    }
+public interface ISenderRequiresCallback : IDisposable
+{
+    void RegisterCallback(ISenderCallback senderCallback);
+}
+
+public interface ISender : IDisposable
+{
+    bool SupportsNativeScheduledSend { get; }
+    Uri Destination { get; }
+    Task<bool> PingAsync();
+    ValueTask SendAsync(Envelope envelope);
 }

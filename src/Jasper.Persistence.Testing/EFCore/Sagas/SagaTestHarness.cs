@@ -40,8 +40,6 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
                 opts.Extensions.UseEntityFrameworkCorePersistence();
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.PublishAllMessages().Locally();
 
                 configure(opts);

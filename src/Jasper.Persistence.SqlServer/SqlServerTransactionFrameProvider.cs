@@ -1,22 +1,20 @@
-﻿using System.Data.SqlClient;
-using Jasper.Configuration;
+﻿using Jasper.Configuration;
 using Jasper.Persistence.Database;
 using Lamar;
 using Microsoft.Data.SqlClient;
 
-namespace Jasper.Persistence.SqlServer
+namespace Jasper.Persistence.SqlServer;
+
+internal class SqlServerTransactionFrameProvider : ITransactionFrameProvider
 {
-    internal class SqlServerTransactionFrameProvider : ITransactionFrameProvider
+    public void ApplyTransactionSupport(IChain chain, IContainer container)
     {
-        public void ApplyTransactionSupport(IChain chain, IContainer container)
-        {
-            var shouldFlushOutgoingMessages = chain.ShouldFlushOutgoingMessages();
+        var shouldFlushOutgoingMessages = chain.ShouldFlushOutgoingMessages();
 
 
-            var frame = new DbTransactionFrame<SqlTransaction, SqlConnection>
-                {ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages};
+        var frame = new DbTransactionFrame<SqlTransaction, SqlConnection>
+            { ShouldFlushOutgoingMessages = shouldFlushOutgoingMessages };
 
-            chain.Middleware.Add(frame);
-        }
+        chain.Middleware.Add(frame);
     }
 }

@@ -65,15 +65,13 @@ namespace Jasper.Tcp.Tests.Protocol
         {
             _listener.Start();
 
-            using (var client = new TcpClient())
-            {
-                if (Dns.GetHostName() == Destination.Host)
-                    await client.ConnectAsync(IPAddress.Loopback, Destination.Port);
+            using var client = new TcpClient();
+            if (Dns.GetHostName() == Destination.Host)
+                await client.ConnectAsync(IPAddress.Loopback, Destination.Port);
 
-                await client.ConnectAsync(Destination.Host, Destination.Port);
+            await client.ConnectAsync(Destination.Host, Destination.Port);
 
-                await WireProtocol.Send(client.GetStream(), theMessageBatch, null, theSender);
-            }
+            await WireProtocol.SendAsync(client.GetStream(), theMessageBatch, null, theSender);
         }
 
         protected void allTheMessagesWereReceived()
@@ -98,7 +96,7 @@ namespace Jasper.Tcp.Tests.Protocol
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        Task IListeningWorkerQueue.Received(Uri? uri, Envelope?[] messages)
+        Task IListeningWorkerQueue.ReceivedAsync(Uri uri, Envelope[] messages)
         {
             if (ThrowErrorOnReceived) throw new DivideByZeroException();
 
@@ -107,7 +105,7 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task Received(Uri? uri, Envelope? envelope)
+        public Task ReceivedAsync(Uri uri, Envelope envelope)
         {
             throw new NotImplementedException();
         }
@@ -131,54 +129,54 @@ namespace Jasper.Tcp.Tests.Protocol
 
         public bool ProcessingFailed { get; set; }
 
-        public Task Successful(OutgoingMessageBatch outgoing)
+        public Task MarkSuccessfulAsync(OutgoingMessageBatch outgoing)
         {
             Succeeded = true;
             return Task.CompletedTask;
         }
 
-        public Task Successful(Envelope outgoing)
+        public Task MarkSuccessfulAsync(Envelope outgoing)
         {
             Succeeded = true;
             return Task.CompletedTask;
         }
 
-        Task ISenderCallback.TimedOut(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.MarkTimedOutAsync(OutgoingMessageBatch outgoing)
         {
             TimedOut = true;
             return Task.CompletedTask;
         }
 
-        Task ISenderCallback.SerializationFailure(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.MarkSerializationFailureAsync(OutgoingMessageBatch outgoing)
         {
             SerializationFailed = true;
             return Task.CompletedTask;
         }
 
-        Task ISenderCallback.QueueDoesNotExist(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.MarkQueueDoesNotExistAsync(OutgoingMessageBatch outgoing)
         {
             QueueDoesNotExist = true;
             return Task.CompletedTask;
         }
 
-        Task ISenderCallback.ProcessingFailure(OutgoingMessageBatch outgoing)
+        Task ISenderCallback.MarkProcessingFailureAsync(OutgoingMessageBatch outgoing)
         {
             ProcessingFailed = true;
             return Task.CompletedTask;
         }
 
-        public Task ProcessingFailure(Envelope outgoing, Exception? exception)
+        public Task MarkProcessingFailureAsync(Envelope outgoing, Exception? exception)
         {
             ProcessingFailed = true;
             return Task.CompletedTask;
         }
 
-        public Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception? exception)
+        public Task MarkProcessingFailureAsync(OutgoingMessageBatch outgoing, Exception? exception)
         {
             throw new NotImplementedException();
         }
 
-        public Task SenderIsLatched(OutgoingMessageBatch outgoing)
+        public Task MarkSenderIsLatchedAsync(OutgoingMessageBatch outgoing)
         {
             throw new NotImplementedException();
         }

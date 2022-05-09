@@ -26,10 +26,10 @@ namespace DocumentationSamples
 
     public class MyMissingHandler : IMissingHandler
     {
-        public Task Handle(Envelope? envelope, IJasperRuntime root)
+        public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
         {
             return root.Acknowledgements
-                .SendFailureAcknowledgement(envelope, "I don't know how to process this message");
+                .SendFailureAcknowledgementAsync(envelope, "I don't know how to process this message");
         }
     }
 

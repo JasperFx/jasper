@@ -49,8 +49,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             }).IntegrateWithJasper();
 
             opts.ListenAtPort(2345).DurablyPersistedLocally();
-
-            opts.Extensions.UseMessageTrackingTestingSupport();
         });
 
         [Fact]

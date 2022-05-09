@@ -1,15 +1,14 @@
-namespace Jasper.Tracking
+namespace Jasper.Tracking;
+
+public enum EventType
 {
-    public enum EventType
-    {
-        Received,
-        Sent,
-        ExecutionStarted,
-        ExecutionFinished,
-        MessageSucceeded,
-        MessageFailed,
-        NoHandlers,
-        NoRoutes,
-        MovedToErrorQueue
-    }
+    Received,
+    Sent,
+    ExecutionStarted,
+    ExecutionFinished,
+    MessageSucceeded,
+    MessageFailed,
+    NoHandlers,
+    NoRoutes,
+    MovedToErrorQueue
 }

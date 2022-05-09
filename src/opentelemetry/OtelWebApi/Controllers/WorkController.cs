@@ -23,7 +23,7 @@ namespace OtelWebApi.Controllers
         [HttpPost("/local/later")]
         public Task Later()
         {
-            return _publisher.Enqueue(new Work());
+            return _publisher.EnqueueAsync(new Work());
         }
 
         [HttpPost("/subscriber1/inline")]

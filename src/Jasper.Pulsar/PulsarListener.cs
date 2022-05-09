@@ -13,11 +13,11 @@ namespace Jasper.Pulsar
     {
         private readonly PulsarEndpoint _endpoint;
         private readonly PulsarTransport _transport;
-        private IConsumer<ReadOnlySequence<byte>> _consumer;
-        private Task _receivingLoop;
+        private IConsumer<ReadOnlySequence<byte>>? _consumer;
+        private Task? _receivingLoop;
         private CancellationToken _cancellation;
         private readonly PulsarSender _sender;
-        private IListeningWorkerQueue _callback;
+        private IListeningWorkerQueue? _callback;
 
         public PulsarListener(PulsarEndpoint endpoint, PulsarTransport transport, CancellationToken cancellation)
         {
@@ -34,7 +34,10 @@ namespace Jasper.Pulsar
         {
             if (envelope is PulsarEnvelope e)
             {
-                return _consumer.Acknowledge(e.MessageData, _cancellation);
+                if (_consumer != null)
+                {
+                    return _consumer.Acknowledge(e.MessageData, _cancellation);
+                }
             }
 
             return ValueTask.CompletedTask;
@@ -44,17 +47,17 @@ namespace Jasper.Pulsar
         {
             if (envelope is PulsarEnvelope e)
             {
-                await _consumer.Acknowledge(e.MessageData, _cancellation);
-                await _sender.Send(envelope);
+                await _consumer!.Acknowledge(e.MessageData, _cancellation);
+                await _sender.SendAsync(envelope);
             }
         }
 
         public void Dispose()
         {
             // TODO -- no mixing!
-            _consumer.DisposeAsync().GetAwaiter().GetResult();
+            _consumer!.DisposeAsync().GetAwaiter().GetResult();
             _sender.Dispose();
-            _receivingLoop.Dispose();
+            _receivingLoop!.Dispose();
         }
 
         public Uri Address { get; }
@@ -68,6 +71,7 @@ namespace Jasper.Pulsar
                 switch (value)
                 {
                     case ListeningStatus.TooBusy when _consumer != null:
+                        // TODO -- no mix and matching. Rather have an inner object that either exists, or does not
                         _consumer?.DisposeAsync();
 
                         _consumer = null;
@@ -78,12 +82,12 @@ namespace Jasper.Pulsar
                 }
             }
         }
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+        public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
         {
             _cancellation = cancellation;
             _callback = callback;
 
-            _consumer = _transport.Client.NewConsumer()
+            _consumer = _transport.Client!.NewConsumer()
                 .SubscriptionName("Jasper")
                 // TODO -- more options here. Give the user complete
                 // control over the Pulsar usage. Maybe expose ConsumerOptions on endpoint
@@ -103,16 +107,16 @@ namespace Jasper.Pulsar
 
                     // TODO -- the worker queue should already have the Uri,
                     // so just take in envelope
-                    await callback.Received(Address, envelope);
+                    await callback!.ReceivedAsync(Address, envelope);
                 }
             }, cancellation);
         }
 
-        public async Task<bool> TryRequeue(Envelope envelope)
+        public async Task<bool> TryRequeueAsync(Envelope envelope)
         {
-            if (envelope is PulsarEnvelope e)
+            if (envelope is PulsarEnvelope)
             {
-                await _sender.Send(envelope);
+                await _sender.SendAsync(envelope);
                 return true;
             }
 

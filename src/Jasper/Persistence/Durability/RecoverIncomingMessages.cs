@@ -7,81 +7,82 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Persistence.Durability
+namespace Jasper.Persistence.Durability;
+
+public class RecoverIncomingMessages : IMessagingAction
 {
-    public class RecoverIncomingMessages : IMessagingAction
+    private readonly ILogger _logger;
+    private readonly AdvancedSettings _settings;
+    private readonly IWorkerQueue _workers;
+
+    public RecoverIncomingMessages(IWorkerQueue workers, AdvancedSettings settings,
+        ILogger logger)
     {
-        private readonly IWorkerQueue _workers;
-        private readonly AdvancedSettings _settings;
-        private readonly ILogger _logger;
+        _workers = workers;
+        _settings = settings;
+        _logger = logger;
+    }
 
-        public RecoverIncomingMessages(IWorkerQueue workers, AdvancedSettings settings,
-            ILogger logger)
+    public async Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
+    {
+        // TODO -- enforce back pressure here on the retries listener!
+
+        await storage.Session.BeginAsync();
+
+
+        var incoming = await determineIncomingAsync(storage);
+
+        _logger.RecoveredIncoming(incoming);
+
+        foreach (var envelope in incoming)
         {
-            _workers = workers;
-            _settings = settings;
-            _logger = logger;
+            envelope.OwnerId = _settings.UniqueNodeId;
+            await _workers.EnqueueAsync(envelope);
         }
 
-        public async Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
+        // TODO -- this should be smart enough later to check for back pressure before rescheduling
+        if (incoming.Count == _settings.RecoveryBatchSize)
         {
-            // TODO -- enforce back pressure here on the retries listener!
-
-            await storage.Session.BeginAsync();
-
-
-            var incoming = await determineIncomingAsync(storage);
-
-            _logger.RecoveredIncoming(incoming);
-
-            foreach (var envelope in incoming)
-            {
-                envelope.OwnerId = _settings.UniqueNodeId;
-                await _workers.EnqueueAsync(envelope);
-            }
-
-            // TODO -- this should be smart enough later to check for back pressure before rescheduling
-            if (incoming.Count == _settings.RecoveryBatchSize)
-                agent.RescheduleIncomingRecovery();
+            agent.RescheduleIncomingRecovery();
         }
+    }
 
-        private async Task<IReadOnlyList<Envelope>> determineIncomingAsync(IEnvelopePersistence storage)
+    public string Description { get; } = "Recover persisted incoming messages";
+
+    private async Task<IReadOnlyList<Envelope>> determineIncomingAsync(IEnvelopePersistence storage)
+    {
+        try
         {
-            try
-            {
-                var gotLock = await storage.Session.TryGetGlobalLock(TransportConstants.IncomingMessageLockId);
+            var gotLock = await storage.Session.TryGetGlobalLockAsync(TransportConstants.IncomingMessageLockId);
 
-                if (!gotLock)
-                {
-                    await storage.Session.RollbackAsync();
-                    return new List<Envelope>();
-                }
-
-                var incoming = await storage.LoadPageOfGloballyOwnedIncomingAsync();
-
-                if (!incoming.Any())
-                {
-                    await storage.Session.RollbackAsync();
-                    return incoming; // Okay to return the empty list here any way
-                }
-
-                await storage.ReassignIncomingAsync(_settings.UniqueNodeId, incoming);
-
-                await storage.Session.CommitAsync();
-            }
-            catch (Exception)
+            if (!gotLock)
             {
                 await storage.Session.RollbackAsync();
-                throw;
-            }
-            finally
-            {
-                await storage.Session.ReleaseGlobalLock(TransportConstants.IncomingMessageLockId);
+                return new List<Envelope>();
             }
 
-            return new List<Envelope>();
+            var incoming = await storage.LoadPageOfGloballyOwnedIncomingAsync();
+
+            if (!incoming.Any())
+            {
+                await storage.Session.RollbackAsync();
+                return incoming; // Okay to return the empty list here any way
+            }
+
+            await storage.ReassignIncomingAsync(_settings.UniqueNodeId, incoming);
+
+            await storage.Session.CommitAsync();
+        }
+        catch (Exception)
+        {
+            await storage.Session.RollbackAsync();
+            throw;
+        }
+        finally
+        {
+            await storage.Session.ReleaseGlobalLockAsync(TransportConstants.IncomingMessageLockId);
         }
 
-        public string Description { get; } = "Recover persisted incoming messages";
+        return new List<Envelope>();
     }
 }

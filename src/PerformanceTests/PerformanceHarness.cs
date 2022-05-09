@@ -69,7 +69,7 @@ namespace PerformanceTests
                 {
                     for (int j = 0; j < countPerThread; j++)
                     {
-                        await _sender.Send(new SmallMessage());
+                        await _sender.SendAsync(new SmallMessage());
                     }
                 });
             }

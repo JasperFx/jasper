@@ -30,9 +30,9 @@ namespace Jasper.Testing.Acceptance
         {
             PotentiallySlowMessageHandler.DidTimeout = false; // start clean
 
-            using var host = JasperHost.For(opts => opts.Extensions.UseMessageTrackingTestingSupport());
+            using var host = JasperHost.Basic();
 
-            await host.TrackActivity().EnqueueMessageAndWait(new DurationMessage { DurationInMilliseconds = 50 });
+            await host.TrackActivity().EnqueueMessageAndWaitAsync(new DurationMessage { DurationInMilliseconds = 50 });
 
             PotentiallySlowMessageHandler.DidTimeout.ShouldBeFalse();
         }
@@ -45,13 +45,12 @@ namespace Jasper.Testing.Acceptance
             using var host = JasperHost.For(opts =>
             {
                 opts.DefaultExecutionTimeout = 50.Milliseconds();
-                opts.Extensions.UseMessageTrackingTestingSupport();
             });
 
             var session = await host
                 .TrackActivity()
                 .DoNotAssertOnExceptionsDetected()
-                .EnqueueMessageAndWait(new DurationMessage { DurationInMilliseconds = 500 });
+                .EnqueueMessageAndWaitAsync(new DurationMessage { DurationInMilliseconds = 500 });
 
             var exceptions = session.AllExceptions();
             exceptions.Single().ShouldBeOfType<TaskCanceledException>();
@@ -63,15 +62,12 @@ namespace Jasper.Testing.Acceptance
         {
             PotentiallySlowMessageHandler.DidTimeout = false; // start clean
 
-            using var host = JasperHost.For(opts =>
-            {
-                opts.Extensions.UseMessageTrackingTestingSupport();
-            });
+            using var host = JasperHost.Basic();
 
             var session = await host
                 .TrackActivity()
                 .DoNotAssertOnExceptionsDetected()
-                .EnqueueMessageAndWait(new PotentiallySlowMessage() { DurationInMilliseconds = 2500 });
+                .EnqueueMessageAndWaitAsync(new PotentiallySlowMessage() { DurationInMilliseconds = 2500 });
 
             var exceptions = session.AllExceptions();
             exceptions.Single().ShouldBeOfType<TaskCanceledException>();

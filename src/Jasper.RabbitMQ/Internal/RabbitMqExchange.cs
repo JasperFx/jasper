@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Jasper.Transports;
 using RabbitMQ.Client;
@@ -7,15 +6,13 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqExchange
     {
-        private readonly RabbitMqTransport _parent;
-        public string Name { get; }
-
-        public RabbitMqExchange(string name, RabbitMqTransport parent)
+        public RabbitMqExchange(string name)
         {
-            _parent = parent;
             Name = name;
             DeclaredName = name == TransportConstants.Default ? "" : Name;
         }
+
+        public string Name { get; }
 
         public bool IsDurable { get; set; } = true;
 
@@ -30,7 +27,11 @@ namespace Jasper.RabbitMQ.Internal
 
         internal void Declare(IModel channel)
         {
-            if (DeclaredName == string.Empty) return;
+            if (DeclaredName == string.Empty)
+            {
+                return;
+            }
+
             var exchangeTypeName = ExchangeType.ToString().ToLower();
             channel.ExchangeDeclare(DeclaredName, exchangeTypeName, IsDurable, AutoDelete, Arguments);
         }
@@ -38,7 +39,11 @@ namespace Jasper.RabbitMQ.Internal
 
         public void Teardown(IModel channel)
         {
-            if (DeclaredName == string.Empty) return;
+            if (DeclaredName == string.Empty)
+            {
+                return;
+            }
+
             channel.ExchangeDelete(DeclaredName);
         }
     }

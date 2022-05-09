@@ -1,8 +1,7 @@
-namespace Jasper.Tracking
+namespace Jasper.Tracking;
+
+public interface ITrackedCondition
 {
-    public interface ITrackedCondition
-    {
-        void Record(EnvelopeRecord record);
-        bool IsCompleted();
-    }
+    void Record(EnvelopeRecord record);
+    bool IsCompleted();
 }

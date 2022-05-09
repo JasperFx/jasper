@@ -5,11 +5,10 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqChannelCallback : IChannelCallback
     {
-        public static readonly RabbitMqChannelCallback Instance = new RabbitMqChannelCallback();
+        public static readonly RabbitMqChannelCallback Instance = new();
 
         private RabbitMqChannelCallback()
         {
-
         }
 
         public ValueTask CompleteAsync(Envelope envelope)
@@ -26,7 +25,7 @@ namespace Jasper.RabbitMQ.Internal
         {
             if (envelope is RabbitMqEnvelope e)
             {
-                return e.Defer();
+                return e.DeferAsync();
             }
 
             return ValueTask.CompletedTask;

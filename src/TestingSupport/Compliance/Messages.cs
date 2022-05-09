@@ -53,7 +53,7 @@ namespace TestingSupport.Compliance
         {
             var pong = new PongMessage{Id = message.Id};
 
-            return context.RespondToSender(pong);
+            return context.RespondToSenderAsync(pong);
         }
 
         public ImplicitPong Handle(ImplicitPing ping)

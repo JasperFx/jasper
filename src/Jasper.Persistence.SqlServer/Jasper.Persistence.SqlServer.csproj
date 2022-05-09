@@ -14,16 +14,18 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj" />
-    <ProjectReference Include="..\Jasper\Jasper.csproj" />
-    <EmbeddedResource Include="Schema/*.sql" />
+    <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj"/>
+    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
+    <EmbeddedResource Include="Schema/*.sql"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Weasel.SqlServer" Version="5.4.0" />
+    <PackageReference Include="Weasel.SqlServer" Version="5.4.0"/>
   </ItemGroup>
 
-  <Import Project="../../Analysis.Build.props" />
+  <Import Project="../../Analysis.Build.props"/>
 </Project>

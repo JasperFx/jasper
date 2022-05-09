@@ -16,41 +16,38 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task calls_all_the_missing_handlers()
         {
-            using (var host = JasperHost.For(x =>
+            using var host = JasperHost.For(x =>
             {
-                x.Extensions.UseMessageTrackingTestingSupport();
-
                 x.Services.AddSingleton<IMissingHandler, RecordingMissingHandler>();
                 x.Services.AddSingleton<IMissingHandler, RecordingMissingHandler2>();
                 x.Services.AddSingleton<IMissingHandler, RecordingMissingHandler3>();
-            }))
+            });
+
+            var message = new MessageWithNoHandler();
+
+
+            await host.ExecuteAndWaitAsync(x => x.EnqueueAsync(message));
+
+            for (int i = 0; i < 4; i++)
             {
-                var message = new MessageWithNoHandler();
-
-
-                await host.ExecuteAndWaitAsync(x => x.Enqueue(message));
-
-                for (int i = 0; i < 4; i++)
+                if (RecordingMissingHandler.Recorded.Any())
                 {
-                    if (RecordingMissingHandler.Recorded.Any())
-                    {
-                        break;
-                    }
-
-                    await Task.Delay(250);
+                    break;
                 }
 
-                RecordingMissingHandler.Recorded.Single().Message.ShouldBeSameAs(message);
-                RecordingMissingHandler2.Recorded.Single().Message.ShouldBeSameAs(message);
-                RecordingMissingHandler3.Recorded.Single().Message.ShouldBeSameAs(message);
+                await Task.Delay(250);
             }
+
+            RecordingMissingHandler.Recorded.Single().Message.ShouldBeSameAs(message);
+            RecordingMissingHandler2.Recorded.Single().Message.ShouldBeSameAs(message);
+            RecordingMissingHandler3.Recorded.Single().Message.ShouldBeSameAs(message);
         }
 
         public class RecordingMissingHandler : IMissingHandler
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope? envelope, IJasperRuntime root)
+            public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
@@ -64,7 +61,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope? envelope, IJasperRuntime root)
+            public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
@@ -78,7 +75,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task Handle(Envelope? envelope, IJasperRuntime root)
+            public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 

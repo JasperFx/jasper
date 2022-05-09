@@ -2,54 +2,57 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jasper.Transports.Sending
+namespace Jasper.Transports.Sending;
+
+public interface ICircuitTester
 {
-    public interface ICircuitTester
+    Task<bool> TryToResumeAsync(CancellationToken cancellationToken);
+}
+
+public interface ICircuit : ICircuitTester
+{
+    TimeSpan RetryInterval { get; }
+    Task ResumeAsync(CancellationToken cancellationToken);
+}
+
+public class CircuitWatcher : IDisposable
+{
+    private readonly CancellationToken _cancellation;
+    private readonly ICircuit _circuit;
+    private readonly Task _task;
+
+    public CircuitWatcher(ICircuit circuit, CancellationToken cancellation)
     {
-        Task<bool> TryToResume(CancellationToken cancellationToken);
+        _circuit = circuit;
+        _cancellation = cancellation;
+
+        _task = Task.Run(pingUntilConnectedAsync, _cancellation);
     }
 
-    public interface ICircuit : ICircuitTester
+    public void Dispose()
     {
-
-        Task Resume(CancellationToken cancellationToken);
-
-        TimeSpan RetryInterval { get; }
+        _task.Dispose();
     }
 
-    public class CircuitWatcher
+    private async Task pingUntilConnectedAsync()
     {
-        private Task _task;
-        private readonly ICircuit _circuit;
-        private readonly CancellationToken _cancellation;
-
-        public CircuitWatcher(ICircuit circuit, CancellationToken cancellation)
+        while (!_cancellation.IsCancellationRequested)
         {
-            _circuit = circuit;
-            _cancellation = cancellation;
+            await Task.Delay(_circuit.RetryInterval, _cancellation);
 
-            _task = Task.Run(pingUntilConnected, _cancellation);
-        }
-
-        private async Task pingUntilConnected()
-        {
-            while (!_cancellation.IsCancellationRequested)
+            try
             {
-                await Task.Delay(_circuit.RetryInterval, _cancellation);
+                var pinged = await _circuit.TryToResumeAsync(_cancellation);
 
-                try
+                if (pinged)
                 {
-                    var pinged = await _circuit.TryToResume(_cancellation);
-
-                    if (pinged)
-                    {
-                        await _circuit.Resume(_cancellation);
-                        return;
-                    }
+                    await _circuit.ResumeAsync(_cancellation);
+                    return;
                 }
-                catch (Exception)
-                {
-                }
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
+            {
             }
         }
     }

@@ -34,7 +34,7 @@ namespace Jasper.Testing.Runtime
 
             theContext.ReadEnvelope(theEnvelope, callback);
 
-            await theContext.ReSchedule(scheduledTime);
+            await theContext.ReScheduleAsync(scheduledTime);
 
             theEnvelope.ScheduledTime.ShouldBe(scheduledTime);
 
@@ -49,7 +49,7 @@ namespace Jasper.Testing.Runtime
 
             theContext.ReadEnvelope(theEnvelope, callback);
 
-            await theContext.ReSchedule(scheduledTime);
+            await theContext.ReScheduleAsync(scheduledTime);
 
             theEnvelope.ScheduledTime.ShouldBe(scheduledTime);
 
@@ -67,7 +67,7 @@ namespace Jasper.Testing.Runtime
 
             var exception = new Exception();
 
-            await theContext.MoveToDeadLetterQueue(exception);
+            await theContext.MoveToDeadLetterQueueAsync(exception);
 
             await theRuntime.Persistence.Received()
                 .MoveToDeadLetterStorageAsync(theEnvelope, exception);
@@ -82,7 +82,7 @@ namespace Jasper.Testing.Runtime
 
             var exception = new Exception();
 
-            await theContext.MoveToDeadLetterQueue(exception);
+            await theContext.MoveToDeadLetterQueueAsync(exception);
 
             await callback.As<IHasDeadLetterQueue>().Received()
                 .MoveToErrorsAsync(theEnvelope, exception);

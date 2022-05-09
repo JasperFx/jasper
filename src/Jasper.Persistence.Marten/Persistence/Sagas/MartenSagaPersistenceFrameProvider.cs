@@ -9,54 +9,55 @@ using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Marten;
 using Marten.Schema;
-using Marten.Util;
 using Oakton.Parsing;
 
-namespace Jasper.Persistence.Marten.Persistence.Sagas
+namespace Jasper.Persistence.Marten.Persistence.Sagas;
+
+public class MartenSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider, ITransactionFrameProvider
 {
-    public class MartenSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider, ITransactionFrameProvider
+    public Frame DeterminePersistenceFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
+        SagaStateExistence existence,
+        ref Variable sagaId, Type sagaStateType,
+        Variable existingState, out Variable loadedState)
     {
-        public Frame DeterminePersistenceFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
-            SagaStateExistence existence,
-            ref Variable sagaId, Type sagaStateType,
-            Variable existingState, out Variable loadedState)
+        var frame = new TransactionalFrame();
+        if (existence == SagaStateExistence.Existing)
         {
-            var frame = new TransactionalFrame();
-            if (existence == SagaStateExistence.Existing)
-            {
-                var doc = frame.LoadDocument(sagaStateType, sagaId);
-                loadedState = doc;
-            }
-            else
-            {
-                var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
-
-                sagaId = new Variable(mapping.IdMember.GetMemberType(),
-                    existingState.Usage + "." + mapping.IdMember.Name);
-
-
-                loadedState = existingState;
-            }
-
-            return frame;
+            var doc = frame.LoadDocument(sagaStateType, sagaId);
+            loadedState = doc;
         }
-
-        public Type DetermineSagaIdType(Type sagaStateType)
+        else
         {
             var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
-            return mapping.IdMember.GetMemberType();
+
+            sagaId = new Variable(mapping.IdMember.GetMemberType(),
+                existingState.Usage + "." + mapping.IdMember.Name);
+
+
+            loadedState = existingState;
         }
 
-        public Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
-            Variable document,
-            Type sagaHandlerType)
-        {
-            return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
-        }
+        return frame;
+    }
 
-        public void ApplyTransactionSupport(IChain chain, IContainer container)
+    public Type DetermineSagaIdType(Type sagaStateType)
+    {
+        var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
+        return mapping.IdMember.GetMemberType();
+    }
+
+    public Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
+        Variable document,
+        Type sagaHandlerType)
+    {
+        return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
+    }
+
+    public void ApplyTransactionSupport(IChain chain, IContainer container)
+    {
+        if (!chain.Middleware.OfType<TransactionalFrame>().Any())
         {
-            if (!chain.Middleware.OfType<TransactionalFrame>().Any()) chain.Middleware.Add(new TransactionalFrame());
+            chain.Middleware.Add(new TransactionalFrame());
         }
     }
 }

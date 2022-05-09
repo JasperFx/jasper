@@ -6,203 +6,219 @@ using Jasper.Runtime.Routing;
 using Jasper.Util;
 using Lamar;
 
-namespace Jasper.Runtime
+namespace Jasper.Runtime;
+
+public class MessagePublisher : CommandBus, IMessagePublisher
 {
-    public class MessagePublisher : CommandBus, IMessagePublisher
+    [DefaultConstructor]
+    public MessagePublisher(IJasperRuntime runtime) : base(runtime)
     {
-        [DefaultConstructor]
-        public MessagePublisher(IJasperRuntime runtime) : base(runtime)
+    }
+
+    public MessagePublisher(IJasperRuntime runtime, string? correlationId) : base(runtime, correlationId)
+    {
+    }
+
+    public Task SendAsync<T>(T message)
+    {
+        if (message == null)
         {
+            throw new ArgumentNullException(nameof(message));
         }
 
-        public MessagePublisher(IJasperRuntime runtime, string? correlationId) : base(runtime, correlationId)
+        var outgoing = Runtime.Router.RouteOutgoingByMessage(message);
+        trackEnvelopeCorrelation(outgoing);
+
+        if (!outgoing.Any())
         {
+            throw new NoRoutesException(typeof(T));
         }
 
-        public Task SendAsync<T>(T? message)
+        return persistOrSendAsync(outgoing);
+    }
+
+    public Task PublishEnvelopeAsync(Envelope envelope)
+    {
+        if (envelope.Message == null && envelope.Data == null)
         {
-            var outgoing = Runtime.Router.RouteOutgoingByMessage(message);
-            trackEnvelopeCorrelation(outgoing);
-
-            if (!outgoing.Any())
-            {
-                throw new NoRoutesException(typeof(T));
-            }
-
-            return persistOrSend(outgoing);
+            throw new ArgumentNullException(nameof(envelope.Message));
         }
 
-        public Task PublishEnvelopeAsync(Envelope? envelope)
+        var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
+        trackEnvelopeCorrelation(outgoing);
+
+        if (outgoing.Any())
         {
-            if (envelope.Message == null && envelope.Data == null)
-                throw new ArgumentNullException(nameof(envelope.Message));
-
-            var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
-            trackEnvelopeCorrelation(outgoing);
-
-            if (!outgoing.Any())
-            {
-                Runtime.MessageLogger.NoRoutesFor(envelope);
-                return Task.CompletedTask;
-            }
-
-            return persistOrSend(outgoing);
+            return persistOrSendAsync(outgoing);
         }
 
-        public Task PublishAsync<T>(T? message)
-        {
-            var envelope = new Envelope(message);
+        Runtime.MessageLogger.NoRoutesFor(envelope);
+        return Task.CompletedTask;
+    }
 
-            return PublishEnvelopeAsync(envelope);
+    public Task PublishAsync<T>(T message)
+    {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
         }
 
-        public async Task<Guid> SendEnvelopeAsync(Envelope? envelope)
+        var envelope = new Envelope(message);
+
+        return PublishEnvelopeAsync(envelope);
+    }
+
+    public async Task<Guid> SendEnvelopeAsync(Envelope envelope)
+    {
+        if (envelope.Message == null && envelope.Data == null)
         {
-            if (envelope.Message == null && envelope.Data == null) throw new ArgumentNullException(nameof(envelope.Message));
-
-            var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
-
-            trackEnvelopeCorrelation(outgoing);
-
-            if (!outgoing.Any())
-            {
-                Runtime.MessageLogger.NoRoutesFor(envelope);
-
-                throw new NoRoutesException(envelope);
-            }
-
-            await persistOrSend(outgoing);
-
-            return envelope.Id;
+            throw new ArgumentNullException(nameof(envelope.Message));
         }
 
-        public Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope?>? customization = null)
+        var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
+
+        trackEnvelopeCorrelation(outgoing);
+
+        if (!outgoing.Any())
         {
-            var envelope = EnvelopeForRequestResponse<TResponse>(message);
+            Runtime.MessageLogger.NoRoutesFor(envelope);
 
-            customization?.Invoke(envelope);
-
-            return SendEnvelopeAsync(envelope);
+            throw new NoRoutesException(envelope);
         }
 
-        public Envelope? EnvelopeForRequestResponse<TResponse>(object request)
+        await persistOrSendAsync(outgoing);
+
+        return envelope.Id;
+    }
+
+    public Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope>? customization = null)
+    {
+        var envelope = EnvelopeForRequestResponse<TResponse>(message);
+
+        customization?.Invoke(envelope);
+
+        return SendEnvelopeAsync(envelope);
+    }
+
+    public Task SendToTopicAsync(object message, string topicName)
+    {
+        var envelope = new Envelope(message)
         {
-            return new Envelope
-            {
-                Message = request,
-                ReplyRequested = typeof(TResponse).ToMessageTypeName(), // memoize this maybe?
-                AcceptedContentTypes = new []{EnvelopeConstants.JsonContentType} // TODO -- might want a default serializer option for here
-            };
+            TopicName = topicName
+        };
+
+        var outgoing = Runtime.Router.RouteToTopic(topicName, envelope);
+        return persistOrSendAsync(outgoing);
+    }
+
+    /// <summary>
+    ///     Send to a specific destination rather than running the routing rules
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="destination">The destination to send to</param>
+    /// <param name="message"></param>
+    public Task SendToDestinationAsync<T>(Uri destination, T message)
+    {
+        if (destination == null)
+        {
+            throw new ArgumentNullException(nameof(destination));
         }
 
-        public Task SendToTopicAsync(object? message, string? topicName)
+        if (message == null)
         {
-            var envelope = new Envelope(message)
-            {
-                TopicName = topicName
-            };
-
-            var outgoing = Runtime.Router.RouteToTopic(topicName, envelope);
-            return persistOrSend(outgoing);
+            throw new ArgumentNullException(nameof(message));
         }
 
-        /// <summary>
-        ///     Send to a specific destination rather than running the routing rules
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="destination">The destination to send to</param>
-        /// <param name="message"></param>
-        public Task SendToDestinationAsync<T>(Uri? destination, T? message)
+        var envelope = new Envelope { Message = message, Destination = destination };
+        Runtime.Router.RouteToDestination(destination, envelope);
+
+        trackEnvelopeCorrelation(envelope);
+
+        return persistOrSendAsync(envelope);
+    }
+
+    /// <summary>
+    ///     Send a message that should be executed at the given time
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="time"></param>
+    /// <typeparam name="T"></typeparam>
+    public Task ScheduleSendAsync<T>(T message, DateTimeOffset time)
+    {
+        return SendEnvelopeAsync(new Envelope
         {
-            if (destination == null) throw new ArgumentNullException(nameof(destination));
+            Message = message,
+            ScheduledTime = time.ToUniversalTime(),
+            Status = EnvelopeStatus.Scheduled
+        });
+    }
 
-            var envelope = new Envelope {Message = message, Destination = destination};
-            Runtime.Router.RouteToDestination(destination, envelope);
+    /// <summary>
+    ///     Send a message that should be executed after the given delay
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="delay"></param>
+    /// <typeparam name="T"></typeparam>
+    public Task ScheduleSendAsync<T>(T message, TimeSpan delay)
+    {
+        return ScheduleSendAsync(message, DateTime.UtcNow.Add(delay));
+    }
 
-            trackEnvelopeCorrelation(envelope);
+    public Envelope EnvelopeForRequestResponse<TResponse>(object request)
+    {
+        return new Envelope
+        {
+            Message = request,
+            ReplyRequested = typeof(TResponse).ToMessageTypeName(), // memoize this maybe?
+            AcceptedContentTypes =
+                new[] { EnvelopeConstants.JsonContentType } // TODO -- might want a default serializer option for here
+        };
+    }
 
-            return persistOrSend(envelope);
+    private void trackEnvelopeCorrelation(Envelope[] outgoing)
+    {
+        foreach (var outbound in outgoing) trackEnvelopeCorrelation(outbound);
+    }
+
+    protected virtual void trackEnvelopeCorrelation(Envelope outbound)
+    {
+        outbound.Source = Runtime.Advanced.ServiceName;
+        outbound.CorrelationId = CorrelationId;
+    }
+
+    private Task persistOrSendAsync(Envelope envelope)
+    {
+        if (envelope.Sender == null)
+        {
+            throw new InvalidOperationException("This envelope has not been routed (Sender is null)");
         }
 
-        /// <summary>
-        ///     Send a message that should be executed at the given time
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="time"></param>
-        /// <typeparam name="T"></typeparam>
-        public Task ScheduleSendAsync<T>(T message, DateTimeOffset time)
+        if (Transaction != null)
         {
-            return SendEnvelopeAsync(new Envelope
-            {
-                Message = message,
-                ScheduledTime = time.ToUniversalTime(),
-                Status = EnvelopeStatus.Scheduled
-            });
+            _outstanding.Fill(envelope);
+            return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
         }
 
-        /// <summary>
-        ///     Send a message that should be executed after the given delay
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="delay"></param>
-        /// <typeparam name="T"></typeparam>
-        public Task ScheduleSendAsync<T>(T message, TimeSpan delay)
+        return envelope.StoreAndForwardAsync();
+    }
+
+    private async Task persistOrSendAsync(params Envelope[] outgoing)
+    {
+        if (Transaction != null)
         {
-            return ScheduleSendAsync(message, DateTime.UtcNow.Add(delay));
-        }
+            await Transaction.PersistAsync(outgoing.Where(isDurable).ToArray());
 
-        private void trackEnvelopeCorrelation(Envelope?[] outgoing)
+            _outstanding.Fill(outgoing);
+        }
+        else
         {
-            foreach (var outbound in outgoing)
-            {
-                trackEnvelopeCorrelation(outbound);
-            }
+            foreach (var outgoingEnvelope in outgoing) await outgoingEnvelope.StoreAndForwardAsync();
         }
+    }
 
-        protected virtual void trackEnvelopeCorrelation(Envelope? outbound)
-        {
-            outbound.Source = Runtime.Advanced.ServiceName;
-            outbound.CorrelationId = CorrelationId;
-        }
-
-        private Task persistOrSend(Envelope envelope)
-        {
-            if (EnlistedInTransaction)
-            {
-                _outstanding.Fill(envelope);
-                return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
-            }
-            else
-            {
-                return envelope.StoreAndForward();
-            }
-        }
-
-        private async Task persistOrSend(params Envelope[] outgoing)
-        {
-            if (EnlistedInTransaction)
-            {
-                await Transaction.PersistAsync(outgoing.Where(isDurable).ToArray());
-
-                _outstanding.Fill(outgoing);
-            }
-            else
-            {
-                foreach (var outgoingEnvelope in outgoing)
-                {
-                    await outgoingEnvelope.StoreAndForward();
-                }
-            }
-        }
-
-        private bool isDurable(Envelope envelope)
-        {
-            if (envelope.Sender != null) return envelope.Sender.IsDurable;
-
-            // TODO -- should this be memoized?
-            if (envelope.Destination != null) return Runtime.Endpoints.GetOrBuildSendingAgent(envelope.Destination).IsDurable;
-
-            return false;
-        }
+    private bool isDurable(Envelope envelope)
+    {
+        // TODO -- should this be memoized? The test on envelope Destination anyway
+        return envelope.Sender?.IsDurable ?? Runtime.Endpoints.GetOrBuildSendingAgent(envelope.Destination!).IsDurable;
     }
 }

@@ -5,15 +5,29 @@ namespace Jasper.RabbitMQ.Internal
 {
     public abstract class RabbitMqConnectionAgent : IDisposable
     {
-        private readonly RabbitMqTransport _transport;
-        protected readonly object _locker = new object();
         private readonly IConnection _connection;
-        internal AgentState State { get; private set; } = AgentState.Disconnected;
-        internal IModel Channel { get; private set; }
+        protected readonly object Locker = new();
 
         protected RabbitMqConnectionAgent(IConnection connection)
         {
             _connection = connection;
+        }
+
+        internal AgentState State { get; private set; } = AgentState.Disconnected;
+
+        private IModel? _channel;
+
+        internal IModel Channel
+        {
+            get
+            {
+                if (_channel == null)
+                {
+                    EnsureConnected();
+                }
+
+                return _channel!;
+            }
         }
 
         public virtual void Dispose()
@@ -23,9 +37,12 @@ namespace Jasper.RabbitMQ.Internal
 
         internal void EnsureConnected()
         {
-            lock (_locker)
+            lock (Locker)
             {
-                if (State == AgentState.Connected) return;
+                if (State == AgentState.Connected)
+                {
+                    return;
+                }
 
                 startNewChannel();
 
@@ -35,9 +52,9 @@ namespace Jasper.RabbitMQ.Internal
 
         protected void startNewChannel()
         {
-            Channel = _connection.CreateModel();
+            _channel = _connection.CreateModel();
 
-            Channel.ModelShutdown += ChannelOnModelShutdown;
+            _channel.ModelShutdown += ChannelOnModelShutdown;
         }
 
         private void ChannelOnModelShutdown(object? sender, ShutdownEventArgs e)
@@ -47,18 +64,17 @@ namespace Jasper.RabbitMQ.Internal
 
         protected void teardownChannel()
         {
-            if (Channel != null)
+            if (_channel != null)
             {
-                Channel.ModelShutdown -= ChannelOnModelShutdown;
-                Channel?.Close();
-                Channel?.Abort();
-                Channel?.Dispose();
+                _channel.ModelShutdown -= ChannelOnModelShutdown;
+                _channel.Close();
+                _channel.Abort();
+                _channel.Dispose();
             }
 
-            Channel = null;
+            _channel = null;
 
             State = AgentState.Disconnected;
         }
-
     }
 }

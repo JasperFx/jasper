@@ -24,7 +24,7 @@ namespace Jasper.Tcp.Tests
 
                 sender.RegisterCallback(new StubSenderCallback());
 
-                await sender.Ping(CancellationToken.None);
+                await sender.PingAsync();
             }
         }
 
@@ -34,7 +34,7 @@ namespace Jasper.Tcp.Tests
             var sender = new BatchedSender("tcp://localhost:3322".ToUri(), new SocketSenderProtocol(),
                 CancellationToken.None, NullLogger.Instance);
 
-            await Should.ThrowAsync<InvalidOperationException>(async () => { await sender.Ping(CancellationToken.None); });
+            await Should.ThrowAsync<InvalidOperationException>(async () => { await sender.PingAsync(); });
         }
     }
 }

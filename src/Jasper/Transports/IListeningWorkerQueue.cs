@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Jasper.Transports
+namespace Jasper.Transports;
+
+public interface IListeningWorkerQueue : IDisposable
 {
-    public interface IListeningWorkerQueue : IDisposable
-    {
-        Task Received(Uri? uri, Envelope?[] messages);
-        Task Received(Uri? uri, Envelope? envelope);
-    }
+    Task ReceivedAsync(Uri uri, Envelope[] messages);
+    Task ReceivedAsync(Uri uri, Envelope envelope);
 }

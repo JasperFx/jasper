@@ -25,19 +25,19 @@ namespace Jasper.Persistence.Testing.SqlServer
                 await conn3.OpenAsync();
 
 
-                await settings.GetGlobalLock(conn1,1);
+                await settings.GetGlobalLockAsync(conn1,1);
 
 
                 // Cannot get the lock here
-                (await settings.TryGetGlobalLock(conn2, 1)).ShouldBeFalse();
+                (await settings.TryGetGlobalLockAsync(conn2, 1)).ShouldBeFalse();
 
 
-                await settings.ReleaseGlobalLock(conn1, 1);
+                await settings.ReleaseGlobalLockAsync(conn1, 1);
 
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await settings.TryGetGlobalLock(conn2, 1)) return;
+                    if (await settings.TryGetGlobalLockAsync(conn2, 1)) return;
 
                     await Task.Delay(250);
                 }
@@ -60,12 +60,12 @@ namespace Jasper.Persistence.Testing.SqlServer
                 await conn3.OpenAsync();
 
                 var tx1 = conn1.BeginTransaction();
-                await settings.GetGlobalTxLock(conn1, tx1, 2);
+                await settings.GetGlobalTxLockAsync(conn1, tx1, 2);
 
 
                 // Cannot get the lock here
                 var tx2 = conn2.BeginTransaction();
-                (await settings.TryGetGlobalTxLock(conn2, tx2, 2)).ShouldBeFalse();
+                (await settings.TryGetGlobalTxLockAsync(conn2, tx2, 2)).ShouldBeFalse();
 
 
                 tx1.Rollback();
@@ -73,7 +73,7 @@ namespace Jasper.Persistence.Testing.SqlServer
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await settings.TryGetGlobalTxLock(conn2, tx2, 2))
+                    if (await settings.TryGetGlobalTxLockAsync(conn2, tx2, 2))
                     {
                         tx2.Rollback();
                         return;
@@ -99,24 +99,24 @@ namespace Jasper.Persistence.Testing.SqlServer
                 await conn2.OpenAsync();
                 await conn3.OpenAsync();
 
-                await settings.GetGlobalLock(conn1,24);
+                await settings.GetGlobalLockAsync(conn1,24);
 
 
                 try
                 {
                     // Cannot get the lock here
-                    (await settings.TryGetGlobalLock(conn2, 24)).ShouldBeFalse();
+                    (await settings.TryGetGlobalLockAsync(conn2, 24)).ShouldBeFalse();
 
                     // Can get the new lock
-                    (await settings.TryGetGlobalLock(conn3, 25)).ShouldBeTrue();
+                    (await settings.TryGetGlobalLockAsync(conn3, 25)).ShouldBeTrue();
 
                     // Cannot get the lock here
-                    (await settings.TryGetGlobalLock(conn2, 25)).ShouldBeFalse();
+                    (await settings.TryGetGlobalLockAsync(conn2, 25)).ShouldBeFalse();
                 }
                 finally
                 {
-                    await settings.ReleaseGlobalLock(conn1,24);
-                    await settings.ReleaseGlobalLock(conn3,25);
+                    await settings.ReleaseGlobalLockAsync(conn1,24);
+                    await settings.ReleaseGlobalLockAsync(conn3,25);
                 }
             }
         }
@@ -135,19 +135,19 @@ namespace Jasper.Persistence.Testing.SqlServer
                 await conn3.OpenAsync();
 
                 var tx1 = conn1.BeginTransaction();
-                await settings.GetGlobalTxLock(conn1, tx1, 4);
+                await settings.GetGlobalTxLockAsync(conn1, tx1, 4);
 
 
                 // Cannot get the lock here
                 var tx2 = conn2.BeginTransaction();
-                (await settings.TryGetGlobalTxLock(conn2, tx2, 4)).ShouldBeFalse();
+                (await settings.TryGetGlobalTxLockAsync(conn2, tx2, 4)).ShouldBeFalse();
 
                 // Can get the new lock
                 var tx3 = conn3.BeginTransaction();
-                (await settings.TryGetGlobalTxLock(conn3, tx3, 5)).ShouldBeTrue();
+                (await settings.TryGetGlobalTxLockAsync(conn3, tx3, 5)).ShouldBeTrue();
 
                 // Cannot get the lock here
-                (await settings.TryGetGlobalTxLock(conn2, tx2, 5)).ShouldBeFalse();
+                (await settings.TryGetGlobalTxLockAsync(conn2, tx2, 5)).ShouldBeFalse();
 
                 tx1.Rollback();
                 tx2.Rollback();

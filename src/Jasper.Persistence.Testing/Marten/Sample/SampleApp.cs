@@ -30,7 +30,6 @@ namespace Jasper.Persistence.Testing.Marten.Sample
 
                 opts.Services.AddMarten(Servers.PostgresConnectionString)
                     .IntegrateWithJasper();
-                opts.Extensions.Include<MessageTrackingExtension>();
             });
 
             theHost.Get<IDocumentStore>().Advanced.Clean.CompletelyRemoveAll();

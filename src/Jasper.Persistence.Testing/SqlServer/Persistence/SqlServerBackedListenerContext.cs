@@ -95,19 +95,19 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
-            await theWorkerQueue.ProcessReceivedMessages(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
+            await theWorkerQueue.ProcessReceivedMessagesAsync(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
 
             return await thePersistence.Admin.AllIncomingAsync();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)
         {
-            thePipeline.Received().Invoke(envelope, theWorkerQueue);
+            thePipeline.Received().InvokeAsync(envelope, theWorkerQueue);
         }
 
         protected void assertEnvelopeWasNotEnqueued(Envelope envelope)
         {
-            thePipeline.DidNotReceive().Invoke(envelope, theWorkerQueue);
+            thePipeline.DidNotReceive().InvokeAsync(envelope, theWorkerQueue);
         }
     }
 }

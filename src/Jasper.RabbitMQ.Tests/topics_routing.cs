@@ -33,7 +33,6 @@ namespace Jasper.RabbitMQ.Tests
                         .ToRabbitTopics("numbers")
                         .OutgoingTopicNameIs<NumberMessage>(x => x.Topic);
 
-                    opts.Extensions.UseMessageTrackingTestingSupport();
                 }).StartAsync();
         }
 
@@ -145,7 +144,7 @@ namespace Jasper.RabbitMQ.Tests
             }
         }
 
-        public static async Task RabbitMqTopicSendingApp()
+        internal static async Task RabbitMqTopicSendingApp()
         {
             #region sample_RabbitMqTopicSendingApp
 
@@ -163,8 +162,6 @@ namespace Jasper.RabbitMQ.Tests
                     opts.PublishAllMessages()
                         .ToRabbitTopics("numbers")
                         .OutgoingTopicNameIs<NumberMessage>(x => x.Topic);
-
-                    opts.Extensions.UseMessageTrackingTestingSupport();
                 }).StartAsync();
 
             #endregion

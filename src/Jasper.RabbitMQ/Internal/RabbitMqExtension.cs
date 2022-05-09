@@ -1,5 +1,4 @@
 ﻿using Jasper.Attributes;
-using Jasper.Configuration;
 using Jasper.RabbitMQ.Internal;
 
 [assembly: JasperModule(typeof(RabbitMqExtension))]
@@ -14,7 +13,6 @@ namespace Jasper.RabbitMQ.Internal
             // to add Rabbit MQ if it does not alreay
             // exist
             options.RabbitMqTransport();
-
         }
     }
 }

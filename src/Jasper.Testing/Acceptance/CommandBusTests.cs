@@ -4,15 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Jasper.Tracking;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Shouldly;
 using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing.Acceptance
 {
-    public class CommandBusTests : IntegrationContext, IMessageLogger
+    public class CommandBusTests : IntegrationContext, ILogger<JasperRuntime>
     {
         private readonly WorkTracker theTracker = new WorkTracker();
 
@@ -30,7 +33,7 @@ namespace Jasper.Testing.Acceptance
                 opts.Publish(x => x.MessagesFromAssemblyContaining<Message1>()
                     .ToLocalQueue("cascading"));
 
-                opts.Services.AddSingleton<IMessageLogger>(this);
+                opts.Services.AddSingleton<ILogger<JasperRuntime>>(this);
 
                 opts.Handlers.OnException<DivideByZeroException>().Requeue();
 
@@ -39,53 +42,24 @@ namespace Jasper.Testing.Acceptance
         }
 
 
-        void IMessageLogger.Sent(Envelope envelope)
-        {
-        }
-
-        void IMessageLogger.Received(Envelope envelope)
-        {
-        }
-
-        void IMessageLogger.ExecutionStarted(Envelope envelope)
-        {
-        }
-
-        void IMessageLogger.ExecutionFinished(Envelope envelope)
-        {
-        }
-
-        void IMessageLogger.MessageSucceeded(Envelope envelope)
-        {
-        }
 
         public readonly IList<Exception> Exceptions = new List<Exception>();
 
-        void IMessageLogger.MessageFailed(Envelope envelope, Exception ex)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            Exceptions.Add(ex);
+            if (exception != null) Exceptions.Add(exception);
         }
 
-        void IMessageLogger.LogException(Exception ex, object? correlationId, string message = "Exception detected:")
+        public bool IsEnabled(LogLevel logLevel)
         {
-            Exceptions.Add(ex);
+            return true;
         }
 
-        void IMessageLogger.NoHandlerFor(Envelope envelope)
+        public IDisposable BeginScope<TState>(TState state)
         {
+            return Substitute.For<IDisposable>();
         }
 
-        void IMessageLogger.NoRoutesFor(Envelope envelope)
-        {
-        }
-
-        void IMessageLogger.MovedToErrorQueue(Envelope envelope, Exception ex)
-        {
-        }
-
-        void IMessageLogger.DiscardedEnvelope(Envelope envelope)
-        {
-        }
 
         [Fact]
         public async Task enqueue_locally()
@@ -95,7 +69,7 @@ namespace Jasper.Testing.Acceptance
                 Id = Guid.NewGuid()
             };
 
-            var session = await Host.ExecuteAndWaitAsync(c => c.Enqueue(message));
+            var session = await Host.ExecuteAndWaitAsync(c => c.EnqueueAsync(message));
 
             var tracked = session.FindSingleTrackedMessageOfType<Message1>();
 

@@ -1,14 +1,12 @@
 using System;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
-using Jasper.Transports.Sending;
 
-namespace Jasper.Transports
+namespace Jasper.Transports;
+
+public interface ISubscriber
 {
-    public interface ISubscriber
-    {
-        bool ShouldSendMessage(Type messageType);
+    bool ShouldSendMessage(Type messageType);
 
-        void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime);
-    }
+    void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime);
 }

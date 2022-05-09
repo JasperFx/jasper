@@ -31,10 +31,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
                     x.AutoCreateSchemaObjects = AutoCreate.All;
                 }).IntegrateWithJasper();
 
-                opts.Extensions.Include<MessageTrackingExtension>();
-
-
-
                 opts.PublishAllMessages().Locally();
 
                 configure(opts);

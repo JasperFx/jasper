@@ -1,11 +1,10 @@
-﻿namespace Jasper.Runtime.Routing
+﻿namespace Jasper.Runtime.Routing;
+
+public enum RoutingScope
 {
-    public enum RoutingScope
-    {
-        Assembly,
-        Namespace,
-        Type,
-        TypeName,
-        All
-    }
+    Assembly,
+    Namespace,
+    Type,
+    TypeName,
+    All
 }

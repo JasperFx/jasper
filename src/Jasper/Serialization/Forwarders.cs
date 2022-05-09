@@ -1,42 +1,37 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Baseline;
 using BaselineTypeDiscovery;
 
-namespace Jasper.Serialization
+namespace Jasper.Serialization;
+
+internal class Forwarders
 {
-    internal class Forwarders
+    public Dictionary<Type, Type> Relationships { get; } = new();
+
+    public void Add(Type type)
     {
-        public Dictionary<Type, Type> Relationships { get; } = new Dictionary<Type, Type>();
+        var forwardedType = type
+            .FindInterfaceThatCloses(typeof(IForwardsTo<>))!
+            .GetGenericArguments()
+            .Single();
 
-        public void Add(Type type)
+        if (Relationships.ContainsKey(type))
         {
-            var forwardedType = type
-                .FindInterfaceThatCloses(typeof(IForwardsTo<>))
-                .GetGenericArguments()
-                .Single();
-
-            if (Relationships.ContainsKey(type))
-            {
-                Relationships[type] = forwardedType;
-            }
-            else
-            {
-                Relationships.Add(type, forwardedType);
-            }
+            Relationships[type] = forwardedType;
         }
-
-        public async Task FindForwards(Assembly? assembly)
+        else
         {
-            var candidates = await TypeRepository.ForAssembly(assembly);
-            foreach (var type in candidates.ClosedTypes.Concretes.Where(t => t.Closes(typeof(IForwardsTo<>))))
-            {
-                Add(type);
-            }
+            Relationships.Add(type, forwardedType);
         }
+    }
+
+    public async Task FindForwardsAsync(Assembly assembly)
+    {
+        var candidates = await TypeRepository.ForAssembly(assembly);
+        foreach (var type in candidates.ClosedTypes.Concretes.Where(t => t.Closes(typeof(IForwardsTo<>)))) Add(type);
     }
 }

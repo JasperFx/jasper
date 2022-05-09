@@ -1,20 +1,19 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Jasper.Runtime.Scheduled
+namespace Jasper.Runtime.Scheduled;
+
+public interface IScheduledJobProcessor : IDisposable
 {
-    public interface IScheduledJobProcessor : IDisposable
-    {
-        void Enqueue(DateTimeOffset executionTime, Envelope? envelope);
+    void Enqueue(DateTimeOffset executionTime, Envelope envelope);
 
-        Task PlayAll();
+    Task PlayAllAsync();
 
-        Task PlayAt(DateTime executionTime);
+    Task PlayAtAsync(DateTime executionTime);
 
-        Task EmptyAll();
+    Task EmptyAllAsync();
 
-        int Count();
+    int Count();
 
-        ScheduledJob[] QueuedJobs();
-    }
+    ScheduledJob[] QueuedJobs();
 }

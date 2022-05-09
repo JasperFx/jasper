@@ -35,7 +35,7 @@ namespace Jasper.Testing.Configuration
 
         private LocalQueueSettings localQueue(string queueName)
         {
-            return theOptions.Get<LocalTransport>()
+            return theOptions.GetOrCreate<LocalTransport>()
                 .QueueFor(queueName);
 
         }
@@ -46,7 +46,7 @@ namespace Jasper.Testing.Configuration
                 .TryGetEndpoint(uri.ToUri());
         }
 
-        private StubTransport theStubTransport => theOptions.Get<StubTransport>();
+        private StubTransport theStubTransport => theOptions.GetOrCreate<StubTransport>();
 
         public void Dispose()
         {

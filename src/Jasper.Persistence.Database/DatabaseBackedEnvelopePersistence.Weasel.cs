@@ -1,32 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Weasel.Core;
 using Weasel.Core.Migrations;
 
-namespace Jasper.Persistence.Database
+namespace Jasper.Persistence.Database;
+
+public abstract partial class DatabaseBackedEnvelopePersistence<T> : IFeatureSchema
 {
-    public abstract partial class DatabaseBackedEnvelopePersistence<T> : IFeatureSchema
+    void IFeatureSchema.WritePermissions(Migrator rules, TextWriter writer)
     {
+        // Nothing
+    }
 
-        void IFeatureSchema.WritePermissions(Migrator rules, TextWriter writer)
-        {
-            // Nothing
-        }
+    IEnumerable<Type> IFeatureSchema.DependentTypes()
+    {
+        yield break;
+    }
 
-        IEnumerable<Type> IFeatureSchema.DependentTypes()
-        {
-            yield break;
-        }
+    public abstract ISchemaObject[] Objects { get; }
 
-        public abstract ISchemaObject[] Objects { get; }
+    Type IFeatureSchema.StorageType => GetType();
 
-        public override IFeatureSchema[] BuildFeatureSchemas()
-        {
-            return new IFeatureSchema[] { this };
-        }
-
-        Type IFeatureSchema.StorageType => GetType();
+    public override IFeatureSchema[] BuildFeatureSchemas()
+    {
+        return new IFeatureSchema[] { this };
     }
 }

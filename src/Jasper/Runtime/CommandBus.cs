@@ -9,155 +9,172 @@ using Jasper.Transports;
 using Jasper.Util;
 using Lamar;
 
-namespace Jasper.Runtime
+namespace Jasper.Runtime;
+
+public class CommandBus : ICommandBus
 {
-    public class CommandBus : ICommandBus
+    // TODO -- smelly that this is protected, stop that!
+    // ReSharper disable once InconsistentNaming
+    protected readonly List<Envelope> _outstanding = new();
+
+    [DefaultConstructor]
+    public CommandBus(IJasperRuntime runtime) : this(runtime, Guid.NewGuid().ToString())
     {
-        // TODO -- smelly that this is protected, stop that!
-        protected readonly List<Envelope> _outstanding = new List<Envelope>();
+    }
 
-        [DefaultConstructor]
-        public CommandBus(IJasperRuntime runtime) : this(runtime, Guid.NewGuid().ToString())
+    internal CommandBus(IJasperRuntime runtime, string? correlationId)
+    {
+        Runtime = runtime;
+        Persistence = runtime.Persistence;
+        CorrelationId = correlationId;
+    }
+
+    public string? CorrelationId { get; protected set; }
+
+    public IJasperRuntime Runtime { get; }
+    public IEnvelopePersistence Persistence { get; }
+
+
+    public IMessageLogger Logger => Runtime.MessageLogger;
+
+    public IEnumerable<Envelope> Outstanding => _outstanding;
+
+    public IEnvelopeTransaction? Transaction { get; protected set; }
+
+
+    public Task InvokeAsync(object message, CancellationToken cancellation = default)
+    {
+        return Runtime.Pipeline.InvokeNowAsync(new Envelope(message)
         {
+            ReplyUri = TransportConstants.RepliesUri,
+            CorrelationId = CorrelationId
+        }, cancellation);
+    }
+
+    public async Task<T?> InvokeAsync<T>(object message, CancellationToken cancellation = default)
+    {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
         }
 
-        public CommandBus(IJasperRuntime runtime, string? correlationId)
+        var envelope = new Envelope(message)
         {
-            Runtime = runtime;
-            Persistence = runtime.Persistence;
-            CorrelationId = correlationId;
+            ReplyUri = TransportConstants.RepliesUri,
+            ReplyRequested = typeof(T).ToMessageTypeName(),
+            ResponseType = typeof(T),
+            CorrelationId = CorrelationId
+        };
+
+        await Runtime.Pipeline.InvokeNowAsync(envelope, cancellation);
+
+        if (envelope.Response == null)
+        {
+            return default;
         }
 
-        public string? CorrelationId { get; protected set; }
+        return (T)envelope.Response;
+    }
 
-        public IJasperRuntime Runtime { get; }
-        public IEnvelopePersistence Persistence { get; }
+    public Task EnqueueAsync<T>(T message)
+    {
+        var envelope = Runtime.Router.RouteLocally(message);
+        return persistOrSendAsync(envelope);
+    }
 
+    public Task EnqueueAsync<T>(T message, string workerQueueName)
+    {
+        var envelope = Runtime.Router.RouteLocally(message, workerQueueName);
 
-        public IMessageLogger Logger => Runtime.MessageLogger;
+        return persistOrSendAsync(envelope);
+    }
 
-        public IEnumerable<Envelope> Outstanding => _outstanding;
-
-
-        public Task InvokeAsync(object message, CancellationToken cancellation = default)
+    public async Task<Guid> ScheduleAsync<T>(T message, DateTimeOffset executionTime)
+    {
+        if (message == null)
         {
-            return Runtime.Pipeline.InvokeNow(new Envelope(message)
-            {
-                ReplyUri = TransportConstants.RepliesUri,
-                CorrelationId = CorrelationId
-            }, cancellation);
+            throw new ArgumentNullException(nameof(message));
         }
 
-        public async Task<T?> InvokeAsync<T>(object message, CancellationToken cancellation = default)
+        var envelope = new Envelope(message)
         {
-            if (message == null) throw new ArgumentNullException(nameof(message));
+            ScheduledTime = executionTime,
+            Destination = TransportConstants.DurableLocalUri
+        };
 
-            var envelope = new Envelope(message)
-            {
-                ReplyUri = TransportConstants.RepliesUri,
-                ReplyRequested = typeof(T).ToMessageTypeName(),
-                ResponseType = typeof(T),
-                CorrelationId = CorrelationId
-            };
+        // TODO -- memoize this.
+        var endpoint = Runtime.Endpoints.EndpointFor(TransportConstants.DurableLocalUri);
 
-            await Runtime.Pipeline.InvokeNow(envelope, cancellation);
+        var writer = endpoint!.DefaultSerializer;
+        envelope.Data = writer!.Write(message);
+        envelope.ContentType = writer.ContentType;
 
-            if (envelope.Response == null)
-            {
-                return default;
-            }
+        envelope.Status = EnvelopeStatus.Scheduled;
+        envelope.OwnerId = TransportConstants.AnyNode;
 
-            return (T)envelope.Response;
+        await ScheduleEnvelopeAsync(envelope);
+
+        return envelope.Id;
+    }
+
+    public Task<Guid> ScheduleAsync<T>(T? message, TimeSpan delay)
+    {
+        return ScheduleAsync(message, DateTimeOffset.UtcNow.Add(delay));
+    }
+
+    internal Task ScheduleEnvelopeAsync(Envelope envelope)
+    {
+        if (envelope.Message == null)
+        {
+            throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
         }
 
-        public Task Enqueue<T>(T message)
+        if (!envelope.ScheduledTime.HasValue)
         {
-            var envelope = Runtime.Router.RouteLocally(message);
-            return persistOrSend(envelope);
+            throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
         }
 
-        public Task Enqueue<T>(T message, string workerQueueName)
-        {
-            var envelope = Runtime.Router.RouteLocally(message, workerQueueName);
 
-            return persistOrSend(envelope);
+        envelope.OwnerId = TransportConstants.AnyNode;
+        envelope.Status = EnvelopeStatus.Scheduled;
+
+        if (Transaction != null)
+        {
+            return Transaction.ScheduleJobAsync(envelope);
         }
 
-        public async Task<Guid> Schedule<T>(T message, DateTimeOffset executionTime)
+        if (Persistence is NullEnvelopePersistence)
         {
-            var envelope = new Envelope(message)
-            {
-                ScheduledTime = executionTime,
-                Destination = TransportConstants.DurableLocalUri
-            };
-
-            var endpoint = Runtime.Endpoints.For(TransportConstants.DurableLocalUri);
-
-            var writer = endpoint.DefaultSerializer;
-            envelope.Data = writer.Write(message);
-            envelope.ContentType = writer.ContentType;
-
-            envelope.Status = EnvelopeStatus.Scheduled;
-            envelope.OwnerId = TransportConstants.AnyNode;
-
-            await ScheduleEnvelope(envelope);
-
-            return envelope.Id;
+            Runtime.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
+            return Task.CompletedTask;
         }
 
-        public Task<Guid> Schedule<T>(T? message, TimeSpan delay)
+        return Persistence.ScheduleJobAsync(envelope);
+    }
+
+    private Task persistOrSendAsync(Envelope envelope)
+    {
+        if (envelope.Sender is null)
         {
-            return Schedule(message, DateTimeOffset.UtcNow.Add(delay));
+            throw new InvalidOperationException("Envelope has not been routed");
         }
 
-        internal Task ScheduleEnvelope(Envelope envelope)
+        if (Transaction is not null)
         {
-            if (envelope.Message == null)
-                throw new ArgumentOutOfRangeException(nameof(envelope), "Envelope.Message is required");
-
-            if (!envelope.ScheduledTime.HasValue)
-                throw new ArgumentOutOfRangeException(nameof(envelope), "No value for ExecutionTime");
-
-
-            envelope.OwnerId = TransportConstants.AnyNode;
-            envelope.Status = EnvelopeStatus.Scheduled;
-
-            if (EnlistedInTransaction)
-            {
-                return Transaction.ScheduleJobAsync(envelope);
-            }
-
-            if (Persistence is NulloEnvelopePersistence)
-            {
-                Runtime.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
-                return Task.CompletedTask;
-            }
-
-            return Persistence.ScheduleJobAsync(envelope);
+            _outstanding.Fill(envelope);
+            return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
         }
 
-        private Task persistOrSend(Envelope? envelope)
-        {
-            if (EnlistedInTransaction)
-            {
-                _outstanding.Fill(envelope);
-                return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
-            }
+        return envelope.StoreAndForwardAsync();
+    }
 
-            return envelope.StoreAndForward();
-        }
+    public Task EnlistInTransactionAsync(IEnvelopeTransaction transaction)
+    {
+        var original = Transaction;
+        Transaction = transaction;
 
-        public bool EnlistedInTransaction { get; protected set; }
-
-        public Task EnlistInTransaction(IEnvelopeTransaction transaction)
-        {
-            var original = Transaction;
-            Transaction = transaction;
-            EnlistedInTransaction = true;
-
-            return original?.CopyToAsync(transaction) ?? Task.CompletedTask;
-        }
-
-        public IEnvelopeTransaction Transaction { get; protected set; }
+        return original == null
+            ? Task.CompletedTask
+            : original.CopyToAsync(transaction);
     }
 }

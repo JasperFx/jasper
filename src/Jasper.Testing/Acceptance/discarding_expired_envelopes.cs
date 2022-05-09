@@ -19,29 +19,23 @@ namespace Jasper.Testing.Acceptance
         {
             var logger = Substitute.For<IMessageLogger>();
 
-            using (var runtime = JasperHost.For(x =>
+            using var runtime = JasperHost.For(x =>
             {
                 x.Handlers.DisableConventionalDiscovery();
                 x.Services.AddSingleton(logger);
-            }))
-            {
-                var pipeline = runtime.Get<IHandlerPipeline>();
+            });
 
-                var envelope = ObjectMother.Envelope();
-                envelope.DeliverBy = DateTime.UtcNow.Subtract(1.Minutes());
-                var channel = Substitute.For<IChannelCallback>();
+            var pipeline = runtime.Get<IHandlerPipeline>();
 
-                await pipeline.Invoke(envelope, channel);
+            var envelope = ObjectMother.Envelope();
+            envelope.DeliverBy = DateTime.UtcNow.Subtract(1.Minutes());
+            var channel = Substitute.For<IChannelCallback>();
 
-                // Log the discard
-                logger.Received().DiscardedEnvelope(envelope);
-
+            await pipeline.InvokeAsync(envelope, channel);
 
 #pragma warning disable 4014
-                channel.Received().CompleteAsync(envelope);
+            channel.Received().CompleteAsync(envelope);
 #pragma warning restore 4014
-            }
-
         }
     }
 }

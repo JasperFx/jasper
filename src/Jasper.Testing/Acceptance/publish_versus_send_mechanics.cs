@@ -25,8 +25,6 @@ namespace Jasper.Testing.Acceptance
 
                 opts.Publish(x => x.Message<Message2>().ToLocalQueue("two"));
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
             });
         }
 

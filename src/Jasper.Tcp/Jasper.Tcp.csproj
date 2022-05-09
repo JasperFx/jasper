@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Jasper\Jasper.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
+  </ItemGroup>
 
 
-  <Import Project="../../Analysis.Build.props" />
+  <Import Project="../../Analysis.Build.props"/>
 </Project>

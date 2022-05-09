@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -11,31 +10,29 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
-        private readonly ILogger _logger;
         private readonly RabbitMqEndpoint _endpoint;
-        private readonly RabbitMqTransport _transport;
-        private IListeningWorkerQueue _callback;
-        private WorkerQueueMessageConsumer _consumer;
+        private readonly ILogger _logger;
         private readonly string _routingKey;
         private readonly RabbitMqSender _sender;
+        private IListeningWorkerQueue? _callback;
         private CancellationToken _cancellation = CancellationToken.None;
+        private WorkerQueueMessageConsumer? _consumer;
 
         public RabbitMqListener(ILogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection)
         {
             _logger = logger;
             _endpoint = endpoint;
-            _transport = transport;
             Address = endpoint.Uri;
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
 
-            _sender = new RabbitMqSender(_endpoint, _transport);
+            _sender = new RabbitMqSender(_endpoint, transport);
         }
 
         public override void Dispose()
         {
-            _callback.Dispose();
+            _callback?.Dispose();
             base.Dispose();
             _sender.Dispose();
         }
@@ -54,39 +51,39 @@ namespace Jasper.RabbitMQ.Internal
                         _consumer = null;
                         break;
                     case ListeningStatus.Accepting when _consumer == null:
-                        Start(_callback, _cancellation);
+                        Start(_callback!, _cancellation);
                         break;
                 }
             }
         }
 
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+        public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
         {
-            if (callback == null) return;
-
             _cancellation = cancellation;
             _cancellation.Register(teardownChannel);
 
             EnsureConnected();
 
-            _callback = callback;
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _endpoint, Address, _sender, _cancellation);
+            _callback = callback ?? throw new ArgumentNullException(nameof(callback));
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _endpoint, Address,
+                _cancellation);
 
             Channel.BasicConsume(_consumer, _routingKey);
         }
 
-        public Task<bool> TryRequeue(Envelope envelope)
+        public async Task<bool> TryRequeueAsync(Envelope envelope)
         {
-            if (envelope is RabbitMqEnvelope e)
+            if (envelope is not RabbitMqEnvelope e)
             {
-                e.Listener.Requeue(e);
-                return Task.FromResult(true);
+                return false;
             }
 
-            return Task.FromResult(false);
+            await e.Listener.RequeueAsync(e);
+            return true;
         }
 
         public Uri Address { get; }
+
         public ValueTask CompleteAsync(Envelope envelope)
         {
             return RabbitMqChannelCallback.Instance.CompleteAsync(envelope);
@@ -97,13 +94,14 @@ namespace Jasper.RabbitMQ.Internal
             return RabbitMqChannelCallback.Instance.DeferAsync(envelope);
         }
 
-        public ValueTask Requeue(RabbitMqEnvelope envelope)
+        public ValueTask RequeueAsync(RabbitMqEnvelope envelope)
         {
-            if (!envelope.Acked)
+            if (!envelope.Acknowledged)
             {
                 Channel.BasicNack(envelope.DeliveryTag, false, false);
             }
-            return _sender.Send(envelope);
+
+            return _sender.SendAsync(envelope);
         }
 
         public void Complete(ulong deliveryTag)

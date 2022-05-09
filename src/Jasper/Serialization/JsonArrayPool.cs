@@ -2,29 +2,31 @@
 using System.Buffers;
 using Newtonsoft.Json;
 
-namespace Jasper.Serialization
+namespace Jasper.Serialization;
+
+internal class JsonArrayPool<T> : IArrayPool<T>
 {
-    internal class JsonArrayPool<T> : IArrayPool<T>
+    private readonly ArrayPool<T> _inner;
+
+    public JsonArrayPool(ArrayPool<T> inner)
     {
-        private readonly ArrayPool<T> _inner;
+        _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+    }
 
-        public JsonArrayPool(ArrayPool<T> inner)
-        {
-            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
-        }
-
-        public T[] Rent(int minimumLength)
-        {
-            return _inner.Rent(minimumLength);
-        }
+    public T[] Rent(int minimumLength)
+    {
+        return _inner.Rent(minimumLength);
+    }
 
 #pragma warning disable CS8767
-        public void Return(T[] array)
+    public void Return(T[] array)
 #pragma warning restore CS8767
+    {
+        if (array == null)
         {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-
-            _inner.Return(array);
+            throw new ArgumentNullException(nameof(array));
         }
+
+        _inner.Return(array);
     }
 }

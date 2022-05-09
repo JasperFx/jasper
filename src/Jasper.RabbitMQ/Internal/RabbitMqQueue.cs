@@ -6,17 +6,12 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqQueue
     {
-        public string Name { get; }
-
         public RabbitMqQueue(string name)
         {
             Name = name;
         }
 
-        internal void Declare(IModel channel)
-        {
-            channel.QueueDeclare(Name, IsDurable, IsExclusive, AutoDelete, Arguments);
-        }
+        public string Name { get; }
 
         public bool AutoDelete { get; set; } = false;
 
@@ -25,6 +20,11 @@ namespace Jasper.RabbitMQ.Internal
         public bool IsDurable { get; set; } = true;
 
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
+
+        internal void Declare(IModel channel)
+        {
+            channel.QueueDeclare(Name, IsDurable, IsExclusive, AutoDelete, Arguments);
+        }
 
         public void Teardown(IModel channel)
         {

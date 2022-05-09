@@ -1,17 +1,11 @@
-﻿using Jasper.Configuration;
-using Jasper.Persistence.Marten.Persistence.Sagas;
-using LamarCodeGeneration.Model;
-using Marten;
-using Microsoft.Extensions.DependencyInjection;
+﻿using LamarCodeGeneration.Model;
 
-namespace Jasper.Persistence.Marten
+namespace Jasper.Persistence.Marten;
+
+internal static class MethodVariablesExtensions
 {
-
-    internal static class MethodVariablesExtensions
+    internal static bool IsUsingMartenPersistence(this IMethodVariables method)
     {
-        internal static bool IsUsingMartenPersistence(this IMethodVariables method)
-        {
-            return method.TryFindVariable(typeof(MartenBackedPersistenceMarker), VariableSource.NotServices) != null;
-        }
+        return method.TryFindVariable(typeof(MartenBackedPersistenceMarker), VariableSource.NotServices) != null;
     }
 }

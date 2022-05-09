@@ -3,133 +3,185 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Persistence.Database
+namespace Jasper.Persistence.Database;
+
+public class DurableStorageSession : IDurableStorageSession
 {
-    public class DurableStorageSession : IDatabaseSession, IDurableStorageSession
+    private readonly CancellationToken _cancellation;
+    private readonly DatabaseSettings _settings;
+
+    public DurableStorageSession(DatabaseSettings settings, CancellationToken cancellation)
     {
-        private readonly DatabaseSettings _settings;
-        private readonly CancellationToken _cancellation;
+        _settings = settings;
+        _cancellation = cancellation;
+    }
 
-        public DurableStorageSession(DatabaseSettings settings, CancellationToken cancellation)
+    public DbConnection? Connection { get; private set; }
+
+    public DbTransaction? Transaction { get; private set; }
+
+    public DbCommand CreateCommand(string sql)
+    {
+        if (Connection == null)
         {
-            _settings = settings;
-            _cancellation = cancellation;
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public DbTransaction Transaction { get; private set; }
+        var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        cmd.Transaction = Transaction;
 
-        public DbConnection Connection { get; private set; }
+        return cmd;
+    }
 
-        public DbCommand CreateCommand(string sql)
+    public DbCommand CallFunction(string functionName)
+    {
+        var cmd = CreateCommand(_settings.SchemaName + "." + functionName);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        return cmd;
+    }
+
+
+    public Task BeginAsync()
+    {
+        if (Connection == null)
         {
-            var cmd = Connection.CreateCommand();
-            cmd.CommandText = sql;
-            cmd.Transaction = Transaction;
-
-            return cmd;
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public DbCommand CallFunction(string functionName)
-        {
-            var cmd = CreateCommand(_settings.SchemaName + "." + functionName);
-            cmd.CommandType = CommandType.StoredProcedure;
+        Transaction = Connection.BeginTransaction();
+        return Task.CompletedTask;
+    }
 
-            return cmd;
+    public Task CommitAsync()
+    {
+        if (Transaction == null)
+        {
+            throw new InvalidOperationException("Transaction has not been started yet");
         }
 
+        Transaction.Commit();
+        Transaction = null;
+        return Task.CompletedTask;
+    }
 
-
-        public Task BeginAsync()
+    public Task RollbackAsync()
+    {
+        if (Transaction == null)
         {
-            Transaction = Connection.BeginTransaction();
-            return Task.CompletedTask;
+            throw new InvalidOperationException("Transaction has not been started yet");
         }
 
-        public Task CommitAsync()
+        Transaction.Rollback();
+        return Task.CompletedTask;
+    }
+
+    public Task ReleaseNodeLockAsync(int lockId)
+    {
+        if (Connection == null)
         {
-            Transaction.Commit();
-            Transaction = null;
-            return Task.CompletedTask;
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public Task RollbackAsync()
+        return _settings.ReleaseGlobalLockAsync(Connection, lockId, _cancellation);
+    }
+
+    public Task GetNodeLockAsync(int lockId)
+    {
+        if (Connection == null)
         {
-            Transaction.Rollback();
-            return Task.CompletedTask;
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public Task ReleaseNodeLockAsync(int lockId)
+        return _settings.GetGlobalLockAsync(Connection, lockId, _cancellation);
+    }
+
+    public Task<bool> TryGetGlobalTxLockAsync(int lockId)
+    {
+        if (Connection == null)
         {
-            return _settings.ReleaseGlobalLock(Connection, lockId, _cancellation);
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public Task GetNodeLockAsync(int lockId)
+        if (Transaction == null)
         {
-            return _settings.GetGlobalLock(Connection, lockId, _cancellation);
+            throw new InvalidOperationException("Transaction has not been started yet");
         }
 
-        public Task<bool> TryGetGlobalTxLock(int lockId)
+        return _settings.TryGetGlobalTxLockAsync(Connection, Transaction, lockId, _cancellation);
+    }
+
+    public Task<bool> TryGetGlobalLockAsync(int lockId)
+    {
+        if (Connection == null)
         {
-            return _settings.TryGetGlobalTxLock(Connection, Transaction, lockId, _cancellation);
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public Task<bool> TryGetGlobalLock(int lockId)
+        if (Transaction == null)
         {
-            return _settings.TryGetGlobalLock(Connection, lockId, Transaction, _cancellation);
+            throw new InvalidOperationException("Transaction has not been started yet");
         }
 
-        public Task ReleaseGlobalLock(int lockId)
+        return _settings.TryGetGlobalLockAsync(Connection, lockId, Transaction, _cancellation);
+    }
+
+    public Task ReleaseGlobalLockAsync(int lockId)
+    {
+        if (Connection == null)
         {
-            return _settings.ReleaseGlobalLock(Connection, lockId, _cancellation, Transaction);
+            throw new InvalidOperationException("Session has not been started yet");
         }
 
-        public bool IsConnected()
-        {
-            return Connection?.State == ConnectionState.Open;
-        }
+        return _settings.ReleaseGlobalLockAsync(Connection, lockId, _cancellation, Transaction);
+    }
 
-        public async Task ConnectAndLockCurrentNodeAsync(ILogger logger, int nodeId)
-        {
-            if (Connection != null)
-            {
-                try
-                {
-                    await Connection.CloseAsync();
-                    Connection.Dispose();
-                    Connection = null;
-                }
-                catch (Exception e)
-                {
-                    logger.LogError(e, "Error while trying to close current connection");
-                }
-            }
+    public bool IsConnected()
+    {
+        return Connection?.State == ConnectionState.Open;
+    }
 
+    public async Task ConnectAndLockCurrentNodeAsync(ILogger logger, int nodeId)
+    {
+        if (Connection != null)
+        {
             try
             {
-                Connection = _settings.CreateConnection();
-
-                await Connection.OpenAsync(_cancellation);
-
-                await _settings.GetGlobalLock(Connection, nodeId, _cancellation, Transaction);
-            }
-            catch (Exception)
-            {
-                Connection?.Dispose();
+                await Connection.CloseAsync();
+                Connection.Dispose();
                 Connection = null;
-
-                throw;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error while trying to close current connection");
             }
         }
 
-        public void Dispose()
+        try
         {
-            Connection.Close();
-            Transaction?.Dispose();
-            Connection?.Dispose();
+            Connection = _settings.CreateConnection();
+
+            await Connection.OpenAsync(_cancellation);
+
+            await _settings.GetGlobalLockAsync(Connection, nodeId, _cancellation, Transaction);
         }
+        catch (Exception)
+        {
+            Connection?.Dispose();
+            Connection = null;
+
+            throw;
+        }
+    }
+
+    public void Dispose()
+    {
+        Connection?.Close();
+        Transaction?.Dispose();
+        Connection?.Dispose();
     }
 }

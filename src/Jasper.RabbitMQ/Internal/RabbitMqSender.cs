@@ -13,12 +13,11 @@ namespace Jasper.RabbitMQ.Internal
     {
         private readonly RabbitMqEndpoint _endpoint;
         private readonly string _exchangeName;
-        private readonly string _key;
         private readonly bool _isDurable;
-        public bool SupportsNativeScheduledSend { get; } = false;
-        public Uri Destination { get; }
+        private readonly string _key;
 
-        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.SendingConnection)
+        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(
+            transport.SendingConnection)
         {
             _endpoint = endpoint;
             Destination = endpoint.Uri;
@@ -29,12 +28,17 @@ namespace Jasper.RabbitMQ.Internal
             _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
         }
 
-        public ValueTask Send(Envelope envelope)
+        public bool SupportsNativeScheduledSend { get; } = false;
+        public Uri Destination { get; }
+
+        public ValueTask SendAsync(Envelope envelope)
         {
             EnsureConnected();
 
             if (State == AgentState.Disconnected)
+            {
                 throw new InvalidOperationException($"The RabbitMQ agent for {Destination} is disconnected");
+            }
 
             var props = Channel.CreateBasicProperties();
             props.Persistent = _isDurable;
@@ -47,11 +51,14 @@ namespace Jasper.RabbitMQ.Internal
             return ValueTask.CompletedTask;
         }
 
-        public Task<bool> Ping(CancellationToken cancellationToken)
+        public Task<bool> PingAsync()
         {
-            lock (_locker)
+            lock (Locker)
             {
-                if (State == AgentState.Connected) return Task.FromResult(true);
+                if (State == AgentState.Connected)
+                {
+                    return Task.FromResult(true);
+                }
 
                 startNewChannel();
 
@@ -59,11 +66,9 @@ namespace Jasper.RabbitMQ.Internal
                 {
                     return Task.FromResult(true);
                 }
-                else
-                {
-                    teardownChannel();
-                    return Task.FromResult(false);
-                }
+
+                teardownChannel();
+                return Task.FromResult(false);
             }
         }
     }

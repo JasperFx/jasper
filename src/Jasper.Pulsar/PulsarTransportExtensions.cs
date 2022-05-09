@@ -2,26 +2,11 @@ using System;
 using Baseline;
 using DotPulsar.Abstractions;
 using Jasper.Configuration;
-using Jasper.Runtime;
-using Microsoft.Extensions.Hosting;
 
 namespace Jasper.Pulsar
 {
     public static class PulsarTransportExtensions
     {
-        /// <summary>
-        /// Retrieve the PulsarTransport object from within the running
-        /// host
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        private static PulsarTransport PulsarTransport(this IHost host)
-        {
-            return host
-                .Get<IJasperRuntime>()
-                .Options
-                .Get<PulsarTransport>();
-        }
 
         /// <summary>
         /// Quick access to the Pulsar Transport within this application.
@@ -32,14 +17,8 @@ namespace Jasper.Pulsar
         internal static PulsarTransport PulsarTransport(this IEndpoints endpoints)
         {
             var transports = endpoints.As<JasperOptions>();
-            var transport = transports.Get<PulsarTransport>();
-            if (transport == null)
-            {
-                transport = new PulsarTransport();
-                transports.Add(transport);
-            }
 
-            return transport;
+            return transports.GetOrCreate<PulsarTransport>();
         }
 
         /// <summary>
@@ -59,7 +38,7 @@ namespace Jasper.Pulsar
         /// <param name="endpoints"></param>
         public static void ConnectToLocalPulsar(this IEndpoints endpoints)
         {
-            endpoints.ConfigurePulsar(x => {});
+            endpoints.ConfigurePulsar(_ => {});
         }
 
         /// <summary>
@@ -72,7 +51,7 @@ namespace Jasper.Pulsar
         public static PulsarSubscriberConfiguration ToPulsar(this IPublishToExpression publishing, string topicPath)
         {
             var transports = publishing.As<PublishingExpression>().Parent;
-            var transport = transports.Get<PulsarTransport>();
+            var transport = transports.GetOrCreate<PulsarTransport>();
             var endpoint = transport.EndpointFor(topicPath);
 
             // This is necessary unfortunately to hook up the subscription rules

@@ -137,7 +137,7 @@ namespace Jasper.Testing
         public void retrieve_transport_by_type()
         {
             new JasperOptions()
-                .Get<LocalTransport>()
+                .GetOrCreate<LocalTransport>()
                 .ShouldNotBeNull();
         }
 
@@ -187,9 +187,9 @@ namespace Jasper.Testing
         public void create_transport_type_if_missing()
         {
             var collection = new JasperOptions();
-            var transport = collection.Get<FakeTransport>();
+            var transport = collection.GetOrCreate<FakeTransport>();
 
-            collection.Get<FakeTransport>()
+            collection.GetOrCreate<FakeTransport>()
                 .ShouldBeSameAs(transport);
         }
 

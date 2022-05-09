@@ -21,8 +21,6 @@ namespace Jasper.Testing.Transports.Local
                 opts.Publish(x => x.Message<Message1>()
                     .ToLocalQueue("incoming"));
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseSystemTextJsonForSerialization();
 
             });

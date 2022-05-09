@@ -34,7 +34,6 @@ namespace Jasper.Persistence.Testing
                 .IncludeType<CascadeReceiver>()
                 .IncludeType<ScheduledMessageHandler>();
 
-            senderRegistry.Extensions.UseMessageTrackingTestingSupport();
 
             senderRegistry.Publish(x =>
             {
@@ -56,7 +55,6 @@ namespace Jasper.Persistence.Testing
 
 
             var receiverRegistry = new JasperOptions();
-            receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
             receiverRegistry.Handlers.DisableConventionalDiscovery()
                 .IncludeType<TTriggerHandler>()
                 .IncludeType<TItemCreatedHandler>()
@@ -64,8 +62,6 @@ namespace Jasper.Persistence.Testing
                 .IncludeType<ScheduledMessageHandler>();
 
             receiverRegistry.ListenAtPort(receiverPort).DurablyPersistedLocally();
-
-            receiverRegistry.Extensions.UseMessageTrackingTestingSupport();
 
             configureReceiver(receiverRegistry);
 
@@ -114,7 +110,7 @@ namespace Jasper.Persistence.Testing
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
                 .WaitForMessageToBeReceivedAt<CascadedMessage>(theSender)
-                .SendMessageAndWait(trigger);
+                .SendMessageAndWaitAsync(trigger);
         }
 
         protected abstract ItemCreated loadItem(IHost receiver, Guid id);
@@ -140,7 +136,7 @@ namespace Jasper.Persistence.Testing
                 Id = Guid.NewGuid()
             };
 
-            await theSender.TrackActivity().AlsoTrack(theReceiver).SendMessageAndWait(item);
+            await theSender.TrackActivity().AlsoTrack(theReceiver).SendMessageAndWaitAsync(item);
 
             await Task.Delay(500.Milliseconds());
 
@@ -199,7 +195,7 @@ namespace Jasper.Persistence.Testing
                 Id = Guid.NewGuid()
             };
 
-            await send(async c => { await c.Schedule(item, 1.Hours()); });
+            await send(async c => { await c.ScheduleAsync(item, 1.Hours()); });
 
             var persistor = theSender.Get<IEnvelopePersistence>();
             var counts = await persistor.Admin.FetchCountsAsync();
@@ -249,9 +245,9 @@ namespace Jasper.Persistence.Testing
 
             await send(async c =>
             {
-                await c.Schedule(message1, 2.Hours());
-                await c.Schedule(message2, 5.Seconds());
-                await c.Schedule(message3, 2.Hours());
+                await c.ScheduleAsync(message1, 2.Hours());
+                await c.ScheduleAsync(message2, 5.Seconds());
+                await c.ScheduleAsync(message3, 2.Hours());
             });
 
 

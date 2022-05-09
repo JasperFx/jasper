@@ -3,40 +3,39 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Jasper.Transports.Util
+namespace Jasper.Transports.Util;
+
+public static class StreamExtensions
 {
-    public static class StreamExtensions
+    public static async Task<byte[]> ReadBytesAsync(this Stream stream, long length)
     {
-        public static async Task<byte[]> ReadBytesAsync(this Stream stream, long? length)
+        var buffer = new byte[length];
+        var totalRead = 0;
+        int current;
+        do
         {
-            var buffer = new byte[length.Value];
-            var totalRead = 0;
-            int current;
-            do
-            {
-                current = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead).ConfigureAwait(false);
-                totalRead += current;
-            } while (totalRead < length && current > 0);
+            current = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead).ConfigureAwait(false);
+            totalRead += current;
+        } while (totalRead < length && current > 0);
 
-            return buffer;
-        }
+        return buffer;
+    }
 
-        public static async Task<bool> ReadExpectedBuffer(this Stream stream, byte[] expected)
+    public static async Task<bool> ReadExpectedBufferAsync(this Stream stream, byte[] expected)
+    {
+        try
         {
-            try
-            {
-                var bytes = await stream.ReadBytesAsync(expected.Length).ConfigureAwait(false);
-                return expected.SequenceEqual(bytes);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var bytes = await stream.ReadBytesAsync(expected.Length).ConfigureAwait(false);
+            return expected.SequenceEqual(bytes);
         }
-
-        public static Task SendBuffer(this Stream stream, byte[] buffer)
+        catch (Exception)
         {
-            return stream.WriteAsync(buffer, 0, buffer.Length);
+            return false;
         }
+    }
+
+    public static Task SendBufferAsync(this Stream stream, byte[] buffer)
+    {
+        return stream.WriteAsync(buffer, 0, buffer.Length);
     }
 }

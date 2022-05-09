@@ -2,24 +2,23 @@
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
-namespace Jasper.Runtime.Handlers
+namespace Jasper.Runtime.Handlers;
+
+public class MessageFrame : Frame
 {
-    public class MessageFrame : Frame
+    private readonly Variable _envelope;
+    private readonly MessageVariable _message;
+
+    public MessageFrame(MessageVariable message, Variable envelope) : base(false)
     {
-        private readonly Variable _envelope;
-        private readonly MessageVariable _message;
+        _message = message;
+        _envelope = envelope;
+    }
 
-        public MessageFrame(MessageVariable message, Variable envelope) : base(false)
-        {
-            _message = message;
-            _envelope = envelope;
-        }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            writer.Write(
-                $"var {_message.Usage} = ({_message.VariableType.FullNameInCode()}){_envelope.Usage}.{nameof(Envelope.Message)};");
-            Next?.GenerateCode(method, writer);
-        }
+    public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+    {
+        writer.Write(
+            $"var {_message.Usage} = ({_message.VariableType.FullNameInCode()}){_envelope.Usage}.{nameof(Envelope.Message)};");
+        Next?.GenerateCode(method, writer);
     }
 }

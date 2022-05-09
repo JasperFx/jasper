@@ -7,73 +7,71 @@ using Jasper.Persistence.Postgresql;
 using Marten;
 using Marten.Services;
 
-namespace Jasper.Persistence.Marten
+namespace Jasper.Persistence.Marten;
+
+public class MartenEnvelopeTransaction : IEnvelopeTransaction
 {
-    public class MartenEnvelopeTransaction : IEnvelopeTransaction
+    private readonly int _nodeId;
+    private readonly IDocumentSession _session;
+    private readonly PostgresqlSettings _settings;
+
+    public MartenEnvelopeTransaction(IDocumentSession session, IExecutionContext bus)
     {
-        private readonly int _nodeId;
-        private readonly IDocumentSession _session;
-        private readonly PostgresqlSettings _settings;
-
-        public MartenEnvelopeTransaction(IDocumentSession session, IExecutionContext bus)
+        if (bus.Persistence is PostgresqlEnvelopePersistence persistence)
         {
-            if (bus.Persistence is PostgresqlEnvelopePersistence persistence)
-            {
-                _settings = (PostgresqlSettings) persistence.DatabaseSettings;
-                _nodeId = persistence.Settings.UniqueNodeId;
-            }
-            else
-            {
-                throw new InvalidOperationException(
-                    "This Jasper application is not using Postgresql + Marten as the backing message persistence");
-            }
-
-            _session = session;
-
+            _settings = (PostgresqlSettings)persistence.DatabaseSettings;
+            _nodeId = persistence.Settings.UniqueNodeId;
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                "This Jasper application is not using Postgresql + Marten as the backing message persistence");
         }
 
-        public Task PersistAsync(Envelope envelope)
-        {
-            _session.StoreOutgoing(_settings, envelope, _nodeId);
-            return Task.CompletedTask;
-        }
-
-        public Task PersistAsync(Envelope[] envelopes)
-        {
-            foreach (var envelope in envelopes) _session.StoreOutgoing(_settings, envelope, _nodeId);
-
-            return Task.CompletedTask;
-        }
-
-        public Task ScheduleJobAsync(Envelope envelope)
-        {
-            _session.StoreIncoming(_settings, envelope);
-            return Task.CompletedTask;
-        }
-
-        public Task CopyToAsync(IEnvelopeTransaction other)
-        {
-            throw new NotSupportedException();
-        }
+        _session = session;
     }
 
-    public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
+    public Task PersistAsync(Envelope envelope)
     {
-        private readonly IExecutionContext _bus;
+        _session.StoreOutgoing(_settings, envelope, _nodeId);
+        return Task.CompletedTask;
+    }
 
-        public FlushOutgoingMessagesOnCommit(IExecutionContext bus)
-        {
-            _bus = bus;
-        }
+    public Task PersistAsync(Envelope[] envelopes)
+    {
+        foreach (var envelope in envelopes) _session.StoreOutgoing(_settings, envelope, _nodeId);
 
-        public override void AfterCommit(IDocumentSession session, IChangeSet commit)
-        {
-            _bus.SendAllQueuedOutgoingMessages().GetAwaiter().GetResult();
-        }
+        return Task.CompletedTask;
+    }
 
-        public override Task AfterCommitAsync(IDocumentSession session, IChangeSet commit, CancellationToken token)
-        {
-            return _bus.SendAllQueuedOutgoingMessages();
-        }
+    public Task ScheduleJobAsync(Envelope envelope)
+    {
+        _session.StoreIncoming(_settings, envelope);
+        return Task.CompletedTask;
+    }
+
+    public Task CopyToAsync(IEnvelopeTransaction other)
+    {
+        throw new NotSupportedException();
+    }
+}
+
+public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
+{
+    private readonly IExecutionContext _bus;
+
+    public FlushOutgoingMessagesOnCommit(IExecutionContext bus)
+    {
+        _bus = bus;
+    }
+
+    public override void AfterCommit(IDocumentSession session, IChangeSet commit)
+    {
+        _bus.FlushOutgoingMessagesAsync().GetAwaiter().GetResult();
+    }
+
+    public override Task AfterCommitAsync(IDocumentSession session, IChangeSet commit, CancellationToken token)
+    {
+        return _bus.FlushOutgoingMessagesAsync();
     }
 }

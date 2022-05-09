@@ -1,30 +1,28 @@
 using System;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Jasper.Runtime;
-using Jasper.Transports;
-using Microsoft.Extensions.Logging;
 
-namespace Jasper.ErrorHandling
+namespace Jasper.ErrorHandling;
+
+public class DiscardExpiredEnvelope : IContinuation
 {
-    public class DiscardExpiredEnvelope : IContinuation
+    public static readonly DiscardExpiredEnvelope Instance = new();
+
+    private DiscardExpiredEnvelope()
     {
-        public static readonly DiscardExpiredEnvelope Instance = new DiscardExpiredEnvelope();
+    }
 
-        private DiscardExpiredEnvelope(){}
-
-        public async ValueTask Execute(IExecutionContext execution,
-            DateTimeOffset now)
+    public async ValueTask ExecuteAsync(IExecutionContext execution,
+        DateTimeOffset now)
+    {
+        try
         {
-            try
-            {
-                execution.Logger.DiscardedEnvelope(execution.Envelope);
-                await execution.Complete();
-            }
-            catch (Exception? e)
-            {
-                execution.Logger.LogException(e);
-            }
+            execution.Logger.DiscardedEnvelope(execution.Envelope!);
+            await execution.CompleteAsync();
+        }
+        catch (Exception? e)
+        {
+            execution.Logger.LogException(e);
         }
     }
 }

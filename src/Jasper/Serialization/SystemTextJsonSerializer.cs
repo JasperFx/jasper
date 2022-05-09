@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace Jasper.Serialization;
 
 /// <summary>
-/// Use System.Text.Json as the JSON serialization
+///     Use System.Text.Json as the JSON serialization
 /// </summary>
 public class SystemTextJsonSerializer : IMessageSerializer
 {
@@ -19,12 +19,12 @@ public class SystemTextJsonSerializer : IMessageSerializer
 
     public byte[] Write(object message)
     {
-        return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(message, _options);
+        return JsonSerializer.SerializeToUtf8Bytes(message, _options);
     }
 
     public object ReadFromData(Type messageType, byte[] data)
     {
-        return System.Text.Json.JsonSerializer.Deserialize(data, messageType);
+        return JsonSerializer.Deserialize(data, messageType)!;
     }
 
     public object ReadFromData(byte[]? data)

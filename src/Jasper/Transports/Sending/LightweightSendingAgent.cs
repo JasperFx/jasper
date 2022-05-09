@@ -1,65 +1,57 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Baseline;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Transports.Sending
+namespace Jasper.Transports.Sending;
+
+public class LightweightSendingAgent : SendingAgent
 {
-    public class LightweightSendingAgent : SendingAgent
+    private List<Envelope> _queued = new();
+
+    public LightweightSendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender,
+        AdvancedSettings settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
     {
-        public LightweightSendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender,
-            AdvancedSettings? settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
+    }
+
+    public override bool IsDurable { get; } = false;
+
+    public override Task EnqueueForRetryAsync(OutgoingMessageBatch batch)
+    {
+        _queued.AddRange(batch.Messages);
+        _queued.RemoveAll(e => e.IsExpired());
+
+        if (_queued.Count > Endpoint.MaximumEnvelopeRetryStorage)
         {
+            var toRemove = _queued.Count - Endpoint.MaximumEnvelopeRetryStorage;
+            _queued = _queued.Skip(toRemove).ToList();
         }
 
-        public IList<Envelope?> Queued { get; private set; } = new List<Envelope?>();
+        return Task.CompletedTask;
+    }
 
-        public override Task EnqueueForRetryAsync(OutgoingMessageBatch batch)
-        {
-            Queued.AddRange(batch.Messages);
-            Queued.RemoveAll(e => e.IsExpired());
+    protected override async Task afterRestartingAsync(ISender sender)
+    {
+        var toRetry = _queued.Where(x => !x.IsExpired()).ToArray();
+        _queued.Clear();
 
-            if (Queued.Count > Endpoint.MaximumEnvelopeRetryStorage)
-            {
-                var toRemove = Queued.Count - Endpoint.MaximumEnvelopeRetryStorage;
-                Queued = Queued.Skip(toRemove).ToList();
-            }
+        foreach (var envelope in toRetry) await _senderDelegate(envelope);
+    }
 
-            return Task.CompletedTask;
-        }
+    public override Task MarkSuccessfulAsync(OutgoingMessageBatch outgoing)
+    {
+        return MarkSuccessAsync();
+    }
 
-        protected override Task afterRestartingAsync(ISender sender)
-        {
-            var toRetry = Queued.Where(x => !x.IsExpired()).ToArray();
-            Queued.Clear();
+    public override Task MarkSuccessfulAsync(Envelope outgoing)
+    {
+        return MarkSuccessAsync();
+    }
 
-            foreach (var envelope in toRetry)
-            {
-                // It's perfectly okay to not wait on the task here
-                _senderDelegate(envelope);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public override Task Successful(OutgoingMessageBatch outgoing)
-        {
-            return MarkSuccessAsync();
-        }
-
-        public override Task Successful(Envelope outgoing)
-        {
-            return MarkSuccessAsync();
-        }
-
-        protected override Task storeAndForwardAsync(Envelope envelope)
-        {
-            return _senderDelegate(envelope);
-        }
-
-        public override bool IsDurable { get; } = false;
+    protected override Task storeAndForwardAsync(Envelope envelope)
+    {
+        return _senderDelegate(envelope);
     }
 }

@@ -24,23 +24,34 @@ namespace Jasper.RabbitMQ.Internal
             _endpoints =
                 new LightweightCache<Uri, RabbitMqEndpoint>(uri =>
                 {
-                    var endpoint = new RabbitMqEndpoint();
+                    var endpoint = new RabbitMqEndpoint(this);
                     endpoint.Parse(uri);
-
-                    endpoint.Parent = this;
 
                     return endpoint;
                 });
 
-            Exchanges = new LightweightCache<string, RabbitMqExchange>(name => new RabbitMqExchange(name, this));
+            Exchanges = new LightweightCache<string, RabbitMqExchange>(name => new RabbitMqExchange(name));
         }
+
+        internal IConnection ListeningConnection => _listenerConnection ??= BuildConnection();
+        internal IConnection SendingConnection => _sendingConnection ??= BuildConnection();
+
+        public bool AutoProvision { get; set; }
+        public bool AutoPurgeOnStartup { get; set; }
+
+        public ConnectionFactory ConnectionFactory { get; } = new();
+
+        public IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; } = new List<AmqpTcpEndpoint>();
+
+        public LightweightCache<string, RabbitMqExchange> Exchanges { get; }
+
+        public LightweightCache<string, RabbitMqQueue> Queues { get; } = new(name => new RabbitMqQueue(name));
+
+        public IList<Binding> Bindings { get; } = new List<Binding>();
 
         public void Dispose()
         {
-            foreach (var endpoint in _endpoints)
-            {
-                endpoint.Dispose();
-            }
+            foreach (var endpoint in _endpoints) endpoint.Dispose();
 
             _listenerConnection?.Close();
             _listenerConnection?.SafeDispose();
@@ -49,8 +60,11 @@ namespace Jasper.RabbitMQ.Internal
             _sendingConnection?.SafeDispose();
         }
 
-        internal IConnection ListeningConnection => _listenerConnection ??= BuildConnection();
-        internal IConnection SendingConnection => _sendingConnection ??= BuildConnection();
+        public IBindingExpression BindExchange(string exchangeName, Action<RabbitMqExchange>? configure = null)
+        {
+            DeclareExchange(exchangeName, configure);
+            return new BindingExpression(exchangeName, this);
+        }
 
         protected override IEnumerable<RabbitMqEndpoint> endpoints()
         {
@@ -78,19 +92,37 @@ namespace Jasper.RabbitMQ.Internal
             return ValueTask.CompletedTask;
         }
 
-        public bool AutoProvision { get; set; }
-        public bool AutoPurgeOnStartup { get; set; }
+        internal IConnection BuildConnection()
+        {
+            return AmqpTcpEndpoints.Any()
+                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
+                : ConnectionFactory.CreateConnection();
+        }
 
-        public ConnectionFactory ConnectionFactory { get; } = new ConnectionFactory();
+        public RabbitMqEndpoint EndpointForQueue(string queueName)
+        {
+            // Yeah, it's super inefficient, but it only happens once or twice
+            // when bootstrapping'
+            var temp = new RabbitMqEndpoint(this) { QueueName = queueName };
+            return findEndpointByUri(temp.Uri);
+        }
 
-        public IList<AmqpTcpEndpoint> AmqpTcpEndpoints { get; } = new List<AmqpTcpEndpoint>();
+        public RabbitMqEndpoint EndpointFor(string routingKey, string exchangeName)
+        {
+            var temp = new RabbitMqEndpoint(this)
+            {
+                RoutingKey = routingKey,
+                ExchangeName = exchangeName
+            };
 
-        public LightweightCache<string, RabbitMqExchange> Exchanges { get; }
+            return findEndpointByUri(temp.Uri);
+        }
 
-        public LightweightCache<string, RabbitMqQueue> Queues { get; }
-            = new LightweightCache<string, RabbitMqQueue>(name => new RabbitMqQueue(name));
-
-        public IList<Binding> Bindings { get; } = new List<Binding>();
+        public RabbitMqEndpoint EndpointForExchange(string exchangeName)
+        {
+            var temp = new RabbitMqEndpoint(this) { ExchangeName = exchangeName };
+            return findEndpointByUri(temp.Uri);
+        }
 
         internal class BindingExpression : IBindingExpression
         {
@@ -103,7 +135,8 @@ namespace Jasper.RabbitMQ.Internal
                 _parent = parent;
             }
 
-            public IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null)
+            public IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null,
+                Dictionary<string, object>? arguments = null)
             {
                 _parent.DeclareQueue(queueName, configure);
                 ToQueue(queueName, $"{_exchangeName}_{queueName}");
@@ -111,7 +144,8 @@ namespace Jasper.RabbitMQ.Internal
                 return _parent;
             }
 
-            public IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null)
+            public IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey,
+                Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null)
             {
                 _parent.DeclareQueue(queueName, configure);
 
@@ -134,66 +168,28 @@ namespace Jasper.RabbitMQ.Internal
                 return _parent;
             }
         }
-
-        public IBindingExpression BindExchange(string exchangeName, Action<RabbitMqExchange>? configure = null)
-        {
-            DeclareExchange(exchangeName, configure);
-            return new BindingExpression(exchangeName, this);
-        }
-
-        internal IConnection BuildConnection()
-        {
-            return AmqpTcpEndpoints.Any()
-                ? ConnectionFactory.CreateConnection(AmqpTcpEndpoints)
-                : ConnectionFactory.CreateConnection();
-        }
-
-        public RabbitMqEndpoint EndpointForQueue(string queueName)
-        {
-            // Yeah, it's super inefficient, but it only happens once or twice
-            // when bootstrapping'
-            var temp = new RabbitMqEndpoint {QueueName = queueName};
-            return findEndpointByUri(temp.Uri);
-        }
-
-        public RabbitMqEndpoint EndpointFor(string routingKey, string exchangeName)
-        {
-            var temp = new RabbitMqEndpoint
-            {
-                RoutingKey = routingKey,
-                ExchangeName = exchangeName
-            };
-
-            return findEndpointByUri(temp.Uri);
-        }
-
-        public RabbitMqEndpoint EndpointForExchange(string exchangeName)
-        {
-            var temp = new RabbitMqEndpoint{ExchangeName = exchangeName};
-            return findEndpointByUri(temp.Uri);
-        }
-
-
     }
-
+s
     public interface IBindingExpression
     {
         /// <summary>
-        /// Bind the named exchange to a queue. The routing key will be
-        /// [exchange name]_[queue name]
+        ///     Bind the named exchange to a queue. The routing key will be
+        ///     [exchange name]_[queue name]
         /// </summary>
         /// <param name="queueName"></param>
         /// <param name="configure">Optional configuration of the Rabbit MQ queue</param>
         /// <param name="arguments">Optional configuration for arguments to the Rabbit MQ binding</param>
-        IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null);
+        IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null,
+            Dictionary<string, object>? arguments = null);
 
         /// <summary>
-        /// Bind the named exchange to a queue with a user supplied binding key
+        ///     Bind the named exchange to a queue with a user supplied binding key
         /// </summary>
         /// <param name="queueName"></param>
         /// <param name="bindingKey"></param>
         /// <param name="configure">Optional configuration of the Rabbit MQ queue</param>
         /// <param name="arguments">Optional configuration for arguments to the Rabbit MQ binding</param>
-        IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey, Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null);
+        IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey,
+            Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null);
     }
 }

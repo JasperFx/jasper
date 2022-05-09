@@ -1,38 +1,37 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
-using Jasper.Transports;
 
-namespace Jasper.Runtime
+namespace Jasper.Runtime;
+
+public class MessageSucceededContinuation : IContinuation
 {
-    public class MessageSucceededContinuation : IContinuation
+    public static readonly MessageSucceededContinuation Instance = new();
+
+    private MessageSucceededContinuation()
     {
-        public static readonly MessageSucceededContinuation Instance = new MessageSucceededContinuation();
+    }
 
-        private MessageSucceededContinuation()
+    public async ValueTask ExecuteAsync(IExecutionContext execution,
+        DateTimeOffset now)
+    {
+        try
         {
+            await execution.FlushOutgoingMessagesAsync();
+
+            await execution.CompleteAsync();
+
+            execution.Logger.MessageSucceeded(execution.Envelope!);
         }
-
-        public async ValueTask Execute(IExecutionContext execution,
-            DateTimeOffset now)
+        catch (Exception? ex)
         {
-            try
-            {
-                await execution.SendAllQueuedOutgoingMessages();
+            await execution.SendFailureAcknowledgementAsync(execution.Envelope!,
+                "Sending cascading message failed: " + ex.Message);
 
-                await execution.Complete();
+            execution.Logger.LogException(ex, execution.Envelope!.Id, ex.Message);
+            execution.Logger.MessageFailed(execution.Envelope, ex);
 
-                execution.Logger.MessageSucceeded(execution.Envelope);
-            }
-            catch (Exception? ex)
-            {
-                await execution.SendFailureAcknowledgement(execution.Envelope,"Sending cascading message failed: " + ex.Message);
-
-                execution.Logger.LogException(ex, execution.Envelope.Id, ex.Message);
-                execution.Logger.MessageFailed(execution.Envelope, ex);
-
-                await new MoveToErrorQueue(ex).Execute(execution, now);
-            }
+            await new MoveToErrorQueue(ex).ExecuteAsync(execution, now);
         }
     }
 }

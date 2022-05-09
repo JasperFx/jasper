@@ -1,8 +1,7 @@
 ﻿using Lamar;
 
-namespace Jasper.Configuration
+namespace Jasper.Configuration;
+
+internal class ExtensionServiceRegistry : ServiceRegistry
 {
-    internal class ExtensionServiceRegistry : ServiceRegistry
-    {
-    }
 }

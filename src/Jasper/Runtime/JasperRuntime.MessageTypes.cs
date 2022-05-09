@@ -7,7 +7,7 @@ namespace Jasper.Runtime;
 
 public partial class JasperRuntime
 {
-    public bool TryFindMessageType(string? messageTypeName, out Type messageType)
+    public bool TryFindMessageType(string messageTypeName, out Type messageType)
     {
         return Handlers.TryFindMessageType(messageTypeName, out messageType);
     }
@@ -16,15 +16,20 @@ public partial class JasperRuntime
     {
         if (envelope.Message == null)
         {
-            if (TryFindMessageType(envelope.MessageType, out var messageType))
+            if (TryFindMessageType(envelope.MessageType!, out var messageType))
             {
                 return messageType;
             }
 
-            throw new InvalidOperationException($"Unable to determine a message type for `{envelope.MessageType}`, the known types are: {Handlers.Chains.Select(x => x.MessageType.ToMessageTypeName()).Join(", ")}");
+            throw new InvalidOperationException(
+                $"Unable to determine a message type for `{envelope.MessageType}`, the known types are: {Handlers.Chains.Select(x => x.MessageType.ToMessageTypeName()).Join(", ")}");
         }
 
-        if (envelope.Message == null) throw new ArgumentNullException(nameof(Envelope.Message));
+        if (envelope.Message == null)
+        {
+            throw new ArgumentNullException(nameof(Envelope.Message));
+        }
+
         return envelope.Message.GetType();
     }
 

@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
 
-namespace Jasper.Runtime.Routing
+namespace Jasper.Runtime.Routing;
+
+public interface IMessageRoute
 {
-    public interface IMessageRoute
-    {
-        void Configure(Envelope envelope);
-        Envelope CloneForSending(Envelope envelope);
+    Uri Destination { get; }
 
-        // TODO -- WATCH THIS!!!! Need to use a consistent Id!
-        Envelope BuildForSending(object message);
+    string ContentType { get; }
+    void Configure(Envelope envelope);
+    Envelope CloneForSending(Envelope envelope);
 
-        Uri Destination { get; }
-
-        string ContentType { get; }
-    }
+    // TODO -- WATCH THIS!!!! Need to use a consistent Id!
+    Envelope BuildForSending(object message);
 }

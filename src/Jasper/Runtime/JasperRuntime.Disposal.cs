@@ -15,15 +15,9 @@ public partial class JasperRuntime : IAsyncDisposable
             await StopAsync(CancellationToken.None);
         }
 
-        foreach (var kv in _senders.Enumerate())
-        {
-            kv.Value.SafeDispose();
-        }
+        foreach (var kv in _senders.Enumerate()) kv.Value.SafeDispose();
 
-        foreach (var listener in _disposables)
-        {
-            listener.SafeDispose();
-        }
+        foreach (var listener in _disposables) listener.SafeDispose();
 
         Advanced.Cancel();
 

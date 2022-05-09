@@ -1,16 +1,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jasper.Runtime.Handlers
+namespace Jasper.Runtime.Handlers;
+
+#region sample_MessageHandler
+
+public abstract class MessageHandler
 {
-    #region sample_MessageHandler
-    public abstract class MessageHandler
-    {
-        public HandlerChain Chain { get; set; }
+    public HandlerChain? Chain { get; set; }
 
-        // This method actually processes the incoming Envelope
-        public abstract Task Handle(IExecutionContext context, CancellationToken cancellation);
-    }
-
-    #endregion
+    // This method actually processes the incoming Envelope
+    public abstract Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
 }
+
+#endregion

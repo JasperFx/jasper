@@ -46,7 +46,7 @@ namespace Jasper.Testing.Transports.Local
             var endpoint = new LocalQueueSettings("foo");
             endpoint.Mode = EndpointMode.Durable;
 
-            endpoint.ReplyUri().ShouldBe("local://durable/foo".ToUri());
+            endpoint.CorrectedUriForReplies().ShouldBe("local://durable/foo".ToUri());
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Transports.Local
             var endpoint = new LocalQueueSettings("foo");
             endpoint.Mode = EndpointMode.BufferedInMemory;
 
-            endpoint.ReplyUri().ShouldBe("local://foo".ToUri());
+            endpoint.CorrectedUriForReplies().ShouldBe("local://foo".ToUri());
         }
 
     }

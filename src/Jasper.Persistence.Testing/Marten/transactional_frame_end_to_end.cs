@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Testing.Marten
             });
 
             var command = new CreateDocCommand();
-            await host.Invoke(command);
+            await host.InvokeAsync(command);
 
             await using var query = host.Get<IQuerySession>();
             query.Load<FakeDoc>(command.Id)
