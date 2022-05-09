@@ -37,7 +37,7 @@ public class RecoverIncomingMessages : IMessagingAction
         foreach (var envelope in incoming)
         {
             envelope.OwnerId = _settings.UniqueNodeId;
-            await _workers.EnqueueAsync(envelope);
+            _workers.Enqueue(envelope);
         }
 
         // TODO -- this should be smart enough later to check for back pressure before rescheduling

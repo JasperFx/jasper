@@ -19,7 +19,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     {
     }
 
-    public Task SendAsync<T>(T message)
+    public ValueTask SendAsync<T>(T message)
     {
         if (message == null)
         {
@@ -37,7 +37,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         return persistOrSendAsync(outgoing);
     }
 
-    public Task PublishEnvelopeAsync(Envelope envelope)
+    public ValueTask PublishEnvelopeAsync(Envelope envelope)
     {
         if (envelope.Message == null && envelope.Data == null)
         {
@@ -53,10 +53,10 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         }
 
         Runtime.MessageLogger.NoRoutesFor(envelope);
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public Task PublishAsync<T>(T message)
+    public ValueTask PublishAsync<T>(T message)
     {
         if (message == null)
         {
@@ -100,7 +100,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         return SendEnvelopeAsync(envelope);
     }
 
-    public Task SendToTopicAsync(object message, string topicName)
+    public ValueTask SendToTopicAsync(object message, string topicName)
     {
         var envelope = new Envelope(message)
         {
@@ -117,7 +117,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     /// <typeparam name="T"></typeparam>
     /// <param name="destination">The destination to send to</param>
     /// <param name="message"></param>
-    public Task SendToDestinationAsync<T>(Uri destination, T message)
+    public ValueTask SendToDestinationAsync<T>(Uri destination, T message)
     {
         if (destination == null)
         {
@@ -186,23 +186,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         outbound.CorrelationId = CorrelationId;
     }
 
-    private Task persistOrSendAsync(Envelope envelope)
-    {
-        if (envelope.Sender == null)
-        {
-            throw new InvalidOperationException("This envelope has not been routed (Sender is null)");
-        }
-
-        if (Transaction != null)
-        {
-            _outstanding.Fill(envelope);
-            return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
-        }
-
-        return envelope.StoreAndForwardAsync();
-    }
-
-    private async Task persistOrSendAsync(params Envelope[] outgoing)
+    private async ValueTask persistOrSendAsync(params Envelope[] outgoing)
     {
         if (Transaction != null)
         {

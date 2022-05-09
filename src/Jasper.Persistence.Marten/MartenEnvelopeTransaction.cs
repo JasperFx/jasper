@@ -67,7 +67,9 @@ public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
 
     public override void AfterCommit(IDocumentSession session, IChangeSet commit)
     {
+#pragma warning disable VSTHRD002
         _bus.FlushOutgoingMessagesAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
     }
 
     public override Task AfterCommitAsync(IDocumentSession session, IChangeSet commit, CancellationToken token)

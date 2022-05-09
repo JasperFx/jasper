@@ -288,6 +288,7 @@ public class TrackedSession : ITrackedSession
     public void Record(EventType eventType, Envelope envelope, string? serviceName, int uniqueNodeId,
         Exception? ex = null)
     {
+        if (envelope.Message is ValueTask) throw new Exception("What you doing Willis?");
         var history = _envelopes[envelope.Id];
 
         var record = new EnvelopeRecord(eventType, envelope, _stopwatch.ElapsedMilliseconds, ex)

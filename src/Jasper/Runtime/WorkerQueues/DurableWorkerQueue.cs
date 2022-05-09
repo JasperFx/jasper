@@ -63,7 +63,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
     {
         envelope.Attempts++;
 
-        await EnqueueAsync(envelope);
+        Enqueue(envelope);
 
         await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttemptsAsync(envelope));
     }
@@ -86,17 +86,17 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
     public int QueuedCount => _receiver.InputCount;
 
-    public Task EnqueueAsync(Envelope envelope)
+    public void Enqueue(Envelope envelope)
     {
         envelope.ReplyUri = envelope.ReplyUri ?? Address;
         _receiver.Post(envelope);
-
-        return Task.CompletedTask;
     }
 
-    public Task ScheduleExecutionAsync(Envelope envelope)
+    public void ScheduleExecution(Envelope envelope)
     {
-        return Task.CompletedTask;
+        // Should never be called, this is only used by lightweight
+        // worker queues
+        throw new NotSupportedException();
     }
 
     public void StartListening(IListener listener)
@@ -115,7 +115,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
         return ProcessReceivedMessagesAsync(now, uri, messages);
     }
 
-    public async Task ReceivedAsync(Uri uri, Envelope envelope)
+    public async ValueTask ReceivedAsync(Uri uri, Envelope envelope)
     {
         if (_listener == null) throw new InvalidOperationException($"Worker queue for {uri} has not been started");
 
@@ -128,7 +128,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
         if (envelope.Status == EnvelopeStatus.Incoming)
         {
-            await EnqueueAsync(envelope);
+            Enqueue(envelope);
         }
 
         await _listener.CompleteAsync(envelope);
@@ -163,7 +163,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
         foreach (var message in envelopes)
         {
-            await EnqueueAsync(message);
+            Enqueue(message);
             await _listener!.CompleteAsync(message);
         }
 

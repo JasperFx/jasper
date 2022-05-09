@@ -70,11 +70,10 @@ public interface IExecutionContext : IMessagePublisher
     ///     Send a response message back to the original sender of the message being handled.
     ///     This can only be used from within a message handler
     /// </summary>
-    /// <param name="context"></param>
     /// <param name="response"></param>
+    /// <param name="context"></param>
     /// <returns></returns>
-    // TODO -- this should probably be ValueTask
-    Task RespondToSenderAsync(object response);
+    ValueTask RespondToSenderAsync(object response);
 
     /// <summary>
     ///     Enqueue a cascading message to the outstanding context transaction

@@ -11,7 +11,7 @@ public interface IAcknowledgementSender
     ///     Sends an acknowledgement back to the original sender
     /// </summary>
     /// <returns></returns>
-    Task SendAcknowledgementAsync(Envelope envelope);
+    ValueTask SendAcknowledgementAsync(Envelope envelope);
 
     /// <summary>
     ///     Send a failure acknowledgement back to the original
@@ -20,5 +20,5 @@ public interface IAcknowledgementSender
     /// <param name="original"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    Task SendFailureAcknowledgementAsync(Envelope original, string message);
+    ValueTask SendFailureAcknowledgementAsync(Envelope original, string message);
 }

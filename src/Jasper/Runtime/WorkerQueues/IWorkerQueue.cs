@@ -7,9 +7,9 @@ public interface IWorkerQueue : IListeningWorkerQueue
 {
     int QueuedCount { get; }
 
-    Task EnqueueAsync(Envelope envelope);
+    void Enqueue(Envelope envelope);
 
-    Task ScheduleExecutionAsync(Envelope envelope);
+    void ScheduleExecution(Envelope envelope);
 
     void StartListening(IListener listener);
 }

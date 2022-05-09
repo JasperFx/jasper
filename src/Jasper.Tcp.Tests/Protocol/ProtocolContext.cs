@@ -105,7 +105,7 @@ namespace Jasper.Tcp.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task ReceivedAsync(Uri uri, Envelope envelope)
+        public ValueTask ReceivedAsync(Uri uri, Envelope envelope)
         {
             throw new NotImplementedException();
         }

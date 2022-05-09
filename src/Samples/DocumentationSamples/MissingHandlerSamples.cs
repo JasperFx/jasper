@@ -26,7 +26,7 @@ namespace DocumentationSamples
 
     public class MyMissingHandler : IMissingHandler
     {
-        public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
+        public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
         {
             return root.Acknowledgements
                 .SendFailureAcknowledgementAsync(envelope, "I don't know how to process this message");

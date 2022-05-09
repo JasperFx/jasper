@@ -113,7 +113,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
     /// <summary>
     ///     Configure the retry policies and error handling for this chain
     /// </summary>
-    public RetryPolicyCollection Retries { get; set; } = new();
+    public RetryPolicyCollection Retries { get; } = new();
 
     public static HandlerChain For<T>(Expression<Action<T>> expression, HandlerGraph parent)
     {

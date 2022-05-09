@@ -69,7 +69,7 @@ namespace Jasper.Testing.Acceptance
                 Id = Guid.NewGuid()
             };
 
-            var session = await Host.ExecuteAndWaitAsync(c => c.EnqueueAsync(message));
+            var session = await Host.ExecuteAndWaitValueTaskAsync(c => c.EnqueueAsync(message));
 
             var tracked = session.FindSingleTrackedMessageOfType<Message1>();
 

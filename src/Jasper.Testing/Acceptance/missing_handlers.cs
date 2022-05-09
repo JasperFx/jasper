@@ -26,7 +26,7 @@ namespace Jasper.Testing.Acceptance
             var message = new MessageWithNoHandler();
 
 
-            await host.ExecuteAndWaitAsync(x => x.EnqueueAsync(message));
+            await host.ExecuteAndWaitValueTaskAsync(x => x.EnqueueAsync(message));
 
             for (int i = 0; i < 4; i++)
             {
@@ -47,13 +47,13 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task HandleAsync(Envelope envelope, IJasperRuntime root)
+            public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
                 root.ShouldNotBeNull();
 
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             }
         }
 
@@ -61,13 +61,13 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
+            public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
                 root.ShouldNotBeNull();
 
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             }
         }
 
@@ -75,13 +75,13 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
+            public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 
                 root.ShouldNotBeNull();
 
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             }
         }
 

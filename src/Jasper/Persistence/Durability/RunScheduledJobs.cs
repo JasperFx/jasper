@@ -66,7 +66,10 @@ internal class RunScheduledJobs : IMessagingAction
 
             _logger.ScheduledJobsQueuedForExecution(readyToExecute);
 
-            foreach (var envelope in readyToExecute) await agent.EnqueueLocallyAsync(envelope);
+            foreach (var envelope in readyToExecute)
+            {
+                agent.EnqueueLocally(envelope);
+            }
         }
         finally
         {

@@ -17,7 +17,7 @@ public interface ISendingAgent
 
     Endpoint Endpoint { get; }
 
-    Task EnqueueOutgoingAsync(Envelope envelope);
+    ValueTask EnqueueOutgoingAsync(Envelope envelope);
 
-    Task StoreAndForwardAsync(Envelope envelope);
+    ValueTask StoreAndForwardAsync(Envelope envelope);
 }

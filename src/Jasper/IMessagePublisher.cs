@@ -14,14 +14,14 @@ public interface IMessagePublisher : ICommandBus
     /// <param name="message"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    Task SendAsync<T>(T message);
+    ValueTask SendAsync<T>(T message);
 
     /// <summary>
     ///     Publish a message to all known subscribers. Ignores the message if there are no known subscribers
     /// </summary>
     /// <param name="envelope"></param>
     /// <returns></returns>
-    Task PublishEnvelopeAsync(Envelope envelope);
+    ValueTask PublishEnvelopeAsync(Envelope envelope);
 
     /// <summary>
     ///     Publish a message to all known subscribers. Ignores the message if there are no known subscribers
@@ -29,7 +29,7 @@ public interface IMessagePublisher : ICommandBus
     /// <param name="message"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    Task PublishAsync<T>(T message);
+    ValueTask PublishAsync<T>(T message);
 
 
     /// <summary>
@@ -58,7 +58,7 @@ public interface IMessagePublisher : ICommandBus
     /// <param name="message"></param>
     /// <param name="topicName"></param>
     /// <returns></returns>
-    Task SendToTopicAsync(object message, string topicName);
+    ValueTask SendToTopicAsync(object message, string topicName);
 
 
     /// <summary>
@@ -67,7 +67,7 @@ public interface IMessagePublisher : ICommandBus
     /// <typeparam name="T"></typeparam>
     /// <param name="destination">The destination to send to</param>
     /// <param name="message"></param>
-    Task SendToDestinationAsync<T>(Uri destination, T message);
+    ValueTask SendToDestinationAsync<T>(Uri destination, T message);
 
     /// <summary>
     ///     Send a message that should be executed at the given time

@@ -23,16 +23,22 @@ public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
         _outstandingJobs[envelope.Id] = new InMemoryScheduledJob(this, envelope, executionTime);
     }
 
-    public async Task PlayAllAsync()
+    public void PlayAll()
     {
         var outstanding = _outstandingJobs.ToArray();
-        foreach (var job in outstanding) await job.EnqueueAsync();
+        foreach (var job in outstanding)
+        {
+            job.Enqueue();
+        }
     }
 
-    public async Task PlayAtAsync(DateTime executionTime)
+    public void Play(DateTime executionTime)
     {
         var outstanding = _outstandingJobs.Where(x => x.ExecutionTime <= executionTime).ToArray();
-        foreach (var job in outstanding) await job.EnqueueAsync();
+        foreach (var job in outstanding)
+        {
+            job.Enqueue();
+        }
     }
 
     public Task EmptyAllAsync()
@@ -79,7 +85,7 @@ public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
 
             _cancellation = new CancellationTokenSource();
             var delayTime = ExecutionTime.Subtract(DateTime.UtcNow);
-            _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(publishAsync, TaskScheduler.Default);
+            _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(obj => publish(), TaskScheduler.Default);
 
             ReceivedAt = DateTime.UtcNow;
         }
@@ -90,11 +96,9 @@ public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
 
         public Envelope Envelope { get; }
 
-        private Task publishAsync(Task obj)
+        private void publish()
         {
-            return _cancellation.IsCancellationRequested
-                ? Task.CompletedTask
-                : EnqueueAsync();
+            if (!_cancellation.IsCancellationRequested) Enqueue();
         }
 
         public void Cancel()
@@ -113,9 +117,9 @@ public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
             };
         }
 
-        public async Task EnqueueAsync()
+        public void Enqueue()
         {
-            await _parent._queue.EnqueueAsync(Envelope);
+            _parent._queue.Enqueue(Envelope);
             Cancel();
         }
 

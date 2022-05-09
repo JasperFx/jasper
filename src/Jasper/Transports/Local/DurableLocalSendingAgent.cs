@@ -46,14 +46,16 @@ public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
 
     public bool IsDurable => true;
 
-    public Task EnqueueOutgoingAsync(Envelope envelope)
+    public ValueTask EnqueueOutgoingAsync(Envelope envelope)
     {
         _messageLogger.Sent(envelope);
 
-        return EnqueueAsync(envelope);
+        Enqueue(envelope);
+
+        return ValueTask.CompletedTask;
     }
 
-    public async Task StoreAndForwardAsync(Envelope envelope)
+    public async ValueTask StoreAndForwardAsync(Envelope envelope)
     {
         _messageLogger.Sent(envelope);
         writeMessageData(envelope);
@@ -71,7 +73,7 @@ public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
 
         if (envelope.Status == EnvelopeStatus.Incoming)
         {
-            await EnqueueAsync(envelope);
+            Enqueue(envelope);
         }
     }
 

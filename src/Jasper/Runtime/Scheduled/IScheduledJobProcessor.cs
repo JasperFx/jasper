@@ -7,9 +7,9 @@ public interface IScheduledJobProcessor : IDisposable
 {
     void Enqueue(DateTimeOffset executionTime, Envelope envelope);
 
-    Task PlayAllAsync();
+    void PlayAll();
 
-    Task PlayAtAsync(DateTime executionTime);
+    void Play(DateTime executionTime);
 
     Task EmptyAllAsync();
 

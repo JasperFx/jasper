@@ -17,7 +17,7 @@ public interface IMissingHandler
     /// <param name="envelope"></param>
     /// <param name="root"></param>
     /// <returns></returns>
-    Task HandleAsync(Envelope? envelope, IJasperRuntime root);
+    ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root);
 }
 
 #endregion

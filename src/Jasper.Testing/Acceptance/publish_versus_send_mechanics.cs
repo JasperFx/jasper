@@ -31,7 +31,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task publish_message_with_no_known_subscribers()
         {
-            var session = await Host.ExecuteAndWaitAsync(x => x.PublishAsync(new Message3()));
+            var session = await Host.ExecuteAndWaitValueTaskAsync(x => x.PublishAsync(new Message3()));
 
             session.AllRecordsInOrder().Any(x => x.EventType != EventType.NoRoutes).ShouldBeFalse();
         }

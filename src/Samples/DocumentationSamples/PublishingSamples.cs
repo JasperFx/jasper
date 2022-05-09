@@ -89,7 +89,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_IServiceBus.Enqueue
-        public Task Enqueue(IExecutionContext bus)
+        public ValueTask Enqueue(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -104,7 +104,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_IServiceBus.Enqueue_to_specific_worker_queue
-        public Task EnqueueToQueue(IExecutionContext bus)
+        public ValueTask EnqueueToQueue(IExecutionContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -155,7 +155,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_sending_message_with_servicebus
-        public Task SendMessage(IExecutionContext bus)
+        public ValueTask SendMessage(IExecutionContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
             // message
@@ -173,7 +173,7 @@ namespace DocumentationSamples
 
 
         #region sample_publishing_message_with_servicebus
-        public Task PublishMessage(IExecutionContext bus)
+        public ValueTask PublishMessage(IExecutionContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
             // message

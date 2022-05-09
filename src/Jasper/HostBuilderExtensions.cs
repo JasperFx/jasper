@@ -189,7 +189,7 @@ public static class HostBuilderExtensions
     /// <param name="message"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static Task SendAsync<T>(this IHost host, T message)
+    public static ValueTask SendAsync<T>(this IHost host, T message)
     {
         return host.Get<IMessagePublisher>().SendAsync(message);
     }

@@ -76,13 +76,13 @@ public class CommandBus : ICommandBus
         return (T)envelope.Response;
     }
 
-    public Task EnqueueAsync<T>(T message)
+    public ValueTask EnqueueAsync<T>(T message)
     {
         var envelope = Runtime.Router.RouteLocally(message);
         return persistOrSendAsync(envelope);
     }
 
-    public Task EnqueueAsync<T>(T message, string workerQueueName)
+    public ValueTask EnqueueAsync<T>(T message, string workerQueueName)
     {
         var envelope = Runtime.Router.RouteLocally(message, workerQueueName);
 
@@ -152,7 +152,7 @@ public class CommandBus : ICommandBus
         return Persistence.ScheduleJobAsync(envelope);
     }
 
-    private Task persistOrSendAsync(Envelope envelope)
+    protected async ValueTask persistOrSendAsync(Envelope envelope)
     {
         if (envelope.Sender is null)
         {
@@ -162,10 +162,16 @@ public class CommandBus : ICommandBus
         if (Transaction is not null)
         {
             _outstanding.Fill(envelope);
-            return envelope.Sender.IsDurable ? Transaction.PersistAsync(envelope) : Task.CompletedTask;
+
+            if (envelope.Sender.IsDurable)
+            {
+                await Transaction.PersistAsync(envelope);
+            }
+
+            return;
         }
 
-        return envelope.StoreAndForwardAsync();
+        await envelope.StoreAndForwardAsync();
     }
 
     public Task EnlistInTransactionAsync(IEnvelopeTransaction transaction)

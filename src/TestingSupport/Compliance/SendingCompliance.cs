@@ -234,18 +234,20 @@ namespace TestingSupport.Compliance
         {
 
             var id2 = string.Empty;
+            Func<IExecutionContext,Task> action = async context =>
+            {
+                id2 = context.CorrelationId;
+
+                await context.SendAsync(new ExecutedMessage());
+                await context.PublishAsync(new ExecutedMessage());
+                //await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
+            };
+            
             var session2 = await theSender
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
 
-                .ExecuteAndWaitAsync(async context =>
-                {
-                    id2 = context.CorrelationId;
-
-                    await context.SendAsync(new ExecutedMessage());
-                    await context.PublishAsync(new ExecutedMessage());
-                    //await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
-                });
+                .ExecuteAndWaitAsync(action);
 
             var envelopes = session2
                 .AllRecordsInOrder(EventType.Sent)

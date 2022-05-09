@@ -47,11 +47,11 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
     ///     Send a response message back to the original sender of the message being handled.
     ///     This can only be used from within a message handler
     /// </summary>
-    /// <param name="context"></param>
     /// <param name="response"></param>
+    /// <param name="context"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <returns></returns>
-    public Task RespondToSenderAsync(object? response)
+    public ValueTask RespondToSenderAsync(object response)
     {
         if (Envelope == null)
         {

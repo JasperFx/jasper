@@ -32,14 +32,14 @@ public class AcknowledgementSender : IAcknowledgementSender
     ///     Sends an acknowledgement back to the original sender
     /// </summary>
     /// <returns></returns>
-    public Task SendAcknowledgementAsync(Envelope original)
+    public ValueTask SendAcknowledgementAsync(Envelope original)
     {
         if (!original.AckRequested && !original.ReplyRequested.IsNotEmpty())
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        if (original.ReplyUri == null) return Task.CompletedTask;
+        if (original.ReplyUri == null) return ValueTask.CompletedTask;
 
         var ack = BuildAcknowledgement(original);
 
@@ -61,10 +61,10 @@ public class AcknowledgementSender : IAcknowledgementSender
     /// <param name="original"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public Task SendFailureAcknowledgementAsync(Envelope original, string message)
+    public ValueTask SendFailureAcknowledgementAsync(Envelope original, string message)
     {
         // Can't do anything here.
-        if (original.ReplyUri == null) return Task.CompletedTask;
+        if (original.ReplyUri == null) return ValueTask.CompletedTask;
 
         if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
         {
@@ -83,6 +83,6 @@ public class AcknowledgementSender : IAcknowledgementSender
             return envelope.StoreAndForwardAsync();
         }
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

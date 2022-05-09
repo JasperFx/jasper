@@ -115,16 +115,16 @@ public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit, I
     public bool Latched { get; private set; }
     public abstract bool IsDurable { get; }
 
-    public Task EnqueueOutgoingAsync(Envelope envelope)
+    public ValueTask EnqueueOutgoingAsync(Envelope envelope)
     {
         setDefaults(envelope);
         _sending.Post(envelope);
         _messageLogger.Sent(envelope);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public async Task StoreAndForwardAsync(Envelope envelope)
+    public async ValueTask StoreAndForwardAsync(Envelope envelope)
     {
         setDefaults(envelope);
 

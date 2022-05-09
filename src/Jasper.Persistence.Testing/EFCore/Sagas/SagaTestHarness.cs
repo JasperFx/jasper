@@ -95,7 +95,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
         protected Task send<T>(T message)
         {
-            return _host.ExecuteAndWaitAsync(x => x.SendAsync(message), 10000);
+            return _host.ExecuteAndWaitValueTaskAsync(x => x.SendAsync(message), 10000);
         }
 
         protected Task send<T>(T message, object sagaId)

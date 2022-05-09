@@ -61,38 +61,38 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
     {
         if (_listener == null)
         {
-            await EnqueueAsync(envelope);
+            Enqueue(envelope);
             return;
         }
 
         var nativelyRequeued = await _listener.TryRequeueAsync(envelope);
         if (!nativelyRequeued)
         {
-            await EnqueueAsync(envelope);
+            Enqueue(envelope);
         }
     }
 
     Task IHasNativeScheduling.MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
     {
         envelope.ScheduledTime = time;
-        return ScheduleExecutionAsync(envelope);
-    }
-
-    public int QueuedCount => _receiver.InputCount;
-
-    public Task EnqueueAsync(Envelope envelope)
-    {
-        if (envelope.IsPing())
-        {
-            return Task.CompletedTask;
-        }
-
-        _receiver.Post(envelope);
+        ScheduleExecution(envelope);
 
         return Task.CompletedTask;
     }
 
-    public Task ScheduleExecutionAsync(Envelope envelope)
+    public int QueuedCount => _receiver.InputCount;
+
+    public void Enqueue(Envelope envelope)
+    {
+        if (envelope.IsPing())
+        {
+            return;
+        }
+
+        _receiver.Post(envelope);
+    }
+
+    public void ScheduleExecution(Envelope envelope)
     {
         if (!envelope.ScheduledTime.HasValue)
         {
@@ -101,7 +101,6 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
         }
 
         _scheduler.Enqueue(envelope.ScheduledTime.Value, envelope);
-        return Task.CompletedTask;
     }
 
 
@@ -120,7 +119,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
         return ProcessReceivedMessagesAsync(now, uri, messages);
     }
 
-    public async Task ReceivedAsync(Uri uri, Envelope envelope)
+    public async ValueTask ReceivedAsync(Uri uri, Envelope envelope)
     {
         if (_listener == null)
         {
@@ -141,7 +140,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
         }
         else
         {
-            await EnqueueAsync(envelope);
+            Enqueue(envelope);
         }
 
         await _listener.CompleteAsync(envelope);
@@ -170,7 +169,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
         foreach (var envelope in envelopes)
         {
             envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
-            await EnqueueAsync(envelope);
+            Enqueue(envelope);
             await _listener.CompleteAsync(envelope);
         }
 

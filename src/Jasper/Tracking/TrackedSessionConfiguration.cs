@@ -101,6 +101,19 @@ public class TrackedSessionConfiguration
         return _session;
     }
 
+    /// <summary>
+    ///     Execute a user defined Lambda against an IMessageContext
+    ///     and wait for all activity to end
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public async Task<ITrackedSession> ExecuteAndWaitAsync(Func<IExecutionContext, ValueTask> action)
+    {
+        _session.Execution = c => action(c).AsTask();
+        await _session.ExecuteAndTrackAsync();
+        return _session;
+    }
+
     public async Task<ITrackedSession> ExecuteWithoutWaitingAsync(Func<IExecutionContext, Task> action)
     {
         _session.Execution = action;

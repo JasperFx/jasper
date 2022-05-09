@@ -25,14 +25,14 @@ public class InlineSendingAgent : ISendingAgent
     public bool IsDurable { get; } = false;
     public bool SupportsNativeScheduledSend => _sender.SupportsNativeScheduledSend;
 
-    public async Task EnqueueOutgoingAsync(Envelope envelope)
+    public async ValueTask EnqueueOutgoingAsync(Envelope envelope)
     {
         setDefaults(envelope);
         await _sender.SendAsync(envelope);
         _logger.Sent(envelope);
     }
 
-    public Task StoreAndForwardAsync(Envelope envelope)
+    public ValueTask StoreAndForwardAsync(Envelope envelope)
     {
         return EnqueueOutgoingAsync(envelope);
     }

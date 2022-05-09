@@ -37,7 +37,7 @@ public interface ICommandBus
     /// <param name="workerQueue">Optionally designate the name of the local worker queue</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    Task EnqueueAsync<T>(T message);
+    ValueTask EnqueueAsync<T>(T message);
 
     /// <summary>
     ///     Enqueues the message locally to a specific worker queue.
@@ -46,7 +46,7 @@ public interface ICommandBus
     /// <param name="workerQueueName">Optionally designate the name of the local worker queue</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    Task EnqueueAsync<T>(T message, string workerQueueName);
+    ValueTask EnqueueAsync<T>(T message, string workerQueueName);
 
 
     /// <summary>

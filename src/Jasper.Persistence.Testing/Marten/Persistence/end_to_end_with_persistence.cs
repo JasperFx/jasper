@@ -113,7 +113,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 Id = Guid.NewGuid()
             };
 
-            await theReceiver.ExecuteAndWaitAsync(c => c.EnqueueAsync(item));
+            await theReceiver.ExecuteAndWaitValueTaskAsync(c => c.EnqueueAsync(item));
 
 
             var documentStore = theReceiver.Get<IDocumentStore>();

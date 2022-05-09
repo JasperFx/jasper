@@ -65,7 +65,7 @@ namespace Jasper.RabbitMQ.Internal
             }
 
 #pragma warning disable VSTHRD110
-            _workerQueue.ReceivedAsync(_address, envelope).ContinueWith(t =>
+            _workerQueue.ReceivedAsync(_address, envelope).AsTask().ContinueWith(t =>
 #pragma warning restore VSTHRD110
             {
                 if (t.IsFaulted)

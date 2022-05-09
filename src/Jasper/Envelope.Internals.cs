@@ -109,7 +109,7 @@ public partial class Envelope
         return envelope;
     }
 
-    internal Task StoreAndForwardAsync()
+    internal async ValueTask StoreAndForwardAsync()
     {
         if (_enqueued)
         {
@@ -123,11 +123,10 @@ public partial class Envelope
 
         _enqueued = true;
 
-
-        return Sender.StoreAndForwardAsync(this);
+        await Sender.StoreAndForwardAsync(this);
     }
 
-    internal Task QuickSendAsync()
+    internal ValueTask QuickSendAsync()
     {
         if (_enqueued)
         {

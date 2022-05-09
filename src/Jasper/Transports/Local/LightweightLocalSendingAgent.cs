@@ -32,17 +32,24 @@ public class LightweightLocalSendingAgent : LightweightWorkerQueue, ISendingAgen
 
     public bool IsDurable => Destination.IsDurable();
 
-    public Task EnqueueOutgoingAsync(Envelope envelope)
+    public ValueTask EnqueueOutgoingAsync(Envelope envelope)
     {
         _messageLogger.Sent(envelope);
         envelope.ReplyUri = envelope.ReplyUri ?? ReplyUri;
 
-        return envelope.IsScheduledForLater(DateTime.UtcNow)
-            ? ScheduleExecutionAsync(envelope)
-            : EnqueueAsync(envelope);
+        if (envelope.IsScheduledForLater(DateTimeOffset.Now))
+        {
+            ScheduleExecution(envelope);
+        }
+        else
+        {
+            Enqueue(envelope);
+        }
+
+        return ValueTask.CompletedTask;
     }
 
-    public Task StoreAndForwardAsync(Envelope envelope)
+    public ValueTask StoreAndForwardAsync(Envelope envelope)
     {
         return EnqueueOutgoingAsync(envelope);
     }

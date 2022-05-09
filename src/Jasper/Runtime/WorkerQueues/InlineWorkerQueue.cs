@@ -36,7 +36,7 @@ public class InlineWorkerQueue : IListeningWorkerQueue
         foreach (var envelope in messages) await ReceivedAsync(uri, envelope);
     }
 
-    public async Task ReceivedAsync(Uri uri, Envelope envelope)
+    public async ValueTask ReceivedAsync(Uri uri, Envelope envelope)
     {
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
             ActivityKind.Consumer);

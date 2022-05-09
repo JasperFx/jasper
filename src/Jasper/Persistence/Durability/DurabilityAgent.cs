@@ -86,9 +86,9 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
         }
     }
 
-    public Task EnqueueLocallyAsync(Envelope envelope)
+    public void EnqueueLocally(Envelope envelope)
     {
-        return _workers.EnqueueAsync(envelope);
+        _workers.Enqueue(envelope);
     }
 
     public void RescheduleIncomingRecovery()

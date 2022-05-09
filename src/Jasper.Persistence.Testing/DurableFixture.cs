@@ -278,7 +278,7 @@ namespace Jasper.Persistence.Testing
                 Id = Guid.NewGuid()
             };
 
-            await send(c => c.SendAsync(item));
+            await send(c => c.SendAsync(item).AsTask());
 
             var outgoing = loadAllOutgoingEnvelopes(theSender).SingleOrDefault();
 

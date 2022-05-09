@@ -53,7 +53,7 @@ namespace Jasper.Testing.Persistence.Sagas
         {
             if (_host == null) withApplication();
 
-            await _host.ExecuteAndWaitAsync(x => x.SendAsync(message));
+            await _host.ExecuteAndWaitValueTaskAsync(x => x.SendAsync(message));
         }
 
         protected Task send<T>(T message, object sagaId)

@@ -62,7 +62,7 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
         set => Debug.WriteLine(value);
     }
 
-    public async Task EnqueueOutgoingAsync(Envelope envelope)
+    public async ValueTask EnqueueOutgoingAsync(Envelope envelope)
     {
         envelope.ReplyUri ??= CorrectedUriForReplies();
 
@@ -79,7 +79,7 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
         }
     }
 
-    public Task StoreAndForwardAsync(Envelope envelope)
+    public ValueTask StoreAndForwardAsync(Envelope envelope)
     {
         return EnqueueOutgoingAsync(envelope);
     }

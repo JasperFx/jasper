@@ -21,13 +21,13 @@ namespace OtelWebApi.Controllers
         }
 
         [HttpPost("/local/later")]
-        public Task Later()
+        public ValueTask Later()
         {
             return _publisher.EnqueueAsync(new Work());
         }
 
         [HttpPost("/subscriber1/inline")]
-        public Task PublishInline()
+        public ValueTask PublishInline()
         {
             return _publisher.PublishAsync(new InlineMessage());
         }

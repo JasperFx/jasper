@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 
 namespace Jasper.Transports.Sending;
 
@@ -31,7 +32,7 @@ public class CircuitWatcher : IDisposable
 
     public void Dispose()
     {
-        _task.Dispose();
+        _task.SafeDispose();
     }
 
     private async Task pingUntilConnectedAsync()

@@ -44,7 +44,7 @@ public static class JasperHostMessageTrackingExtensions
     public static Task<ITrackedSession> SendMessageAndWaitAsync<T>(this IHost host, T? message,
         int timeoutInMilliseconds = 5000)
     {
-        return host.ExecuteAndWaitAsync(c => c.SendAsync(message), timeoutInMilliseconds);
+        return host.ExecuteAndWaitValueTaskAsync(c => c.SendAsync(message), timeoutInMilliseconds);
     }
 
     /// <summary>
@@ -89,6 +89,28 @@ public static class JasperHostMessageTrackingExtensions
         {
             Timeout = timeoutInMilliseconds.Milliseconds(),
             Execution = action
+        };
+
+        await session.ExecuteAndTrackAsync();
+
+        return session;
+    }
+
+    /// <summary>
+    ///     Executes an action and waits until the execution of all messages and all cascading messages
+    ///     have completed
+    /// </summary>
+    /// <param name="runtime"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    internal static async Task<ITrackedSession> ExecuteAndWaitValueTaskAsync(this IHost host,
+        Func<IExecutionContext, ValueTask> action,
+        int timeoutInMilliseconds = 5000)
+    {
+        var session = new TrackedSession(host)
+        {
+            Timeout = timeoutInMilliseconds.Milliseconds(),
+            Execution = c => action(c).AsTask()
         };
 
         await session.ExecuteAndTrackAsync();

@@ -168,6 +168,7 @@ namespace Jasper.RabbitMQ.Tests
             var session = await publisher
                 .TrackActivity()
                 .AlsoTrack(receiver)
+                .Timeout(2.Minutes())
                 .SendMessageAndWaitAsync(new PingMessage { Number = 1 });
 
 
@@ -479,7 +480,7 @@ namespace Jasper.RabbitMQ.Tests
     public static class PingHandler
     {
         // Simple message handler for the PingMessage message type
-        public static Task Handle(
+        public static ValueTask Handle(
             // The first argument is assumed to be the message type
             PingMessage message,
 
