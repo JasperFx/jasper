@@ -5,89 +5,88 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Util;
 using Jasper.Util;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Tcp
+namespace Jasper.Tcp;
+
+public class SocketListener : IListener
 {
-    public class SocketListener : IListener
+    private readonly CancellationToken _cancellationToken;
+    private readonly IPAddress _ipaddr;
+    private readonly ILogger _logger;
+    private readonly int _port;
+    private TcpListener? _listener;
+    private Task? _receivingLoop;
+    private ActionBlock<Socket>? _socketHandling;
+
+    public SocketListener(ILogger logger, IPAddress ipaddr, int port,
+        CancellationToken cancellationToken)
     {
-        private readonly CancellationToken _cancellationToken;
-        private readonly IPAddress _ipaddr;
-        private readonly ILogger _logger;
-        private readonly int _port;
-        private TcpListener _listener;
-        private Task _receivingLoop;
-        private ActionBlock<Socket> _socketHandling;
+        _logger = logger;
+        _port = port;
+        _ipaddr = ipaddr;
+        _cancellationToken = cancellationToken;
 
-        public SocketListener(ILogger logger, IPAddress ipaddr, int port,
-            CancellationToken cancellationToken)
+        Address = $"tcp://{ipaddr}:{port}/".ToUri();
+    }
+
+    public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
+    {
+        _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
+        _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+        _socketHandling = new ActionBlock<Socket>(async s =>
         {
-            _logger = logger;
-            _port = port;
-            _ipaddr = ipaddr;
-            _cancellationToken = cancellationToken;
+            await using var stream = new NetworkStream(s, true);
+            await HandleStreamAsync(callback, stream);
+        }, new ExecutionDataflowBlockOptions { CancellationToken = _cancellationToken });
 
-            Address = $"tcp://{ipaddr}:{port}/".ToUri();
-        }
-
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+        _receivingLoop = Task.Run(async () =>
         {
-            _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
-            _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _listener.Start();
 
-            _socketHandling = new ActionBlock<Socket>(async s =>
+            while (!_cancellationToken.IsCancellationRequested)
             {
-                await using var stream = new NetworkStream(s, true);
-                await HandleStream(callback, stream);
-            }, new ExecutionDataflowBlockOptions{CancellationToken = _cancellationToken});
+                var socket = await _listener.AcceptSocketAsync(_cancellationToken);
+                await _socketHandling.SendAsync(socket, _cancellationToken);
+            }
+        }, _cancellationToken);
+    }
 
-            _receivingLoop = Task.Run(async () =>
-            {
-                _listener.Start();
+    public Task<bool> TryRequeueAsync(Envelope envelope)
+    {
+        return Task.FromResult(false);
+    }
 
-                while (!_cancellationToken.IsCancellationRequested)
-                {
-                    var socket = await _listener.AcceptSocketAsync(_cancellationToken);
-                    await _socketHandling.SendAsync(socket, _cancellationToken);
-                }
-            }, _cancellationToken);
-        }
+    public Uri Address { get; }
 
-        public Task<bool> TryRequeue(Envelope envelope)
-        {
-            return Task.FromResult(false);
-        }
+    public void Dispose()
+    {
+        _socketHandling?.Complete();
+        _listener?.Stop();
+        _listener?.Server.Dispose();
+        _receivingLoop?.Dispose();
+    }
 
-        public Uri Address { get; }
+    public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
 
-        public void Dispose()
-        {
-            _socketHandling?.Complete();
-            _listener?.Stop();
-            _listener?.Server.Dispose();
-        }
+    public ValueTask CompleteAsync(Envelope envelope)
+    {
+        return ValueTask.CompletedTask;
+    }
 
-        public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
+    public ValueTask DeferAsync(Envelope envelope)
+    {
+        return ValueTask.CompletedTask;
+    }
 
-        public Task HandleStream(IListeningWorkerQueue callback, Stream stream)
-        {
-            return Status == ListeningStatus.TooBusy
-                ? stream.SendBuffer(WireProtocol.ProcessingFailureBuffer)
-                : WireProtocol.Receive(_logger, stream, callback, Address);
-        }
-
-        public ValueTask CompleteAsync(Envelope envelope)
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        public ValueTask DeferAsync(Envelope envelope)
-        {
-            return ValueTask.CompletedTask;
-        }
+    public Task HandleStreamAsync(IListeningWorkerQueue? callback, Stream stream)
+    {
+        return Status == ListeningStatus.TooBusy
+            ? stream.SendBufferAsync(WireProtocol.ProcessingFailureBuffer)
+            : WireProtocol.ReceiveAsync(_logger, stream, callback, Address);
     }
 }

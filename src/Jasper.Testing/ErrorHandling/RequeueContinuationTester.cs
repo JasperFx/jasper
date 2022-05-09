@@ -23,9 +23,9 @@ namespace Jasper.Testing.ErrorHandling
             context.Envelope.Returns(envelope);
 
 
-            await RequeueContinuation.Instance.Execute(context, DateTime.Now);
+            await RequeueContinuation.Instance.ExecuteAsync(context, DateTime.Now);
 
-            await context.Received(1).Defer();
+            await context.Received(1).DeferAsync();
         }
     }
 }

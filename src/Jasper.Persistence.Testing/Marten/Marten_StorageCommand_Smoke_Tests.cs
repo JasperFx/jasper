@@ -13,21 +13,18 @@ namespace Jasper.Persistence.Testing.Marten
         [Theory]
         [InlineData("storage rebuild")]
         [InlineData("storage counts")]
-        [InlineData("storage script")]
         [InlineData("storage clear")]
         [InlineData("storage release")]
         public async Task smoke_test_calls(string commandLine)
         {
             var args = commandLine.Split(' ');
 
-
-
             var exitCode = await Host.CreateDefaultBuilder().UseJasper(registry =>
             {
                 registry.Services.AddMarten(Servers.PostgresConnectionString)
                     .IntegrateWithJasper();
 
-            }).RunJasper(args);
+            }).RunJasperAsync(args);
 
             exitCode.ShouldBe(0);
         }

@@ -1,56 +1,62 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Logging;
-using Jasper.Persistence.Durability;
 using Jasper.Runtime;
-using Jasper.Transports;
 
-namespace Jasper.ErrorHandling
+namespace Jasper.ErrorHandling;
+
+public class MoveToErrorQueue : IContinuation
 {
-    public class MoveToErrorQueue : IContinuation
+    private readonly Exception _exception;
+
+    public MoveToErrorQueue(Exception exception)
     {
-        public MoveToErrorQueue(Exception? exception)
+        _exception = exception ?? throw new ArgumentNullException(nameof(exception));
+    }
+
+    public async ValueTask ExecuteAsync(IExecutionContext execution,
+        DateTimeOffset now)
+    {
+        await execution.SendFailureAcknowledgementAsync(execution.Envelope!,
+            $"Moved message {execution.Envelope!.Id} to the Error Queue.\n{_exception}");
+
+        await execution.MoveToDeadLetterQueueAsync(_exception);
+
+        execution.Logger.MessageFailed(execution.Envelope, _exception);
+        execution.Logger.MovedToErrorQueue(execution.Envelope, _exception);
+    }
+
+    public override string ToString()
+    {
+        return "Move to Error Queue";
+    }
+
+    protected bool Equals(MoveToErrorQueue other)
+    {
+        return Equals(_exception, other._exception);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
         {
-            Exception = exception;
+            return false;
         }
 
-        public Exception? Exception { get; }
-
-        public async ValueTask Execute(IExecutionContext execution,
-            DateTimeOffset now)
+        if (ReferenceEquals(this, obj))
         {
-            await execution.SendFailureAcknowledgement(execution.Envelope,
-                $"Moved message {execution.Envelope.Id} to the Error Queue.\n{Exception}");
-
-            await execution.MoveToDeadLetterQueue(Exception);
-
-            execution.Logger.MessageFailed(execution.Envelope, Exception);
-            execution.Logger.MovedToErrorQueue(execution.Envelope, Exception);
-
-
+            return true;
         }
 
-        public override string ToString()
+        if (obj.GetType() != GetType())
         {
-            return "Move to Error Queue";
+            return false;
         }
 
-        protected bool Equals(MoveToErrorQueue other)
-        {
-            return Equals(Exception, other.Exception);
-        }
+        return Equals((MoveToErrorQueue)obj);
+    }
 
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((MoveToErrorQueue) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (Exception != null ? Exception.GetHashCode() : 0);
-        }
+    public override int GetHashCode()
+    {
+        return _exception.GetHashCode();
     }
 }

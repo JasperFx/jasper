@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Jasper.Runtime
+namespace Jasper.Runtime;
+
+public class UnknownTransportException : Exception
 {
-    public class UnknownTransportException : Exception
+    public UnknownTransportException(string message) : base(message)
     {
-        public UnknownTransportException(string message) : base(message)
-        {
-        }
     }
 }

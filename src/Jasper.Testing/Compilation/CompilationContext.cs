@@ -56,7 +56,7 @@ namespace Jasper.Testing.Compilation
             var context = new ExecutionContext(_host.Get<IJasperRuntime>());
             context.ReadEnvelope(theEnvelope, InvocationCallback.Instance);
 
-            await handler.Handle(context, default(CancellationToken));
+            await handler.HandleAsync(context, default(CancellationToken));
 
             return context;
         }

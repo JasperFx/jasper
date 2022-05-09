@@ -5,7 +5,6 @@ using System.Linq;
 using Baseline;
 using DotPulsar;
 using DotPulsar.Abstractions;
-using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -15,7 +14,7 @@ namespace Jasper.Pulsar
     public class PulsarEndpoint : TransportEndpoint<IMessage<ReadOnlySequence<byte>>, MessageMetadata>, IDisposable
     {
         private readonly PulsarTransport _parent;
-        private PulsarListener _listener;
+        private PulsarListener? _listener;
         public const string Persistent = "persistent";
         public const string NonPersistent = "non-persistent";
         public const string DefaultNamespace = "tenant";
@@ -46,13 +45,16 @@ namespace Jasper.Pulsar
             dict.Add(nameof(Persistent), Persistent);
             dict.Add(nameof(Tenant), Tenant);
             dict.Add(nameof(Namespace), Namespace);
-            dict.Add(nameof(TopicName), TopicName);
+            if (TopicName != null)
+            {
+                dict.Add(nameof(TopicName), TopicName);
+            }
 
             return dict;
         }
 
         public override Uri Uri { get; }
-        public override Uri? ReplyUri()
+        public override Uri CorrectedUriForReplies()
         {
             return Uri;
         }
@@ -60,14 +62,15 @@ namespace Jasper.Pulsar
         public string Persistence { get; private set; } = Persistent;
         public string Tenant { get; private set; } = Public;
         public string Namespace { get; private set; } = DefaultNamespace;
-        public string TopicName { get; private set;}
+        public string? TopicName { get; private set;}
 
         protected override void writeOutgoingHeader(MessageMetadata outgoing, string key, string value)
         {
             outgoing[key] = value;
         }
 
-        protected override bool tryReadIncomingHeader(IMessage<ReadOnlySequence<byte>> incoming, string key, out string value)
+        protected override bool tryReadIncomingHeader(IMessage<ReadOnlySequence<byte>> incoming, string key,
+            out string? value)
         {
             return incoming.Properties.TryGetValue(key, out value);
         }
@@ -80,7 +83,7 @@ namespace Jasper.Pulsar
             }
         }
 
-        public override void Parse(Uri? uri)
+        public override void Parse(Uri uri)
         {
             if (uri.Segments.Length != 4)
             {

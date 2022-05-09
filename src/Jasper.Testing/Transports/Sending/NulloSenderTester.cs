@@ -12,11 +12,11 @@ namespace Jasper.Testing.Transports.Sending
         [Fact]
         public async Task enqueue_automatically_marks_envelope_as_successful()
         {
-            var sender = new NulloSender("tcp://localhost:3333".ToUri());
+            var sender = new NullSender("tcp://localhost:3333".ToUri());
 
             var env = ObjectMother.Envelope();
 
-            await sender.Send(env);
+            await sender.SendAsync(env);
         }
     }
 }

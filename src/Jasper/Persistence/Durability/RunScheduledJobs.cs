@@ -6,72 +6,71 @@ using Jasper.Logging;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Persistence.Durability
+namespace Jasper.Persistence.Durability;
+
+internal class RunScheduledJobs : IMessagingAction
 {
-    internal class RunScheduledJobs : IMessagingAction
+    private readonly ILogger _logger;
+    private readonly AdvancedSettings _settings;
+
+    public RunScheduledJobs(AdvancedSettings settings, ILogger logger)
     {
-        private readonly AdvancedSettings _settings;
-        private readonly ILogger _logger;
+        _settings = settings;
+        _logger = logger;
+    }
 
-        public RunScheduledJobs(AdvancedSettings settings, ILogger logger)
+    public Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
+    {
+        var utcNow = DateTimeOffset.UtcNow;
+        return ExecuteAtTimeAsync(storage, agent, utcNow);
+    }
+
+    public string Description { get; } = "Run Scheduled Messages";
+
+    public async Task ExecuteAtTimeAsync(IEnvelopePersistence storage, IDurabilityAgent agent,
+        DateTimeOffset utcNow)
+    {
+        var hasLock = await storage.Session.TryGetGlobalLockAsync(TransportConstants.ScheduledJobLockId);
+        if (!hasLock)
         {
-            _settings = settings;
-            _logger = logger;
+            return;
         }
 
-        public Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
-        {
-            var utcNow = DateTimeOffset.UtcNow;
-            return ExecuteAtTimeAsync(storage, agent, utcNow);
-        }
+        await storage.Session.BeginAsync();
 
-        public async Task ExecuteAtTimeAsync(IEnvelopePersistence storage, IDurabilityAgent agent,
-            DateTimeOffset utcNow)
+        try
         {
-            var hasLock = await storage.Session.TryGetGlobalLock(TransportConstants.ScheduledJobLockId);
-            if (!hasLock) return;
-
-            await storage.Session.BeginAsync();
+#pragma warning disable CS8600
+            IReadOnlyList<Envelope> readyToExecute;
+#pragma warning restore CS8600
 
             try
             {
-#pragma warning disable CS8600
-                IReadOnlyList<Envelope> readyToExecute = null;
-#pragma warning restore CS8600
+                readyToExecute = await storage.LoadScheduledToExecuteAsync(utcNow);
 
-                try
-                {
-                    readyToExecute = await storage.LoadScheduledToExecuteAsync(utcNow);
-
-                    if (!readyToExecute.Any())
-                    {
-                        await storage.Session.RollbackAsync();
-                        return;
-                    }
-
-                    await storage.ReassignIncomingAsync(_settings.UniqueNodeId, readyToExecute);
-
-                    await storage.Session.CommitAsync();
-                }
-                catch (Exception)
+                if (!readyToExecute.Any())
                 {
                     await storage.Session.RollbackAsync();
-                    throw;
+                    return;
                 }
 
-                _logger.ScheduledJobsQueuedForExecution(readyToExecute);
+                await storage.ReassignIncomingAsync(_settings.UniqueNodeId, readyToExecute);
 
-                foreach (var envelope in readyToExecute)
-                {
-                    await agent.EnqueueLocallyAsync(envelope);
-                }
+                await storage.Session.CommitAsync();
             }
-            finally
+            catch (Exception)
             {
-                await storage.Session.ReleaseGlobalLock(TransportConstants.ScheduledJobLockId);
+                await storage.Session.RollbackAsync();
+                throw;
             }
-        }
 
-        public string Description { get; } = "Run Scheduled Messages";
+            _logger.ScheduledJobsQueuedForExecution(readyToExecute);
+
+            foreach (var envelope in readyToExecute) await agent.EnqueueLocallyAsync(envelope);
+        }
+        finally
+        {
+            await storage.Session.ReleaseGlobalLockAsync(TransportConstants.ScheduledJobLockId);
+        }
     }
 }

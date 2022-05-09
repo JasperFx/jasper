@@ -1,85 +1,88 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization;
 
-namespace Jasper.Runtime
+namespace Jasper.Runtime;
+
+public class AcknowledgementSender : IAcknowledgementSender
 {
-    public class AcknowledgementSender : IAcknowledgementSender
+    private readonly IEnvelopeRouter _router;
+    private readonly IMessageSerializer _writer;
+
+    public AcknowledgementSender(IEnvelopeRouter router, IJasperRuntime root)
     {
-        private readonly IEnvelopeRouter _router;
-        private readonly IMessageSerializer? _writer;
+        _router = router;
+        _writer = root.Options.FindSerializer(EnvelopeConstants.JsonContentType);
+    }
 
-        public AcknowledgementSender(IEnvelopeRouter router, IJasperRuntime root)
+    public Envelope BuildAcknowledgement(Envelope envelope)
+    {
+        var ack = new Envelope(new Acknowledgement { CorrelationId = envelope.Id }, _writer)
         {
-            _router = router;
-            _writer = root.Options.FindSerializer(EnvelopeConstants.JsonContentType);
+            CausationId = envelope.Id.ToString(),
+            Destination = envelope.ReplyUri,
+            SagaId = envelope.SagaId
+        };
+
+        return ack;
+    }
+
+    /// <summary>
+    ///     Sends an acknowledgement back to the original sender
+    /// </summary>
+    /// <returns></returns>
+    public Task SendAcknowledgementAsync(Envelope original)
+    {
+        if (!original.AckRequested && !original.ReplyRequested.IsNotEmpty())
+        {
+            return Task.CompletedTask;
         }
 
-        public Envelope BuildAcknowledgement(Envelope envelope)
+        if (original.ReplyUri == null) return Task.CompletedTask;
+
+        var ack = BuildAcknowledgement(original);
+
+        var envelope = new Envelope
         {
-            var ack = new Envelope(new Acknowledgement {CorrelationId = envelope.Id}, _writer)
-            {
-                CausationId = envelope.Id.ToString(),
-                Destination = envelope.ReplyUri,
-                SagaId = envelope.SagaId,
-            };
+            CausationId = original.Id.ToString(),
+            Destination = original.ReplyUri,
+            Message = ack
+        };
 
-            return ack;
-        }
+        _router.RouteToDestination(original.ReplyUri, envelope);
+        return envelope.StoreAndForwardAsync();
+    }
 
-        /// <summary>
-        ///     Sends an acknowledgement back to the original sender
-        /// </summary>
-        /// <returns></returns>
-        public Task SendAcknowledgement(Envelope original)
+    /// <summary>
+    ///     Send a failure acknowledgement back to the original
+    ///     sending service
+    /// </summary>
+    /// <param name="original"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public Task SendFailureAcknowledgementAsync(Envelope original, string message)
+    {
+        // Can't do anything here.
+        if (original.ReplyUri == null) return Task.CompletedTask;
+
+        if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
         {
-            if (!original.AckRequested && !original.ReplyRequested.IsNotEmpty()) return Task.CompletedTask;
-
-            var ack = BuildAcknowledgement(original);
-
             var envelope = new Envelope
             {
                 CausationId = original.Id.ToString(),
                 Destination = original.ReplyUri,
-                Message = ack
+                Message = new FailureAcknowledgement
+                {
+                    CorrelationId = original.Id,
+                    Message = message
+                }
             };
 
             _router.RouteToDestination(original.ReplyUri, envelope);
-            return envelope.StoreAndForward();
-
+            return envelope.StoreAndForwardAsync();
         }
 
-        /// <summary>
-        ///     Send a failure acknowledgement back to the original
-        ///     sending service
-        /// </summary>
-        /// <param name="original"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public Task SendFailureAcknowledgement(Envelope original, string message)
-        {
-            if (original.AckRequested || original.ReplyRequested.IsNotEmpty())
-            {
-                var envelope = new Envelope
-                {
-                    CausationId = original.Id.ToString(),
-                    Destination = original.ReplyUri,
-                    Message = new FailureAcknowledgement
-                    {
-                        CorrelationId = original.Id,
-                        Message = message
-                    }
-                };
-
-                _router.RouteToDestination(original.ReplyUri, envelope);
-                return envelope.StoreAndForward();
-
-            }
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

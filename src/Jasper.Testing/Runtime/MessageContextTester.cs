@@ -24,7 +24,9 @@ namespace Jasper.Testing.Runtime
             original.Id = Guid.NewGuid();
             original.CorrelationId = Guid.NewGuid().ToString();
 
-            theContext = theRuntime.ContextFor(original).As<ExecutionContext>();
+            var context = new ExecutionContext(theRuntime);
+            context.ReadEnvelope(original, InvocationCallback.Instance);
+            theContext = context.As<ExecutionContext>();
         }
 
         private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();

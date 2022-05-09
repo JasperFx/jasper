@@ -5,6 +5,10 @@ CREATE PROCEDURE %SCHEMA%.uspDiscardAndReassignOutgoing
 
 AS
 
-    DELETE FROM %SCHEMA%.jasper_outgoing_envelopes WHERE id IN (SELECT ID FROM @DISCARDS);
+DELETE
+FROM %SCHEMA%.jasper_outgoing_envelopes
+WHERE id IN (SELECT ID FROM @DISCARDS);
 
-    UPDATE %SCHEMA%.jasper_outgoing_envelopes SET owner_id = @OWNERID WHERE ID IN (SELECT ID FROM @REASSIGNED);
+UPDATE %SCHEMA%.jasper_outgoing_envelopes
+SET owner_id = @OWNERID
+WHERE ID IN (SELECT ID FROM @REASSIGNED);

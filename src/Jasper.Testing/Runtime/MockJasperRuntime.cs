@@ -104,14 +104,6 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IExecutionContext ContextFor(Envelope? envelope)
-        {
-            var context = new ExecutionContext(this);
-            context.ReadEnvelope(envelope, InvocationCallback.Instance);
-
-            return context;
-        }
-
         public IEnvelopePersistence Persistence { get; } = Substitute.For<IEnvelopePersistence>();
         public ILogger Logger { get; } = Substitute.For<ILogger>();
 

@@ -17,7 +17,6 @@ namespace Jasper.Tcp.Tests
             {
                 options.PublishAllMessages().ToPort(7777);
                 options.StubAllExternallyOutgoingEndpoints();
-                options.Extensions.UseMessageTrackingTestingSupport();
             });
 
             var message = new Message1();

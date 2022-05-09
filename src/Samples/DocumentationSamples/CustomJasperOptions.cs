@@ -17,7 +17,8 @@ namespace DocumentationSamples
                 // of JasperOptions
                 .UseJasper(opts =>
                 {
-                    opts.Extensions.UseMessageTrackingTestingSupport();
+                    opts.ServiceName = "MyService";
+                    // Other Jasper configuration
                 });
         #endregion
 
@@ -45,8 +46,6 @@ namespace DocumentationSamples
                     {
                         // This will "stub" out all configured external endpoints
                         opts.StubAllExternallyOutgoingEndpoints();
-
-                        opts.Extensions.UseMessageTrackingTestingSupport();
                     }
                 });
         #endregion

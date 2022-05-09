@@ -25,7 +25,7 @@ namespace Jasper.Testing.Tracking
 
         public when_determining_if_the_session_is_done()
         {
-            _host = JasperHost.For(x => x.UseMessageTrackingTestingSupport());
+            _host = JasperHost.Basic();
             theSession = new TrackedSession(_host);
         }
 
@@ -105,7 +105,7 @@ namespace Jasper.Testing.Tracking
 
             session.Record(EventType.MessageSucceeded, env1, "jasper", 1);
 
-            await session.Track();
+            await session.TrackAsync();
 
             session.Status.ShouldBe(TrackingStatus.Completed);
         }
@@ -131,7 +131,7 @@ namespace Jasper.Testing.Tracking
 
             session.Record(EventType.MessageSucceeded, env2, "jasper", 1);
 
-            await session.Track();
+            await session.TrackAsync();
 
             session.Status.ShouldBe(TrackingStatus.Completed);
         }
@@ -143,7 +143,7 @@ namespace Jasper.Testing.Tracking
             {
                 Timeout = 10.Milliseconds()
             };
-            await session.Track();
+            await session.TrackAsync();
 
             session.Status.ShouldBe(TrackingStatus.TimedOut);
         }

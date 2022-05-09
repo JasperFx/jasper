@@ -4,7 +4,7 @@ namespace Benchmarks_Generated
     {
 
 
-        public override System.Threading.Tasks.Task Handle(Jasper.IExecutionContext context, System.Threading.CancellationToken cancellation)
+        public override System.Threading.Tasks.Task HandleAsync(Jasper.IExecutionContext context, System.Threading.CancellationToken cancellation)
         {
             var target = (TestMessages.Target)context.Envelope.Message;
             Benchmarks.TargetHandler.Handle(target);

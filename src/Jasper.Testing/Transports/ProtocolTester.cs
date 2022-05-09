@@ -23,13 +23,13 @@ namespace Jasper.Testing.Transports
             throw new System.NotImplementedException();
         }
 
-        protected override bool tryReadIncomingHeader(DummyMessage incoming, string key, out string value)
+        protected override bool tryReadIncomingHeader(DummyMessage incoming, string key, out string? value)
         {
             return incoming.StringHeaders.TryGetValue(key, out value);
         }
 
         public override Uri Uri { get; }
-        public override Uri? ReplyUri()
+        public override Uri CorrectedUriForReplies()
         {
             throw new NotImplementedException();
         }

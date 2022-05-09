@@ -23,7 +23,7 @@ namespace InMemoryMediator
         public async Task Create([FromBody] CreateItemCommand command)
         {
             // Start the "Outbox" transaction
-            await _messaging.EnlistInTransaction(_db);
+            await _messaging.EnlistInTransactionAsync(_db);
 
             // Create a new Item entity
             var item = new Item
@@ -56,7 +56,7 @@ namespace InMemoryMediator
 
             // After the DbContext transaction succeeds, kick out
             // the persisted messages in the context "outbox"
-            await _messaging.SendAllQueuedOutgoingMessages();
+            await _messaging.FlushOutgoingMessagesAsync();
         }
     }
 

@@ -21,9 +21,11 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
     private readonly Lazy<IEnvelopePersistence> _persistence;
     private bool _hasStopped;
 
+    private readonly string _serviceName;
+    private readonly int _uniqueNodeId;
+
 
     public JasperRuntime(JasperOptions options,
-        IMessageLogger messageLogger,
         IContainer container,
         ILogger<JasperRuntime> logger)
     {
@@ -32,13 +34,14 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
         Handlers = options.HandlerGraph;
         Logger = logger;
 
-        MessageLogger = messageLogger;
+        _uniqueNodeId = options.Advanced.UniqueNodeId;
+        _serviceName = options.ServiceName ?? "JasperService";
 
         var provider = container.GetInstance<ObjectPoolProvider>();
         var pool = provider.Create(this);
 
         // TODO -- might make NoHandlerContinuation lazy!
-        Pipeline = new HandlerPipeline(Handlers, MessageLogger,
+        Pipeline = new HandlerPipeline(Handlers, this,
             new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
             this, pool);
 
@@ -53,11 +56,11 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
         Cancellation = Advanced.Cancellation;
     }
 
-    public IJasperEndpoints Endpoints => this;
-
     public DurabilityAgent? Durability { get; private set; }
 
     internal HandlerGraph Handlers { get; }
+
+    public IJasperEndpoints Endpoints => this;
 
     public IAcknowledgementSender Acknowledgements { get; }
 
@@ -75,7 +78,7 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 
     public IHandlerPipeline Pipeline { get; }
 
-    public IMessageLogger MessageLogger { get; }
+    public IMessageLogger MessageLogger => this;
 
 
     public IEnvelopePersistence Persistence => _persistence.Value;

@@ -10,31 +10,26 @@ namespace Jasper.RabbitMQ.Internal
     {
         void ITreeDescriber.Describe(TreeNode parentNode)
         {
-            var props = new Dictionary<string, object>{
-                {"HostName", ConnectionFactory.HostName},
-                {"Port", ConnectionFactory.Port == -1 ? 5672 : ConnectionFactory.Port},
-                {nameof(AutoProvision), AutoProvision},
-                {nameof(AutoPurgeOnStartup), AutoPurgeOnStartup}
+            var props = new Dictionary<string, object>
+            {
+                { "HostName", ConnectionFactory.HostName },
+                { "Port", ConnectionFactory.Port == -1 ? 5672 : ConnectionFactory.Port },
+                { nameof(AutoProvision), AutoProvision },
+                { nameof(AutoPurgeOnStartup), AutoPurgeOnStartup }
             };
 
-            var table = JasperOptions.BuildTableForProperties(props);
+            var table = props.BuildTableForProperties();
             parentNode.AddNode(table);
 
 
             if (Exchanges.Any())
             {
                 var exchangesNode = parentNode.AddNode("Exchanges");
-                foreach (var exchange in Exchanges)
-                {
-                    exchangesNode.AddNode(exchange.Name);
-                }
+                foreach (var exchange in Exchanges) exchangesNode.AddNode(exchange.Name);
             }
 
             var queueNode = parentNode.AddNode("Queues");
-            foreach (var queue in Queues)
-            {
-                queueNode.AddNode(queue.Name);
-            }
+            foreach (var queue in Queues) queueNode.AddNode(queue.Name);
 
             if (Bindings.Any())
             {
@@ -48,15 +43,12 @@ namespace Jasper.RabbitMQ.Internal
 
                 foreach (var binding in Bindings)
                 {
-                    bindingTable.AddRow(binding.BindingKey, binding.ExchangeName ?? string.Empty, binding.QueueName,
+                    bindingTable.AddRow(binding.BindingKey ?? string.Empty, binding.ExchangeName ?? string.Empty, binding.QueueName ?? string.Empty,
                         binding.Arguments.Select(pair => $"{pair.Key}={pair.Value}").Join(", "));
                 }
 
                 bindings.AddNode(bindingTable);
             }
-
-
-
         }
     }
 }

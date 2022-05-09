@@ -1,27 +1,25 @@
 using System;
 using System.Data.Common;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Persistence.Durability
+namespace Jasper.Persistence.Durability;
+
+public interface IDurableStorageSession : IDisposable
 {
-    public interface IDurableStorageSession : IDisposable
-    {
-        Task ReleaseNodeLockAsync(int lockId);
-        Task GetNodeLockAsync(int lockId);
-        Task BeginAsync();
-        Task CommitAsync();
-        Task RollbackAsync();
+    DbTransaction? Transaction { get; }
+    Task ReleaseNodeLockAsync(int lockId);
+    Task GetNodeLockAsync(int lockId);
+    Task BeginAsync();
+    Task CommitAsync();
+    Task RollbackAsync();
 
-        Task<bool> TryGetGlobalTxLock(int lockId);
-        Task<bool> TryGetGlobalLock(int lockId);
-        Task ReleaseGlobalLock(int lockId);
+    Task<bool> TryGetGlobalTxLockAsync(int lockId);
+    Task<bool> TryGetGlobalLockAsync(int lockId);
+    Task ReleaseGlobalLockAsync(int lockId);
 
-        bool IsConnected();
-        Task ConnectAndLockCurrentNodeAsync(ILogger logger, int nodeId);
-        DbTransaction Transaction { get; }
-        DbCommand CallFunction(string functionName);
-        DbCommand CreateCommand(string sql);
-    }
+    bool IsConnected();
+    Task ConnectAndLockCurrentNodeAsync(ILogger logger, int nodeId);
+    DbCommand CallFunction(string functionName);
+    DbCommand CreateCommand(string sql);
 }

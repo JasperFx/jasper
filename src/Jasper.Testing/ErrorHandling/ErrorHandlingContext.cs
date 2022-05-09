@@ -16,7 +16,6 @@ namespace Jasper.Testing.ErrorHandling
 
         public ErrorHandlingContext()
         {
-            theOptions.Extensions.UseMessageTrackingTestingSupport();
             theOptions.Handlers.DisableConventionalDiscovery()
                 .Discovery(x => x.IncludeType<ErrorCausingMessageHandler>());
         }
@@ -33,7 +32,7 @@ namespace Jasper.Testing.ErrorHandling
                 _session = await host
                     .TrackActivity()
                     .DoNotAssertOnExceptionsDetected()
-                    .SendMessageAndWait(theMessage);
+                    .SendMessageAndWaitAsync(theMessage);
 
                 return _session.AllRecordsInOrder().LastOrDefault(x =>
                     x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
@@ -49,7 +48,7 @@ namespace Jasper.Testing.ErrorHandling
                 var session = await host
                     .TrackActivity()
                     .DoNotAssertOnExceptionsDetected()
-                    .SendMessageAndWait(theMessage);
+                    .SendMessageAndWaitAsync(theMessage);
 
                 var record = session.AllRecordsInOrder().LastOrDefault(x =>
                     x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
@@ -84,7 +83,7 @@ namespace Jasper.Testing.ErrorHandling
                 var session = await host
                     .TrackActivity()
                     .DoNotAssertOnExceptionsDetected()
-                    .SendMessageAndWait(theMessage);
+                    .SendMessageAndWaitAsync(theMessage);
 
                 var record = session.AllRecordsInOrder().LastOrDefault(x =>
                     x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);

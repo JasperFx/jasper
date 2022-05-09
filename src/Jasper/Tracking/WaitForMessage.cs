@@ -1,39 +1,44 @@
 using Baseline;
 
-namespace Jasper.Tracking
+namespace Jasper.Tracking;
+
+public class WaitForMessage<T> : ITrackedCondition
 {
-    public class WaitForMessage<T> : ITrackedCondition
+    private bool _isCompleted;
+
+    public int UniqueNodeId { get; set; }
+
+    public void Record(EnvelopeRecord record)
     {
-        private bool _isCompleted;
-
-        public void Record(EnvelopeRecord record)
+        if (record.EventType != EventType.MessageSucceeded && record.EventType != EventType.MessageFailed)
         {
-            if (record.EventType != EventType.MessageSucceeded && record.EventType != EventType.MessageFailed) return;
-
-            if (record.Envelope.Message is T message)
-            {
-                if (UniqueNodeId != 0 && UniqueNodeId != record.UniqueNodeId) return;
-
-                _isCompleted = true;
-            }
+            return;
         }
 
-        public int UniqueNodeId { get; set; }
-
-        public override string ToString()
+        if (record.Envelope.Message is T)
         {
-            var description = $"Wait for message of type {typeof(T).GetFullName()} to be received";
-            if (UniqueNodeId != 0)
+            if (UniqueNodeId != 0 && UniqueNodeId != record.UniqueNodeId)
             {
-                description += " at node " + UniqueNodeId;
+                return;
             }
 
-            return description;
+            _isCompleted = true;
+        }
+    }
+
+    public bool IsCompleted()
+    {
+        return _isCompleted;
+    }
+
+    public override string ToString()
+    {
+        var description = $"Wait for message of type {typeof(T).GetFullName()} to be received";
+        if (UniqueNodeId != 0)
+        {
+            description += " at node " + UniqueNodeId;
         }
 
-        public bool IsCompleted()
-        {
-            return _isCompleted;
-        }
+        return description;
     }
 }

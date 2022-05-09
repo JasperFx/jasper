@@ -7,9 +7,9 @@ namespace Jasper.RabbitMQ
 {
     public class Binding
     {
-        public string BindingKey { get; set; }
-        public string QueueName { get; set; }
-        public string ExchangeName { get; set; }
+        public string? BindingKey { get; init; }
+        public string? QueueName { get; init; }
+        public string? ExchangeName { get; init; }
 
         public IDictionary<string, object> Arguments { get; set; } = new Dictionary<string, object>();
 
@@ -27,7 +27,8 @@ namespace Jasper.RabbitMQ
         {
             if (BindingKey.IsEmpty() || QueueName.IsEmpty() || ExchangeName.IsEmpty())
             {
-                throw new InvalidOperationException($"{nameof(BindingKey)} properties {nameof(BindingKey)}, {nameof(QueueName)}, and {nameof(ExchangeName)} are all required for this operation");
+                throw new InvalidOperationException(
+                    $"{nameof(BindingKey)} properties {nameof(BindingKey)}, {nameof(QueueName)}, and {nameof(ExchangeName)} are all required for this operation");
             }
         }
 
@@ -48,7 +49,7 @@ namespace Jasper.RabbitMQ
                 return true;
             }
 
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
@@ -63,7 +64,8 @@ namespace Jasper.RabbitMQ
 
         public override string ToString()
         {
-            return $"{nameof(BindingKey)}: {BindingKey}, {nameof(QueueName)}: {QueueName}, {nameof(ExchangeName)}: {ExchangeName}";
+            return
+                $"{nameof(BindingKey)}: {BindingKey}, {nameof(QueueName)}: {QueueName}, {nameof(ExchangeName)}: {ExchangeName}";
         }
     }
 }

@@ -4,14 +4,15 @@ using Jasper.RabbitMQ.Internal;
 
 namespace Jasper.RabbitMQ
 {
-    public class RabbitMqSubscriberConfiguration : SubscriberConfiguration<RabbitMqSubscriberConfiguration, RabbitMqEndpoint>
+    public class
+        RabbitMqSubscriberConfiguration : SubscriberConfiguration<RabbitMqSubscriberConfiguration, RabbitMqEndpoint>
     {
         public RabbitMqSubscriberConfiguration(RabbitMqEndpoint endpoint) : base(endpoint)
         {
         }
 
         /// <summary>
-        /// Configure raw properties of this RabbitMqEndpoint. Advanced usages
+        ///     Configure raw properties of this RabbitMqEndpoint. Advanced usages
         /// </summary>
         /// <param name="configure"></param>
         /// <returns></returns>
@@ -20,7 +21,5 @@ namespace Jasper.RabbitMQ
             configure(_endpoint);
             return this;
         }
-
-
     }
 }

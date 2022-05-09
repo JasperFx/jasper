@@ -1,14 +1,9 @@
-﻿using System;
-using Polly;
+﻿namespace Jasper.ErrorHandling;
 
-namespace Jasper.ErrorHandling
+public interface IHasRetryPolicies
 {
-    public interface IHasRetryPolicies
-    {
-        /// <summary>
-        ///     Collection of Polly policies for exception handling during the execution of a message
-        /// </summary>
-        RetryPolicyCollection Retries { get; set; }
-    }
-
+    /// <summary>
+    ///     Collection of Polly policies for exception handling during the execution of a message
+    /// </summary>
+    RetryPolicyCollection Retries { get; }
 }

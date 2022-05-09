@@ -42,7 +42,7 @@ namespace EFPlusSqlServerConsole
                 // This is rebuilding the persistent storage database schema on startup
                 // and also clearing any persisted envelope state
                 .UseResourceSetupOnStartup(StartupAction.ResetState)
-                .RunJasper(args);
+                .RunJasperAsync(args);
         }
     }
 }

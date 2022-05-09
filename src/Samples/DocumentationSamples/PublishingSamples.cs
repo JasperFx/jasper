@@ -99,7 +99,7 @@ namespace DocumentationSamples
                 Item = "Cookbook"
             };
 
-            return bus.Enqueue(@event);
+            return bus.EnqueueAsync(@event);
         }
         #endregion
 
@@ -116,7 +116,7 @@ namespace DocumentationSamples
 
             // Put this message in a local worker
             // queue named 'highpriority'
-            return bus.Enqueue(@event, "highpriority");
+            return bus.EnqueueAsync(@event, "highpriority");
         }
         #endregion
 
@@ -147,10 +147,10 @@ namespace DocumentationSamples
 
             // Schedule the message to be processed in a certain amount
             // of time
-            await bus.Schedule(message, 30.Days());
+            await bus.ScheduleAsync(message, 30.Days());
 
             // Schedule the message to be processed at a certain time
-            await bus.Schedule(message, DateTime.UtcNow.AddDays(30));
+            await bus.ScheduleAsync(message, DateTime.UtcNow.AddDays(30));
         }
         #endregion
 

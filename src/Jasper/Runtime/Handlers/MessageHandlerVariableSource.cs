@@ -1,35 +1,40 @@
 ﻿using System;
 using LamarCodeGeneration.Model;
 
-namespace Jasper.Runtime.Handlers
+namespace Jasper.Runtime.Handlers;
+
+public class MessageHandlerVariableSource : IVariableSource
 {
-    public class MessageHandlerVariableSource : IVariableSource
+    public MessageHandlerVariableSource(Type messageType)
     {
-        public MessageHandlerVariableSource(Type messageType)
-        {
-            MessageType = messageType;
+        MessageType = messageType;
 
-            Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IExecutionContext.Envelope)}");
-            Message = new MessageVariable(Envelope, messageType);
+        Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IExecutionContext.Envelope)}");
+        Message = new MessageVariable(Envelope, messageType);
+    }
+
+    public Type MessageType { get; }
+
+    public MessageVariable Message { get; }
+    public Variable Envelope { get; }
+
+    public bool Matches(Type type)
+    {
+        return type == typeof(Envelope) || type == MessageType;
+    }
+
+    public Variable Create(Type type)
+    {
+        if (type == MessageType)
+        {
+            return Message;
         }
 
-        public Type MessageType { get; }
-
-        public MessageVariable Message { get; }
-        public Variable Envelope { get; }
-
-        public bool Matches(Type type)
+        if (type == typeof(Envelope))
         {
-            return type == typeof(Envelope) || type == MessageType;
+            return Envelope;
         }
 
-        public Variable Create(Type type)
-        {
-            if (type == MessageType) return Message;
-
-            if (type == typeof(Envelope)) return Envelope;
-
-            throw new ArgumentOutOfRangeException(nameof(type));
-        }
+        throw new ArgumentOutOfRangeException(nameof(type));
     }
 }

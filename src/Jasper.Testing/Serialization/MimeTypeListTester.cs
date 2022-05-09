@@ -69,13 +69,6 @@ namespace Jasper.Testing.Serialization
         }
 
         [Fact]
-        public void should_ignore_null()
-        {
-            var list = new MimeTypeList((string) null);
-            list.Count().ShouldBe(0);
-        }
-
-        [Fact]
         public void should_ignore_whitespace_only_string()
         {
             var list = new MimeTypeList("    ");

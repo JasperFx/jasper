@@ -26,7 +26,7 @@ namespace Jasper.Persistence.Testing
         {
             using (var host1 = JasperHost.For(opts => opts.ConfigureDurableSender(true, true)))
             {
-                await host1.Send(new ReceivedMessage());
+                await host1.SendAsync(new ReceivedMessage());
 
                 var counts = await host1.Get<IEnvelopePersistence>().Admin.FetchCountsAsync();
 
@@ -74,7 +74,6 @@ namespace Jasper.Persistence.Testing
 
             opts.Services.AddSingleton(new ReceivingSettings {Latched = latched});
 
-            opts.Extensions.UseMessageTrackingTestingSupport();
         }
     }
 

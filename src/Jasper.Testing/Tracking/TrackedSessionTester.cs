@@ -22,10 +22,7 @@ namespace Jasper.Testing.Tracking
 
         public TrackedSessionTester()
         {
-            _host = JasperHost.For(x => x.UseMessageTrackingTestingSupport());
-
-            _host.Services.GetRequiredService<IMessageLogger>()
-                .ShouldBeOfType<MessageTrackingLogger>();
+            _host = JasperHost.Basic();
 
             theSession = new TrackedSession(_host);
         }
@@ -34,7 +31,7 @@ namespace Jasper.Testing.Tracking
         public async Task throw_if_any_exceptions_happy_path()
         {
             theSession.Record(EventType.Sent, theEnvelope, "", 1);
-            await theSession.Track();
+            await theSession.TrackAsync();
             theSession.AssertNoExceptionsWereThrown();
         }
 
@@ -43,7 +40,7 @@ namespace Jasper.Testing.Tracking
         {
             theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
             theSession.Record(EventType.ExecutionFinished, theEnvelope, "", 1, ex: new DivideByZeroException());
-            await theSession.Track();
+            await theSession.TrackAsync();
 
             Should.Throw<AggregateException>(() => theSession.AssertNoExceptionsWereThrown());
         }
@@ -53,7 +50,7 @@ namespace Jasper.Testing.Tracking
         {
             theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
             theSession.Record(EventType.ExecutionFinished, theEnvelope, "", 1);
-            await theSession.Track();
+            await theSession.TrackAsync();
             theSession.AssertNoExceptionsWereThrown();
             theSession.AssertNotTimedOut();
         }
@@ -63,7 +60,7 @@ namespace Jasper.Testing.Tracking
         {
             theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
             theSession.Record(EventType.ExecutionFinished, theEnvelope, "", 1, ex: new DivideByZeroException());
-            await theSession.Track();
+            await theSession.TrackAsync();
 
             Should.Throw<AggregateException>(() =>
             {
@@ -76,7 +73,7 @@ namespace Jasper.Testing.Tracking
         public async Task throw_if_any_exceptions_and_completed_sad_path_with_never_completed()
         {
             theSession.Record(EventType.ExecutionStarted, theEnvelope, "", 1);
-            await theSession.Track();
+            await theSession.TrackAsync();
 
             Should.Throw<TimeoutException>(() =>
             {

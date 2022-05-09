@@ -15,10 +15,12 @@ namespace Jasper.Testing.Runtime
             var root = new MockJasperRuntime();
             var original = ObjectMother.Envelope();
 
-            var context = root.ContextFor(original);
+            var context1 = new ExecutionContext(root);
+            context1.ReadEnvelope(original, InvocationCallback.Instance);
+            var context = (IExecutionContext)context1;
 
             context.Envelope.ShouldBe(original);
-            context.EnlistedInTransaction.ShouldBeTrue();
+            context.Transaction.ShouldNotBeNull();
 
             context.As<ExecutionContext>().Transaction.ShouldBeSameAs(context);
         }

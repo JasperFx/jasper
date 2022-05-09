@@ -20,18 +20,18 @@ public static class TransportLoggerExtensions
     public const int DiscardedUnknownTransportEventId = 209;
     public const int ListeningStatusChangedEventId = 210;
     private static readonly Action<ILogger, Uri, Exception> _circuitBroken;
-    private static readonly Action<ILogger, Uri, Exception> _circuitResumed;
-    private static readonly Action<ILogger, Envelope, Exception> _discardedExpired;
-    private static readonly Action<ILogger, Envelope, Exception> _discardedUnknownTransport;
-    private static readonly Action<ILogger, int, Uri, Exception> _incomingBatchReceived;
-    private static readonly Action<ILogger, ListeningStatus, Exception> _listeningStatusChanged;
+    private static readonly Action<ILogger, Uri, Exception?> _circuitResumed;
+    private static readonly Action<ILogger, Envelope, Exception?> _discardedExpired;
+    private static readonly Action<ILogger, Envelope, Exception?> _discardedUnknownTransport;
+    private static readonly Action<ILogger, int, Uri, Exception?> _incomingBatchReceived;
+    private static readonly Action<ILogger, ListeningStatus, Exception?> _listeningStatusChanged;
 
-    private static readonly Action<ILogger, Uri, Exception> _outgoingBatchFailed;
-    private static readonly Action<ILogger, int, Uri, Exception> _outgoingBatchSucceeded;
-    private static readonly Action<ILogger, int, Exception> _recoveredIncoming;
-    private static readonly Action<ILogger, int, Exception> _recoveredOutgoing;
-    private static readonly Action<ILogger, Envelope, DateTimeOffset, Exception> _scheduledJobsQueued;
-    private static readonly Action<ILogger, Uri, Exception> _incomingReceived;
+    private static readonly Action<ILogger, Uri, Exception?> _outgoingBatchFailed;
+    private static readonly Action<ILogger, int, Uri, Exception?> _outgoingBatchSucceeded;
+    private static readonly Action<ILogger, int, Exception?> _recoveredIncoming;
+    private static readonly Action<ILogger, int, Exception?> _recoveredOutgoing;
+    private static readonly Action<ILogger, Envelope, DateTimeOffset, Exception?> _scheduledJobsQueued;
+    private static readonly Action<ILogger, Uri, Exception?> _incomingReceived;
 
     static TransportLoggerExtensions()
     {
@@ -85,32 +85,30 @@ public static class TransportLoggerExtensions
         _outgoingBatchFailed(logger, batch.Destination, ex);
     }
 
-    public static void IncomingBatchReceived(this ILogger logger, IEnumerable<Envelope?> envelopes)
+    public static void IncomingBatchReceived(this ILogger logger, IEnumerable<Envelope> envelopes)
     {
         _incomingBatchReceived(logger, envelopes.Count(), envelopes.FirstOrDefault()?.ReplyUri, null);
     }
 
-    public static void IncomingReceived(this ILogger logger, Envelope? envelope)
+    public static void IncomingReceived(this ILogger logger, Envelope envelope, Uri? address)
     {
         _incomingReceived(logger, envelope.ReplyUri, null);
     }
 
-    public static void CircuitBroken(this ILogger logger, Uri? destination)
+    public static void CircuitBroken(this ILogger logger, Uri destination)
     {
         _circuitBroken(logger, destination, null);
     }
 
-    public static void CircuitResumed(this ILogger logger, Uri? destination)
+    public static void CircuitResumed(this ILogger logger, Uri destination)
     {
         _circuitResumed(logger, destination, null);
     }
 
-    public static void ScheduledJobsQueuedForExecution(this ILogger logger, IEnumerable<Envelope?> envelopes)
+    public static void ScheduledJobsQueuedForExecution(this ILogger logger, IEnumerable<Envelope> envelopes)
     {
         foreach (var envelope in envelopes)
-        {
             _scheduledJobsQueued(logger, envelope, envelope.ScheduledTime ?? DateTimeOffset.UtcNow, null);
-        }
     }
 
     public static void RecoveredIncoming(this ILogger logger, IEnumerable<Envelope> envelopes)
@@ -118,12 +116,12 @@ public static class TransportLoggerExtensions
         _recoveredIncoming(logger, envelopes.Count(), null);
     }
 
-    public static void RecoveredOutgoing(this ILogger logger, IEnumerable<Envelope?> envelopes)
+    public static void RecoveredOutgoing(this ILogger logger, IEnumerable<Envelope> envelopes)
     {
         _recoveredOutgoing(logger, envelopes.Count(), null);
     }
 
-    public static void DiscardedExpired(this ILogger logger, IEnumerable<Envelope?> envelopes)
+    public static void DiscardedExpired(this ILogger logger, IEnumerable<Envelope> envelopes)
     {
         foreach (var envelope in envelopes) _discardedExpired(logger, envelope, null);
     }
@@ -137,5 +135,4 @@ public static class TransportLoggerExtensions
     {
         _listeningStatusChanged(logger, status, null);
     }
-
 }

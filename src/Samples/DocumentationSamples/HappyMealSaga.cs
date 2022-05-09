@@ -144,7 +144,7 @@ namespace DocumentationSamples
                 Id = ++_orderIdSequence
             };
 
-            if (order.Drink == "Soda") await context.Enqueue(new SodaRequested {OrderId = state.Id});
+            if (order.Drink == "Soda") await context.EnqueueAsync(new SodaRequested {OrderId = state.Id});
 
             // And other outgoing messages to coordinate gathering up the happy meal
 

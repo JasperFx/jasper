@@ -9,7 +9,7 @@ namespace DocumentationSamples
         public static async Task enqueue_locally(ICommandBus bus)
         {
             // Enqueue a message to the local worker queues
-            await bus.Enqueue(new Message1());
+            await bus.EnqueueAsync(new Message1());
 
         }
 

@@ -12,7 +12,6 @@ namespace Jasper.Persistence.Testing.SqlServer
         [Theory]
         [InlineData("storage rebuild")]
         [InlineData("storage counts")]
-        [InlineData("storage script")]
         [InlineData("storage clear")]
         [InlineData("storage release")]
         public async Task smoke_test_calls(string commandLine)
@@ -21,7 +20,7 @@ namespace Jasper.Persistence.Testing.SqlServer
             (await Host.CreateDefaultBuilder().UseJasper(registry =>
             {
                 registry.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-            }).RunJasper(args)).ShouldBe(0);
+            }).RunJasperAsync(args)).ShouldBe(0);
         }
 
     }

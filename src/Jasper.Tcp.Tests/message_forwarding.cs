@@ -20,8 +20,6 @@ namespace Jasper.Tcp.Tests
                 opts.Handlers.DisableConventionalDiscovery();
                 opts.Handlers.IncludeType<NewMessageHandler>();
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.Publish(x =>
                 {
                     x.Message<OriginalMessage>();
@@ -43,7 +41,7 @@ namespace Jasper.Tcp.Tests
                 var session = await host
                     .TrackActivity()
                     .IncludeExternalTransports()
-                    .ExecuteAndWait(c => c.SendEnvelopeAsync(envelope));
+                    .ExecuteAndWaitAsync(c => c.SendEnvelopeAsync(envelope));
 
 
                 session.FindSingleTrackedMessageOfType<NewMessage>(EventType.MessageSucceeded)

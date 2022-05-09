@@ -15,8 +15,11 @@ namespace Jasper.RabbitMQ.Internal
     {
         public Task Check(CancellationToken token)
         {
-            var queueNames = AllKnownQueueNames();
-            if (!queueNames.Any()) return Task.CompletedTask;
+            var queueNames = allKnownQueueNames();
+            if (!queueNames.Any())
+            {
+                return Task.CompletedTask;
+            }
 
             using var connection = BuildConnection();
             using var channel = connection.CreateModel();
@@ -53,6 +56,48 @@ namespace Jasper.RabbitMQ.Internal
             return Task.CompletedTask;
         }
 
+        public Task Teardown(CancellationToken token)
+        {
+            TeardownAll();
+            return Task.CompletedTask;
+        }
+
+        public Task Setup(CancellationToken token)
+        {
+            InitializeAllObjects();
+            return Task.CompletedTask;
+        }
+
+        public Task<IRenderable> DetermineStatus(CancellationToken token)
+        {
+            var queues = allKnownQueueNames();
+
+            var table = new Table();
+            table.Alignment = Justify.Left;
+            table.AddColumn("Queue");
+            table.AddColumn("Count");
+
+            using var connection = BuildConnection();
+            using var channel = connection.CreateModel();
+
+            foreach (var queue in queues)
+            {
+                try
+                {
+                    var count = channel.MessageCount(queue);
+                    table.AddRow(queue, count.ToString());
+                }
+                catch (Exception)
+                {
+                    table.AddRow(new Markup(queue), new Markup("[red]Does not exist[/]"));
+                }
+            }
+
+            return Task.FromResult((IRenderable)table);
+        }
+
+        string IStatefulResource.Type => "JasperTransport";
+
         internal void PurgeAllQueues()
         {
             using var connection = BuildConnection();
@@ -88,12 +133,6 @@ namespace Jasper.RabbitMQ.Internal
             connection.Close();
         }
 
-        public Task Teardown(CancellationToken token)
-        {
-            TeardownAll();
-            return Task.CompletedTask;
-        }
-
         internal void TeardownAll()
         {
             using var connection = BuildConnection();
@@ -120,12 +159,6 @@ namespace Jasper.RabbitMQ.Internal
             channel.Close();
 
             connection.Close();
-        }
-
-        public Task Setup(CancellationToken token)
-        {
-            InitializeAllObjects();
-            return Task.CompletedTask;
         }
 
         internal void InitializeAllObjects()
@@ -156,41 +189,11 @@ namespace Jasper.RabbitMQ.Internal
             connection.Close();
         }
 
-        public Task<IRenderable> DetermineStatus(CancellationToken token)
+        private string[] allKnownQueueNames()
         {
-            var queues = AllKnownQueueNames();
-
-            var table = new Table();
-            table.Alignment = Justify.Left;
-            table.AddColumn("Queue");
-            table.AddColumn("Count");
-
-            using var connection = BuildConnection();
-            using var channel = connection.CreateModel();
-
-            foreach (var queue in queues)
-            {
-                try
-                {
-                    var count = channel.MessageCount(queue);
-                    table.AddRow(queue, count.ToString());
-                }
-                catch (Exception)
-                {
-                    table.AddRow(new Markup(queue), new Markup("[red]Does not exist[/]"));
-                }
-            }
-
-            return Task.FromResult((IRenderable)table);
+            var bindingQueueNames = Bindings.Where(x => x.QueueName != null).Select(x => x.QueueName);
+            return Queues.Select(x => x.Name)
+                .Concat(bindingQueueNames).Distinct().ToArray()!;
         }
-
-        internal string[] AllKnownQueueNames()
-        {
-            var queues = Queues.Select(x => x.Name)
-                .Concat(Bindings.Select(x => x.QueueName)).Distinct().ToArray();
-            return queues;
-        }
-
-        string IStatefulResource.Type => "JasperTransport";
     }
 }

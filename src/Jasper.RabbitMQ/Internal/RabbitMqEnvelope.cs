@@ -1,31 +1,30 @@
 using System.Threading.Tasks;
-using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqEnvelope : Envelope
     {
-        internal RabbitMqListener Listener { get; private set; }
-        internal ulong DeliveryTag { get; }
-
-        public RabbitMqEnvelope(RabbitMqListener listener, ulong deliveryTag) : base()
+        public RabbitMqEnvelope(RabbitMqListener listener, ulong deliveryTag)
         {
             Listener = listener;
             DeliveryTag = deliveryTag;
         }
 
+        internal RabbitMqListener Listener { get; }
+        internal ulong DeliveryTag { get; }
+
+        public bool Acknowledged { get; private set; }
+
         internal void Complete()
         {
             Listener.Complete(DeliveryTag);
-            Acked = true;
+            Acknowledged = true;
         }
 
-        internal ValueTask Defer()
+        internal ValueTask DeferAsync()
         {
-            Acked = true;
-            return Listener.Requeue(this);
+            Acknowledged = true;
+            return Listener.RequeueAsync(this);
         }
-
-        public bool Acked { get; private set; }
     }
 }

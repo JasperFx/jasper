@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Logging;
 using Jasper.Runtime;
-using Jasper.Transports;
 
-namespace Jasper.ErrorHandling
+namespace Jasper.ErrorHandling;
+
+public class RequeueContinuation : IContinuation
 {
-    public class RequeueContinuation : IContinuation
+    public static readonly RequeueContinuation Instance = new();
+
+    private RequeueContinuation()
     {
-        public static readonly RequeueContinuation Instance = new RequeueContinuation();
+    }
 
-        private RequeueContinuation()
-        {
-        }
+    public ValueTask ExecuteAsync(IExecutionContext execution, DateTimeOffset now)
+    {
+        return execution.DeferAsync();
+    }
 
-        public ValueTask Execute(IExecutionContext execution, DateTimeOffset now)
-        {
-            return execution.Defer();
-        }
-
-        public override string ToString()
-        {
-            return "Defer the message for later processing";
-        }
+    public override string ToString()
+    {
+        return "Defer the message for later processing";
     }
 }

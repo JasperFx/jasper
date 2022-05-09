@@ -51,11 +51,9 @@ namespace Jasper.Testing.Acceptance
 
                 opts.ListenForMessagesFrom("stub://5678");
                 opts.ListenForMessagesFrom("stub://6789");
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
             });
             var session = await host.TrackActivity().IncludeExternalTransports()
-                .SendMessageAndWait(new DifferentMessage());
+                .SendMessageAndWaitAsync(new DifferentMessage());
 
             var envelopes = session.FindEnvelopesWithMessageType<DifferentMessage>(EventType.Sent);
 

@@ -1,37 +1,48 @@
 ﻿using System;
 
-namespace Jasper
+namespace Jasper;
+
+public class FailureAcknowledgement
 {
-    public class FailureAcknowledgement
+    public Guid CorrelationId { get; init; }
+    public string Message { get; init; } = null!;
+
+    protected bool Equals(FailureAcknowledgement other)
     {
-        public Guid CorrelationId { get; set; }
-        public string Message { get; set; }
+        return Equals(CorrelationId, other.CorrelationId) && string.Equals(Message, other.Message);
+    }
 
-        protected bool Equals(FailureAcknowledgement other)
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
         {
-            return Equals(CorrelationId, other.CorrelationId) && string.Equals(Message, other.Message);
+            return false;
         }
 
-        public override bool Equals(object? obj)
+        if (ReferenceEquals(this, obj))
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((FailureAcknowledgement) obj);
+            return true;
         }
 
-        public override int GetHashCode()
+        if (obj.GetType() != GetType())
         {
-            unchecked
-            {
-                return ((CorrelationId.GetHashCode()) * 397) ^
-                       (Message.GetHashCode());
-            }
+            return false;
         }
 
-        public override string ToString()
+        return Equals((FailureAcknowledgement)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return $"Failure acknowledgement for {CorrelationId} / '{Message}'";
+            return (CorrelationId.GetHashCode() * 397) ^
+                   Message.GetHashCode();
         }
+    }
+
+    public override string ToString()
+    {
+        return $"Failure acknowledgement for {CorrelationId} / '{Message}'";
     }
 }

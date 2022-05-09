@@ -28,7 +28,7 @@ namespace Ponger
             // back to the original sender. Jasper uses message
             // headers to embed the reply address for exactly
             // this use case
-            return context.RespondToSender(response);
+            return context.RespondToSenderAsync(response);
         }
     }
 }

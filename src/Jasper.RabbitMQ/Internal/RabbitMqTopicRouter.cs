@@ -17,14 +17,14 @@ namespace Jasper.RabbitMQ.Internal
 
         public override Uri BuildUriForTopic(string topicName)
         {
-            var endpoint = new RabbitMqEndpoint
+            var endpoint = new RabbitMqEndpoint(new RabbitMqTransport())
             {
                 ExchangeName = ExchangeName,
                 Mode = Mode,
                 RoutingKey = topicName
             };
 
-            return endpoint.ReplyUri();
+            return endpoint.Uri;
         }
 
         public override RabbitMqSubscriberConfiguration FindConfigurationForTopic(string topicName,
@@ -33,7 +33,7 @@ namespace Jasper.RabbitMQ.Internal
             var uri = BuildUriForTopic(topicName);
             var endpoint = endpoints.As<JasperOptions>().GetOrCreateEndpoint(uri);
 
-            return new RabbitMqSubscriberConfiguration((RabbitMqEndpoint) endpoint);
+            return new RabbitMqSubscriberConfiguration((RabbitMqEndpoint)endpoint);
         }
     }
 }

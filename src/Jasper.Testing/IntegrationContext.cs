@@ -15,7 +15,6 @@ namespace Jasper.Testing
         {
             Host = JasperHost.For(x =>
             {
-                x.Extensions.UseMessageTrackingTestingSupport();
                 x.Handlers.IncludeType<MessageConsumer>();
             });
         }

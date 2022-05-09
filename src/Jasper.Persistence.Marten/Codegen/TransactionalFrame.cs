@@ -5,109 +5,121 @@ using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Marten;
 
-namespace Jasper.Persistence.Marten.Codegen
+namespace Jasper.Persistence.Marten.Codegen;
+
+public class TransactionalFrame : Frame
 {
-    public class TransactionalFrame : Frame
+    private readonly IList<Loaded> _loadedDocs = new List<Loaded>();
+
+    private readonly IList<Variable> _saved = new List<Variable>();
+    private Variable? _context;
+    private bool _createsSession;
+    private bool _isUsingPersistence;
+    private Variable? _store;
+
+    public TransactionalFrame() : base(true)
     {
-        private readonly IList<Loaded> _loadedDocs = new List<Loaded>();
+    }
 
-        private readonly IList<Variable> _saved = new List<Variable>();
-        private Variable _context;
-        private bool _createsSession;
-        private bool _isUsingPersistence;
-        private Variable _store;
+    public Variable? Session { get; private set; }
 
-        public TransactionalFrame() : base(true)
+    public Variable LoadDocument(Type documentType, Variable docId)
+    {
+        var document = new Variable(documentType, this);
+        var loaded = new Loaded(document, documentType, docId);
+        _loadedDocs.Add(loaded);
+
+        return document;
+    }
+
+    public void SaveDocument(Variable document)
+    {
+        _saved.Add(document);
+    }
+
+
+    public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
+    {
+        _store = chain.FindVariable(typeof(IDocumentStore));
+
+        Session = chain.TryFindVariable(typeof(IDocumentSession), VariableSource.NotServices);
+        if (Session == null)
         {
+            _createsSession = true;
+            Session = new Variable(typeof(IDocumentSession), this);
         }
 
-        public Variable Session { get; private set; }
+        _isUsingPersistence = chain.IsUsingMartenPersistence();
 
-        public Variable LoadDocument(Type documentType, Variable docId)
+        // Inside of messaging. Not sure how this is gonna work for HTTP yet
+        _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
+
+        yield return _store;
+        if (_context != null)
         {
-            var document = new Variable(documentType, this);
-            var loaded = new Loaded(document, documentType, docId);
-            _loadedDocs.Add(loaded);
-
-            return document;
+            yield return _context;
         }
 
-        public void SaveDocument(Variable document)
+        if (Session != null)
         {
-            _saved.Add(document);
+            yield return Session;
         }
+    }
 
-
-        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
+    public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+    {
+        if (_createsSession)
         {
-            _store = chain.FindVariable(typeof(IDocumentStore));
-
-            Session = chain.TryFindVariable(typeof(IDocumentSession), VariableSource.NotServices);
-            if (Session == null)
-            {
-                _createsSession = true;
-                Session = new Variable(typeof(IDocumentSession), this);
-            }
-
-            _isUsingPersistence = chain.IsUsingMartenPersistence();
-
-            // Inside of messaging. Not sure how this is gonna work for HTTP yet
-            _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
-
-            yield return _store;
-            if (_context != null) yield return _context;
-            if (Session != null) yield return Session;
-        }
-
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            if (_createsSession)
-            {
-                writer.BlankLine();
-                writer.WriteComment("Open a new document session");
-                writer.Write(
-                    $"BLOCK:using (var {Session.Usage} = {_store.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
-            }
-
-            if (_context != null && _isUsingPersistence)
-                writer.Write(
-                    $"await {typeof(ExecutionContextExtensions).FullName}.{nameof(ExecutionContextExtensions.EnlistInTransactionAsync)}({_context.Usage}, {Session.Usage});");
-
-            foreach (var loaded in _loadedDocs) loaded.Write(writer, Session);
-
-            Next?.GenerateCode(method, writer);
-
-
-            foreach (var saved in _saved)
-                writer.Write($"{Session.Usage}.{nameof(IDocumentSession.Store)}({saved.Usage});");
-
             writer.BlankLine();
-            writer.WriteComment("Commit the unit of work");
-            writer.Write($"await {Session.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}(cancellation).ConfigureAwait(false);");
-
-            if (_createsSession) writer.FinishBlock();
+            writer.WriteComment("Open a new document session");
+            writer.Write(
+                $"BLOCK:using (var {Session!.Usage} = {_store!.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
         }
 
-        public class Loaded
+        if (_context != null && _isUsingPersistence)
         {
-            private readonly Variable _docId;
-            private readonly Variable _document;
-            private readonly Type _documentType;
+            writer.Write(
+                $"await {typeof(ExecutionContextExtensions).FullName}.{nameof(ExecutionContextExtensions.EnlistInTransactionAsync)}({_context.Usage}, {Session!.Usage});");
+        }
 
-            public Loaded(Variable document, Type documentType, Variable docId)
-            {
-                _documentType = documentType ?? throw new ArgumentNullException(nameof(documentType));
+        foreach (var loaded in _loadedDocs) loaded.Write(writer, Session!);
 
-                _document = document ?? throw new ArgumentNullException(nameof(document));
+        Next?.GenerateCode(method, writer);
 
-                _docId = docId ?? throw new ArgumentNullException(nameof(docId));
-            }
 
-            public void Write(ISourceWriter writer, Variable session)
-            {
-                writer.Write(
-                    $"var {_document.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
-            }
+        foreach (var saved in _saved)
+            writer.Write($"{Session!.Usage}.{nameof(IDocumentSession.Store)}({saved.Usage});");
+
+        writer.BlankLine();
+        writer.WriteComment("Commit the unit of work");
+        writer.Write(
+            $"await {Session!.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}(cancellation).ConfigureAwait(false);");
+
+        if (_createsSession)
+        {
+            writer.FinishBlock();
+        }
+    }
+
+    public class Loaded
+    {
+        private readonly Variable _docId;
+        private readonly Variable _document;
+        private readonly Type _documentType;
+
+        public Loaded(Variable document, Type documentType, Variable docId)
+        {
+            _documentType = documentType ?? throw new ArgumentNullException(nameof(documentType));
+
+            _document = document ?? throw new ArgumentNullException(nameof(document));
+
+            _docId = docId ?? throw new ArgumentNullException(nameof(docId));
+        }
+
+        public void Write(ISourceWriter writer, Variable session)
+        {
+            writer.Write(
+                $"var {_document.Usage} = await {session.Usage}.{nameof(IDocumentSession.LoadAsync)}<{_documentType.FullNameInCode()}>({_docId.Usage});");
         }
     }
 }

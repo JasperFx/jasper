@@ -5,66 +5,64 @@ using Jasper.Logging;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.Runtime.WorkerQueues
+namespace Jasper.Runtime.WorkerQueues;
+
+public class InlineWorkerQueue : IListeningWorkerQueue
 {
-    public class InlineWorkerQueue : IListeningWorkerQueue
+    private readonly ILogger _logger;
+    private readonly IHandlerPipeline _pipeline;
+    private readonly AdvancedSettings _settings;
+
+    public InlineWorkerQueue(IHandlerPipeline pipeline, ILogger logger, IListener listener,
+        AdvancedSettings settings)
     {
-        private readonly IHandlerPipeline _pipeline;
-        private readonly ILogger _logger;
-        private readonly AdvancedSettings? _settings;
+        Listener = listener;
+        _pipeline = pipeline;
+        _logger = logger;
+        _settings = settings;
 
-        public InlineWorkerQueue(IHandlerPipeline pipeline, ILogger logger, IListener listener,
-            AdvancedSettings? settings)
+        Listener.Start(this, settings.Cancellation);
+    }
+
+    public IListener? Listener { get; private set; }
+
+    public void Dispose()
+    {
+        Listener = null; // making sure the listener can be released
+    }
+
+    public async Task ReceivedAsync(Uri uri, Envelope[] messages)
+    {
+        foreach (var envelope in messages) await ReceivedAsync(uri, envelope);
+    }
+
+    public async Task ReceivedAsync(Uri uri, Envelope envelope)
+    {
+        using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
+            ActivityKind.Consumer);
+
+        try
         {
-            Listener = listener;
-            _pipeline = pipeline;
-            _logger = logger;
-            _settings = settings;
+            envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+            await _pipeline.InvokeAsync(envelope, Listener!, activity!);
+            _logger.IncomingReceived(envelope, Listener!.Address);
 
-            Listener.Start(this, settings.Cancellation);
+            // TODO -- mark success on the activity?
         }
-
-        public void Dispose()
+        catch (Exception? e)
         {
-            Listener = null; // making sure the listener can be released
-        }
-
-        public IListener Listener { get; private set; }
-
-        public async Task Received(Uri? uri, Envelope?[] messages)
-        {
-            foreach (var envelope in messages)
-            {
-                await Received(uri, envelope);
-            }
-        }
-
-        public async Task Received(Uri? uri, Envelope? envelope)
-        {
-            using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName, envelope,
-                ActivityKind.Consumer);
+            // TODO -- Mark failures onto the activity?
+            _logger.LogError(e, "Failure to receive an incoming message for envelope {EnvelopeId}", envelope.Id);
 
             try
             {
-                envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
-                await _pipeline.Invoke(envelope, Listener, activity);
-                _logger.IncomingReceived(envelope);
-
-                // TODO -- mark success on the activity?
+                await Listener!.DeferAsync(envelope);
             }
-            catch (Exception? e)
+            catch (Exception? ex)
             {
-                // TODO -- Mark failures onto the activity?
-                _logger.LogError(e, "Failure to receive an incoming message for envelope {EnvelopeId}", envelope.Id);
-
-                try
-                {
-                    await Listener.DeferAsync(envelope);
-                }
-                catch (Exception? ex)
-                {
-                    _logger.LogError(ex, envelope.CorrelationId,"Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline");
-                }
+                _logger.LogError(ex,
+                    "Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline ({CausationId})",
+                    envelope.CorrelationId);
             }
         }
     }

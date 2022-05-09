@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Jasper.Transports.Sending
+namespace Jasper.Transports.Sending;
+
+public interface ISenderCallback
 {
-    public interface ISenderCallback
-    {
-        Task Successful(OutgoingMessageBatch outgoing);
-        Task Successful(Envelope outgoing);
-        Task TimedOut(OutgoingMessageBatch outgoing);
-        Task SerializationFailure(OutgoingMessageBatch outgoing);
-        Task QueueDoesNotExist(OutgoingMessageBatch outgoing);
-        Task ProcessingFailure(OutgoingMessageBatch outgoing);
-        Task ProcessingFailure(OutgoingMessageBatch outgoing, Exception? exception);
-        Task ProcessingFailure(Envelope outgoing, Exception? exception);
-        Task SenderIsLatched(OutgoingMessageBatch outgoing);
-    }
+    Task MarkSuccessfulAsync(OutgoingMessageBatch outgoing);
+    Task MarkTimedOutAsync(OutgoingMessageBatch outgoing);
+    Task MarkSerializationFailureAsync(OutgoingMessageBatch outgoing);
+    Task MarkQueueDoesNotExistAsync(OutgoingMessageBatch outgoing);
+    Task MarkProcessingFailureAsync(OutgoingMessageBatch outgoing);
+    Task MarkProcessingFailureAsync(OutgoingMessageBatch outgoing, Exception? exception);
+    Task MarkSenderIsLatchedAsync(OutgoingMessageBatch outgoing);
 }

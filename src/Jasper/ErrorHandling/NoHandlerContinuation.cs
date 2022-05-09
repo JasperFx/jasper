@@ -1,44 +1,49 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.Runtime;
-using Jasper.Transports;
 
-namespace Jasper.ErrorHandling
+namespace Jasper.ErrorHandling;
+
+public class NoHandlerContinuation : IContinuation
 {
-    public class NoHandlerContinuation : IContinuation
+    private readonly IMissingHandler[] _handlers;
+    private readonly IJasperRuntime _root;
+
+    public NoHandlerContinuation(IMissingHandler[] handlers, IJasperRuntime root)
     {
-        private readonly IMissingHandler[] _handlers;
-        private readonly IJasperRuntime _root;
+        _handlers = handlers;
+        _root = root;
+    }
 
-        public NoHandlerContinuation(IMissingHandler[] handlers, IJasperRuntime root)
+    public async ValueTask ExecuteAsync(IExecutionContext execution,
+        DateTimeOffset now)
+    {
+        if (execution.Envelope == null) throw new InvalidOperationException("Context does not have an Envelope");
+
+        execution.Logger.NoHandlerFor(execution.Envelope!);
+
+        foreach (var handler in _handlers)
         {
-            _handlers = handlers;
-            _root = root;
+            try
+            {
+                await handler.HandleAsync(execution.Envelope, _root);
+            }
+            catch (Exception? e)
+            {
+                execution.Logger.LogException(e);
+            }
         }
 
-        public async ValueTask Execute(IExecutionContext execution,
-            DateTimeOffset now)
+        if (execution.Envelope.AckRequested)
         {
-            execution.Logger.NoHandlerFor(execution.Envelope);
-
-            foreach (var handler in _handlers)
-                try
-                {
-                    await handler.Handle(execution.Envelope, _root);
-                }
-                catch (Exception? e)
-                {
-                    execution.Logger.LogException(e);
-                }
-
-            if (execution.Envelope.AckRequested) await execution.SendAcknowledgement(execution.Envelope);
-
-            await execution.Complete();
-
-            // These two lines are important to make the message tracking work
-            // if there is no handler
-            execution.Logger.ExecutionFinished(execution.Envelope);
-            execution.Logger.MessageSucceeded(execution.Envelope);
+            await execution.SendAcknowledgementAsync(execution.Envelope);
         }
+
+        await execution.CompleteAsync();
+
+        // These two lines are important to make the message tracking work
+        // if there is no handler
+        execution.Logger.ExecutionFinished(execution.Envelope);
+        execution.Logger.MessageSucceeded(execution.Envelope);
     }
 }

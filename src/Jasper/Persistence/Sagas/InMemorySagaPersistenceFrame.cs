@@ -1,49 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jasper.Persistence.Durability;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 
-namespace Jasper.Persistence.Sagas
+namespace Jasper.Persistence.Sagas;
+
+public class InMemorySagaPersistenceFrame : AsyncFrame
 {
-    public class InMemorySagaPersistenceFrame : AsyncFrame
+    private readonly SagaStateExistence _existence;
+    private readonly Variable _sagaId;
+    private Variable? _context;
+    private Variable? _persistor;
+
+    public InMemorySagaPersistenceFrame(Type documentType, Variable sagaId, SagaStateExistence existence)
     {
-        private readonly SagaStateExistence _existence;
-        private readonly Variable _sagaId;
-        private Variable _context;
-        private Variable _persistor;
+        _sagaId = sagaId;
+        _existence = existence;
+        Document = new Variable(documentType, this);
+    }
 
-        public InMemorySagaPersistenceFrame(Type documentType, Variable sagaId, SagaStateExistence existence)
+    public Variable Document { get; }
+
+    public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
+    {
+        writer.Write($"{_context!.Usage}.{nameof(IExecutionContext.UseInMemoryTransaction)}();");
+
+        if (_existence == SagaStateExistence.Existing)
         {
-            _sagaId = sagaId;
-            _existence = existence;
-            Document = new Variable(documentType, this);
+            writer.Write(
+                $"var {Document.Usage} = {_persistor!.Usage}.{nameof(InMemorySagaPersistor.Load)}<{Document.VariableType.FullNameInCode()}>({_sagaId.Usage});");
         }
 
-        public Variable Document { get; }
+        Next?.GenerateCode(method, writer);
+    }
 
-        public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
-        {
-            writer.Write($"{_context.Usage}.{nameof(IExecutionContext.UseInMemoryTransaction)}();");
+    public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
+    {
+        _context = chain.FindVariable(typeof(IExecutionContext));
+        yield return _context;
 
-            if (_existence == SagaStateExistence.Existing)
-                writer.Write(
-                    $"var {Document.Usage} = {_persistor.Usage}.{nameof(InMemorySagaPersistor.Load)}<{Document.VariableType.FullNameInCode()}>({_sagaId.Usage});");
+        yield return _sagaId;
 
-            Next?.GenerateCode(method, writer);
-        }
+        _persistor = chain.FindVariable(typeof(InMemorySagaPersistor));
 
-        public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
-        {
-            _context = chain.FindVariable(typeof(IExecutionContext));
-            yield return _context;
-
-            yield return _sagaId;
-
-            _persistor = chain.FindVariable(typeof(InMemorySagaPersistor));
-
-            yield return _persistor;
-        }
+        yield return _persistor;
     }
 }

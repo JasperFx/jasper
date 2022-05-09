@@ -68,7 +68,6 @@ namespace TestingSupport.Compliance
                 .IncludeType<PongHandler>();
 
             options.AddSerializer(new GreenTextWriter());
-            options.Extensions.UseMessageTrackingTestingSupport();
             options.ServiceName = "SenderService";
             options.PublishAllMessages().To(OutboundAddress);
 
@@ -108,8 +107,6 @@ namespace TestingSupport.Compliance
             options.Handlers.OnException<BadImageFormatException>()
                 .RetryLater(3.Seconds());
 
-
-            options.Extensions.UseMessageTrackingTestingSupport();
 
             options.Services.AddSingleton(new ColorHistory());
 
@@ -180,7 +177,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(15.Seconds())
-                .ExecuteAndWait(c => c.SendToDestinationAsync(theOutboundAddress, new Message2()));
+                .ExecuteAndWaitAsync(c => c.SendToDestinationAsync(theOutboundAddress, new Message2()));
 
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
@@ -193,7 +190,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
+                .ExecuteAndWaitAsync(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
@@ -209,7 +206,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(30.Seconds())
-                .SendMessageAndWait(message1);
+                .SendMessageAndWaitAsync(message1);
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
@@ -222,7 +219,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWait(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
+                .ExecuteAndWaitAsync(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
 
 
             var record = session.FindEnvelopesWithMessageType<Message1>(EventType.MessageSucceeded).Single();
@@ -241,7 +238,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
 
-                .ExecuteAndWait(async context =>
+                .ExecuteAndWaitAsync(async context =>
                 {
                     id2 = context.CorrelationId;
 
@@ -267,7 +264,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver ?? theSender)
-                .ExecuteAndWait(c => c.ScheduleSendAsync(new ColorChosen {Name = "Orange"}, 5.Seconds()));
+                .ExecuteAndWaitAsync(c => c.ScheduleSendAsync(new ColorChosen {Name = "Orange"}, 5.Seconds()));
 
             var message = session.FindSingleTrackedMessageOfType<ColorChosen>(EventType.MessageSucceeded);
             message.Name.ShouldBe("Orange");
@@ -285,7 +282,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .SendMessageAndWait(theMessage);
+                .SendMessageAndWaitAsync(theMessage);
 
             return _session.AllRecordsInOrder().LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
@@ -299,7 +296,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .DoNotAssertOnExceptionsDetected()
-                .SendMessageAndWait(theMessage);
+                .SendMessageAndWaitAsync(theMessage);
 
             var record = session.AllRecordsInOrder().LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
@@ -333,7 +330,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(30.Seconds())
-                .SendMessageAndWait(theMessage);
+                .SendMessageAndWaitAsync(theMessage);
 
             var record = session.AllRecordsInOrder().LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
@@ -409,7 +406,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
-                .SendMessageAndWait(ping);
+                .SendMessageAndWaitAsync(ping);
 
             session.FindSingleTrackedMessageOfType<PongMessage>(EventType.MessageSucceeded)
                 .Id.ShouldBe(ping.Id);
@@ -424,7 +421,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
-                .ExecuteAndWait(x => x.SendAndExpectResponseForAsync<ImplicitPong>(ping));
+                .ExecuteAndWaitAsync(x => x.SendAndExpectResponseForAsync<ImplicitPong>(ping));
 
             session.FindSingleTrackedMessageOfType<ImplicitPong>(EventType.MessageSucceeded)
                 .Id.ShouldBe(ping.Id);
@@ -444,7 +441,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .ExecuteAndWait(c => c.SendEnvelopeAsync(envelope));
+                .ExecuteAndWaitAsync(c => c.SendEnvelopeAsync(envelope));
 
             session.FindSingleTrackedMessageOfType<BlueMessage>()
                 .Name.ShouldBe("Magic Johnson");
@@ -458,7 +455,7 @@ namespace TestingSupport.Compliance
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .ExecuteAndWait(c =>
+                .ExecuteAndWaitAsync(c =>
                     c.SendAsync(new GreenMessage {Name = "Kareem Abdul-Jabbar"}));
 
 

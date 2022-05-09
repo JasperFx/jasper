@@ -23,9 +23,9 @@ namespace Jasper.Testing.ErrorHandling
             var context = Substitute.For<IExecutionContext>();
             context.Envelope.Returns(envelope);
 
-            await continuation.Execute(context, DateTime.UtcNow);
+            await continuation.ExecuteAsync(context, DateTime.UtcNow);
 
-            await context.Received(1).RetryExecutionNow();
+            await context.Received(1).RetryExecutionNowAsync();
         }
     }
 }

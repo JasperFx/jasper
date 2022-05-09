@@ -1,11 +1,11 @@
 using System;
 
-namespace Jasper.Transports
+namespace Jasper.Transports;
+
+public class TransportEndpointException : Exception
 {
-    public class TransportEndpointException : Exception
+    public TransportEndpointException(Uri? uri, string message, Exception innerException) : base(
+        $"Error with endpoint '{uri}': {message}", innerException)
     {
-        public TransportEndpointException(Uri? uri, string message, Exception innerException) : base($"Error with endpoint '{uri}': {message}", innerException)
-        {
-        }
     }
 }

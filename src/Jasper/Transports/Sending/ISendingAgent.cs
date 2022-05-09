@@ -2,28 +2,22 @@ using System;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 
-namespace Jasper.Transports.Sending
+namespace Jasper.Transports.Sending;
+
+public interface ISendingAgent : IDisposable
 {
-    public interface ISendingAgent : IDisposable
-    {
-        Uri Destination { get; }
-        Uri? ReplyUri { get; set; }
-        bool Latched { get; }
+    Uri Destination { get; }
+    Uri? ReplyUri { get; set; }
+    bool Latched { get; }
 
 
-        bool IsDurable { get; }
+    bool IsDurable { get; }
 
-        bool SupportsNativeScheduledSend { get; }
+    bool SupportsNativeScheduledSend { get; }
 
-        // This would be called in the future by the outbox, assuming
-        // that the envelope is already persisted and just needs to be sent out
-        Task EnqueueOutgoing(Envelope envelope);
+    Endpoint Endpoint { get; }
 
-        // This would be called by the EnvelopeSender if invoked
-        // indirectly
-        Task StoreAndForward(Envelope envelope);
+    Task EnqueueOutgoingAsync(Envelope envelope);
 
-        Endpoint Endpoint { get; }
-
-    }
+    Task StoreAndForwardAsync(Envelope envelope);
 }

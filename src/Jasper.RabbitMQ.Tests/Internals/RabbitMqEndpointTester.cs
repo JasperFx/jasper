@@ -13,7 +13,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void parse_non_durable_uri()
         {
-            var endpoint = new RabbitMqEndpoint();
+            var endpoint = new RabbitMqEndpoint(new RabbitMqTransport());
             endpoint.Parse(new Uri("rabbitmq://exchange/exchange1/routing/key1"));
 
             endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
@@ -24,7 +24,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void parse_durable_uri()
         {
-            var endpoint = new RabbitMqEndpoint();
+            var endpoint = new RabbitMqEndpoint(new RabbitMqTransport());
             endpoint.Parse(new Uri("rabbitmq://exchange/exchange1/routing/key1/durable"));
 
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
@@ -35,7 +35,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void parse_durable_uri_with_only_queue()
         {
-            var endpoint = new RabbitMqEndpoint();
+            var endpoint = new RabbitMqEndpoint(new RabbitMqTransport());
             endpoint.Parse(new Uri("rabbitmq://queue/q1/durable"));
 
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
@@ -45,7 +45,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void build_uri_for_exchange_and_routing()
         {
-            new RabbitMqEndpoint
+            new RabbitMqEndpoint(new RabbitMqTransport())
                 {
                     ExchangeName = "ex1",
                     RoutingKey = "key1"
@@ -56,7 +56,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void build_uri_for_queue_only()
         {
-            new RabbitMqEndpoint
+            new RabbitMqEndpoint(new RabbitMqTransport())
                 {
                     QueueName = "foo"
                 }
@@ -67,18 +67,18 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void build_uri_for_queue_only_and_durable()
         {
-            new RabbitMqEndpoint
+            new RabbitMqEndpoint(new RabbitMqTransport())
                 {
                     QueueName = "foo",
                     Mode = EndpointMode.Durable
                 }
-                .ReplyUri().ShouldBe(new Uri("rabbitmq://queue/foo/durable"));
+                .CorrectedUriForReplies().ShouldBe(new Uri("rabbitmq://queue/foo/durable"));
         }
 
         [Fact]
         public void build_uri_for_exchange_only()
         {
-            new RabbitMqEndpoint()
+            new RabbitMqEndpoint(new RabbitMqTransport())
             {
                 ExchangeName = "ex2"
 
@@ -88,7 +88,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void build_uri_for_exchange_and_topics()
         {
-            new RabbitMqEndpoint()
+            new RabbitMqEndpoint(new RabbitMqTransport())
             {
                 ExchangeName = "ex2"
 
@@ -98,23 +98,23 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void generate_reply_uri_for_non_durable()
         {
-            new RabbitMqEndpoint
+            new RabbitMqEndpoint(new RabbitMqTransport())
                 {
                     ExchangeName = "ex1",
                     RoutingKey = "key1"
                 }
-                .ReplyUri().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1"));
+                .CorrectedUriForReplies().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1"));
         }
 
         [Fact]
         public void generate_reply_uri_for_durable()
         {
-            new RabbitMqEndpoint
+            new RabbitMqEndpoint(new RabbitMqTransport())
             {
                 ExchangeName = "ex1",
                 RoutingKey = "key1",
                 Mode = EndpointMode.Durable
-            }.ReplyUri().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1/durable"));
+            }.CorrectedUriForReplies().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1/durable"));
 
 
         }

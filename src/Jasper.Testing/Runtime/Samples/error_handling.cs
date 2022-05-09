@@ -224,12 +224,12 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async ValueTask Execute(IExecutionContext execution,
+        public async ValueTask ExecuteAsync(IExecutionContext execution,
             DateTimeOffset now)
         {
             // Raise a separate "alert" event message
             var session = new ExecutionContext(execution.As<ExecutionContext>().Runtime);
-            await session.Schedule(execution.Envelope.Message, now.AddHours(1));
+            await session.ScheduleAsync(execution.Envelope.Message, now.AddHours(1));
             await session.SendAsync(new RescheduledAlert
             {
                 Id = execution.Envelope.Id,

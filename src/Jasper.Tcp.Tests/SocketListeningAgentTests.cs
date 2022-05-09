@@ -24,7 +24,7 @@ namespace Jasper.Tcp.Tests
 
             var callback = Substitute.For<IListeningWorkerQueue>();
 
-            await agent.HandleStream(callback, stream);
+            await agent.HandleStreamAsync(callback, stream);
 
             stream.Position = 0;
             var bytes = stream.ReadAllBytes();

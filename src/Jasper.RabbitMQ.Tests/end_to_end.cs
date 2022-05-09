@@ -43,8 +43,6 @@ namespace Jasper.RabbitMQ.Tests
             var queueName = RabbitTesting.NextQueueName();
             using var publisher = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
                 opts.PublishAllMessages()
@@ -72,8 +70,6 @@ namespace Jasper.RabbitMQ.Tests
             var queueName = RabbitTesting.NextQueueName();
             using var publisher = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
                 opts.PublishAllMessages()
@@ -93,8 +89,6 @@ namespace Jasper.RabbitMQ.Tests
 
             using var receiver = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq().AutoProvision();
 
                 opts.ListenToRabbitQueue(queueName);
@@ -116,7 +110,7 @@ namespace Jasper.RabbitMQ.Tests
                 .TrackActivity()
                 .AlsoTrack(receiver)
                 .Timeout(30.Seconds()) // this one can be slow when it's in a group of tests
-                .SendMessageAndWait(new ColorChosen { Name = "Orange" });
+                .SendMessageAndWaitAsync(new ColorChosen { Name = "Orange" });
 
 
             receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
@@ -133,8 +127,6 @@ namespace Jasper.RabbitMQ.Tests
             using var publisher = JasperHost.For(opts =>
             {
                 opts.ServiceName = "Publisher";
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
 
                 opts.UseRabbitMq().AutoProvision();
 
@@ -158,8 +150,6 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.ServiceName = "Receiver";
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq().AutoProvision();
 
                 opts.ListenToRabbitQueue(queueName1);
@@ -178,7 +168,7 @@ namespace Jasper.RabbitMQ.Tests
             var session = await publisher
                 .TrackActivity()
                 .AlsoTrack(receiver)
-                .SendMessageAndWait(new PingMessage { Number = 1 });
+                .SendMessageAndWaitAsync(new PingMessage { Number = 1 });
 
 
             // TODO -- let's make an assertion here?
@@ -195,8 +185,6 @@ namespace Jasper.RabbitMQ.Tests
 
             var publisher = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq()
                     .AutoProvision()
                     .BindExchange(exchangeName)
@@ -207,8 +195,6 @@ namespace Jasper.RabbitMQ.Tests
 
             var receiver = JasperHost.For(opts =>
             {
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq()
                     .AutoProvision()
                     .DeclareQueue(RabbitTesting.NextQueueName())
@@ -224,7 +210,7 @@ namespace Jasper.RabbitMQ.Tests
                 await publisher
                     .TrackActivity()
                     .AlsoTrack(receiver)
-                    .SendMessageAndWait(new ColorChosen { Name = "Orange" });
+                    .SendMessageAndWaitAsync(new ColorChosen { Name = "Orange" });
 
                 receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
             }
@@ -247,8 +233,6 @@ namespace Jasper.RabbitMQ.Tests
                 opts.Advanced.ScheduledJobPollingTime = 1.Seconds();
                 opts.ServiceName = "Publisher";
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
                 opts.PublishAllMessages().ToRabbitQueue(queueName).Durably();
@@ -266,8 +250,6 @@ namespace Jasper.RabbitMQ.Tests
             var receiver = JasperHost.For(opts =>
             {
                 opts.ServiceName = "Receiver";
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
 
                 opts.UseRabbitMq();
 
@@ -291,7 +273,7 @@ namespace Jasper.RabbitMQ.Tests
                     .AlsoTrack(receiver)
                     .WaitForMessageToBeReceivedAt<ColorChosen>(receiver)
                     .Timeout(15.Seconds())
-                    .ExecuteAndWait(c => c.ScheduleSendAsync(new ColorChosen { Name = "Orange" }, 5.Seconds()));
+                    .ExecuteAndWaitAsync(c => c.ScheduleSendAsync(new ColorChosen { Name = "Orange" }, 5.Seconds()));
 
                 receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
             }
@@ -319,8 +301,6 @@ namespace Jasper.RabbitMQ.Tests
                     .BindExchange(exchangeName).ToQueue(queueName2)
                     .BindExchange(exchangeName).ToQueue(queueName3);
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.PublishAllMessages().ToRabbitExchange(exchangeName);
             });
 
@@ -328,7 +308,6 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.UseRabbitMq();
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
                 opts.ListenToRabbitQueue(queueName1);
                 opts.Services.AddSingleton<ColorHistory>();
             });
@@ -337,8 +316,6 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.UseRabbitMq();
 
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
                 opts.ListenToRabbitQueue(queueName2);
                 opts.Services.AddSingleton<ColorHistory>();
             });
@@ -347,8 +324,6 @@ namespace Jasper.RabbitMQ.Tests
             {
                 opts.UseRabbitMq();
 
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
                 opts.ListenToRabbitQueue(queueName3);
                 opts.Services.AddSingleton<ColorHistory>();
             });
@@ -361,7 +336,7 @@ namespace Jasper.RabbitMQ.Tests
                     .WaitForMessageToBeReceivedAt<ColorChosen>(receiver1)
                     .WaitForMessageToBeReceivedAt<ColorChosen>(receiver2)
                     .WaitForMessageToBeReceivedAt<ColorChosen>(receiver3)
-                    .SendMessageAndWait(new ColorChosen { Name = "Purple" });
+                    .SendMessageAndWaitAsync(new ColorChosen { Name = "Purple" });
 
 
                 receiver1.Get<ColorHistory>().Name.ShouldBe("Purple");
@@ -392,8 +367,6 @@ namespace Jasper.RabbitMQ.Tests
                 opts.PublishAllMessages().ToRabbit("special", "topics");
 
                 opts.Handlers.DisableConventionalDiscovery();
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
             });
 
             var receiver = JasperHost.For(opts =>
@@ -401,8 +374,6 @@ namespace Jasper.RabbitMQ.Tests
                 opts.UseRabbitMq();
 
                 opts.ListenToRabbitQueue(queueName);
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
 
                 opts.Handlers.DisableConventionalDiscovery().IncludeType<SpecialTopicGuy>();
             });
@@ -413,7 +384,7 @@ namespace Jasper.RabbitMQ.Tests
                 var session = await publisher
                     .TrackActivity()
                     .AlsoTrack(receiver)
-                    .SendMessageAndWait(message);
+                    .SendMessageAndWaitAsync(message);
 
 
                 var received = session.FindSingleTrackedMessageOfType<SpecialTopic>(EventType.MessageSucceeded);
@@ -528,7 +499,7 @@ namespace Jasper.RabbitMQ.Tests
             // back to the original sender. Jasper uses message
             // headers to embed the reply address for exactly
             // this use case
-            return context.RespondToSender(response);
+            return context.RespondToSenderAsync(response);
         }
     }
 }

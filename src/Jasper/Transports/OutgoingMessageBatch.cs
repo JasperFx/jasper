@@ -2,46 +2,37 @@ using System;
 using System.Collections.Generic;
 using Jasper.Serialization;
 
-namespace Jasper.Transports
+namespace Jasper.Transports;
+
+public class OutgoingMessageBatch
 {
-    public class OutgoingMessageBatch
+    public OutgoingMessageBatch(Uri destination, IReadOnlyList<Envelope> messages)
     {
-        public OutgoingMessageBatch(Uri destination, IEnumerable<Envelope> messages)
-        {
-            Destination = destination;
-            var messagesList = new List<Envelope>();
-            messagesList.AddRange(messages);
-            Messages = messagesList;
+        Destination = destination;
+        var messagesList = new List<Envelope>();
+        messagesList.AddRange(messages);
+        Messages = messagesList;
 
-            foreach (var message in messages)
-            {
-                message.Destination = destination;
-            }
+        foreach (var message in messages) message.Destination = destination;
 
-            Data = EnvelopeSerializer.Serialize(Messages);
-        }
+        Data = EnvelopeSerializer.Serialize(Messages);
+    }
 
-        public byte[] Data { get; set; }
+    public byte[] Data { get; set; }
 
-        public Uri Destination { get; }
+    public Uri Destination { get; }
 
-        public IList<Envelope> Messages { get; }
+    public IList<Envelope> Messages { get; }
 
-        public bool IsPing { get; private set; }
+    public override string ToString()
+    {
+        return $"Outgoing batch to {Destination} with {Messages.Count} messages";
+    }
 
-        public override string ToString()
-        {
-            return $"Outgoing batch to {Destination} with {Messages.Count} messages";
-        }
+    public static OutgoingMessageBatch ForPing(Uri destination)
+    {
+        var envelope = Envelope.ForPing(destination);
 
-        public static OutgoingMessageBatch ForPing(Uri? destination)
-        {
-            var envelope = Envelope.ForPing(destination);
-
-            return new OutgoingMessageBatch(destination, new[] {envelope})
-            {
-                IsPing = true
-            };
-        }
+        return new OutgoingMessageBatch(destination, new[] { envelope });
     }
 }

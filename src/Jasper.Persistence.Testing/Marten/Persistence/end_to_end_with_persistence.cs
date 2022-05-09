@@ -42,8 +42,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                     x.DatabaseSchemaName = "sender";
                 }).IntegrateWithJasper();
 
-                opts.Extensions.UseMessageTrackingTestingSupport();
-
                 opts.ListenAtPort(2567);
             });
 
@@ -52,8 +50,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
                 opts.ListenAtPort(2345).DurablyPersistedLocally();
-
-                opts.Extensions.UseMessageTrackingTestingSupport();
 
                 opts.Services.AddMarten(x =>
                 {
@@ -95,7 +91,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             };
 
 
-            await theSender.Get<IMessagePublisher>().Schedule(item, 1.Days());
+            await theSender.Get<IMessagePublisher>().ScheduleAsync(item, 1.Days());
 
             var persistor = theSender.Get<IEnvelopePersistence>();
 
@@ -117,7 +113,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 Id = Guid.NewGuid()
             };
 
-            await theReceiver.ExecuteAndWaitAsync(c => c.Enqueue(item));
+            await theReceiver.ExecuteAndWaitAsync(c => c.EnqueueAsync(item));
 
 
             var documentStore = theReceiver.Get<IDocumentStore>();

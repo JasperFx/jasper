@@ -17,9 +17,9 @@ internal class HandlerScopingPolicy : IFamilyPolicy
         _handlers = handlers;
     }
 
-    public ServiceFamily Build(Type type, ServiceGraph serviceGraph)
+    public ServiceFamily? Build(Type type, ServiceGraph serviceGraph)
     {
-        if (TypeExtensions.IsConcrete(type) && matches(type))
+        if (type.IsConcrete() && matches(type))
         {
             var instance = new ConstructorInstance(type, type, ServiceLifetime.Scoped);
             return new ServiceFamily(type, new IDecoratorPolicy[0], instance);

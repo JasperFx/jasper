@@ -5,41 +5,56 @@ namespace Jasper.RabbitMQ.Internal
 {
     public abstract class RabbitMqConnectionAgent : IDisposable
     {
-        private readonly RabbitMqTransport _transport;
-        protected readonly object _locker = new object();
-        private IConnection _connection;
-        internal AgentState State { get; private set; } = AgentState.Disconnected;
-        internal IModel Channel { get; private set; }
+        private readonly IConnection _connection;
+        protected readonly object Locker = new();
 
-        protected RabbitMqConnectionAgent(RabbitMqTransport transport)
+        protected RabbitMqConnectionAgent(IConnection connection)
         {
-            _transport = transport;
+            _connection = connection;
+        }
+
+        internal AgentState State { get; private set; } = AgentState.Disconnected;
+
+        private IModel? _channel;
+
+        internal IModel Channel
+        {
+            get
+            {
+                if (_channel == null)
+                {
+                    EnsureConnected();
+                }
+
+                return _channel!;
+            }
         }
 
         public virtual void Dispose()
         {
-            teardownConnection();
+            teardownChannel();
         }
 
         internal void EnsureConnected()
         {
-            lock (_locker)
+            lock (Locker)
             {
-                if (State == AgentState.Connected) return;
+                if (State == AgentState.Connected)
+                {
+                    return;
+                }
 
-                startNewConnection();
+                startNewChannel();
 
                 State = AgentState.Connected;
             }
         }
 
-        protected void startNewConnection()
+        protected void startNewChannel()
         {
-            _connection = _transport.BuildConnection();
+            _channel = _connection.CreateModel();
 
-            Channel = _connection.CreateModel();
-
-            Channel.ModelShutdown += ChannelOnModelShutdown;
+            _channel.ModelShutdown += ChannelOnModelShutdown;
         }
 
         private void ChannelOnModelShutdown(object? sender, ShutdownEventArgs e)
@@ -47,23 +62,19 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
         }
 
-        protected void teardownConnection()
+        protected void teardownChannel()
         {
-            if (Channel != null)
+            if (_channel != null)
             {
-                Channel.ModelShutdown -= ChannelOnModelShutdown;
-                Channel?.Close();
-                Channel?.Abort();
-                Channel?.Dispose();
-                _connection?.Close();
-                _connection?.Dispose();
+                _channel.ModelShutdown -= ChannelOnModelShutdown;
+                _channel.Close();
+                _channel.Abort();
+                _channel.Dispose();
             }
 
-            Channel = null;
-            _connection = null;
+            _channel = null;
 
             State = AgentState.Disconnected;
         }
-
     }
 }

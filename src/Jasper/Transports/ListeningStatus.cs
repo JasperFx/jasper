@@ -1,8 +1,7 @@
-﻿namespace Jasper.Transports
+﻿namespace Jasper.Transports;
+
+public enum ListeningStatus
 {
-    public enum ListeningStatus
-    {
-        Accepting,
-        TooBusy
-    }
+    Accepting,
+    TooBusy
 }

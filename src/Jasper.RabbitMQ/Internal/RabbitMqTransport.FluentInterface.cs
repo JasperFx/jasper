@@ -17,7 +17,8 @@ namespace Jasper.RabbitMQ.Internal
         }
 
 
-        public IRabbitMqTransportExpression DeclareExchange(string exchangeName, Action<RabbitMqExchange>? configure = null)
+        public IRabbitMqTransportExpression DeclareExchange(string exchangeName,
+            Action<RabbitMqExchange>? configure = null)
         {
             var exchange = Exchanges[exchangeName];
             configure?.Invoke(exchange);
@@ -48,6 +49,5 @@ namespace Jasper.RabbitMQ.Internal
                 e.AutoDelete = autoDelete;
             });
         }
-
     }
 }
