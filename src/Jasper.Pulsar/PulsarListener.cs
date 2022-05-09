@@ -9,7 +9,7 @@ using Jasper.Transports;
 
 namespace Jasper.Pulsar
 {
-    internal class PulsarListener : IListener
+    internal class PulsarListener : IListener, IAsyncDisposable
     {
         private readonly PulsarEndpoint _endpoint;
         private readonly PulsarTransport _transport;
@@ -52,11 +52,15 @@ namespace Jasper.Pulsar
             }
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            // TODO -- no mixing!
-            _consumer!.DisposeAsync().GetAwaiter().GetResult();
-            _sender.Dispose();
+            if (_consumer != null)
+            {
+                await _consumer.DisposeAsync();
+            }
+
+            await _sender.DisposeAsync();
+
             _receivingLoop!.Dispose();
         }
 

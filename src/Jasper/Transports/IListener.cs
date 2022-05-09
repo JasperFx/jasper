@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Jasper.Transports;
 
-public interface IListener : IChannelCallback, IDisposable
+public interface IListener : IChannelCallback
 {
     Uri Address { get; }
     ListeningStatus Status { get; set; }

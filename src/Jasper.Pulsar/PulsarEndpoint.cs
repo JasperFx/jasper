@@ -11,10 +11,9 @@ using Jasper.Transports.Sending;
 
 namespace Jasper.Pulsar
 {
-    public class PulsarEndpoint : TransportEndpoint<IMessage<ReadOnlySequence<byte>>, MessageMetadata>, IDisposable
+    public class PulsarEndpoint : TransportEndpoint<IMessage<ReadOnlySequence<byte>>, MessageMetadata>
     {
         private readonly PulsarTransport _parent;
-        private PulsarListener? _listener;
         public const string Persistent = "persistent";
         public const string NonPersistent = "non-persistent";
         public const string DefaultNamespace = "tenant";
@@ -112,9 +111,9 @@ namespace Jasper.Pulsar
 
             // TODO -- parallel listener option????
 
-            _listener = new PulsarListener(this, _parent, runtime.Cancellation);
+            var listener = new PulsarListener(this, _parent, runtime.Cancellation);
 
-            runtime.Endpoints.AddListener(_listener, this);
+            runtime.Endpoints.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IJasperRuntime root)
@@ -122,9 +121,5 @@ namespace Jasper.Pulsar
             return new PulsarSender(this, _parent, root.Cancellation);
         }
 
-        public void Dispose()
-        {
-            _listener?.Dispose();
-        }
     }
 }

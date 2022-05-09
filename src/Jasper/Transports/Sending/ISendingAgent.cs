@@ -4,7 +4,7 @@ using Jasper.Configuration;
 
 namespace Jasper.Transports.Sending;
 
-public interface ISendingAgent : IDisposable
+public interface ISendingAgent
 {
     Uri Destination { get; }
     Uri? ReplyUri { get; set; }

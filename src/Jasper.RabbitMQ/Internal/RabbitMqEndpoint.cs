@@ -12,14 +12,12 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqEndpoint : TransportEndpoint<IBasicProperties>, IDisposable
+    public class RabbitMqEndpoint : TransportEndpoint<IBasicProperties>
     {
         public const string QueueSegment = "queue";
         public const string ExchangeSegment = "exchange";
         public const string RoutingSegment = "routing";
         private readonly RabbitMqTransport _parent;
-
-        private IListener? _listener;
 
         public RabbitMqEndpoint(RabbitMqTransport parent)
         {
@@ -68,11 +66,6 @@ namespace Jasper.RabbitMQ.Internal
 
                 return uri;
             }
-        }
-
-        public void Dispose()
-        {
-            _listener?.Dispose();
         }
 
         public override IDictionary<string, object> DescribeProperties()
@@ -159,16 +152,11 @@ namespace Jasper.RabbitMQ.Internal
                 return;
             }
 
-            if (ListenerCount > 1)
-            {
-                _listener = new ParallelRabbitMqListener(runtime.Logger, this, _parent);
-            }
-            else
-            {
-                _listener = new RabbitMqListener(runtime.Logger, this, _parent);
-            }
+            IListener listener = ListenerCount > 1
+                ? new ParallelRabbitMqListener(runtime.Logger, this, _parent)
+                : new RabbitMqListener(runtime.Logger, this, _parent);
 
-            runtime.Endpoints.AddListener(_listener, this);
+            runtime.Endpoints.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IJasperRuntime root)

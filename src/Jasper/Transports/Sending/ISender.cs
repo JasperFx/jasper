@@ -8,7 +8,7 @@ public interface ISenderRequiresCallback : IDisposable
     void RegisterCallback(ISenderCallback senderCallback);
 }
 
-public interface ISender : IDisposable
+public interface ISender 
 {
     bool SupportsNativeScheduledSend { get; }
     Uri Destination { get; }

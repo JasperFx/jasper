@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending;
 
-public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit
+public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit, IAsyncDisposable
 {
     private readonly ILogger _logger;
     private readonly IMessageLogger _messageLogger;
@@ -111,11 +111,6 @@ public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit
     public Uri? ReplyUri { get; set; }
 
     public Uri Destination => _sender.Destination;
-
-    public void Dispose()
-    {
-        _sender.Dispose();
-    }
 
     public bool Latched { get; private set; }
     public abstract bool IsDurable { get; }
@@ -264,5 +259,14 @@ public abstract class SendingAgent : ISendingAgent, ISenderCallback, ICircuit
         var batch = new OutgoingMessageBatch(outgoing.Destination, new[] { outgoing });
         _logger.OutgoingBatchFailed(batch, exception);
         return markFailedAsync(batch);
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        if (_sender is IAsyncDisposable ad) return ad.DisposeAsync();
+
+        if (_sender is IDisposable d) d.SafeDispose();
+
+        return ValueTask.CompletedTask;
     }
 }

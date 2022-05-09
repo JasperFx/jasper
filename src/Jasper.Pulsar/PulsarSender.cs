@@ -9,7 +9,7 @@ using Jasper.Transports.Sending;
 
 namespace Jasper.Pulsar
 {
-    public class PulsarSender : ISender
+    public class PulsarSender : ISender, IAsyncDisposable
     {
         private readonly PulsarEndpoint _endpoint;
         private readonly CancellationToken _cancellation;
@@ -26,14 +26,13 @@ namespace Jasper.Pulsar
             Destination = _endpoint.Uri;
         }
 
-        public void Dispose()
+        public ValueTask DisposeAsync()
         {
-            // TODO -- don't mix! Use DisposeAsync() wherever possible
-            // TODO -- might be a good Baseline function to Dispose or AsyncDispose an enumerable of objects
-            _producer.DisposeAsync().GetAwaiter().GetResult();
+            return _producer.DisposeAsync();
         }
 
-        public bool SupportsNativeScheduledSend { get; } = true;
+
+        public bool SupportsNativeScheduledSend => true;
         public Uri Destination { get; }
         public async Task<bool> PingAsync()
         {

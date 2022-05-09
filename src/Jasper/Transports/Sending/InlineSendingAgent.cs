@@ -19,11 +19,6 @@ public class InlineSendingAgent : ISendingAgent
         Endpoint = endpoint;
     }
 
-    public void Dispose()
-    {
-        // nothing
-    }
-
     public Uri Destination => _sender.Destination;
     public Uri? ReplyUri { get; set; }
     public bool Latched { get; } = false;

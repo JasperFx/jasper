@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Tcp;
 
-public class SocketListener : IListener
+public class SocketListener : IListener, IDisposable
 {
     private readonly CancellationToken _cancellationToken;
     private readonly IPAddress _ipaddr;

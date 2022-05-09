@@ -51,8 +51,6 @@ namespace Jasper.RabbitMQ.Internal
 
         public void Dispose()
         {
-            foreach (var endpoint in _endpoints) endpoint.Dispose();
-
             _listenerConnection?.Close();
             _listenerConnection?.SafeDispose();
 

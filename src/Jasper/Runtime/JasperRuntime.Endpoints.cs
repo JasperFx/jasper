@@ -16,7 +16,7 @@ namespace Jasper.Runtime;
 public partial class JasperRuntime : IJasperEndpoints
 {
     private readonly object _channelLock = new();
-    private readonly IList<IDisposable> _disposables = new List<IDisposable>();
+    private readonly IList<object> _disposables = new List<object>();
     private readonly List<ISubscriber> _subscribers = new();
 
     private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
@@ -85,7 +85,7 @@ public partial class JasperRuntime : IJasperEndpoints
 
     public void AddListener(IListener listener, Endpoint settings)
     {
-        IDisposable? worker = settings.Mode switch
+        object? worker = settings.Mode switch
         {
             EndpointMode.Durable => new DurableWorkerQueue(settings, Pipeline, Advanced,
                 Persistence, Logger),

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class ParallelRabbitMqListener : IListener
+    public class ParallelRabbitMqListener : IListener, IDisposable
     {
         private readonly IList<RabbitMqListener> _listeners = new List<RabbitMqListener>();
 

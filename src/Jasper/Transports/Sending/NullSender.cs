@@ -10,10 +10,6 @@ public class NullSender : ISender
         Destination = destination;
     }
 
-    public void Dispose()
-    {
-    }
-
     public bool SupportsNativeScheduledSend => false;
     public Uri Destination { get; }
 

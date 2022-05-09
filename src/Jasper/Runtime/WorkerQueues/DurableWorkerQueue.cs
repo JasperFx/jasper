@@ -13,7 +13,7 @@ using Polly.Retry;
 
 namespace Jasper.Runtime.WorkerQueues;
 
-public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling, IHasDeadLetterQueue
+public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling, IHasDeadLetterQueue, IAsyncDisposable
 {
     private readonly ILogger _logger;
     private readonly IEnvelopePersistence _persistence;
@@ -141,6 +141,12 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
     {
         // Might need to drain the block
         _receiver.Complete();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _receiver.Complete();
+        await _receiver.Completion;
     }
 
     // Separated for testing here.
