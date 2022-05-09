@@ -131,12 +131,11 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
         _outstanding.Clear();
     }
 
-    // TODO -- evaluate whether this can be done without the GetResult() call
-    public void UseInMemoryTransaction()
+    public async ValueTask UseInMemoryTransactionAsync()
     {
         if (!ReferenceEquals(this, Transaction))
         {
-            EnlistInTransactionAsync(this).GetAwaiter().GetResult();
+            await EnlistInTransactionAsync(this);
         }
     }
 

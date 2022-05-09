@@ -57,7 +57,7 @@ public interface IExecutionContext : IMessagePublisher, IAcknowledgementSender
     ///     Opt into using an in memory transaction for the execution context.
     ///     Honestly, this is mostly for testing usage
     /// </summary>
-    void UseInMemoryTransaction();
+    ValueTask UseInMemoryTransactionAsync();
 
     /// <summary>
     ///     Called by Jasper itself to mark this context as being part

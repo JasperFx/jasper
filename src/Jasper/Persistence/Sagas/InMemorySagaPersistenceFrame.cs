@@ -24,7 +24,7 @@ public class InMemorySagaPersistenceFrame : AsyncFrame
 
     public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
     {
-        writer.Write($"{_context!.Usage}.{nameof(IExecutionContext.UseInMemoryTransaction)}();");
+        writer.Write($"await {_context!.Usage}.{nameof(IExecutionContext.UseInMemoryTransactionAsync)}();");
 
         if (_existence == SagaStateExistence.Existing)
         {
