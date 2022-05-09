@@ -16,6 +16,7 @@ public class NoHandlerContinuation : IContinuation
     }
 
     public async ValueTask ExecuteAsync(IExecutionContext execution,
+        IJasperRuntime runtime,
         DateTimeOffset now)
     {
         if (execution.Envelope == null) throw new InvalidOperationException("Context does not have an Envelope");
@@ -36,7 +37,7 @@ public class NoHandlerContinuation : IContinuation
 
         if (execution.Envelope.AckRequested)
         {
-            await execution.SendAcknowledgementAsync(execution.Envelope);
+            await runtime.Acknowledgements.SendAcknowledgementAsync(execution.Envelope);
         }
 
         await execution.CompleteAsync();

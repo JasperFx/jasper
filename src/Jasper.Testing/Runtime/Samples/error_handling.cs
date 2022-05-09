@@ -225,6 +225,7 @@ namespace Jasper.Testing.Runtime.Samples
         }
 
         public async ValueTask ExecuteAsync(IExecutionContext execution,
+            IJasperRuntime runtime,
             DateTimeOffset now)
         {
             // Raise a separate "alert" event message

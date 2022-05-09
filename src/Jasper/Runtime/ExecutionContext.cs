@@ -145,21 +145,6 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
         foreach (var envelope in _outstanding) envelope.SagaId = sagaId.ToString();
     }
 
-    Envelope IAcknowledgementSender.BuildAcknowledgement(Envelope envelope)
-    {
-        return Runtime.Acknowledgements.BuildAcknowledgement(envelope);
-    }
-
-    Task IAcknowledgementSender.SendAcknowledgementAsync(Envelope envelope)
-    {
-        return Runtime.Acknowledgements.SendAcknowledgementAsync(envelope);
-    }
-
-    Task IAcknowledgementSender.SendFailureAcknowledgementAsync(Envelope original, string message)
-    {
-        return Runtime.Acknowledgements.SendFailureAcknowledgementAsync(original, message);
-    }
-
     public ValueTask CompleteAsync()
     {
         if (_channel == null || Envelope == null)

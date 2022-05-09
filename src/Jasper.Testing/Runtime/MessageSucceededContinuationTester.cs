@@ -19,9 +19,10 @@ namespace Jasper.Testing.Runtime
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .ExecuteAsync(theContext, DateTime.UtcNow);
+                .ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
         }
 
+        private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
 
         private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
@@ -49,19 +50,19 @@ namespace Jasper.Testing.Runtime
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .ExecuteAsync(theContext, DateTime.UtcNow);
+                .ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
-        private readonly IChannelCallback theChannel = Substitute.For<IChannelCallback>();
         private readonly Exception theException = new DivideByZeroException();
         private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
+        private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
 
         [Fact]
         public void should_send_a_failure_ack()
         {
             var message = "Sending cascading message failed: " + theException.Message;
-            theContext.Received().SendFailureAcknowledgementAsync(theEnvelope, message);
+            theRuntime.Acknowledgements.Received().SendFailureAcknowledgementAsync(theEnvelope, message);
         }
     }
 }

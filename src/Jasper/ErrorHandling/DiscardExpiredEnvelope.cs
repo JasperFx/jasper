@@ -13,6 +13,7 @@ public class DiscardExpiredEnvelope : IContinuation
     }
 
     public async ValueTask ExecuteAsync(IExecutionContext execution,
+        IJasperRuntime runtime,
         DateTimeOffset now)
     {
         try

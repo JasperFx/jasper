@@ -47,7 +47,7 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public Task HandleAsync(Envelope? envelope, IJasperRuntime root)
+            public Task HandleAsync(Envelope envelope, IJasperRuntime root)
             {
                 Recorded.Add(envelope);
 

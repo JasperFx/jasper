@@ -25,13 +25,15 @@ namespace Jasper.Testing.Runtime
         private readonly MoveToErrorQueue theContinuation;
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
         private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
+        private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
 
         [Fact]
         public async Task should_send_a_failure_ack()
         {
-            await theContinuation.ExecuteAsync(theContext, DateTime.UtcNow);
 
-            await theContext
+            await theContinuation.ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
+
+            await theRuntime.Acknowledgements
                 .Received()
                 .SendFailureAcknowledgementAsync(theEnvelope,$"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}")
                 ;
@@ -40,7 +42,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task logging_calls()
         {
-            await theContinuation.ExecuteAsync(theContext, DateTime.UtcNow);
+            await theContinuation.ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
 
             theContext.Logger.Received().MessageFailed(theEnvelope, theException);
             theContext.Logger.Received().MovedToErrorQueue(theEnvelope, theException);

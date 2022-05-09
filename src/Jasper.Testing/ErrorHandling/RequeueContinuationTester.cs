@@ -23,7 +23,7 @@ namespace Jasper.Testing.ErrorHandling
             context.Envelope.Returns(envelope);
 
 
-            await RequeueContinuation.Instance.ExecuteAsync(context, DateTime.Now);
+            await RequeueContinuation.Instance.ExecuteAsync(context, new MockJasperRuntime(), DateTime.Now);
 
             await context.Received(1).DeferAsync();
         }

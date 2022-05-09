@@ -12,7 +12,7 @@ public class RetryNowContinuation : IContinuation
     {
     }
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution, DateTimeOffset now)
+    public async ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
     {
         await execution.RetryExecutionNowAsync();
     }

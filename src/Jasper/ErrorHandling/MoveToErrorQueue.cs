@@ -14,9 +14,10 @@ public class MoveToErrorQueue : IContinuation
     }
 
     public async ValueTask ExecuteAsync(IExecutionContext execution,
+        IJasperRuntime runtime,
         DateTimeOffset now)
     {
-        await execution.SendFailureAcknowledgementAsync(execution.Envelope!,
+        await runtime.Acknowledgements.SendFailureAcknowledgementAsync(execution.Envelope!,
             $"Moved message {execution.Envelope!.Id} to the Error Queue.\n{_exception}");
 
         await execution.MoveToDeadLetterQueueAsync(_exception);

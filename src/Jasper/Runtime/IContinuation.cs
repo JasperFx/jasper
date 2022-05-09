@@ -14,9 +14,10 @@ public interface IContinuation
     ///     Post-message handling action
     /// </summary>
     /// <param name="execution"></param>
+    /// <param name="runtime"></param>
     /// <param name="now"></param>
     /// <returns></returns>
-    ValueTask ExecuteAsync(IExecutionContext execution, DateTimeOffset now);
+    ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now);
 }
 
 #endregion

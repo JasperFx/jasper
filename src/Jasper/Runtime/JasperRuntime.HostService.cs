@@ -76,11 +76,20 @@ public partial class JasperRuntime
             foreach (var endpoint in transport.Endpoints()) endpoint.Root = this; // necessary to locate serialization
         }
 
-        foreach (var transport in Options) transport.StartSenders(this);
+        foreach (var transport in Options)
+        {
+            transport.StartSenders(this);
+        }
 
-        foreach (var transport in Options) transport.StartListeners(this);
+        foreach (var transport in Options)
+        {
+            transport.StartListeners(this);
+        }
 
-        foreach (var subscriber in Options.Subscribers) _subscribers.Fill(subscriber);
+        foreach (var subscriber in Options.Subscribers)
+        {
+            _subscribers.Fill(subscriber);
+        }
     }
 
     private async Task startDurabilityAgentAsync()

@@ -19,7 +19,7 @@ public class HandlerPipeline : IHandlerPipeline
     private readonly HandlerGraph _graph;
     private readonly NoHandlerContinuation _noHandlers;
 
-    private readonly IJasperRuntime _root;
+    private readonly IJasperRuntime _runtime;
 
 
     private readonly AdvancedSettings _settings;
@@ -29,17 +29,17 @@ public class HandlerPipeline : IHandlerPipeline
 
 
     public HandlerPipeline(HandlerGraph graph, IMessageLogger logger,
-        NoHandlerContinuation noHandlers, IJasperRuntime root, ObjectPool<ExecutionContext> contextPool)
+        NoHandlerContinuation noHandlers, IJasperRuntime runtime, ObjectPool<ExecutionContext> contextPool)
     {
         _graph = graph;
         _noHandlers = noHandlers;
-        _root = root;
+        _runtime = runtime;
         _contextPool = contextPool;
-        _cancellation = root.Cancellation;
+        _cancellation = runtime.Cancellation;
 
         Logger = logger;
 
-        _settings = root.Advanced;
+        _settings = runtime.Advanced;
     }
 
     public IMessageLogger Logger { get; }
@@ -62,7 +62,7 @@ public class HandlerPipeline : IHandlerPipeline
             {
                 // TODO -- pass the activity into IContinuation?
                 var continuation = await executeAsync(context, envelope);
-                await continuation.ExecuteAsync(context, DateTime.UtcNow);
+                await continuation.ExecuteAsync(context, _runtime, DateTime.UtcNow);
             }
             catch (Exception? e)
             {
@@ -133,7 +133,7 @@ public class HandlerPipeline : IHandlerPipeline
             // Try to deserialize
             try
             {
-                var serializer = envelope.Serializer ?? _root.Options.DetermineSerializer(envelope);
+                var serializer = envelope.Serializer ?? _runtime.Options.DetermineSerializer(envelope);
 
                 if (envelope.Data == null)
                     throw new ArgumentOutOfRangeException(nameof(envelope),
@@ -200,7 +200,7 @@ public class HandlerPipeline : IHandlerPipeline
 
         var policy = handler.Chain!.Retries.BuildPolicy(_graph.Retries);
 
-        var timeoutSpan = handler.Chain.DetermineMessageTimeout(_root.Options);
+        var timeoutSpan = handler.Chain.DetermineMessageTimeout(_runtime.Options);
 
         if (policy == null)
         {
@@ -276,8 +276,8 @@ public class HandlerPipeline : IHandlerPipeline
 
     internal void MarkFailure(IExecutionContext context, Exception ex)
     {
-        _root.MessageLogger.LogException(ex, context.Envelope!.Id, "Failure during message processing execution");
-        _root.MessageLogger
+        _runtime.MessageLogger.LogException(ex, context.Envelope!.Id, "Failure during message processing execution");
+        _runtime.MessageLogger
             .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
     }
 }
