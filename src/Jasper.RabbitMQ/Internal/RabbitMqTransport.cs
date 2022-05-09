@@ -169,7 +169,7 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
     }
-s
+
     public interface IBindingExpression
     {
         /// <summary>
