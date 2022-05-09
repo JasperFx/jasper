@@ -257,7 +257,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
     {
         if (Persistence is NullEnvelopePersistence)
         {
-            foreach (var envelope in _scheduled) Runtime.ScheduledJobs.Enqueue(envelope.ScheduledTime!.Value, envelope);
+            foreach (var envelope in _scheduled) Runtime.ScheduleLocalExecutionInMemory(envelope.ScheduledTime!.Value, envelope);
         }
         else
         {

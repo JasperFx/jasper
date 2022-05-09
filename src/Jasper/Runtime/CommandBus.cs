@@ -145,7 +145,7 @@ public class CommandBus : ICommandBus
 
         if (Persistence is NullEnvelopePersistence)
         {
-            Runtime.ScheduledJobs.Enqueue(envelope.ScheduledTime.Value, envelope);
+            Runtime.ScheduleLocalExecutionInMemory(envelope.ScheduledTime.Value, envelope);
             return Task.CompletedTask;
         }
 

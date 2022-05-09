@@ -70,9 +70,14 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 
     public ILogger Logger { get; }
 
-    public IScheduledJobProcessor ScheduledJobs { get; private set; } = null!;
+    internal IScheduledJobProcessor ScheduledJobs { get; private set; } = null!;
 
     public JasperOptions Options { get; }
+
+    public void ScheduleLocalExecutionInMemory(DateTimeOffset executionTime, Envelope envelope)
+    {
+        ScheduledJobs.Enqueue(executionTime, envelope);
+    }
 
     public IEnvelopeRouter Router { get; }
 

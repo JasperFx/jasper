@@ -25,7 +25,11 @@ namespace Jasper.Testing.Runtime
 
     public class MockJasperRuntime : IJasperRuntime
     {
-        public IScheduledJobProcessor ScheduledJobs { get; } = Substitute.For<IScheduledJobProcessor>();
+        public void ScheduleLocalExecutionInMemory(DateTimeOffset executionTime, Envelope envelope)
+        {
+            throw new NotSupportedException();
+        }
+
         public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();

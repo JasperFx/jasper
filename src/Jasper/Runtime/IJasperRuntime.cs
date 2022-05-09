@@ -13,8 +13,12 @@ namespace Jasper.Runtime;
 
 public interface IJasperRuntime
 {
-    // TODO -- eliminate this in favor of just a "EnqueueScheduledJobInMemory()" method
-    IScheduledJobProcessor ScheduledJobs { get; }
+    /// <summary>
+    /// Schedule an envelope for later execution in memory
+    /// </summary>
+    /// <param name="executionTime"></param>
+    /// <param name="envelope"></param>
+    void ScheduleLocalExecutionInMemory(DateTimeOffset executionTime, Envelope envelope);
     IEnvelopeRouter Router { get; }
     IHandlerPipeline Pipeline { get; }
     IMessageLogger MessageLogger { get; }

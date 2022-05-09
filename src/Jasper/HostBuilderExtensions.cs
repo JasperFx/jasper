@@ -120,7 +120,6 @@ public static class HostBuilderExtensions
 
             services.MessagingRootService(x => x.Pipeline);
             services.MessagingRootService(x => x.Router);
-            services.MessagingRootService(x => x.ScheduledJobs);
 
             services.AddOptions();
             services.AddLogging();
