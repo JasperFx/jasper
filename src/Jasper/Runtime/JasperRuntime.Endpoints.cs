@@ -21,7 +21,7 @@ public partial class JasperRuntime : IJasperEndpoints
 
     private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
-    private ImHashMap<Uri?, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty!;
+    private ImHashMap<Uri, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty!;
 
     public IEnumerable<ISubscriber> Subscribers => _subscribers;
 
