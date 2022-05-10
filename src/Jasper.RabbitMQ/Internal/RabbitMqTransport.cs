@@ -76,7 +76,6 @@ namespace Jasper.RabbitMQ.Internal
             return _endpoints[uri];
         }
 
-        // TODO -- this surely needs to be ValueTask or Task
         public override ValueTask InitializeAsync(IJasperRuntime root)
         {
             if (AutoProvision)

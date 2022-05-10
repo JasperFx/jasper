@@ -1,4 +1,5 @@
 using System;
+using Baseline;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -6,11 +7,16 @@ namespace Jasper.RabbitMQ.Internal
     public abstract class RabbitMqConnectionAgent : IDisposable
     {
         private readonly IConnection _connection;
+        private readonly RabbitMqTransport _transport;
+        private readonly RabbitMqEndpoint _endpoint;
         protected readonly object Locker = new();
 
-        protected RabbitMqConnectionAgent(IConnection connection)
+        protected RabbitMqConnectionAgent(IConnection connection, RabbitMqTransport transport,
+            RabbitMqEndpoint endpoint)
         {
             _connection = connection;
+            _transport = transport;
+            _endpoint = endpoint;
         }
 
         internal AgentState State { get; private set; } = AgentState.Disconnected;
@@ -45,6 +51,21 @@ namespace Jasper.RabbitMQ.Internal
                 }
 
                 startNewChannel();
+
+                if (_transport.AutoProvision)
+                {
+                    if (_endpoint.ExchangeName.IsNotEmpty())
+                    {
+                        var exchange = _transport.Exchanges[_endpoint.ExchangeName];
+                        exchange.Declare(_channel!);
+                    }
+
+                    if (_endpoint.QueueName.IsNotEmpty())
+                    {
+                        var queue = _transport.Queues[_endpoint.QueueName];
+                        queue.Declare(_channel!);
+                    }
+                }
 
                 State = AgentState.Connected;
             }

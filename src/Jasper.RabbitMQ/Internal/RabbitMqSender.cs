@@ -16,7 +16,7 @@ namespace Jasper.RabbitMQ.Internal
         private readonly string _key;
 
         public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(
-            transport.SendingConnection)
+            transport.SendingConnection, transport, endpoint)
         {
             _endpoint = endpoint;
             Destination = endpoint.Uri;

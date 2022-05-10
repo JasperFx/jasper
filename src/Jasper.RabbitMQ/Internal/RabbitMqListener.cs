@@ -19,7 +19,7 @@ namespace Jasper.RabbitMQ.Internal
         private WorkerQueueMessageConsumer? _consumer;
 
         public RabbitMqListener(ILogger logger,
-            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection)
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection, transport, endpoint)
         {
             _logger = logger;
             _endpoint = endpoint;

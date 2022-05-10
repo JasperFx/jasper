@@ -10,6 +10,16 @@ namespace Jasper.RabbitMQ.Tests.Internals
     public class configuration_model_specs
     {
         [Fact]
+        public void defaults()
+        {
+            var exchange = new RabbitMqExchange("foo");
+            exchange.Name.ShouldBe("foo");
+            exchange.ExchangeType.ShouldBe(ExchangeType.Fanout);
+            exchange.AutoDelete.ShouldBeFalse();
+            exchange.IsDurable.ShouldBeTrue();
+        }
+
+        [Fact]
         public void exchange_declare()
         {
             var channel = Substitute.For<IModel>();

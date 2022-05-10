@@ -1,3 +1,4 @@
+using System.Linq;
 using Baseline.Reflection;
 using Jasper.RabbitMQ.Internal;
 using NSubstitute;
@@ -9,6 +10,18 @@ namespace Jasper.RabbitMQ.Tests.Internals
 {
     public class RabbitMqQueueTests
     {
+        [Fact]
+        public void defaults()
+        {
+            var queue = new RabbitMqQueue("foo");
+
+            queue.Name.ShouldBe("foo");
+            queue.IsDurable.ShouldBeTrue();
+            queue.IsExclusive.ShouldBeFalse();
+            queue.AutoDelete.ShouldBeFalse();
+            queue.Arguments.Any().ShouldBeFalse();
+        }
+
         [Theory]
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
