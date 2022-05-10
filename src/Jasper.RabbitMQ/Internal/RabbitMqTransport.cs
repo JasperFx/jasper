@@ -37,6 +37,8 @@ namespace Jasper.RabbitMQ.Internal
         internal IConnection SendingConnection => _sendingConnection ??= BuildConnection();
 
         public bool AutoProvision { get; set; }
+
+        [Obsolete("Use Oakton? Or make this queue by queue?")]
         public bool AutoPurgeOnStartup { get; set; }
 
         public ConnectionFactory ConnectionFactory { get; } = new();

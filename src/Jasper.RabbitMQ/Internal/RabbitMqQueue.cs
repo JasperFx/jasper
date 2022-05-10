@@ -20,10 +20,14 @@ namespace Jasper.RabbitMQ.Internal
         public bool IsDurable { get; set; } = true;
 
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
+        public bool HasDeclared { get; private set; }
 
         internal void Declare(IModel channel)
         {
+            if (HasDeclared) return;
+
             channel.QueueDeclare(Name, IsDurable, IsExclusive, AutoDelete, Arguments);
+            HasDeclared = true;
         }
 
         public void Teardown(IModel channel)

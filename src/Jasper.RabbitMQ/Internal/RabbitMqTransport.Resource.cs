@@ -166,6 +166,7 @@ namespace Jasper.RabbitMQ.Internal
             using var connection = BuildConnection();
             using var channel = connection.CreateModel();
 
+            // TODO -- use ILogger in all cases here
             foreach (var queue in Queues)
             {
                 Console.WriteLine("Declaring Rabbit MQ queue " + queue);

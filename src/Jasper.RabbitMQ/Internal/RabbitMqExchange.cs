@@ -12,6 +12,8 @@ namespace Jasper.RabbitMQ.Internal
             DeclaredName = name == TransportConstants.Default ? "" : Name;
         }
 
+        public bool HasDeclared { get; private set; }
+
         public string Name { get; }
 
         public bool IsDurable { get; set; } = true;
@@ -32,8 +34,12 @@ namespace Jasper.RabbitMQ.Internal
                 return;
             }
 
+            if (HasDeclared) return;
+
             var exchangeTypeName = ExchangeType.ToString().ToLower();
             channel.ExchangeDeclare(DeclaredName, exchangeTypeName, IsDurable, AutoDelete, Arguments);
+
+            HasDeclared = true;
         }
 
 
