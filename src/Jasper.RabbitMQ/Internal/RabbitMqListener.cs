@@ -68,6 +68,8 @@ namespace Jasper.RabbitMQ.Internal
             _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _endpoint, Address,
                 _cancellation);
 
+            Channel.BasicQos(_endpoint.PreFetchSize, _endpoint.PreFetchCount, false);
+
             Channel.BasicConsume(_consumer, _routingKey);
         }
 

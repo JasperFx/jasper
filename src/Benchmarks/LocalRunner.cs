@@ -46,7 +46,7 @@ namespace Benchmarks
                 }
 
                 opts.DefaultLocalQueue
-                    .MaximumThreads(NumberOfThreads);
+                    .MaximumParallelMessages(NumberOfThreads);
 
             }).GetAwaiter().GetResult();
 

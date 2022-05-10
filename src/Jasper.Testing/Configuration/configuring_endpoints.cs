@@ -23,7 +23,7 @@ namespace Jasper.Testing.Configuration
             _host = Host.CreateDefaultBuilder().UseJasper(x =>
             {
                 x.ListenForMessagesFrom("local://one").Sequential().Named("one");
-                x.ListenForMessagesFrom("local://two").MaximumThreads(11);
+                x.ListenForMessagesFrom("local://two").MaximumParallelMessages(11);
                 x.ListenForMessagesFrom("local://three").DurablyPersistedLocally();
                 x.ListenForMessagesFrom("local://four").DurablyPersistedLocally().BufferedInMemory();
                 x.ListenForMessagesFrom("local://five").ProcessInline();
@@ -74,7 +74,7 @@ namespace Jasper.Testing.Configuration
         public void configure_default_queue()
         {
             theOptions.DefaultLocalQueue
-                .MaximumThreads(13);
+                .MaximumParallelMessages(13);
 
             localQueue(TransportConstants.Default)
                 .ExecutionOptions.MaxDegreeOfParallelism
@@ -85,7 +85,7 @@ namespace Jasper.Testing.Configuration
         public void configure_durable_queue()
         {
             theOptions.DurableScheduledMessagesLocalQueue
-                .MaximumThreads(22);
+                .MaximumParallelMessages(22);
 
             localQueue(TransportConstants.Durable)
                 .ExecutionOptions.MaxDegreeOfParallelism

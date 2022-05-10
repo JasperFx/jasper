@@ -55,7 +55,7 @@ namespace Benchmarks
 
                 opts.PublishAllMessages().ToRabbitQueue(queueName);
                 opts.ListenToRabbitQueue(queueName)
-                    .MaximumThreads(NumberOfThreads)
+                    .MaximumParallelMessages(NumberOfThreads)
                     .ListenerCount(ListenerCount);
 
             }).GetAwaiter().GetResult();

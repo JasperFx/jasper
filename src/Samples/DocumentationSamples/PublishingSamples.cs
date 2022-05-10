@@ -27,7 +27,7 @@ namespace DocumentationSamples
                                 .Sequential();
 
                             opts.LocalQueue("two")
-                                .MaximumThreads(5);
+                                .MaximumParallelMessages(5);
 
 
                             // Or just edit the ActionBlock directly

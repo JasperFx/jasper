@@ -25,7 +25,7 @@ public class ListenerConfiguration<TSelf, TEndpoint> : IListenerConfiguration<TS
     // ReSharper disable once InconsistentNaming
     protected TEndpoint endpoint { get; }
 
-    public TSelf MaximumThreads(int maximumParallelHandlers)
+    public TSelf MaximumParallelMessages(int maximumParallelHandlers)
     {
         endpoint.ExecutionOptions.MaxDegreeOfParallelism = maximumParallelHandlers;
         return this.As<TSelf>();

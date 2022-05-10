@@ -13,7 +13,7 @@ public interface IListenerConfiguration<T>
     /// </summary>
     /// <param name="maximumParallelHandlers"></param>
     /// <returns></returns>
-    T MaximumThreads(int maximumParallelHandlers);
+    T MaximumParallelMessages(int maximumParallelHandlers);
 
     /// <summary>
     ///     Forces this worker queue to use no more than one thread

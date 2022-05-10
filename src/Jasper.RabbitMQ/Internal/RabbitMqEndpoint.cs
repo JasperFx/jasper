@@ -68,6 +68,37 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
+        /// <summary>
+        /// Limit on the combined size of pre-fetched messages. The default in Jasper is 0, which
+        /// denotes an unlimited size.
+        /// </summary>
+        public uint PreFetchSize { get; set; } = 0;
+
+        private ushort? _preFetchCount;
+
+        /// <summary>
+        /// The number of unacknowledged messages that can be processed concurrently
+        /// </summary>
+        public ushort PreFetchCount
+        {
+            get
+            {
+                if (_preFetchCount.HasValue) return _preFetchCount.Value;
+
+                switch (Mode)
+                {
+                    case EndpointMode.BufferedInMemory:
+                        case EndpointMode.Durable:
+                        return (ushort)(ExecutionOptions.MaxDegreeOfParallelism * 2);
+
+                }
+
+                return 100;
+            }
+            set => _preFetchCount = value;
+        }
+
+
         public override IDictionary<string, object> DescribeProperties()
         {
             var dict = base.DescribeProperties();

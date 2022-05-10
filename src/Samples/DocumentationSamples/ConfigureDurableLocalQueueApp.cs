@@ -16,7 +16,7 @@ namespace DocumentationSamples
 
                         // Allow no more than 3 scheduled messages
                         // to execute at one time
-                        .MaximumThreads(3);
+                        .MaximumParallelMessages(3);
                 }).StartAsync();
 
             #endregion

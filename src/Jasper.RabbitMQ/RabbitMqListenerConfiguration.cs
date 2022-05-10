@@ -52,5 +52,30 @@ namespace Jasper.RabbitMQ
             endpoint.ReceivesMessage(messageType);
             return this;
         }
+
+        /// <summary>
+        /// Override the Rabbit MQ PreFetchCount value for just this endpoint for how many
+        /// messages can be pre-fetched into memory before being handled
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public RabbitMqListenerConfiguration PreFetchCount(ushort count)
+        {
+            endpoint.PreFetchCount = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Override the Rabbit MQ PreFetchSize value for just this endpoint for the total size of the
+        /// messages that can be pre-fetched into memory before being handled
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public RabbitMqListenerConfiguration PreFetchSize(uint size)
+        {
+            endpoint.PreFetchSize = size;
+            return this;
+        }
+
     }
 }
