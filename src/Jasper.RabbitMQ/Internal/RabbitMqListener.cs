@@ -57,7 +57,7 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             _cancellation = cancellation;
             _cancellation.Register(teardownChannel);

@@ -8,7 +8,7 @@ public interface IListener : IChannelCallback
 {
     Uri Address { get; }
     ListeningStatus Status { get; set; }
-    void Start(IListeningWorkerQueue? callback, CancellationToken cancellation);
+    void Start(IListeningWorkerQueue callback, CancellationToken cancellation);
 
     Task<bool> TryRequeueAsync(Envelope envelope);
 }

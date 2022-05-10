@@ -55,6 +55,7 @@ public partial class Envelope
 
     internal void MarkReceived(Uri uri, DateTimeOffset now, int currentNodeId)
     {
+        Destination = uri;
         if (IsScheduledForLater(now))
         {
             Status = EnvelopeStatus.Scheduled;

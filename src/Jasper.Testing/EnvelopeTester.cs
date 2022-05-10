@@ -176,6 +176,20 @@ namespace Jasper.Testing
 
         }
 
+        [Fact]
+        public void marked_received_sets_the_destination()
+        {
+            var envelope = ObjectMother.Envelope();
+            envelope.ScheduledTime = DateTime.UtcNow.AddDays(-1);
+
+            var uri = TransportConstants.LocalUri;
+            var uniqueNodeId = 3;
+
+            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+
+            envelope.Destination.ShouldBe(uri);
+        }
+
 
         [Fact]
         public void mark_received_when_expired_execution()

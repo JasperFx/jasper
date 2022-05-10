@@ -33,7 +33,7 @@ public class SocketListener : IListener, IDisposable
         Address = $"tcp://{ipaddr}:{port}/".ToUri();
     }
 
-    public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
+    public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
     {
         _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
         _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);

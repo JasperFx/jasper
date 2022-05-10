@@ -41,7 +41,7 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             foreach (var listener in _listeners) listener.Start(callback, cancellation);
         }

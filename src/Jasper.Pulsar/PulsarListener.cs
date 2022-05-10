@@ -86,7 +86,7 @@ namespace Jasper.Pulsar
                 }
             }
         }
-        public void Start(IListeningWorkerQueue? callback, CancellationToken cancellation)
+        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
         {
             _cancellation = cancellation;
             _callback = callback;
