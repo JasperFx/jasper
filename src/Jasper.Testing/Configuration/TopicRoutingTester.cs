@@ -35,7 +35,7 @@ namespace Jasper.Testing.Configuration
 
 
 
-    public class TopicRouterTester
+    public class TopicRoutingTester
     {
         [Theory]
         [InlineData(typeof(M1), "one")]
