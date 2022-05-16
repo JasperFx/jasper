@@ -30,7 +30,7 @@ namespace Jasper.RabbitMQ.Internal
                     return endpoint;
                 });
 
-            Exchanges = new LightweightCache<string, RabbitMqExchange>(name => new RabbitMqExchange(name));
+            Exchanges = new LightweightCache<string, RabbitMqExchange>(name => new RabbitMqExchange(name, this));
         }
 
         internal IConnection ListeningConnection => _listenerConnection ??= BuildConnection();

@@ -144,6 +144,17 @@ public class TrackedSessionConfiguration
     }
 
     /// <summary>
+    ///     Send a message from the current Jasper application to a specified topic name and wait for
+    ///     all cascading activity to complete
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public Task<ITrackedSession> SendMessageToTopicAndWaitAsync(string topicName, object message, DeliveryOptions? options = null)
+    {
+        return ExecuteAndWaitAsync(c => c.SendToTopicAsync(topicName, message, options));
+    }
+
+    /// <summary>
     ///     Send a message from the current Jasper application and wait for
     ///     all cascading activity to complete
     /// </summary>

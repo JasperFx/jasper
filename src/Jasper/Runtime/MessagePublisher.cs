@@ -55,7 +55,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     }
 
 
-    public ValueTask SendToTopicAsync(object message, string topicName, DeliveryOptions? options = null)
+    public ValueTask SendToTopicAsync(string topicName, object message, DeliveryOptions? options = null)
     {
         if (message == null)
         {

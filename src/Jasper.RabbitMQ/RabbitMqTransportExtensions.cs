@@ -197,5 +197,38 @@ namespace Jasper.RabbitMQ
             return new RabbitMqSubscriberConfiguration(endpoint);
         }
 
+
+        /// <summary>
+        /// Publish matching messages to Rabbit MQ to the designated topic exchange, with
+        /// the topic name derived from the message type name or an explicit override
+        /// </summary>
+        /// <param name="publishing"></param>
+        /// <param name="exchangeName">The Rabbit MQ exchange name</param>
+        /// <param name="configure">Optional configuration of this exchange if Jasper is doing the initialization in Rabbit MQ</param>
+        /// <returns></returns>
+        public static RabbitMqSubscriberConfiguration ToRabbitTopics(this IPublishToExpression publishing,
+            string exchangeName, Action<RabbitMqExchange>? configure = null)
+        {
+            var transports = publishing.As<PublishingExpression>().Parent;
+            var transport = transports.GetOrCreate<RabbitMqTransport>();
+
+            transport.DeclareExchange(exchangeName, e =>
+            {
+                configure?.Invoke(e);
+                e.ExchangeType = ExchangeType.Topic;
+            });
+
+            var endpoint = transport.EndpointForExchange(exchangeName);
+            endpoint.RoutingType = RoutingMode.ByTopic;
+
+            // This is necessary unfortunately to hook up the subscription rules
+            publishing.To(endpoint.Uri);
+
+            return new RabbitMqSubscriberConfiguration(endpoint);
+        }
+
+
+
+
     }
 }

@@ -398,6 +398,8 @@ namespace Jasper.RabbitMQ.Tests
                 receiver.Dispose();
             }
         }
+
+
     }
 
     public class SpecialTopicGuy

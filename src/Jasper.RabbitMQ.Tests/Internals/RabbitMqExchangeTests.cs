@@ -12,7 +12,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         [Fact]
         public void defaults()
         {
-            var exchange = new RabbitMqExchange("foo");
+            var exchange = new RabbitMqExchange("foo", new RabbitMqTransport());
             exchange.Name.ShouldBe("foo");
             exchange.ExchangeType.ShouldBe(ExchangeType.Fanout);
             exchange.AutoDelete.ShouldBeFalse();
@@ -23,7 +23,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         public void exchange_declare()
         {
             var channel = Substitute.For<IModel>();
-            var exchange = new RabbitMqExchange("foo")
+            var exchange = new RabbitMqExchange("foo", new RabbitMqTransport())
             {
                 ExchangeType = ExchangeType.Fanout,
                 AutoDelete = true,
@@ -41,7 +41,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
         public void already_latched()
         {
             var channel = Substitute.For<IModel>();
-            var exchange = new RabbitMqExchange("foo")
+            var exchange = new RabbitMqExchange("foo", new RabbitMqTransport())
             {
                 ExchangeType = ExchangeType.Fanout,
                 AutoDelete = true,

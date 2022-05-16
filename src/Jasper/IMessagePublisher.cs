@@ -30,10 +30,11 @@ public interface IMessagePublisher : ICommandBus
     ///     on having a backing transport endpoint that supports
     ///     topic routing
     /// </summary>
-    /// <param name="message"></param>
     /// <param name="topicName"></param>
+    /// <param name="message"></param>
+    /// <param name="options"></param>
     /// <returns></returns>
-    ValueTask SendToTopicAsync(object message, string topicName, DeliveryOptions? options = null);
+    ValueTask SendToTopicAsync(string topicName, object message, DeliveryOptions? options = null);
 
     // TODO -- send to named endpoint
 
