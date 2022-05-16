@@ -25,8 +25,6 @@ public partial class JasperRuntime
 
             startInMemoryScheduledJobs();
 
-            _durableLocalQueue = GetOrBuildSendingAgent(TransportConstants.DurableLocalUri);
-
             await startDurabilityAgentAsync();
         }
         catch (Exception? e)
@@ -84,11 +82,6 @@ public partial class JasperRuntime
         foreach (var transport in Options)
         {
             transport.StartListeners(this);
-        }
-
-        foreach (var subscriber in Options.Subscribers)
-        {
-            _subscribers.Fill(subscriber);
         }
     }
 

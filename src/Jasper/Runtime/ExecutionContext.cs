@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
 using Jasper.Util;
+using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
 
@@ -43,6 +46,15 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
         foreach (var envelope in _scheduled) await other.ScheduleJobAsync(envelope);
     }
 
+    internal ValueTask ForwardScheduledEnvelopeAsync(Envelope envelope)
+    {
+        // TODO -- harden this a bit?
+        envelope.Sender = Runtime.Endpoints.GetOrBuildSendingAgent(envelope.Destination);
+        envelope.Serializer = Runtime.Options.FindSerializer(envelope.ContentType);
+
+        return persistOrSendAsync(envelope);
+    }
+
     /// <summary>
     ///     Send a response message back to the original sender of the message being handled.
     ///     This can only be used from within a message handler
@@ -64,7 +76,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
             throw new ArgumentOutOfRangeException(nameof(Envelope), $"There is no {nameof(Envelope.ReplyUri)}");
         }
 
-        return SendToDestinationAsync(Envelope.ReplyUri, response);
+        return SendAsync(Envelope.ReplyUri, response);
     }
 
 
@@ -84,8 +96,13 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
             case null:
                 return;
 
+            case ISendMyself sendsMyself:
+                await sendsMyself.ApplyAsync(this);
+                return;
+
             case Envelope env:
-                await SendEnvelopeAsync(env);
+                throw new InvalidOperationException(
+                    "You cannot directly send an Envelope. You may want to use ISendMyself for cascading messages");
                 return;
 
             case IEnumerable<object> enumerable:
@@ -96,7 +113,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
 
         if (message.GetType().ToMessageTypeName() == Envelope.ReplyRequested)
         {
-            await SendToDestinationAsync(Envelope.ReplyUri!, message);
+            await SendAsync(Envelope.ReplyUri!, message);
             return;
         }
 
@@ -109,6 +126,8 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
 
     public async Task FlushOutgoingMessagesAsync()
     {
+        if (!Outstanding.Any()) return;
+
         foreach (var envelope in Outstanding)
         {
             try
@@ -229,11 +248,11 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
 
         Transaction = this;
 
-        if (Envelope.AckRequested)
+        if (Envelope.AckRequested && Envelope.ReplyUri != null)
         {
-            var ack = Runtime.Acknowledgements.BuildAcknowledgement(Envelope);
-
-            _outstanding.Add(ack);
+            var ack = new Acknowledgement { CorrelationId = Envelope.Id };
+            var ackEnvelope = Runtime.RoutingFor(typeof(Acknowledgement)).RouteToDestination(ack, Envelope.ReplyUri, null);
+            _outstanding.Add(ackEnvelope);
         }
     }
 
@@ -259,6 +278,61 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
         if (Envelope != null)
         {
             outbound.CausationId = Envelope.Id.ToString();
+        }
+    }
+
+    public async ValueTask SendAcknowledgementAsync()
+    {
+        if (Envelope!.ReplyUri == null) return;
+
+        var acknowledgement = new Acknowledgement
+        {
+            CorrelationId = Envelope.Id
+        };
+
+        var envelope = Runtime.RoutingFor(typeof(Acknowledgement))
+            .RouteToDestination(acknowledgement, Envelope.ReplyUri, null);
+
+        trackEnvelopeCorrelation(envelope);
+        envelope.SagaId = Envelope.SagaId;
+        // TODO -- reevaluate the metadata. Causation, ORiginator, all that
+
+        try
+        {
+            await envelope.StoreAndForwardAsync();
+        }
+        catch (Exception e)
+        {
+            // TODO -- any kind of retry? Only an issue for inline senders anyway
+            Runtime.Logger.LogError(e, "Failure while sending an acknowledgement for envelope {Id}", envelope.Id);
+        }
+    }
+
+    public async ValueTask SendFailureAcknowledgementAsync(string failureDescription)
+    {
+        if (Envelope!.ReplyUri == null) return;
+
+        var acknowledgement = new FailureAcknowledgement
+        {
+            CorrelationId = Envelope.Id,
+            Message = failureDescription
+        };
+
+        var envelope = Runtime.RoutingFor(typeof(FailureAcknowledgement))
+            .RouteToDestination(acknowledgement, Envelope.ReplyUri, null);
+
+        trackEnvelopeCorrelation(envelope);
+        envelope.SagaId = Envelope.SagaId;
+        // TODO -- reevaluate the metadata. Causation, ORiginator, all that
+
+        try
+        {
+            await envelope.StoreAndForwardAsync();
+        }
+        catch (Exception e)
+        {
+            // TODO -- any kind of retry? Only an issue for inline senders anyway
+            Runtime.Logger.LogError(e, "Failure while sending a failure acknowledgement for envelope {Id}", envelope.Id);
         }
     }
 }

@@ -1,6 +1,6 @@
 using Baseline.Dates;
 using Jasper;
-using Jasper.Tcp;
+using Jasper.Transports.Tcp;
 using Microsoft.Extensions.Hosting;
 
 namespace DocumentationSamples
@@ -20,7 +20,7 @@ namespace DocumentationSamples
                         // Set a message expiration on all
                         // outgoing messages to this
                         // endpoint
-                        .CustomizeOutgoing(env => env.DeliverWithin(2.Seconds()));
+                        .CustomizeOutgoing(env => env.DeliverWithin = 2.Seconds());
                 }).StartAsync();
 
             #endregion

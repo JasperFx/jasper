@@ -1,6 +1,5 @@
 using Jasper;
-using Jasper.Tcp;
-using Jasper.Tracking;
+using Jasper.Transports.Tcp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 

@@ -47,9 +47,9 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
+            public ValueTask HandleAsync(IExecutionContext context, IJasperRuntime root)
             {
-                Recorded.Add(envelope);
+                Recorded.Add(context.Envelope);
 
                 root.ShouldNotBeNull();
 
@@ -61,9 +61,9 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
+            public ValueTask HandleAsync(IExecutionContext context, IJasperRuntime root)
             {
-                Recorded.Add(envelope);
+                Recorded.Add(context.Envelope);
 
                 root.ShouldNotBeNull();
 
@@ -75,9 +75,9 @@ namespace Jasper.Testing.Acceptance
         {
             public static IList<Envelope> Recorded = new List<Envelope>();
 
-            public ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root)
+            public ValueTask HandleAsync(IExecutionContext context, IJasperRuntime root)
             {
-                Recorded.Add(envelope);
+                Recorded.Add(context.Envelope);
 
                 root.ShouldNotBeNull();
 

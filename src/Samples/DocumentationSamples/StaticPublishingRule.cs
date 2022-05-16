@@ -1,5 +1,5 @@
 using Jasper;
-using Jasper.Tcp;
+using Jasper.Transports.Tcp;
 using Microsoft.Extensions.Hosting;
 using TestingSupport.Compliance;
 using TestMessages;

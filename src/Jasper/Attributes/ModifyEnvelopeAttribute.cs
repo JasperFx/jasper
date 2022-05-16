@@ -7,7 +7,7 @@ namespace Jasper.Attributes;
 ///     a message type is sent by Jasper by modifying the Envelope
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public abstract class ModifyEnvelopeAttribute : Attribute
+public abstract class ModifyEnvelopeAttribute : Attribute, IEnvelopeRule
 {
     public abstract void Modify(Envelope envelope);
 }

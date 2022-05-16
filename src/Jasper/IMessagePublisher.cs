@@ -4,24 +4,18 @@ using System.Threading.Tasks;
 namespace Jasper;
 
 /// <summary>
-///     Slimmed down IMessageContext for stateless message sending and execution
+/// Entry point for sending or publishing messages
 /// </summary>
 public interface IMessagePublisher : ICommandBus
 {
     /// <summary>
-    ///     Publish a message to all known subscribers. Will throw an exception if there are no known subscribers
+    /// Sends a message to the expected, one subscriber. Will throw an exception if there are no known subscribers
     /// </summary>
     /// <param name="message"></param>
+    /// <param name="options"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    ValueTask SendAsync<T>(T message);
-
-    /// <summary>
-    ///     Publish a message to all known subscribers. Ignores the message if there are no known subscribers
-    /// </summary>
-    /// <param name="envelope"></param>
-    /// <returns></returns>
-    ValueTask PublishEnvelopeAsync(Envelope envelope);
+    ValueTask SendAsync<T>(T message, DeliveryOptions? options = null);
 
     /// <summary>
     ///     Publish a message to all known subscribers. Ignores the message if there are no known subscribers
@@ -29,26 +23,7 @@ public interface IMessagePublisher : ICommandBus
     /// <param name="message"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    ValueTask PublishAsync<T>(T message);
-
-
-    /// <summary>
-    ///     Advanced publishing if you need absolute control over how a message is sent
-    /// </summary>
-    /// <param name="envelope"></param>
-    /// <returns></returns>
-    Task<Guid> SendEnvelopeAsync(Envelope envelope);
-
-    /// <summary>
-    ///     Send a message with the expectation of a response sent back to the global subscription
-    ///     Uri of the logical service.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="customization"></param>
-    /// <typeparam name="TResponse"></typeparam>
-    /// <returns></returns>
-    Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope>? customization = null);
-
+    ValueTask PublishAsync<T>(T message, DeliveryOptions? options = null);
 
     /// <summary>
     ///     Send a message to a specific topic name. This relies
@@ -58,8 +33,9 @@ public interface IMessagePublisher : ICommandBus
     /// <param name="message"></param>
     /// <param name="topicName"></param>
     /// <returns></returns>
-    ValueTask SendToTopicAsync(object message, string topicName);
+    ValueTask SendToTopicAsync(object message, string topicName, DeliveryOptions? options = null);
 
+    // TODO -- send to named endpoint
 
     /// <summary>
     ///     Send to a specific destination rather than running the routing rules
@@ -67,21 +43,23 @@ public interface IMessagePublisher : ICommandBus
     /// <typeparam name="T"></typeparam>
     /// <param name="destination">The destination to send to</param>
     /// <param name="message"></param>
-    ValueTask SendToDestinationAsync<T>(Uri destination, T message);
+    ValueTask SendAsync<T>(Uri destination, T message, DeliveryOptions? options = null);
 
     /// <summary>
     ///     Send a message that should be executed at the given time
     /// </summary>
     /// <param name="message"></param>
     /// <param name="time"></param>
+    /// <param name="options"></param>
     /// <typeparam name="T"></typeparam>
-    Task ScheduleSendAsync<T>(T message, DateTimeOffset time);
+    ValueTask SchedulePublishAsync<T>(T message, DateTimeOffset time, DeliveryOptions? options = null);
 
     /// <summary>
     ///     Send a message that should be executed after the given delay
     /// </summary>
     /// <param name="message"></param>
     /// <param name="delay"></param>
+    /// <param name="options"></param>
     /// <typeparam name="T"></typeparam>
-    Task ScheduleSendAsync<T>(T message, TimeSpan delay);
+    ValueTask SchedulePublishAsync<T>(T message, TimeSpan delay, DeliveryOptions? options = null);
 }

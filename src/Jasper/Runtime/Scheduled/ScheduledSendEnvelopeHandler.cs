@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Runtime.Handlers;
 
 namespace Jasper.Runtime.Scheduled;
@@ -20,6 +21,6 @@ public class ScheduledSendEnvelopeHandler : MessageHandler
 
         var scheduled = (Envelope)context.Envelope!.Message!;
 
-        return context.SendEnvelopeAsync(scheduled);
+        return context.As<ExecutionContext>().ForwardScheduledEnvelopeAsync(scheduled).AsTask();
     }
 }

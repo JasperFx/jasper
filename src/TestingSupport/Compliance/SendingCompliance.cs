@@ -177,7 +177,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
                 .Timeout(15.Seconds())
-                .ExecuteAndWaitAsync(c => c.SendToDestinationAsync(theOutboundAddress, new Message2()));
+                .ExecuteAndWaitAsync(c => c.SendAsync(theOutboundAddress, new Message2()));
 
             session.FindSingleTrackedMessageOfType<Message2>(EventType.MessageSucceeded)
                 .ShouldNotBeNull();
@@ -190,7 +190,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWaitAsync(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
+                .ExecuteAndWaitAsync(c => c.SendAsync(theOutboundAddress, new Message1()));
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
@@ -219,7 +219,7 @@ namespace TestingSupport.Compliance
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()
-                .ExecuteAndWaitAsync(c => c.SendToDestinationAsync(theOutboundAddress, new Message1()));
+                .ExecuteAndWaitAsync(c => c.SendAsync(theOutboundAddress, new Message1()));
 
 
             var record = session.FindEnvelopesWithMessageType<Message1>(EventType.MessageSucceeded).Single();
@@ -242,7 +242,7 @@ namespace TestingSupport.Compliance
                 await context.PublishAsync(new ExecutedMessage());
                 //await context.ScheduleSend(new ExecutedMessage(), DateTime.UtcNow.AddDays(5));
             };
-            
+
             var session2 = await theSender
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
@@ -266,7 +266,7 @@ namespace TestingSupport.Compliance
                 .AlsoTrack(theReceiver)
                 .Timeout(15.Seconds())
                 .WaitForMessageToBeReceivedAt<ColorChosen>(theReceiver ?? theSender)
-                .ExecuteAndWaitAsync(c => c.ScheduleSendAsync(new ColorChosen {Name = "Orange"}, 5.Seconds()));
+                .ExecuteAndWaitAsync(c => c.SchedulePublishAsync(new ColorChosen {Name = "Orange"}, 5.Seconds()));
 
             var message = session.FindSingleTrackedMessageOfType<ColorChosen>(EventType.MessageSucceeded);
             message.Name.ShouldBe("Orange");
@@ -286,7 +286,7 @@ namespace TestingSupport.Compliance
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWaitAsync(theMessage);
 
-            return _session.AllRecordsInOrder().LastOrDefault(x =>
+            return _session.AllRecordsInOrder().Where(x => x.Envelope.Message is ErrorCausingMessage).LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
 
         }
@@ -300,7 +300,7 @@ namespace TestingSupport.Compliance
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWaitAsync(theMessage);
 
-            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+            var record = session.AllRecordsInOrder().Where(x => x.Envelope.Message is ErrorCausingMessage).LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
 
             if (record == null) throw new Exception("No ending activity detected");
@@ -334,7 +334,7 @@ namespace TestingSupport.Compliance
                 .Timeout(30.Seconds())
                 .SendMessageAndWaitAsync(theMessage);
 
-            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+            var record = session.AllRecordsInOrder().Where(x => x.Envelope.Message is ErrorCausingMessage).LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
 
             if (record == null) throw new Exception("No ending activity detected");
@@ -423,7 +423,7 @@ namespace TestingSupport.Compliance
                 .TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .Timeout(30.Seconds())
-                .ExecuteAndWaitAsync(x => x.SendAndExpectResponseForAsync<ImplicitPong>(ping));
+                .ExecuteAndWaitAsync(x => x.SendAsync(ping, DeliveryOptions.RequireResponse<ImplicitPong>()));
 
             session.FindSingleTrackedMessageOfType<ImplicitPong>(EventType.MessageSucceeded)
                 .Id.ShouldBe(ping.Id);
@@ -435,15 +435,11 @@ namespace TestingSupport.Compliance
             if (Fixture.AllLocally) return; // this just doesn't apply when running all with local queues
 
             var greenMessage = new GreenMessage {Name = "Magic Johnson"};
-            var envelope = new Envelope(greenMessage)
-            {
-                ContentType = "text/plain"
-            };
 
             var session = await theSender
                 .TrackActivity()
                 .AlsoTrack(theReceiver)
-                .ExecuteAndWaitAsync(c => c.SendEnvelopeAsync(envelope));
+                .ExecuteAndWaitAsync(c => c.SendAsync(greenMessage, new DeliveryOptions{ContentType = "text/plain"}));
 
             session.FindSingleTrackedMessageOfType<BlueMessage>()
                 .Name.ShouldBe("Magic Johnson");

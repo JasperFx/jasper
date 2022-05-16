@@ -11,10 +11,9 @@ public partial class Envelope
     public static readonly string PingMessageType = "jasper-ping";
     private byte[]? _data;
 
-    private DateTimeOffset? _deliverBy;
-
     private object? _message;
     private DateTimeOffset? _scheduledTime;
+    private DateTimeOffset? _deliverBy;
 
     public Envelope()
     {
@@ -25,7 +24,77 @@ public partial class Envelope
         Message = message ?? throw new ArgumentNullException(nameof(message));
     }
 
+    /// <summary>
+    /// Optional metadata about this message
+    /// </summary>
     public Dictionary<string, string?> Headers { get; internal set; } = new();
+
+    /// <summary>
+    ///     Instruct Jasper to throw away this message if it is not successfully sent and processed
+    ///     by the time specified
+    /// </summary>
+    public DateTimeOffset? DeliverBy
+    {
+        get => _deliverBy;
+        set => _deliverBy = value?.ToUniversalTime();
+    }
+
+    /// <summary>
+    ///     Is an acknowledgement requested
+    /// </summary>
+    public bool AckRequested { get; internal set; }
+
+    /// <summary>
+    ///     Used by scheduled jobs or transports with a native scheduled send functionality to have this message processed by
+    ///     the receiving application at or after the designated time
+    /// </summary>
+    public DateTimeOffset? ScheduledTime
+    {
+        get => _scheduledTime;
+        set => _scheduledTime = value?.ToUniversalTime();
+    }
+
+    /// <summary>
+    ///     Set the DeliverBy property to have this message thrown away
+    ///     if it cannot be sent before the alotted time
+    /// </summary>
+    /// <value></value>
+    public TimeSpan DeliverWithin
+    {
+        set => DeliverBy = DateTimeOffset.Now.Add(value);
+    }
+
+    /// <summary>
+    /// Set the ScheduleTime to now plus the value of the supplied TimeSpan
+    /// </summary>
+    public TimeSpan ScheduleDelay
+    {
+        set => ScheduledTime = DateTimeOffset.Now.Add(value);
+    }
+
+    /// <summary>
+    ///     Schedule this envelope to be sent or executed
+    ///     after a delay
+    /// </summary>
+    /// <param name="delay"></param>
+    /// <returns></returns>
+    public Envelope ScheduleDelayed(TimeSpan delay)
+    {
+        ScheduledTime = DateTimeOffset.Now.Add(delay);
+        return this;
+    }
+
+    /// <summary>
+    ///     Schedule this envelope to be sent or executed
+    ///     at a certain time
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    public Envelope ScheduleAt(DateTimeOffset time)
+    {
+        ScheduledTime = time;
+        return this;
+    }
 
     /// <summary>
     ///     The raw, serialized message data
@@ -77,16 +146,6 @@ public partial class Envelope
 
 
     public DateTimeOffset SentAt { get; internal set; } = DateTimeOffset.Now;
-
-    /// <summary>
-    ///     Instruct Jasper to throw away this message if it is not successfully sent and processed
-    ///     by the time specified
-    /// </summary>
-    public DateTimeOffset? DeliverBy
-    {
-        get => _deliverBy;
-        set => _deliverBy = value?.ToUniversalTime();
-    }
 
     /// <summary>
     ///     The name of the service that sent this envelope
@@ -146,24 +205,10 @@ public partial class Envelope
     public string? ReplyRequested { get; internal set; }
 
     /// <summary>
-    ///     Is an acknowledgement requested
-    /// </summary>
-    public bool AckRequested { get; internal set; }
-
-    /// <summary>
-    ///     Used by scheduled jobs or transports with a native scheduled send functionality to have this message processed by
-    ///     the receiving application at or after the designated time
-    /// </summary>
-    public DateTimeOffset? ScheduledTime
-    {
-        get => _scheduledTime;
-        set => _scheduledTime = value?.ToUniversalTime();
-    }
-
-    /// <summary>
     ///     Designates the topic name for outgoing messages to topic-based publish/subscribe
     ///     routing. This property is only used for routing
     /// </summary>
+    [Obsolete("Do we really need this?")]
     public string? TopicName { get; set; }
 
 
@@ -189,16 +234,6 @@ public partial class Envelope
         return text;
     }
 
-
-    /// <summary>
-    ///     Set the DeliverBy property to have this message thrown away
-    ///     if it cannot be sent before the alotted time
-    /// </summary>
-    /// <param name="span"></param>
-    public void DeliverWithin(TimeSpan span)
-    {
-        DeliverBy = DateTimeOffset.Now.Add(span);
-    }
 
     protected bool Equals(Envelope other)
     {
@@ -253,30 +288,5 @@ public partial class Envelope
     internal string GetMessageTypeName()
     {
         return (Message?.GetType().Name ?? MessageType)!;
-    }
-
-
-    /// <summary>
-    ///     Schedule this envelope to be sent or executed
-    ///     after a delay
-    /// </summary>
-    /// <param name="delay"></param>
-    /// <returns></returns>
-    public Envelope ScheduleDelayed(TimeSpan delay)
-    {
-        ScheduledTime = DateTime.UtcNow.Add(delay);
-        return this;
-    }
-
-    /// <summary>
-    ///     Schedule this envelope to be sent or executed
-    ///     at a certain time
-    /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
-    public Envelope ScheduleAt(DateTime time)
-    {
-        ScheduledTime = time.ToUniversalTime();
-        return this;
     }
 }

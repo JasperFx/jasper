@@ -119,7 +119,6 @@ public static class HostBuilderExtensions
             services.AddSingleton<InMemorySagaPersistor>();
 
             services.MessagingRootService(x => x.Pipeline);
-            services.MessagingRootService(x => x.Router);
 
             services.AddOptions();
             services.AddLogging();
@@ -189,11 +188,19 @@ public static class HostBuilderExtensions
     /// <param name="message"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static ValueTask SendAsync<T>(this IHost host, T message)
+    public static ValueTask SendAsync<T>(this IHost host, T message, DeliveryOptions? options = null)
     {
-        return host.Get<IMessagePublisher>().SendAsync(message);
+        return host.Get<IMessagePublisher>().SendAsync(message, options);
     }
 
+    /// <summary>
+    /// Syntactical sugar to invoke a single message with the registered
+    /// Jasper command bus for this host
+    /// </summary>
+    /// <param name="host"></param>
+    /// <param name="command"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public static Task InvokeAsync<T>(this IHost host, T command)
     {
         return host.Get<ICommandBus>().InvokeAsync(command!);

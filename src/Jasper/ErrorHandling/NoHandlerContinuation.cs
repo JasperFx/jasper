@@ -27,7 +27,7 @@ public class NoHandlerContinuation : IContinuation
         {
             try
             {
-                await handler.HandleAsync(execution.Envelope, _root);
+                await handler.HandleAsync(execution, _root);
             }
             catch (Exception? e)
             {
@@ -37,7 +37,7 @@ public class NoHandlerContinuation : IContinuation
 
         if (execution.Envelope.AckRequested)
         {
-            await runtime.Acknowledgements.SendAcknowledgementAsync(execution.Envelope);
+            await execution.SendAcknowledgementAsync();
         }
 
         await execution.CompleteAsync();

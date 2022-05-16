@@ -70,14 +70,9 @@ namespace Jasper.Testing.Configuration
 
             var envelope = ObjectMother.Envelope();
 
-            endpoint.Customize(envelope);
+            endpoint.ApplyEnvelopeRules(envelope);
 
             envelope.Headers["a"].ShouldBe("one");
-        }
-
-        public class OtherMessage
-        {
-
         }
 
         public abstract class BaseMessage
@@ -97,14 +92,14 @@ namespace Jasper.Testing.Configuration
 
             // Negative Case
             var envelope1 = new Envelope(new Message1());
-            endpoint.Customize(envelope1);
+            endpoint.ApplyEnvelopeRules(envelope1);
 
             envelope1.Headers.ContainsKey("g").ShouldBeFalse();
 
 
             // Positive Case
             var envelope2 = new Envelope(new OtherMessage());
-            endpoint.Customize(envelope2);
+            endpoint.ApplyEnvelopeRules(envelope2);
 
             envelope2.Headers["g"].ShouldBe("good");
 
@@ -120,14 +115,14 @@ namespace Jasper.Testing.Configuration
 
             // Negative Case
             var envelope1 = new Envelope(new Message1());
-            endpoint.Customize(envelope1);
+            endpoint.ApplyEnvelopeRules(envelope1);
 
             envelope1.Headers.ContainsKey("g").ShouldBeFalse();
 
 
             // Positive Case
             var envelope2 = new Envelope(new ExtendedMessage());
-            endpoint.Customize(envelope2);
+            endpoint.ApplyEnvelopeRules(envelope2);
 
             envelope2.Headers["g"].ShouldBe("good");
 
@@ -138,6 +133,11 @@ namespace Jasper.Testing.Configuration
             public string Color { get; set; }
         }
 
+
+    }
+
+    public class OtherMessage
+    {
 
     }
 }

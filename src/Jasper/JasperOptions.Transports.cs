@@ -17,7 +17,6 @@ public partial class JasperOptions : IEnumerable<ITransport>, IEndpoints, IDescr
     IAsyncDisposable
 {
     private readonly Dictionary<string, ITransport> _transports = new();
-    public IList<ISubscriber> Subscribers { get; } = new List<ISubscriber>();
 
     public async ValueTask DisposeAsync()
     {
@@ -77,6 +76,27 @@ public partial class JasperOptions : IEnumerable<ITransport>, IEndpoints, IDescr
         var expression = new PublishingExpression(this);
         configuration(expression);
         expression.AttachSubscriptions();
+    }
+
+    /// <summary>
+    /// Shorthand syntax to route a single message type
+    /// </summary>
+    /// <typeparam name="TMessageType"></typeparam>
+    /// <returns></returns>
+    public PublishingExpression PublishMessage<TMessageType>()
+    {
+        var expression = new PublishingExpression(this)
+        {
+            AutoAddSubscriptions = true
+
+        };
+
+        // TODO -- you need a separate PublishingExpression so that
+        // customizations are only applied to this message type
+
+        expression.Message<TMessageType>();
+
+        return expression;
     }
 
     public IPublishToExpression PublishAllMessages()

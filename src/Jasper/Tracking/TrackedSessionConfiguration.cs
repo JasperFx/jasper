@@ -138,10 +138,36 @@ public class TrackedSessionConfiguration
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public Task<ITrackedSession> SendMessageAndWaitAsync(object? message)
+    public Task<ITrackedSession> SendMessageAndWaitAsync(object message, DeliveryOptions? options = null)
     {
-        return ExecuteAndWaitAsync(c => c.SendAsync(message));
+        return ExecuteAndWaitAsync(c => c.SendAsync(message, options));
     }
+
+    /// <summary>
+    ///     Send a message from the current Jasper application and wait for
+    ///     all cascading activity to complete
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="message"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public Task<ITrackedSession> SendMessageAndWaitAsync(Uri destination, object message,
+        DeliveryOptions? options = null)
+    {
+        return ExecuteAndWaitAsync(c => c.SendAsync(destination, message, options));
+    }
+
+    /// <summary>
+    ///     Publish a message from the current Jasper application and wait for
+    ///     all cascading activity to complete
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public Task<ITrackedSession> PublishMessageAndWaitAsync(object? message, DeliveryOptions? options = null)
+    {
+        return ExecuteAndWaitAsync(c => c.PublishAsync(message, options));
+    }
+
 
     /// <summary>
     ///     Enqueue a message locally from the current Jasper application and wait for
@@ -153,4 +179,6 @@ public class TrackedSessionConfiguration
     {
         return ExecuteAndWaitAsync(c => c.EnqueueAsync(message));
     }
+
+
 }

@@ -1,7 +1,7 @@
 using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
-using Jasper.Tcp;
+using Jasper.Transports.Tcp;
 using Microsoft.Extensions.Hosting;
 using TestMessages;
 

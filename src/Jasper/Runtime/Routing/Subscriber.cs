@@ -6,7 +6,7 @@ using Jasper.Transports;
 
 namespace Jasper.Runtime.Routing;
 
-public abstract class Subscriber : ISubscriber
+public abstract class Subscriber
 {
     private EndpointMode _mode = EndpointMode.BufferedInMemory;
 
@@ -36,7 +36,6 @@ public abstract class Subscriber : ISubscriber
         return Subscriptions.Any(x => x.Matches(messageType));
     }
 
-    public abstract void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime);
 
     protected virtual bool supportsMode(EndpointMode mode)
     {

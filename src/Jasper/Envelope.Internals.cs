@@ -22,10 +22,21 @@ public partial class Envelope
 {
     private bool _enqueued;
 
+    internal Envelope(object message, ISendingAgent agent)
+    {
+        Message = message;
+        Sender = agent;
+        Serializer = agent.Endpoint.DefaultSerializer;
+        ContentType = Serializer!.ContentType;
+        Destination = agent.Destination;
+        ReplyUri = agent.ReplyUri;
+    }
+
     internal Envelope(object message, IMessageSerializer writer)
     {
         Message = message;
         Serializer = writer ?? throw new ArgumentNullException(nameof(writer));
+        ContentType = writer.ContentType;
     }
 
 
@@ -98,16 +109,6 @@ public partial class Envelope
             CausationId = Id.ToString(),
             SagaId = SagaId
         };
-    }
-
-    internal Envelope CloneForWriter(IMessageSerializer writer)
-    {
-        var envelope = (Envelope)MemberwiseClone();
-        envelope.Headers = new Dictionary<string, string?>(Headers);
-        envelope.Serializer = writer;
-        envelope.ContentType = writer.ContentType;
-
-        return envelope;
     }
 
     internal async ValueTask StoreAndForwardAsync()

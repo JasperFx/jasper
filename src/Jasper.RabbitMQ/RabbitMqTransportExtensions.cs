@@ -197,24 +197,5 @@ namespace Jasper.RabbitMQ
             return new RabbitMqSubscriberConfiguration(endpoint);
         }
 
-        /// <summary>
-        ///     Publish matching messages to Rabbit MQ to the designated exchange by the topic name for the message
-        ///     type or the designated topic name in the Envelope. This is *only* usable
-        ///     for "topic" exchanges
-        /// </summary>
-        /// <param name="publishing"></param>
-        /// <param name="exchangeName">The Rabbit MQ exchange name</param>
-        /// <returns></returns>
-        public static TopicRouterConfiguration<RabbitMqSubscriberConfiguration> ToRabbitTopics(
-            this IPublishToExpression publishing, string exchangeName)
-        {
-            var transports = publishing.As<PublishingExpression>().Parent;
-
-            var router = new RabbitMqTopicRouter(exchangeName);
-
-            publishing.ViaRouter(router);
-
-            return new TopicRouterConfiguration<RabbitMqSubscriberConfiguration>(router, transports);
-        }
     }
 }

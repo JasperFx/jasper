@@ -17,8 +17,7 @@ public class MoveToErrorQueue : IContinuation
         IJasperRuntime runtime,
         DateTimeOffset now)
     {
-        await runtime.Acknowledgements.SendFailureAcknowledgementAsync(execution.Envelope!,
-            $"Moved message {execution.Envelope!.Id} to the Error Queue.\n{_exception}");
+        await execution.SendFailureAcknowledgementAsync($"Moved message {execution.Envelope!.Id} to the Error Queue.\n{_exception}");
 
         await execution.MoveToDeadLetterQueueAsync(_exception);
 

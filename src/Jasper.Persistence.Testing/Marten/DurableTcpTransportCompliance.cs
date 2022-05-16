@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using IntegrationTests;
 using Jasper.Persistence.Marten;
-using Jasper.Tcp;
 using Jasper.Util;
 using Marten;
 using TestingSupport.Compliance;
@@ -41,7 +40,6 @@ namespace Jasper.Persistence.Testing.Marten
 
             await SenderIs(opts =>
             {
-                opts.Extensions.Include<TcpTransportExtension>();
                 var receivingUri = $"tcp://localhost:{PortFinder.GetAvailablePort()}/incoming/durable".ToUri();
                 opts.ListenForMessagesFrom(receivingUri);
 
@@ -54,7 +52,6 @@ namespace Jasper.Persistence.Testing.Marten
 
             await ReceiverIs(opts =>
             {
-                opts.Extensions.Include<TcpTransportExtension>();
                 opts.ListenForMessagesFrom(OutboundAddress);
 
                 opts.Services.AddMarten(o =>

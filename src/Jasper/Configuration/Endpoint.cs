@@ -82,11 +82,9 @@ public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesPrope
 
     public bool IsUsedForReplies { get; set; }
 
+    internal IList<IEnvelopeRule> OutgoingRules { get; } = new List<IEnvelopeRule>();
 
-    internal IList<Action<Envelope>> Customizations { get; } = new List<Action<Envelope>>();
-
-
-    public ISendingAgent? Agent { get; internal set; }
+    internal ISendingAgent? Agent { get; set; }
 
 
     /// <summary>
@@ -176,18 +174,13 @@ public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesPrope
 
     protected abstract ISender CreateSender(IJasperRuntime root);
 
-    internal void Customize(Envelope envelope)
+    // This is only surviving to support testing
+    internal void ApplyEnvelopeRules(Envelope envelope)
     {
-        foreach (var modification in Customizations) modification(envelope);
-    }
-
-    public override void AddRoute(MessageTypeRouting routing, IJasperRuntime runtime)
-    {
-        if (Agent == null)
+        foreach (var rule in OutgoingRules)
         {
-            throw new InvalidOperationException("The agent has not been initialized for this endpoint");
+            rule.Modify(envelope);
         }
-
-        routing.AddStaticRoute(Agent);
     }
+
 }

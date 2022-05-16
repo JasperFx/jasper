@@ -60,13 +60,16 @@ public class SubscriberConfiguration<T, TEndpoint> : ISubscriberConfiguration<T>
 
     public T CustomizeOutgoing(Action<Envelope> customize)
     {
-        _endpoint.Customizations.Add(customize);
-        return TypeExtensions.As<T>(this);
+        _endpoint.OutgoingRules.Add(new LambdaEnvelopeRule(customize));
+
+        return this.As<T>();
     }
 
     public T CustomizeOutgoingMessagesOfType<TMessage>(Action<Envelope> customize)
     {
-        return CustomizeOutgoingMessagesOfType<TMessage>((env, _) => customize(env));
+        _endpoint.OutgoingRules.Add(new LambdaEnvelopeRule<TMessage>(customize));
+
+        return this.As<T>();
     }
 
     public T CustomizeOutgoingMessagesOfType<TMessage>(Action<Envelope, TMessage> customize)

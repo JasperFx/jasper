@@ -274,7 +274,7 @@ namespace Jasper.RabbitMQ.Tests
                     .AlsoTrack(receiver)
                     .WaitForMessageToBeReceivedAt<ColorChosen>(receiver)
                     .Timeout(15.Seconds())
-                    .ExecuteAndWaitAsync(c => c.ScheduleSendAsync(new ColorChosen { Name = "Orange" }, 5.Seconds()));
+                    .ExecuteAndWaitAsync(c => c.SchedulePublishAsync(new ColorChosen { Name = "Orange" }, 5.Seconds()));
 
                 receiver.Get<ColorHistory>().Name.ShouldBe("Orange");
             }

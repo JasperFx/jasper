@@ -19,7 +19,7 @@ public interface IJasperRuntime
     /// <param name="executionTime"></param>
     /// <param name="envelope"></param>
     void ScheduleLocalExecutionInMemory(DateTimeOffset executionTime, Envelope envelope);
-    IEnvelopeRouter Router { get; }
+
     IHandlerPipeline Pipeline { get; }
     IMessageLogger MessageLogger { get; }
     JasperOptions Options { get; }
@@ -29,9 +29,30 @@ public interface IJasperRuntime
     AdvancedSettings Advanced { get; }
     CancellationToken Cancellation { get; }
 
-    IAcknowledgementSender Acknowledgements { get; }
-
     IJasperEndpoints Endpoints { get; }
+    IMessageRouter RoutingFor(Type messageType);
+}
+
+public static class JasperRuntimeExtensions
+{
+    /// <summary>
+    /// Shortcut to preview the routing for a single message
+    /// </summary>
+    /// <param name="runtime"></param>
+    /// <param name="message"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static Envelope[] RouteForSend(this IJasperRuntime runtime, object message, DeliveryOptions? options)
+    {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        var router = runtime.RoutingFor(message.GetType());
+        return router.RouteForSend(message, options);
+    }
 }
 
 public interface IJasperEndpoints
@@ -42,8 +63,6 @@ public interface IJasperEndpoints
     void AddListener(IListener listener, Endpoint settings);
 
     void AddSendingAgent(ISendingAgent sendingAgent);
-
-    void AddSubscriber(ISubscriber subscriber);
 
     Endpoint? EndpointFor(Uri uri);
 }

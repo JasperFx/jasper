@@ -41,10 +41,10 @@ public static class JasperHostMessageTrackingExtensions
     /// <param name="message"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static Task<ITrackedSession> SendMessageAndWaitAsync<T>(this IHost host, T? message,
+    public static Task<ITrackedSession> SendMessageAndWaitAsync<T>(this IHost host, T? message, DeliveryOptions? options = null,
         int timeoutInMilliseconds = 5000)
     {
-        return host.ExecuteAndWaitValueTaskAsync(c => c.SendAsync(message), timeoutInMilliseconds);
+        return host.ExecuteAndWaitValueTaskAsync(c => c.SendAsync(message, options), timeoutInMilliseconds);
     }
 
     /// <summary>

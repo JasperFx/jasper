@@ -33,7 +33,7 @@ namespace Jasper.Testing.Transports.Local
             configure();
 
             var message1 = new Message1();
-            var session = await Host.SendMessageAndWaitAsync(message1, 15000);
+            var session = await Host.SendMessageAndWaitAsync(message1, timeoutInMilliseconds:15000);
 
 
             session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)

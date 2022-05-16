@@ -12,7 +12,7 @@ namespace Jasper.RabbitMQ.Internal
 
         IRabbitMqTransportExpression IRabbitMqTransportExpression.AutoPurgeOnStartup()
         {
-            AutoPurgeOnStartup = true;
+            AutoPurgeAllQueues = true;
             return this;
         }
 

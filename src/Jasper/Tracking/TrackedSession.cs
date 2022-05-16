@@ -162,6 +162,12 @@ public class TrackedSession : ITrackedSession
             .Distinct().ToList()!;
     }
 
+    public Envelope FindSingleReceivedEnvelopeForMessageType<T>()
+    {
+        return FindEnvelopesWithMessageType<T>().Single(x => x.EventType == EventType.Received)
+            .Envelope;
+    }
+
     public void WatchOther(IHost host)
     {
         if (ReferenceEquals(host, _primaryHost))

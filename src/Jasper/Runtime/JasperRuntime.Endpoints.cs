@@ -17,13 +17,10 @@ public partial class JasperRuntime : IJasperEndpoints
 {
     private readonly object _channelLock = new();
     private readonly IList<object> _disposables = new List<object>();
-    private readonly List<ISubscriber> _subscribers = new();
 
     private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
     private ImHashMap<Uri, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty!;
-
-    public IEnumerable<ISubscriber> Subscribers => _subscribers;
 
     public ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
     {
@@ -41,7 +38,6 @@ public partial class JasperRuntime : IJasperEndpoints
             }
 
             AddSendingAgent(agent);
-            AddSubscriber(endpoint);
 
             return agent;
         }
@@ -56,12 +52,6 @@ public partial class JasperRuntime : IJasperEndpoints
     {
         _senders = _senders.AddOrUpdate(sendingAgent.Destination, sendingAgent);
     }
-
-    public void AddSubscriber(ISubscriber subscriber)
-    {
-        _subscribers.Fill(subscriber);
-    }
-
 
     public ISendingAgent GetOrBuildSendingAgent(Uri address)
     {

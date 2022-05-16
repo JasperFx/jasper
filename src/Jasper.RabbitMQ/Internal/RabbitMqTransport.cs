@@ -36,10 +36,13 @@ namespace Jasper.RabbitMQ.Internal
         internal IConnection ListeningConnection => _listenerConnection ??= BuildConnection();
         internal IConnection SendingConnection => _sendingConnection ??= BuildConnection();
 
+        /// <summary>
+        /// Should Jasper attempt to auto-provision all exchanges, queues, and bindings
+        /// if they do not already exist?
+        /// </summary>
         public bool AutoProvision { get; set; }
 
-        [Obsolete("Use Oakton? Or make this queue by queue?")]
-        public bool AutoPurgeOnStartup { get; set; }
+        public bool AutoPurgeAllQueues { get; set; }
 
         public ConnectionFactory ConnectionFactory { get; } = new();
 
@@ -83,7 +86,7 @@ namespace Jasper.RabbitMQ.Internal
                 InitializeAllObjects();
             }
 
-            if (AutoPurgeOnStartup)
+            if (AutoPurgeAllQueues)
             {
                 PurgeAllQueues();
             }

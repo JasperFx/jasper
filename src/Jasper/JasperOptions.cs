@@ -13,6 +13,7 @@ using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
 using Jasper.Transports.Local;
 using Jasper.Transports.Stub;
+using Jasper.Transports.Tcp;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -48,6 +49,7 @@ public sealed partial class JasperOptions : IExtensions
 
         Add(new StubTransport());
         Add(new LocalTransport());
+        Add(new TcpTransport());
 
         establishApplicationAssembly(assemblyName);
 
@@ -282,4 +284,6 @@ public sealed partial class JasperOptions : IExtensions
     {
         _serializers[serializer.ContentType] = serializer;
     }
+
+
 }

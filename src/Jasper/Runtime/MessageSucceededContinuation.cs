@@ -26,8 +26,7 @@ public class MessageSucceededContinuation : IContinuation
         }
         catch (Exception? ex)
         {
-            await runtime.Acknowledgements.SendFailureAcknowledgementAsync(execution.Envelope!,
-                "Sending cascading message failed: " + ex.Message);
+            await execution.SendFailureAcknowledgementAsync("Sending cascading message failed: " + ex.Message);
 
             execution.Logger.LogException(ex, execution.Envelope!.Id, ex.Message);
             execution.Logger.MessageFailed(execution.Envelope, ex);

@@ -14,10 +14,10 @@ public interface IMissingHandler
     /// <summary>
     ///     Executes for unhandled envelopes
     /// </summary>
-    /// <param name="envelope"></param>
+    /// <param name="context"></param>
     /// <param name="root"></param>
     /// <returns></returns>
-    ValueTask HandleAsync(Envelope? envelope, IJasperRuntime root);
+    ValueTask HandleAsync(IExecutionContext context, IJasperRuntime root);
 }
 
 #endregion

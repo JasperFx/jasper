@@ -6,8 +6,8 @@ using Baseline.Dates;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Testing.Marten;
-using Jasper.Tcp;
 using Jasper.Tracking;
+using Jasper.Transports.Tcp;
 using Jasper.Util;
 using Microsoft.Extensions.Hosting;
 using Oakton.Resources;
@@ -218,9 +218,9 @@ namespace Jasper.Persistence.Testing
 
             await send(async c =>
             {
-                await c.ScheduleSendAsync(message1, 2.Hours());
-                await c.ScheduleSendAsync(message2, 5.Seconds());
-                await c.ScheduleSendAsync(message3, 2.Hours());
+                await c.SchedulePublishAsync(message1, 2.Hours());
+                await c.SchedulePublishAsync(message2, 5.Seconds());
+                await c.SchedulePublishAsync(message3, 2.Hours());
             });
 
             ScheduledMessageHandler.ReceivedMessages.Count.ShouldBe(0);

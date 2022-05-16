@@ -30,7 +30,6 @@ namespace Jasper.Testing.Runtime
             throw new NotSupportedException();
         }
 
-        public IEnvelopeRouter Router { get; } = Substitute.For<IEnvelopeRouter>();
         public IHandlerPipeline Pipeline { get; } = Substitute.For<IHandlerPipeline>();
         public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();
         public JasperOptions Options { get; } = new JasperOptions();
@@ -38,8 +37,11 @@ namespace Jasper.Testing.Runtime
         public ITransport[] Transports { get; } =
             {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
 
-        public IAcknowledgementSender Acknowledgements { get; } = Substitute.For<IAcknowledgementSender>();
         public IJasperEndpoints Endpoints { get; } = Substitute.For<IJasperEndpoints>();
+        public IMessageRouter RoutingFor(Type messageType)
+        {
+            throw new NotImplementedException();
+        }
 
         public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
@@ -82,8 +84,6 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ISubscriber> Subscribers => SubscriberDictionary.Values;
-
         public IExecutionContext NewContext()
         {
             return new ExecutionContext(this);
@@ -113,38 +113,6 @@ namespace Jasper.Testing.Runtime
 
         public HandlerGraph Handlers { get; } = new HandlerGraph();
 
-        public readonly Dictionary<Uri, ISubscriber> SubscriberDictionary = new Dictionary<Uri,ISubscriber>();
-
-        public ISendingAgent GetOrBuild(Uri address)
-        {
-            throw new NotSupportedException();
-//            if (Subscribers.TryGetValue(address, out var subscriber))
-//            {
-//                return subscriber;
-//            }
-//
-//            return null;
-        }
-
-        public void AddSendingAgent(ISendingAgent sendingAgent)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddSubscriber(ISubscriber subscriber)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISendingAgent AgentForLocalQueue(string queueName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Endpoint? EndpointFor(Uri uri)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Dispose()
         {

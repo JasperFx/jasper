@@ -47,10 +47,6 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 
         _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
-        Router = this;
-
-        Acknowledgements = new AcknowledgementSender(Router, this);
-
         _container = container;
 
         Cancellation = Advanced.Cancellation;
@@ -61,8 +57,6 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
     internal HandlerGraph Handlers { get; }
 
     public IJasperEndpoints Endpoints => this;
-
-    public IAcknowledgementSender Acknowledgements { get; }
 
     public CancellationToken Cancellation { get; }
 
@@ -78,8 +72,6 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
     {
         ScheduledJobs.Enqueue(executionTime, envelope);
     }
-
-    public IEnvelopeRouter Router { get; }
 
     public IHandlerPipeline Pipeline { get; }
 

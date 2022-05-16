@@ -1,8 +1,4 @@
-﻿using Jasper;
-using Jasper.RabbitMQ;
-using Jasper.Tcp;
-using LamarCodeGeneration;
-using TestMessages;
+﻿using TestMessages;
 
 namespace MyApp
 {

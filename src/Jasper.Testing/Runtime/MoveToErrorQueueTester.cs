@@ -33,9 +33,9 @@ namespace Jasper.Testing.Runtime
 
             await theContinuation.ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
 
-            await theRuntime.Acknowledgements
+            await theContext
                 .Received()
-                .SendFailureAcknowledgementAsync(theEnvelope,$"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}")
+                .SendFailureAcknowledgementAsync($"Moved message {theEnvelope.Id} to the Error Queue.\n{theException}")
                 ;
         }
 

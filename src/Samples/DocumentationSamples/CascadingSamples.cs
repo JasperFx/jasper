@@ -53,9 +53,9 @@ namespace DocumentationSamples
             _bus = bus;
         }
 
-        public Task GatherResponse()
+        public ValueTask GatherResponse()
         {
-            return _bus.SendAndExpectResponseForAsync<MyResponse>(new MyMessage());
+            return _bus.SendAsync(new MyMessage(), DeliveryOptions.RequireResponse<MyResponse>());
         }
     }
     #endregion

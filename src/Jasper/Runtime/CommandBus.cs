@@ -78,13 +78,23 @@ public class CommandBus : ICommandBus
 
     public ValueTask EnqueueAsync<T>(T message)
     {
-        var envelope = Runtime.Router.RouteLocally(message);
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        var envelope = Runtime.RoutingFor(message.GetType()).RouteLocal(message, null); // TODO -- propagate DeliveryOptions
         return persistOrSendAsync(envelope);
     }
 
     public ValueTask EnqueueAsync<T>(T message, string workerQueueName)
     {
-        var envelope = Runtime.Router.RouteLocally(message, workerQueueName);
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        var envelope = Runtime.RoutingFor(message.GetType()).RouteLocal(message, workerQueueName, null); // TODO -- propagate DeliveryOptions
 
         return persistOrSendAsync(envelope);
     }
@@ -117,7 +127,7 @@ public class CommandBus : ICommandBus
         return envelope.Id;
     }
 
-    public Task<Guid> ScheduleAsync<T>(T? message, TimeSpan delay)
+    public Task<Guid> ScheduleAsync<T>(T message, TimeSpan delay)
     {
         return ScheduleAsync(message, DateTimeOffset.UtcNow.Add(delay));
     }

@@ -15,7 +15,7 @@ namespace Jasper.RabbitMQ.Internal
                 { "HostName", ConnectionFactory.HostName },
                 { "Port", ConnectionFactory.Port == -1 ? 5672 : ConnectionFactory.Port },
                 { nameof(AutoProvision), AutoProvision },
-                { nameof(AutoPurgeOnStartup), AutoPurgeOnStartup }
+                { nameof(AutoPurgeAllQueues), AutoPurgeAllQueues }
             };
 
             var table = props.BuildTableForProperties();

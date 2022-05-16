@@ -2,8 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
-using Jasper.Runtime.Routing;
-using Jasper.Util;
 using Lamar;
 
 namespace Jasper.Runtime;
@@ -19,32 +17,32 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     {
     }
 
-    public ValueTask SendAsync<T>(T message)
+    public ValueTask SendAsync<T>(T message, DeliveryOptions? options = null)
     {
         if (message == null)
         {
             throw new ArgumentNullException(nameof(message));
         }
 
-        var outgoing = Runtime.Router.RouteOutgoingByMessage(message);
+        // Cannot trust the T here. Can be "object"
+        var outgoing = Runtime.RoutingFor(message.GetType()).RouteForSend(message, options);
         trackEnvelopeCorrelation(outgoing);
-
-        if (!outgoing.Any())
-        {
-            throw new NoRoutesException(typeof(T));
-        }
 
         return persistOrSendAsync(outgoing);
     }
 
-    public ValueTask PublishEnvelopeAsync(Envelope envelope)
+    public ValueTask PublishAsync<T>(T message, DeliveryOptions? options = null)
     {
-        if (envelope.Message == null && envelope.Data == null)
+        if (message == null)
         {
-            throw new ArgumentNullException(nameof(envelope.Message));
+            throw new ArgumentNullException(nameof(message));
         }
 
-        var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
+        // TODO -- eliminate this. Only happening for logging at this point. Check same in Send.
+        var envelope = new Envelope(message);
+
+        // You can't trust the T here.
+        var outgoing = Runtime.RoutingFor(message.GetType()).RouteForPublish(message, options);
         trackEnvelopeCorrelation(outgoing);
 
         if (outgoing.Any())
@@ -56,58 +54,15 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask PublishAsync<T>(T message)
+
+    public ValueTask SendToTopicAsync(object message, string topicName, DeliveryOptions? options = null)
     {
         if (message == null)
         {
             throw new ArgumentNullException(nameof(message));
         }
 
-        var envelope = new Envelope(message);
-
-        return PublishEnvelopeAsync(envelope);
-    }
-
-    public async Task<Guid> SendEnvelopeAsync(Envelope envelope)
-    {
-        if (envelope.Message == null && envelope.Data == null)
-        {
-            throw new ArgumentNullException(nameof(envelope.Message));
-        }
-
-        var outgoing = Runtime.Router.RouteOutgoingByEnvelope(envelope);
-
-        trackEnvelopeCorrelation(outgoing);
-
-        if (!outgoing.Any())
-        {
-            Runtime.MessageLogger.NoRoutesFor(envelope);
-
-            throw new NoRoutesException(envelope);
-        }
-
-        await persistOrSendAsync(outgoing);
-
-        return envelope.Id;
-    }
-
-    public Task SendAndExpectResponseForAsync<TResponse>(object message, Action<Envelope>? customization = null)
-    {
-        var envelope = EnvelopeForRequestResponse<TResponse>(message);
-
-        customization?.Invoke(envelope);
-
-        return SendEnvelopeAsync(envelope);
-    }
-
-    public ValueTask SendToTopicAsync(object message, string topicName)
-    {
-        var envelope = new Envelope(message)
-        {
-            TopicName = topicName
-        };
-
-        var outgoing = Runtime.Router.RouteToTopic(topicName, envelope);
+        var outgoing = Runtime.RoutingFor(message.GetType()).RouteToTopic(message, topicName, null); // TODO -- push through delivery options
         return persistOrSendAsync(outgoing);
     }
 
@@ -117,7 +72,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     /// <typeparam name="T"></typeparam>
     /// <param name="destination">The destination to send to</param>
     /// <param name="message"></param>
-    public ValueTask SendToDestinationAsync<T>(Uri destination, T message)
+    public ValueTask SendAsync<T>(Uri destination, T message, DeliveryOptions? options = null)
     {
         if (destination == null)
         {
@@ -129,8 +84,8 @@ public class MessagePublisher : CommandBus, IMessagePublisher
             throw new ArgumentNullException(nameof(message));
         }
 
-        var envelope = new Envelope { Message = message, Destination = destination };
-        Runtime.Router.RouteToDestination(destination, envelope);
+        var envelope = Runtime.RoutingFor(message.GetType())
+            .RouteToDestination(message, destination, options);
 
         trackEnvelopeCorrelation(envelope);
 
@@ -142,15 +97,14 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     /// </summary>
     /// <param name="message"></param>
     /// <param name="time"></param>
+    /// <param name="options"></param>
     /// <typeparam name="T"></typeparam>
-    public Task ScheduleSendAsync<T>(T message, DateTimeOffset time)
+    public ValueTask SchedulePublishAsync<T>(T message, DateTimeOffset time, DeliveryOptions? options = null)
     {
-        return SendEnvelopeAsync(new Envelope
-        {
-            Message = message,
-            ScheduledTime = time.ToUniversalTime(),
-            Status = EnvelopeStatus.Scheduled
-        });
+        options ??= new DeliveryOptions();
+        options.ScheduledTime = time;
+
+        return PublishAsync(message, options);
     }
 
     /// <summary>
@@ -158,21 +112,13 @@ public class MessagePublisher : CommandBus, IMessagePublisher
     /// </summary>
     /// <param name="message"></param>
     /// <param name="delay"></param>
+    /// <param name="options"></param>
     /// <typeparam name="T"></typeparam>
-    public Task ScheduleSendAsync<T>(T message, TimeSpan delay)
+    public ValueTask SchedulePublishAsync<T>(T message, TimeSpan delay, DeliveryOptions? options = null)
     {
-        return ScheduleSendAsync(message, DateTime.UtcNow.Add(delay));
-    }
-
-    public Envelope EnvelopeForRequestResponse<TResponse>(object request)
-    {
-        return new Envelope
-        {
-            Message = request,
-            ReplyRequested = typeof(TResponse).ToMessageTypeName(), // memoize this maybe?
-            AcceptedContentTypes =
-                new[] { EnvelopeConstants.JsonContentType } // TODO -- might want a default serializer option for here
-        };
+        options ??= new DeliveryOptions();
+        options.ScheduleDelay = delay;
+        return PublishAsync(message, options);
     }
 
     private void trackEnvelopeCorrelation(Envelope[] outgoing)
@@ -186,7 +132,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         outbound.CorrelationId = CorrelationId;
     }
 
-    private async ValueTask persistOrSendAsync(params Envelope[] outgoing)
+    protected async ValueTask persistOrSendAsync(params Envelope[] outgoing)
     {
         if (Transaction != null)
         {

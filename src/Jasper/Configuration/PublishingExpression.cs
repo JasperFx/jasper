@@ -45,21 +45,6 @@ public class PublishingExpression : IPublishToExpression
         return new SubscriberConfiguration(endpoint);
     }
 
-    /// <summary>
-    ///     Use a routing rule "Subscriber" as a recipient. This is used
-    ///     by Jasper's topic routing
-    /// </summary>
-    /// <param name="subscriber"></param>
-    public void ViaRouter(Subscriber subscriber)
-    {
-        if (AutoAddSubscriptions)
-        {
-            subscriber.Subscriptions.AddRange(_subscriptions);
-        }
-
-        Parent.Subscribers.Fill(subscriber);
-        _subscribers.Add(subscriber);
-    }
 
     /// <summary>
     ///     Send all the matching messages to the designated Uri string

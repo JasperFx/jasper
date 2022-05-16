@@ -147,18 +147,7 @@ namespace Jasper.Testing
             child.CausationId.ShouldBe(parent.CorrelationId);
         }
 
-        [Fact]
-        public void set_deliver_by_threshold()
-        {
-            var envelope = new Envelope();
 
-            envelope.DeliverWithin(5.Minutes());
-
-            envelope.DeliverBy.ShouldNotBeNull();
-
-            envelope.DeliverBy.Value.ShouldBeGreaterThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(-5));
-            envelope.DeliverBy.Value.ShouldBeLessThan(DateTimeOffset.UtcNow.AddMinutes(5).AddSeconds(5));
-        }
 
         [Fact]
         public void mark_received_when_not_delayed_execution()

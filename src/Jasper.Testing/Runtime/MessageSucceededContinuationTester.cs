@@ -62,7 +62,7 @@ namespace Jasper.Testing.Runtime
         public void should_send_a_failure_ack()
         {
             var message = "Sending cascading message failed: " + theException.Message;
-            theRuntime.Acknowledgements.Received().SendFailureAcknowledgementAsync(theEnvelope, message);
+            theContext.Received().SendFailureAcknowledgementAsync(message);
         }
     }
 }

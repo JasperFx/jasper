@@ -85,6 +85,14 @@ public interface ITrackedSession
     /// </summary>
     /// <returns></returns>
     IReadOnlyList<Exception> AllExceptions();
+
+    /// <summary>
+    /// Find the single, expected envelope received
+    /// for the message type "T"
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Envelope FindSingleReceivedEnvelopeForMessageType<T>();
 }
 
 #endregion

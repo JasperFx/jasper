@@ -108,4 +108,19 @@ public interface IExecutionContext : IMessagePublisher
     /// </summary>
     /// <returns></returns>
     Task RetryExecutionNowAsync();
+
+    /// <summary>
+    ///     Sends an acknowledgement back to the original sender
+    /// </summary>
+    /// <returns></returns>
+    ValueTask SendAcknowledgementAsync();
+
+    /// <summary>
+    ///     Send a failure acknowledgement back to the original
+    ///     sending service
+    /// </summary>
+    /// <param name="original"></param>
+    /// <param name="failureDescription">Descriptive message about why the message was not successfully processed</param>
+    /// <returns></returns>
+    ValueTask SendFailureAcknowledgementAsync(string failureDescription);
 }

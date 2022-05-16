@@ -2,152 +2,66 @@ using System;
 using System.Linq;
 using Baseline;
 using Baseline.ImTools;
+using Jasper.Attributes;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
+using Jasper.Transports;
+using Jasper.Transports.Local;
 using Jasper.Transports.Sending;
 
 namespace Jasper.Runtime;
 
-public partial class JasperRuntime : IEnvelopeRouter
+public partial class JasperRuntime
 {
-    private ISendingAgent? _durableLocalQueue;
-    private ImHashMap<Type, MessageTypeRouting> _routes = ImHashMap<Type, MessageTypeRouting>.Empty;
-
-    public Envelope[] RouteOutgoingByMessage(object message)
+    internal ISendingAgent DetermineLocalSendingAgent(Type messageType)
     {
-        var envelopes = routingFor(message.GetType()).RouteByMessage(message);
-        adjustForScheduledSend(envelopes);
-
-        return envelopes;
-    }
-
-    public Envelope[] RouteOutgoingByEnvelope(Envelope original)
-    {
-        var messageType = DetermineMessageType(original);
-
-        var messageTypeRouting = routingFor(messageType);
-
-        var envelopes = original.TopicName.IsEmpty()
-            ? messageTypeRouting.RouteByEnvelope(messageType, original)
-            : messageTypeRouting.RouteToTopic(messageType, original);
-
-        adjustForScheduledSend(envelopes);
-
-        return envelopes;
-    }
-
-
-    public void RouteToDestination(Uri destination, Envelope envelope)
-    {
-        envelope.Destination = destination;
-        routingFor(envelope).RouteToDestination(envelope);
-    }
-
-    public Envelope[] RouteToTopic(string topicName, Envelope envelope)
-    {
-        var messageTypeRouting = routingFor(envelope);
-        envelope.TopicName = topicName;
-        var envelopes = messageTypeRouting.RouteToTopic(messageTypeRouting.MessageType, envelope);
-
-        adjustForScheduledSend(envelopes);
-
-        return envelopes;
-    }
-
-    Envelope IEnvelopeRouter.RouteLocally<T>(T message) where T : default
-    {
-        if (message == null)
+        if (messageType.HasAttribute<LocalQueueAttribute>())
         {
-            throw new ArgumentNullException(nameof(message));
+            var queueName = messageType.GetAttribute<LocalQueueAttribute>()!.QueueName;
+            return AgentForLocalQueue(queueName);
         }
 
-        var agent = routingFor(typeof(T)).LocalQueue;
-
-        return new Envelope(message)
-        {
-            Destination = agent.Destination,
-            ContentType = EnvelopeConstants.JsonContentType,
-            Sender = agent,
-            Serializer = agent.Endpoint.DefaultSerializer
-        };
-    }
-
-    public Envelope RouteLocally<T>(T message, string workerQueue)
-    {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
-
-        if (workerQueue == null)
-        {
-            throw new ArgumentNullException(nameof(workerQueue));
-        }
-
-        var agent = AgentForLocalQueue(workerQueue);
-
-        return new Envelope(message)
-        {
-            Destination = agent.Destination,
-            ContentType = EnvelopeConstants.JsonContentType,
-            Sender = agent,
-            Serializer = agent.Endpoint.DefaultSerializer
-        };
-    }
-
-    public MessageTypeRouting RouteByType(Type messageType)
-    {
-        RegisterMessageType(messageType);
-        var routing = new MessageTypeRouting(messageType, this);
-
-        var subscribers = Subscribers
-            .Where(x => x.ShouldSendMessage(messageType))
+        var subscribers = Options.GetOrCreate<LocalTransport>().Endpoints().OfType<LocalQueueSettings>().Where(x => x.ShouldSendMessage(messageType))
+            .Select(x => x.Agent)
             .ToArray();
 
-        if (subscribers.Any())
-        {
-            foreach (var subscriber in subscribers) subscriber.AddRoute(routing, this);
-        }
-        else if (Options.HandlerGraph.CanHandle(messageType))
-        {
-            routing.UseLocalQueueAsRoute();
-        }
-
-        return routing;
+        return subscribers.FirstOrDefault() ?? GetOrBuildSendingAgent(TransportConstants.LocalUri);
     }
 
-    private void adjustForScheduledSend(Envelope[] outgoing)
-    {
-        var now = DateTime.UtcNow;
-        for (var i = 0; i < outgoing.Length; i++)
-        {
-            if (outgoing[i].IsScheduledForLater(now) && !outgoing[i].Sender!.SupportsNativeScheduledSend)
-            {
-                outgoing[i] = outgoing[i].ForScheduledSend(_durableLocalQueue);
-            }
-        }
-    }
 
-    private MessageTypeRouting routingFor(Envelope envelope)
-    {
-        return routingFor(DetermineMessageType(envelope));
-    }
+    private ImHashMap<Type, IMessageRouter> _messageTypeRouting = ImHashMap<Type, IMessageRouter>.Empty;
 
-    private MessageTypeRouting routingFor(Type messageType)
+
+    public IMessageRouter RoutingFor(Type messageType)
     {
-        if (messageType == null)
+        if (messageType == typeof(object))
+            throw new ArgumentOutOfRangeException(nameof(messageType),
+                "System.Object has been erroneously passed in as the message type");
+
+        if (_messageTypeRouting.TryFind(messageType, out var raw))
         {
-            throw new ArgumentNullException(nameof(messageType));
+            return raw;
         }
 
-        if (_routes.TryFind(messageType, out var routing))
+        var routes = endpoints().Where(x => x.ShouldSendMessage(messageType))
+            .Select(x => new MessageRoute(messageType, x)).ToArray();
+
+        // If no routes here and this app has a handler for the message type,
+        // assume it's a local route
+        if (!routes.Any() && Options.HandlerGraph.CanHandle(messageType))
         {
-            return routing;
+            var localSendingAgentForMessageType = DetermineLocalSendingAgent(messageType);
+            var messageRoute = new MessageRoute(messageType, localSendingAgentForMessageType.Endpoint);
+
+            routes = new[] { messageRoute };
         }
 
-        routing = RouteByType(messageType);
-        _routes = _routes.AddOrUpdate(messageType, routing);
+        var router = routes.Any()
+            ? typeof(MultipleRouteMessageRouter<>).CloseAndBuildAs<IMessageRouter>(this, routes, messageType)
+            : typeof(EmptyMessageRouter<>).CloseAndBuildAs<IMessageRouter>(this, messageType);
 
-        return routing;
+        _messageTypeRouting = _messageTypeRouting.AddOrUpdate(messageType, router);
+
+        return router;
     }
 }

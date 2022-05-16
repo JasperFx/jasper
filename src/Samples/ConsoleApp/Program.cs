@@ -1,9 +1,8 @@
 #region sample_QuickStartConsoleMain
 
 using System.Threading.Tasks;
-using Jasper;
 using Jasper.RabbitMQ;
-using Jasper.Tcp;
+using Jasper.Transports.Tcp;
 using LamarCodeGeneration;
 using TestingSupport;
 
