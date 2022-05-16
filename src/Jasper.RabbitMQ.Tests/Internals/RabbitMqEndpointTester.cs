@@ -22,6 +22,13 @@ namespace Jasper.RabbitMQ.Tests.Internals
         }
 
         [Fact]
+        public void default_routing_mode_is_static()
+        {
+            var endpoint = new RabbitMqEndpoint(new RabbitMqTransport());
+            endpoint.RoutingType.ShouldBe(RoutingMode.Static);
+        }
+
+        [Fact]
         public void default_prefetch_size_is_0()
         {
             var endpoint = new RabbitMqEndpoint(new RabbitMqTransport());

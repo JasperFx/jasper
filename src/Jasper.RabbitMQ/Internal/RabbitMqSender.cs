@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Configuration;
+using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using RabbitMQ.Client;
@@ -14,8 +15,10 @@ namespace Jasper.RabbitMQ.Internal
         private readonly string _exchangeName;
         private readonly bool _isDurable;
         private readonly string _key;
+        private Func<Envelope, string> _toRoutingKey;
 
-        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(
+        public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport,
+            RoutingMode routingType) : base(
             transport.SendingConnection, transport, endpoint)
         {
             _endpoint = endpoint;
@@ -25,6 +28,8 @@ namespace Jasper.RabbitMQ.Internal
 
             _exchangeName = endpoint.ExchangeName == TransportConstants.Default ? "" : endpoint.ExchangeName;
             _key = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
+
+            _toRoutingKey = routingType == RoutingMode.Static ? _ => _key : TopicRouting.DetermineTopicName;
         }
 
         public bool SupportsNativeScheduledSend { get; } = false;
@@ -45,7 +50,8 @@ namespace Jasper.RabbitMQ.Internal
 
             _endpoint.MapEnvelopeToOutgoing(envelope, props);
 
-            Channel.BasicPublish(_exchangeName, _key, props, envelope.Data);
+            var routingKey = _toRoutingKey(envelope);
+            Channel.BasicPublish(_exchangeName, routingKey, props, envelope.Data);
 
             return ValueTask.CompletedTask;
         }

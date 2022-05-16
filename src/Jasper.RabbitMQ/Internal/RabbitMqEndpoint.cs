@@ -72,7 +72,7 @@ namespace Jasper.RabbitMQ.Internal
         /// Limit on the combined size of pre-fetched messages. The default in Jasper is 0, which
         /// denotes an unlimited size.
         /// </summary>
-        public uint PreFetchSize { get; set; } = 0;
+        public uint PreFetchSize { get; set; }
 
         private ushort? _preFetchCount;
 
@@ -192,7 +192,7 @@ namespace Jasper.RabbitMQ.Internal
 
         protected override ISender CreateSender(IJasperRuntime root)
         {
-            return new RabbitMqSender(this, _parent);
+            return new RabbitMqSender(this, _parent, RoutingType);
         }
 
         protected override void writeOutgoingHeader(IBasicProperties outgoing, string key, string value)

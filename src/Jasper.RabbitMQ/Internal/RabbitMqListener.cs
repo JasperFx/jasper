@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Jasper.Configuration;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -27,7 +28,7 @@ namespace Jasper.RabbitMQ.Internal
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
 
-            _sender = new RabbitMqSender(_endpoint, transport);
+            _sender = new RabbitMqSender(_endpoint, transport, RoutingMode.Static);
         }
 
         public override void Dispose()

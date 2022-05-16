@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Baseline.Dates;
@@ -24,7 +25,7 @@ public enum EndpointMode
 /// <summary>
 ///     Configuration for a single message listener within a Jasper application
 /// </summary>
-public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesProperties
+public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
 {
     private IMessageSerializer? _defaultSerializer;
     private string? _name;
@@ -38,6 +39,43 @@ public abstract class Endpoint : Subscriber, ICircuitParameters, IDescribesPrope
     {
         // ReSharper disable once VirtualMemberCallInConstructor
         Parse(uri);
+    }
+
+    private EndpointMode _mode = EndpointMode.BufferedInMemory;
+
+    public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
+
+    /// <summary>
+    ///     Mark whether or not the receiver for this listener should use
+    ///     message persistence for durability
+    /// </summary>
+    public EndpointMode Mode
+    {
+        get => _mode;
+        set
+        {
+            if (!supportsMode(value))
+            {
+                throw new InvalidOperationException(
+                    $"Endpoint of type {GetType().Name} does not support EndpointMode.{value}");
+            }
+
+            _mode = value;
+        }
+    }
+
+
+    public RoutingMode RoutingType { get; set; } = RoutingMode.Static;
+
+    internal bool ShouldSendMessage(Type messageType)
+    {
+        return Subscriptions.Any(x => x.Matches(messageType));
+    }
+
+
+    protected virtual bool supportsMode(EndpointMode mode)
+    {
+        return true;
     }
 
     internal IJasperRuntime? Root { get; set; }

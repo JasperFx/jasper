@@ -208,7 +208,6 @@ public partial class Envelope
     ///     Designates the topic name for outgoing messages to topic-based publish/subscribe
     ///     routing. This property is only used for routing
     /// </summary>
-    [Obsolete("Do we really need this?")]
     public string? TopicName { get; set; }
 
 

@@ -2,7 +2,9 @@ using System;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Runtime.Routing;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Shouldly;
+using TestingSupport;
 using Xunit;
 
 namespace Jasper.Testing.Configuration
@@ -47,6 +49,20 @@ namespace Jasper.Testing.Configuration
             TopicRouting.DetermineTopicName(messageType).ShouldBe(expected);
             TopicRouting.DetermineTopicName(messageType).ShouldBe(expected);
             TopicRouting.DetermineTopicName(messageType).ShouldBe(expected);
+        }
+
+        [Fact]
+        public void use_explicit_topic_on_envelope()
+        {
+            TopicRouting.DetermineTopicName(new Envelope(new M1()) { TopicName = "foo" })
+                .ShouldBe("foo");
+        }
+
+        [Fact]
+        public void use_message_type_topic_if_no_explicit_topic()
+        {
+            TopicRouting.DetermineTopicName(new Envelope(new M1()))
+                .ShouldBe(TopicRouting.DetermineTopicName(typeof(M1)));
         }
 
     }

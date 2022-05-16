@@ -8,7 +8,6 @@
     <ProjectReference Include="..\..\Jasper.JsonCommands\Jasper.JsonCommands.csproj" />
     <ProjectReference Include="..\..\Jasper.Pulsar\Jasper.Pulsar.csproj" />
     <ProjectReference Include="..\..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
-    <ProjectReference Include="..\..\Jasper.Tcp\Jasper.Tcp.csproj" />
     <ProjectReference Include="..\..\Jasper\Jasper.csproj" />
     <ProjectReference Include="..\..\TestingSupport\TestingSupport.csproj" />
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace Jasper.Configuration;
 
 public class PublishingExpression : IPublishToExpression
 {
-    private readonly IList<Subscriber> _subscribers = new List<Subscriber>();
+    private readonly IList<Endpoint> _endpoints = new List<Endpoint>();
     private readonly IList<Subscription> _subscriptions = new List<Subscription>();
 
     internal PublishingExpression(JasperOptions parent)
@@ -35,7 +35,7 @@ public class PublishingExpression : IPublishToExpression
     {
         var endpoint = Parent.GetOrCreateEndpoint(uri);
 
-        _subscribers.Add(endpoint);
+        _endpoints.Add(endpoint);
 
         if (AutoAddSubscriptions)
         {
@@ -84,7 +84,7 @@ public class PublishingExpression : IPublishToExpression
             settings.Subscriptions.AddRange(_subscriptions);
         }
 
-        _subscribers.Add(settings);
+        _endpoints.Add(settings);
 
         return new ListenerConfiguration(settings);
     }
@@ -131,12 +131,12 @@ public class PublishingExpression : IPublishToExpression
 
     internal void AttachSubscriptions()
     {
-        if (!_subscribers.Any())
+        if (!_endpoints.Any())
         {
             throw new InvalidOperationException("No subscriber endpoint(s) are specified!");
         }
 
-        foreach (var endpoint in _subscribers) endpoint.Subscriptions.AddRange(_subscriptions);
+        foreach (var endpoint in _endpoints) endpoint.Subscriptions.AddRange(_subscriptions);
     }
 
     internal void AddSubscriptionForAllMessages()
