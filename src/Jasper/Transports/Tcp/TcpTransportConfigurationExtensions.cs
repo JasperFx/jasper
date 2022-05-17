@@ -10,9 +10,9 @@ public static class TcpTransportConfigurationExtensions
     ///     fast, but non-durable way
     /// </summary>
     /// <param name="port"></param>
-    public static IListenerConfiguration ListenAtPort(this IEndpoints endpoints, int port)
+    public static IListenerConfiguration ListenAtPort(this JasperOptions endpoints, int port)
     {
-        var settings = endpoints.As<JasperOptions>().GetOrCreate<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
+        var settings = endpoints.GetOrCreate<TcpTransport>().ListenTo(TcpEndpoint.ToUri(port));
         return new ListenerConfiguration(settings);
     }
 

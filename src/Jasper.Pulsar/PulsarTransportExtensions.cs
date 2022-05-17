@@ -14,7 +14,7 @@ namespace Jasper.Pulsar
         /// </summary>
         /// <param name="endpoints"></param>
         /// <returns></returns>
-        internal static PulsarTransport PulsarTransport(this IEndpoints endpoints)
+        internal static PulsarTransport PulsarTransport(this JasperOptions endpoints)
         {
             var transports = endpoints.As<JasperOptions>();
 
@@ -27,7 +27,7 @@ namespace Jasper.Pulsar
         /// </summary>
         /// <param name="endpoints"></param>
         /// <param name="configure"></param>
-        public static void ConfigurePulsar(this IEndpoints endpoints, Action<IPulsarClientBuilder> configure)
+        public static void ConfigurePulsar(this JasperOptions endpoints, Action<IPulsarClientBuilder> configure)
         {
             configure(endpoints.PulsarTransport().Builder);
         }
@@ -36,7 +36,7 @@ namespace Jasper.Pulsar
         /// Connect to a local, standalone Pulsar broker at the default port
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void ConnectToLocalPulsar(this IEndpoints endpoints)
+        public static void ConnectToLocalPulsar(this JasperOptions endpoints)
         {
             endpoints.ConfigurePulsar(_ => {});
         }
@@ -67,7 +67,7 @@ namespace Jasper.Pulsar
         /// <param name="endpoints"></param>
         /// <param name="topicPath"></param>
         /// <returns></returns>
-        public static PulsarListenerConfiguration ListenToPulsarTopic(this IEndpoints endpoints, string topicPath)
+        public static PulsarListenerConfiguration ListenToPulsarTopic(this JasperOptions endpoints, string topicPath)
         {
             var uri = PulsarEndpoint.UriFor(topicPath);
             var endpoint = endpoints.PulsarTransport()[uri];

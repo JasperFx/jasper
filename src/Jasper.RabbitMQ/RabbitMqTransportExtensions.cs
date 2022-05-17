@@ -59,7 +59,7 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="endpoints"></param>
         /// <returns></returns>
-        internal static RabbitMqTransport RabbitMqTransport(this IEndpoints endpoints)
+        internal static RabbitMqTransport RabbitMqTransport(this JasperOptions endpoints)
         {
             var transports = endpoints.As<JasperOptions>();
 
@@ -72,7 +72,7 @@ namespace Jasper.RabbitMQ
         /// </summary>
         /// <param name="endpoints"></param>
         /// <param name="configure"></param>
-        public static IRabbitMqTransportExpression UseRabbitMq(this IEndpoints endpoints,
+        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions endpoints,
             Action<ConnectionFactory> configure)
         {
             var transport = endpoints.RabbitMqTransport();
@@ -90,7 +90,7 @@ namespace Jasper.RabbitMQ
         ///     Rabbit MQ Uri that designates the connection information. See
         ///     https://www.rabbitmq.com/uri-spec.html
         /// </param>
-        public static IRabbitMqTransportExpression UseRabbitMq(this IEndpoints endpoints, Uri rabbitMqUri)
+        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions endpoints, Uri rabbitMqUri)
         {
             return endpoints.UseRabbitMq(factory => factory.Uri = rabbitMqUri);
         }
@@ -100,7 +100,7 @@ namespace Jasper.RabbitMQ
         ///     Rabbit MQ client options
         /// </summary>
         /// <param name="endpoints"></param>
-        public static IRabbitMqTransportExpression UseRabbitMq(this IEndpoints endpoints)
+        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions endpoints)
         {
             return endpoints.UseRabbitMq(_ => { });
         }
@@ -113,7 +113,7 @@ namespace Jasper.RabbitMQ
         /// <param name="configure">
         ///     Optional configuration for this Rabbit Mq queue if being initialized by Jasper
         ///     <returns></returns>
-        public static RabbitMqListenerConfiguration ListenToRabbitQueue(this IEndpoints endpoints, string queueName,
+        public static RabbitMqListenerConfiguration ListenToRabbitQueue(this JasperOptions endpoints, string queueName,
             Action<RabbitMqQueue>? configure = null)
         {
             var transport = endpoints.RabbitMqTransport();

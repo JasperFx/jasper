@@ -13,7 +13,7 @@ using Spectre.Console;
 
 namespace Jasper;
 
-public partial class JasperOptions : IEnumerable<ITransport>, IEndpoints, IDescribedSystemPart, IWriteToConsole,
+public partial class JasperOptions : IEnumerable<ITransport>, IDescribedSystemPart, IWriteToConsole,
     IAsyncDisposable
 {
     private readonly Dictionary<string, ITransport> _transports = new();
