@@ -43,7 +43,7 @@ public partial class JasperRuntime
             return raw;
         }
 
-        var routes = endpoints().Where(x => x.ShouldSendMessage(messageType))
+        var routes = Options.endpoints().Where(x => x.ShouldSendMessage(messageType))
             .Select(x => new MessageRoute(messageType, x)).ToArray();
 
         // If no routes here and this app has a handler for the message type,

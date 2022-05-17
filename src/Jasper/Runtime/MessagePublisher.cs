@@ -62,7 +62,7 @@ public class MessagePublisher : CommandBus, IMessagePublisher
             throw new ArgumentNullException(nameof(message));
         }
 
-        var outgoing = Runtime.RoutingFor(message.GetType()).RouteToTopic(message, topicName, null); // TODO -- push through delivery options
+        var outgoing = Runtime.RoutingFor(message.GetType()).RouteToTopic(message, topicName, options);
         return persistOrSendAsync(outgoing);
     }
 

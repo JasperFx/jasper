@@ -95,7 +95,7 @@ public partial class JasperRuntime : IJasperEndpoints
 
     public Endpoint? EndpointFor(Uri uri)
     {
-        return endpoints().FirstOrDefault(x => x.Uri == uri);
+        return Options.endpoints().FirstOrDefault(x => x.Uri == uri);
     }
 
     private ISendingAgent buildSendingAgent(ISender sender, Endpoint endpoint)
@@ -158,10 +158,5 @@ public partial class JasperRuntime : IJasperEndpoints
         var endpoint = transport.GetOrCreateEndpoint(uri);
         endpoint.Root ??= this; // This is important for serialization
         return endpoint.StartSending(this, transport.ReplyEndpoint()?.CorrectedUriForReplies());
-    }
-
-    private IEnumerable<Endpoint> endpoints()
-    {
-        return Options.SelectMany(x => x.Endpoints());
     }
 }

@@ -28,7 +28,7 @@ namespace Jasper.Testing.ErrorHandling
             await shouldMoveToErrorQueueOnAttempt(2);
         }
 
-        [Fact]
+        [Fact] // Warning, this times out a little too easily. Retry it before you panic
         public async Task moves_to_dead_letter_queue_on_maximum_attempts()
         {
             throwOnAttempt<DataMisalignedException>(1);

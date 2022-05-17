@@ -286,4 +286,8 @@ public sealed partial class JasperOptions : IExtensions
     }
 
 
+    internal IEnumerable<Endpoint> endpoints()
+    {
+        return this.SelectMany(x => x.Endpoints());
+    }
 }

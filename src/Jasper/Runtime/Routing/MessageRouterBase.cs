@@ -5,6 +5,7 @@ using Baseline;
 using Baseline.ImTools;
 using Baseline.Reflection;
 using Jasper.Attributes;
+using Jasper.Configuration;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 
@@ -16,6 +17,9 @@ internal abstract class MessageRouterBase<T> : IMessageRouter<T>, IMessageRouter
 
     private ImHashMap<Uri, MessageRoute> _specificRoutes = ImHashMap<Uri, MessageRoute>.Empty;
     private ImHashMap<string, MessageRoute> _localRoutes = ImHashMap<string, MessageRoute>.Empty;
+
+    private readonly MessageRoute[] _topicRoutes;
+
     private readonly MessageRoute _local;
 
     protected MessageRouterBase(JasperRuntime runtime)
@@ -33,6 +37,9 @@ internal abstract class MessageRouterBase<T> : IMessageRouter<T>, IMessageRouter
 
         _local = new MessageRoute(typeof(T), runtime.DetermineLocalSendingAgent(typeof(T)).Endpoint);
         _local.Rules.AddRange(HandlerRules!);
+
+        _topicRoutes = runtime.Options.AllEndpoints().Where(x => x.RoutingType == RoutingMode.ByTopic)
+            .Select(endpoint => new MessageRoute(typeof(T), endpoint)).ToArray();
 
         Runtime = runtime;
     }
@@ -79,9 +86,22 @@ internal abstract class MessageRouterBase<T> : IMessageRouter<T>, IMessageRouter
         return _local.CreateForSending(message, options, LocalDurableQueue, Runtime);
     }
 
-    public Envelope RouteToTopic(T message, string topicName, DeliveryOptions? options)
+    public Envelope[] RouteToTopic(T message, string topicName, DeliveryOptions? options)
     {
-        throw new NotImplementedException();
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        if (!_topicRoutes.Any()) throw new InvalidOperationException("There are no registered topic routed endpoints");
+        var envelopes = new Envelope[_topicRoutes.Length];
+        for (int i = 0; i < envelopes.Length; i++)
+        {
+            envelopes[i] = _topicRoutes[i].CreateForSending(message, options, LocalDurableQueue, Runtime);
+            envelopes[i].TopicName = topicName;
+        }
+
+        return envelopes;
     }
 
     public Envelope RouteLocal(T message, string workerQueue, DeliveryOptions? options)
@@ -125,7 +145,7 @@ internal abstract class MessageRouterBase<T> : IMessageRouter<T>, IMessageRouter
         return RouteToEndpointByName((T)message, endpointName, options);
     }
 
-    public Envelope RouteToTopic(object message, string topicName, DeliveryOptions? options)
+    public Envelope[] RouteToTopic(object message, string topicName, DeliveryOptions? options)
     {
         return RouteToTopic((T)message, topicName, options);
     }

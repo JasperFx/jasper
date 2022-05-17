@@ -22,11 +22,11 @@ namespace Jasper.RabbitMQ.Tests
             theSender = JasperHost.For(opts =>
             {
                 opts.UseRabbitMq().AutoProvision();
-                opts.PublishAllMessages().ToRabbitTopics("TopicRouter", exchange =>
+                opts.PublishAllMessages().ToRabbitTopics("jasper.topics", exchange =>
                 {
                     exchange.BindTopic("color.green").ToQueue("green");
                     exchange.BindTopic("color.blue").ToQueue("blue");
-                    exchange.BindTopic("color.all").ToQueue("all");
+                    exchange.BindTopic("color.*").ToQueue("all");
                 });
             });
 
@@ -77,6 +77,22 @@ namespace Jasper.RabbitMQ.Tests
         }
 
         [Fact]
+        public async Task send_by_message_topic_to_multiple_listeners()
+        {
+            var session = await theSender
+                .TrackActivity()
+                .IncludeExternalTransports()
+                .AlsoTrack(theFirstReceiver, theSecondReceiver, theThirdReceiver)
+                .SendMessageAndWaitAsync(new FirstMessage());
+
+            session.FindEnvelopesWithMessageType<FirstMessage>()
+                .Where(x => x.EventType == EventType.Received)
+                .Select(x => x.ServiceName)
+                .OrderBy(x => x).ShouldHaveTheSameElementsAs("Second", "Third");
+
+        }
+
+        [Fact]
         public async Task send_by_explicit_topic()
         {
             var session = await theSender
@@ -92,11 +108,29 @@ namespace Jasper.RabbitMQ.Tests
                 .ShouldHaveTheSameElementsAs("First", "Third");
 
         }
+
+        [Fact]
+        public async Task send_by_explicit_topic_2()
+        {
+            var session = await theSender
+                .TrackActivity()
+                .IncludeExternalTransports()
+                .AlsoTrack(theFirstReceiver, theSecondReceiver, theThirdReceiver)
+                .SendMessageToTopicAndWaitAsync("color.blue", new PurpleMessage());
+
+            session.FindEnvelopesWithMessageType<PurpleMessage>()
+                .Where(x => x.EventType == EventType.Received)
+                .Select(x => x.ServiceName)
+                .OrderBy(x => x)
+                .ShouldHaveTheSameElementsAs("Second", "Third");
+
+        }
     }
 
     [Topic("color.purple")]
     public class PurpleMessage{}
 
+    [Topic("color.blue")]
     public class FirstMessage
     {
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -125,6 +159,11 @@ namespace Jasper.RabbitMQ.Tests
         }
 
         public void Handle(ThirdMessage message)
+        {
+
+        }
+
+        public void Handle(PurpleMessage message)
         {
 
         }
