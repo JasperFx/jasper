@@ -17,7 +17,7 @@ namespace Jasper.Testing.Configuration
         {
             var registry = new JasperOptions();
             registry.Handlers.DisableConventionalDiscovery();
-            registry.Extensions.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
             registry.Services.For<IColorService>().Use<BlueService>();
 
             using (var runtime = JasperHost.For(registry))
@@ -32,7 +32,7 @@ namespace Jasper.Testing.Configuration
         {
             #region sample_explicitly_add_extension
             var registry = new JasperOptions();
-            registry.Extensions.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
             #endregion
 
             registry.Handlers.DisableConventionalDiscovery();
@@ -48,10 +48,10 @@ namespace Jasper.Testing.Configuration
         public void will_only_apply_extension_once()
         {
             var registry = new JasperOptions();
-            registry.Extensions.Include<OptionalExtension>();
-            registry.Extensions.Include<OptionalExtension>();
-            registry.Extensions.Include<OptionalExtension>();
-            registry.Extensions.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
+            registry.Include<OptionalExtension>();
 
             using (var host = JasperHost.For(registry))
             {
@@ -59,11 +59,11 @@ namespace Jasper.Testing.Configuration
                     .Count().ShouldBe(1);
             }
         }
-        
+
         [Fact]
         public void picks_up_on_handlers_from_extension()
         {
-            with(x => x.Extensions.Include<MyExtension>());
+            with(x => x.Include<MyExtension>());
 
             var handlerChain = chainFor<ExtensionMessage>();
             handlerChain.Handlers.Single()
@@ -90,7 +90,7 @@ namespace Jasper.Testing.Configuration
             options.Services.For<IColorService>().Use<RedService>();
         }
     }
-    
+
     public class MyExtension : IJasperExtension
     {
         public void Configure(JasperOptions options)

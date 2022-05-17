@@ -47,7 +47,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
             theReceiver = JasperHost.For(opts =>
             {
-                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
+                opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
                 opts.ListenAtPort(2345).DurablyPersistedLocally();
 

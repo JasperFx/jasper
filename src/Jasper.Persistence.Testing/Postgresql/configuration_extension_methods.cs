@@ -44,13 +44,10 @@ namespace Jasper.Persistence.Testing.Postgresql
         [Fact]
         public void bootstrap_with_connection_string()
         {
-            using (var runtime = JasperHost.For(x =>
-                x.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString)))
-            {
-
-                runtime.Get<PostgresqlSettings>()
-                    .ConnectionString.ShouldBe(Servers.PostgresConnectionString);
-            }
+            using var runtime = JasperHost.For(x =>
+                x.PersistMessagesWithPostgresql(Servers.PostgresConnectionString));
+            runtime.Get<PostgresqlSettings>()
+                .ConnectionString.ShouldBe(Servers.PostgresConnectionString);
         }
     }
 

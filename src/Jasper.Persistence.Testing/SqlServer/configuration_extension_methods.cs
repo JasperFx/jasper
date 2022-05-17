@@ -27,7 +27,7 @@ namespace Jasper.Persistence.Testing.SqlServer
                 })
                 .UseJasper((context, options) =>
                 {
-                    options.Extensions.PersistMessagesWithSqlServer(context.Configuration["connection"]);
+                    options.PersistMessagesWithSqlServer(context.Configuration["connection"]);
                 });
 
 
@@ -45,7 +45,7 @@ namespace Jasper.Persistence.Testing.SqlServer
         public void bootstrap_with_connection_string()
         {
             using var runtime = JasperHost.For(x =>
-                x.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString));
+                x.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString));
             runtime.Get<SqlServerSettings>()
                 .ConnectionString.ShouldBe(Servers.SqlServerConnectionString);
         }

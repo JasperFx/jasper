@@ -34,11 +34,11 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
             {
                 opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
 
-                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
 
                 opts.Services.AddDbContext<SagaDbContext>(x => x.UseSqlServer(Servers.SqlServerConnectionString));
 
-                opts.Extensions.UseEntityFrameworkCorePersistence();
+                opts.UseEntityFrameworkCorePersistence();
 
                 opts.PublishAllMessages().Locally();
 

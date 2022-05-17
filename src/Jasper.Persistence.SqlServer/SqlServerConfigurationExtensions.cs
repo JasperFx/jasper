@@ -10,10 +10,10 @@ public static class SqlServerConfigurationExtensions
     /// <param name="settings"></param>
     /// <param name="connectionString"></param>
     /// <param name="schema"></param>
-    public static void PersistMessagesWithSqlServer(this IExtensions extensions, string connectionString,
+    public static void PersistMessagesWithSqlServer(this JasperOptions options, string connectionString,
         string? schema = null)
     {
-        extensions.Include<SqlServerBackedPersistence>(x =>
+        options.Include<SqlServerBackedPersistence>(x =>
         {
             x.Settings.ConnectionString = connectionString;
 

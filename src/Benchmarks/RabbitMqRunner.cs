@@ -41,11 +41,11 @@ namespace Benchmarks
                 switch (DatabaseEngine)
                 {
                     case "SqlServer":
-                        opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                        opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
                         break;
 
                     case "Postgresql":
-                        opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
+                        opts.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
                         break;
                 }
 

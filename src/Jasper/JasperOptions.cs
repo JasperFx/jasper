@@ -25,7 +25,7 @@ namespace Jasper;
 /// <summary>
 ///     Completely defines and configures a Jasper application
 /// </summary>
-public sealed partial class JasperOptions : IExtensions
+public sealed partial class JasperOptions
 {
     private static Assembly? _rememberedCallingAssembly;
     private readonly List<IJasperExtension> _appliedExtensions = new();
@@ -57,12 +57,6 @@ public sealed partial class JasperOptions : IExtensions
 
         deriveServiceName();
     }
-
-    /// <summary>
-    ///     Apply Jasper extensions
-    /// </summary>
-    public IExtensions Extensions => this;
-
 
     /// <summary>
     ///     Advanced configuration options for Jasper message processing,
@@ -130,7 +124,7 @@ public sealed partial class JasperOptions : IExtensions
     ///     Applies the extension to this application
     /// </summary>
     /// <param name="extension"></param>
-    void IExtensions.Include(IJasperExtension extension)
+    public void Include(IJasperExtension extension)
     {
         ApplyExtensions(new[] { extension });
     }
@@ -140,17 +134,12 @@ public sealed partial class JasperOptions : IExtensions
     /// </summary>
     /// <param name="configure">Optional configuration of the extension</param>
     /// <typeparam name="T"></typeparam>
-    void IExtensions.Include<T>(Action<T>? configure)
+    public void Include<T>(Action<T>? configure = null) where T : IJasperExtension, new()
     {
         var extension = new T();
         configure?.Invoke(extension);
 
         ApplyExtensions(new IJasperExtension[] { extension });
-    }
-
-    T? IExtensions.GetRegisteredExtension<T>() where T : default
-    {
-        return _appliedExtensions.OfType<T>().FirstOrDefault();
     }
 
     private void deriveServiceName()

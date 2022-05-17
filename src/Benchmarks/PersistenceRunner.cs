@@ -44,11 +44,11 @@ namespace Benchmarks
                 opts.Advanced.DurabilityAgentEnabled = false;
                 if (DatabaseEngine == "SqlServer")
                 {
-                    opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                    opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
                 }
                 else
                 {
-                    opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
+                    opts.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
                 }
             }).GetAwaiter().GetResult();
 

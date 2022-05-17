@@ -14,8 +14,8 @@ builder.Host.UseJasper(opts =>
 {
     // TODO -- use single helper that can read the connection string
     // from the DbContext
-    opts.Extensions.PersistMessagesWithSqlServer(connectionString);
-    opts.Extensions.UseEntityFrameworkCorePersistence();
+    opts.PersistMessagesWithSqlServer(connectionString);
+    opts.UseEntityFrameworkCorePersistence();
 });
 
 // Register the EF Core DbContext

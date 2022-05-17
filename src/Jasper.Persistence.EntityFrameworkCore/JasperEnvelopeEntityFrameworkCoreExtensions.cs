@@ -13,10 +13,10 @@ public static class JasperEntityFrameworkCoreConfigurationExtensions
     ///     Uses Entity Framework Core for Saga persistence and transactional
     ///     middleware
     /// </summary>
-    /// <param name="extensions"></param>
-    public static void UseEntityFrameworkCorePersistence(this IExtensions extensions)
+    /// <param name="options"></param>
+    public static void UseEntityFrameworkCorePersistence(this JasperOptions options)
     {
-        extensions.Include<EntityFrameworkCoreBackedPersistence>();
+        options.Include<EntityFrameworkCoreBackedPersistence>();
     }
 }
 

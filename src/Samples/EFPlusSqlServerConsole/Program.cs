@@ -23,11 +23,11 @@ namespace EFPlusSqlServerConsole
 
                     // Setting up Sql Server-backed message persistence
                     // This requires a reference to Jasper.Persistence.SqlServer
-                    opts.Extensions.PersistMessagesWithSqlServer(connectionString);
+                    opts.PersistMessagesWithSqlServer(connectionString);
 
                     // Set up Entity Framework Core as the support
                     // for Jasper's transactional middleware
-                    opts.Extensions.UseEntityFrameworkCorePersistence();
+                    opts.UseEntityFrameworkCorePersistence();
 
                     // Register the EF Core DbContext
                     opts.Services.AddDbContext<ItemsDbContext>(

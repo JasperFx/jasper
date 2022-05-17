@@ -36,7 +36,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         {
             theHost = JasperHost.For(opts =>
             {
-                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
             });
 
             await theHost.ResetResourceState();

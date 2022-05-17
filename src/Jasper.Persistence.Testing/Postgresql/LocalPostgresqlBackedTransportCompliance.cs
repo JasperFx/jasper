@@ -21,7 +21,7 @@ namespace Jasper.Persistence.Testing.Postgresql
         {
             return TheOnlyAppIs(opts =>
             {
-                opts.Extensions.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
+                opts.PersistMessagesWithPostgresql(Servers.PostgresConnectionString);
             });
         }
 
