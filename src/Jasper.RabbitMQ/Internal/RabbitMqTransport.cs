@@ -141,7 +141,7 @@ namespace Jasper.RabbitMQ.Internal
                     var queue = Queues[endpoint.QueueName];
                     queue.Declare(channel!);
 
-                    if (queue.PurgeOnStartup)
+                    if (queue.PurgeOnStartup || AutoPurgeAllQueues)
                     {
                         channel!.QueuePurge(queue.Name);
                     }
@@ -151,7 +151,7 @@ namespace Jasper.RabbitMQ.Internal
             {
                 var queue = Queues[endpoint.QueueName];
 
-                if (queue.PurgeOnStartup)
+                if (queue.PurgeOnStartup || AutoPurgeAllQueues)
                 {
                     channel!.QueuePurge(queue.Name);
                 }
