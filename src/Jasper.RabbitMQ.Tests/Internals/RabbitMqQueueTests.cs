@@ -69,5 +69,11 @@ namespace Jasper.RabbitMQ.Tests.Internals
             channel.DidNotReceiveWithAnyArgs().QueueDeclare("foo", isDurable, isExclusive, autoDelete, queue.Arguments);
             queue.HasDeclared.ShouldBeTrue();
         }
+
+        [Fact]
+        public void purge_messages_on_first_usage()
+        {
+
+        }
     }
 }

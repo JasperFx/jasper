@@ -126,6 +126,38 @@ namespace Jasper.RabbitMQ.Internal
             return findEndpointByUri(temp.Uri);
         }
 
+        internal void InitializeEndpoint(RabbitMqEndpoint endpoint, IModel channel)
+        {
+            if (AutoProvision)
+            {
+                if (endpoint.ExchangeName.IsNotEmpty())
+                {
+                    var exchange = Exchanges[endpoint.ExchangeName];
+                    exchange.Declare(channel!);
+                }
+
+                if (endpoint.QueueName.IsNotEmpty())
+                {
+                    var queue = Queues[endpoint.QueueName];
+                    queue.Declare(channel!);
+
+                    if (queue.PurgeOnStartup)
+                    {
+                        channel!.QueuePurge(queue.Name);
+                    }
+                }
+            }
+            else if (endpoint.QueueName.IsNotEmpty() && endpoint.QueueName.IsNotEmpty())
+            {
+                var queue = Queues[endpoint.QueueName];
+
+                if (queue.PurgeOnStartup)
+                {
+                    channel!.QueuePurge(queue.Name);
+                }
+            }
+        }
+
         internal class BindingExpression : IBindingExpression
         {
             private readonly string _exchangeName;

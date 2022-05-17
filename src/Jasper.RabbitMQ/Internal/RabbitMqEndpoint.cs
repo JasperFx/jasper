@@ -123,8 +123,6 @@ namespace Jasper.RabbitMQ.Internal
                 dict.Add(nameof(ListenerCount), ListenerCount);
             }
 
-            // TODO -- there will be more here as we allow the rabbit connection to vary more
-
             return dict;
         }
 

@@ -52,20 +52,7 @@ namespace Jasper.RabbitMQ.Internal
 
                 startNewChannel();
 
-                if (_transport.AutoProvision)
-                {
-                    if (_endpoint.ExchangeName.IsNotEmpty())
-                    {
-                        var exchange = _transport.Exchanges[_endpoint.ExchangeName];
-                        exchange.Declare(_channel!);
-                    }
-
-                    if (_endpoint.QueueName.IsNotEmpty())
-                    {
-                        var queue = _transport.Queues[_endpoint.QueueName];
-                        queue.Declare(_channel!);
-                    }
-                }
+                _transport.InitializeEndpoint(_endpoint, _channel);
 
                 State = AgentState.Connected;
             }

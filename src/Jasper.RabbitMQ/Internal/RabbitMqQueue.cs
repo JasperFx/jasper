@@ -22,6 +22,13 @@ namespace Jasper.RabbitMQ.Internal
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
         public bool HasDeclared { get; private set; }
 
+
+        /// <summary>
+        /// Declare that Jasper should purge the existing queue
+        /// of all existing messages on startup
+        /// </summary>
+        public bool PurgeOnStartup { get; set; }
+
         internal void Declare(IModel channel)
         {
             if (HasDeclared) return;
