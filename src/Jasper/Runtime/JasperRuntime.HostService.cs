@@ -71,7 +71,7 @@ public partial class JasperRuntime
         foreach (var transport in Options)
         {
             await transport.InitializeAsync(this).ConfigureAwait(false);
-            foreach (var endpoint in transport.Endpoints()) endpoint.Root = this; // necessary to locate serialization
+            foreach (var endpoint in transport.Endpoints()) endpoint.Runtime = this; // necessary to locate serialization
         }
 
         foreach (var transport in Options)

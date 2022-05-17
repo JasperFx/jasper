@@ -13,7 +13,7 @@ using Jasper.Util;
 
 namespace Jasper.Runtime;
 
-public partial class JasperRuntime : IJasperEndpoints
+public partial class JasperRuntime
 {
     private readonly object _channelLock = new();
     private readonly IList<object> _disposables = new List<object>();
@@ -22,7 +22,7 @@ public partial class JasperRuntime : IJasperEndpoints
 
     private ImHashMap<Uri, ISendingAgent> _senders = ImHashMap<Uri, ISendingAgent>.Empty!;
 
-    public ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint)
+    public ISendingAgent CreateSendingAgent(Uri? replyUri, ISender sender, Endpoint endpoint)
     {
         try
         {
@@ -53,7 +53,7 @@ public partial class JasperRuntime : IJasperEndpoints
         _senders = _senders.AddOrUpdate(sendingAgent.Destination, sendingAgent);
     }
 
-    public ISendingAgent GetOrBuildSendingAgent(Uri address)
+    public ISendingAgent GetOrBuildSendingAgent(Uri address, Action<Endpoint>? configureNewEndpoint = null)
     {
         if (address == null)
         {
@@ -68,20 +68,23 @@ public partial class JasperRuntime : IJasperEndpoints
         lock (_channelLock)
         {
             return !_senders.TryFind(address, out agent)
-                ? buildSendingAgent(address)
+                ? buildSendingAgent(address, configureNewEndpoint)
                 : agent;
         }
     }
 
-    public void AddListener(IListener listener, Endpoint settings)
+    public void AddListener(IListener listener, Endpoint endpoint)
     {
-        object? worker = settings.Mode switch
+        object? worker = endpoint.Mode switch
         {
-            EndpointMode.Durable => new DurableWorkerQueue(settings, Pipeline, Advanced,
+            EndpointMode.Durable => new DurableWorkerQueue(endpoint, Pipeline, Advanced,
                 Persistence, Logger),
-            EndpointMode.BufferedInMemory => new LightweightWorkerQueue(settings, Logger, Pipeline,
+
+            EndpointMode.BufferedInMemory => new LightweightWorkerQueue(endpoint, Logger, Pipeline,
                 Advanced),
+
             EndpointMode.Inline => new InlineWorkerQueue(Pipeline, Logger, listener, Advanced),
+
             _ => null
         };
 
@@ -135,7 +138,7 @@ public partial class JasperRuntime : IJasperEndpoints
         return agent;
     }
 
-    private ISendingAgent buildSendingAgent(Uri uri)
+    private ISendingAgent buildSendingAgent(Uri uri, Action<Endpoint>? configureNewEndpoint)
     {
         var transport = Options.TransportForScheme(uri.Scheme);
         if (transport == null)
@@ -148,7 +151,7 @@ public partial class JasperRuntime : IJasperEndpoints
         {
             var local = (LocalTransport)transport;
             var agent = local.AddSenderForDestination(uri, this);
-            agent.Endpoint.Root = this; // This is important for serialization
+            agent.Endpoint.Runtime = this; // This is important for serialization
 
             AddSendingAgent(agent);
 
@@ -156,7 +159,9 @@ public partial class JasperRuntime : IJasperEndpoints
         }
 
         var endpoint = transport.GetOrCreateEndpoint(uri);
-        endpoint.Root ??= this; // This is important for serialization
+        configureNewEndpoint?.Invoke(endpoint);
+
+        endpoint.Runtime ??= this; // This is important for serialization
         return endpoint.StartSending(this, transport.ReplyEndpoint()?.CorrectedUriForReplies());
     }
 }

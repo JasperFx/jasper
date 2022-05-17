@@ -77,7 +77,7 @@ public class TcpEndpoint : Endpoint
         }
 
         var listener = createListener(runtime);
-        runtime.Endpoints.AddListener(listener, this);
+        runtime.AddListener(listener, this);
     }
 
     protected override ISender CreateSender(IJasperRuntime root)

@@ -49,7 +49,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
     internal ValueTask ForwardScheduledEnvelopeAsync(Envelope envelope)
     {
         // TODO -- harden this a bit?
-        envelope.Sender = Runtime.Endpoints.GetOrBuildSendingAgent(envelope.Destination);
+        envelope.Sender = Runtime.GetOrBuildSendingAgent(envelope.Destination);
         envelope.Serializer = Runtime.Options.FindSerializer(envelope.ContentType);
 
         return persistOrSendAsync(envelope);

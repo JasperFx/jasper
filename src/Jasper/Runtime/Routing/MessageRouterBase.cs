@@ -11,7 +11,7 @@ using Jasper.Transports.Sending;
 
 namespace Jasper.Runtime.Routing;
 
-internal abstract class MessageRouterBase<T> : IMessageRouter<T>, IMessageRouter
+internal abstract class MessageRouterBase<T> : IMessageRouter
 {
     internal JasperRuntime Runtime { get; }
 

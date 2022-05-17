@@ -19,7 +19,7 @@ public class LocalTransport : ITransport
 
     public LocalTransport()
     {
-        _queues = new(name => new LocalQueueSettings(name) { Root = Root });
+        _queues = new(name => new LocalQueueSettings(name) { Runtime = Root });
 
         _queues.FillDefault(TransportConstants.Default);
         _queues.FillDefault(TransportConstants.Replies);
@@ -42,7 +42,7 @@ public class LocalTransport : ITransport
         Root = root;
         foreach (var queue in _queues)
         {
-            queue.Root = root;
+            queue.Runtime = root;
         }
 
         // Nothing
@@ -94,7 +94,7 @@ public class LocalTransport : ITransport
         queue.Agent = buildAgent(queue, runtime);
         _agents = _agents.AddOrUpdate(queue.Name, buildAgent(queue, runtime));
 
-        runtime.Endpoints.AddSendingAgent(buildAgent(queue, runtime));
+        runtime.AddSendingAgent(buildAgent(queue, runtime));
 
         return queue.Agent;
     }

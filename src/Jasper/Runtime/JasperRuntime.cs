@@ -56,8 +56,6 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 
     internal HandlerGraph Handlers { get; }
 
-    public IJasperEndpoints Endpoints => this;
-
     public CancellationToken Cancellation { get; }
 
     public AdvancedSettings Advanced { get; }

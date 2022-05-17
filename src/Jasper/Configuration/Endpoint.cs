@@ -78,7 +78,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
         return true;
     }
 
-    internal IJasperRuntime? Root { get; set; }
+    internal IJasperRuntime? Runtime { get; set; }
 
     public IMessageSerializer? DefaultSerializer
     {
@@ -86,7 +86,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
         {
             if (_defaultSerializer == null)
             {
-                var parent = Root?.Options.DefaultSerializer;
+                var parent = Runtime?.Options.DefaultSerializer;
                 if (parent != null)
                 {
                     // Gives you a chance to use per-endpoint JSON settings for example
@@ -94,7 +94,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
                 }
             }
 
-            return _defaultSerializer ??= Root?.Options.DefaultSerializer;
+            return _defaultSerializer ??= Runtime?.Options.DefaultSerializer;
         }
         set => _defaultSerializer = value;
     }
@@ -182,7 +182,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
             return serializer;
         }
 
-        serializer = Root?.Options.FindSerializer(contentType);
+        serializer = Runtime?.Options.FindSerializer(contentType);
         _serializers = _serializers!.AddOrUpdate(contentType, serializer)!;
 
         return serializer;
@@ -207,7 +207,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
         Uri? replyUri)
     {
         var sender = runtime.Advanced.StubAllOutgoingExternalSenders ? new NullSender(Uri) : CreateSender(runtime);
-        return runtime.Endpoints.AddSubscriber(replyUri, sender, this);
+        return runtime.CreateSendingAgent(replyUri, sender, this);
     }
 
     protected abstract ISender CreateSender(IJasperRuntime root);

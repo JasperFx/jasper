@@ -29,7 +29,14 @@ public interface IJasperRuntime
     AdvancedSettings Advanced { get; }
     CancellationToken Cancellation { get; }
 
-    IJasperEndpoints Endpoints { get; }
+    ISendingAgent CreateSendingAgent(Uri? replyUri, ISender sender, Endpoint endpoint);
+
+    ISendingAgent GetOrBuildSendingAgent(Uri address, Action<Endpoint>? configureNewEndpoint = null);
+    void AddListener(IListener listener, Endpoint endpoint);
+
+    void AddSendingAgent(ISendingAgent sendingAgent);
+
+    Endpoint? EndpointFor(Uri uri);
     IMessageRouter RoutingFor(Type messageType);
 }
 
@@ -55,14 +62,3 @@ public static class JasperRuntimeExtensions
     }
 }
 
-public interface IJasperEndpoints
-{
-    ISendingAgent AddSubscriber(Uri? replyUri, ISender sender, Endpoint endpoint);
-
-    ISendingAgent GetOrBuildSendingAgent(Uri address);
-    void AddListener(IListener listener, Endpoint settings);
-
-    void AddSendingAgent(ISendingAgent sendingAgent);
-
-    Endpoint? EndpointFor(Uri uri);
-}

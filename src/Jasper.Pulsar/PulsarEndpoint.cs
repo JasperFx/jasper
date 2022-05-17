@@ -113,7 +113,7 @@ namespace Jasper.Pulsar
 
             var listener = new PulsarListener(this, _parent, runtime.Cancellation);
 
-            runtime.Endpoints.AddListener(listener, this);
+            runtime.AddListener(listener, this);
         }
 
         protected override ISender CreateSender(IJasperRuntime root)

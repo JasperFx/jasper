@@ -34,10 +34,26 @@ namespace Jasper.Testing.Runtime
         public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();
         public JasperOptions Options { get; } = new JasperOptions();
 
-        public ITransport[] Transports { get; } =
-            {Substitute.For<ITransport>(), Substitute.For<ITransport>(), Substitute.For<ITransport>()};
+        public ISendingAgent CreateSendingAgent(Uri replyUri, ISender sender, Endpoint endpoint)
+        {
+            throw new NotImplementedException();
+        }
 
-        public IJasperEndpoints Endpoints { get; } = Substitute.For<IJasperEndpoints>();
+        public ISendingAgent GetOrBuildSendingAgent(Uri address, Action<Endpoint> configureNewEndpoint = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddSendingAgent(ISendingAgent sendingAgent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Endpoint EndpointFor(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
         public IMessageRouter RoutingFor(Type messageType)
         {
             throw new NotImplementedException();
