@@ -11,7 +11,7 @@ public class ScheduledJob
 
     public Guid EnvelopeId { get; }
 
-    public DateTime? ReceivedAt { get; set; }
+    public DateTimeOffset ReceivedAt { get; set; }
     public DateTimeOffset? ExecutionTime { get; set; }
 
     public string? MessageType { get; set; }

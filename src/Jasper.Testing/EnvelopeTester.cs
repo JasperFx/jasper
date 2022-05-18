@@ -106,10 +106,10 @@ namespace Jasper.Testing
 
             envelope.IsExpired().ShouldBeFalse();
 
-            envelope.DeliverBy = DateTime.UtcNow.AddSeconds(-1);
+            envelope.DeliverBy = DateTimeOffset.Now.AddSeconds(-1);
             envelope.IsExpired().ShouldBeTrue();
 
-            envelope.DeliverBy = DateTime.UtcNow.AddHours(1);
+            envelope.DeliverBy = DateTimeOffset.Now.AddHours(1);
 
             envelope.IsExpired().ShouldBeFalse();
         }
@@ -158,7 +158,7 @@ namespace Jasper.Testing
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
-            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
 
             envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
             envelope.OwnerId.ShouldBe(uniqueNodeId);
@@ -169,12 +169,12 @@ namespace Jasper.Testing
         public void marked_received_sets_the_destination()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.ScheduledTime = DateTime.UtcNow.AddDays(-1);
+            envelope.ScheduledTime = DateTimeOffset.Now.AddDays(-1);
 
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
-            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
 
             envelope.Destination.ShouldBe(uri);
         }
@@ -184,12 +184,12 @@ namespace Jasper.Testing
         public void mark_received_when_expired_execution()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.ScheduledTime = DateTime.UtcNow.AddDays(-1);
+            envelope.ScheduledTime = DateTimeOffset.Now.AddDays(-1);
 
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
-            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
 
             envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
             envelope.OwnerId.ShouldBe(uniqueNodeId);
@@ -200,12 +200,12 @@ namespace Jasper.Testing
         public void mark_received_when_it_has_a_later_execution_time()
         {
             var envelope = ObjectMother.Envelope();
-            envelope.ScheduledTime = DateTime.UtcNow.AddDays(1);
+            envelope.ScheduledTime = DateTimeOffset.Now.AddDays(1);
 
             var uri = TransportConstants.LocalUri;
             var uniqueNodeId = 3;
 
-            envelope.MarkReceived(uri, DateTime.UtcNow, uniqueNodeId);
+            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
 
             envelope.Status.ShouldBe(EnvelopeStatus.Scheduled);
             envelope.OwnerId.ShouldBe(TransportConstants.AnyNode);
@@ -222,7 +222,7 @@ namespace Jasper.Testing
             public when_building_an_envelope_for_scheduled_send()
             {
                 theOriginal = ObjectMother.Envelope();
-                theOriginal.ScheduledTime = DateTime.UtcNow.Date.AddDays(2);
+                theOriginal.ScheduledTime = DateTimeOffset.Now.Date.AddDays(2);
                 theOriginal.Destination = "tcp://server3:2345".ToUri();
 
                 theSubscriber = Substitute.For<ISendingAgent>();

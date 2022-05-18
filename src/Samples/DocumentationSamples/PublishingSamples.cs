@@ -50,7 +50,7 @@ namespace DocumentationSamples
         {
             var @event = new InvoiceCreated
             {
-                Time = DateTime.UtcNow,
+                Time = DateTimeOffset.Now,
                 Purchaser = "Guy Fieri",
                 Amount = 112.34,
                 Item = "Cookbook"
@@ -65,7 +65,7 @@ namespace DocumentationSamples
         {
             var @event = new InvoiceCreated
             {
-                Time = DateTime.UtcNow,
+                Time = DateTimeOffset.Now,
                 Purchaser = "Guy Fieri",
                 Amount = 112.34,
                 Item = "Cookbook"
@@ -80,7 +80,7 @@ namespace DocumentationSamples
         {
             var @event = new InvoiceCreated
             {
-                Time = DateTime.UtcNow,
+                Time = DateTimeOffset.Now,
                 Purchaser = "Guy Fieri",
                 Amount = 112.34,
                 Item = "Cookbook"
@@ -105,7 +105,7 @@ namespace DocumentationSamples
             await bus.SchedulePublishAsync(message, 30.Days());
 
             // Schedule the message to be processed at a certain time
-            await bus.SchedulePublishAsync(message, DateTime.UtcNow.AddDays(30));
+            await bus.SchedulePublishAsync(message, DateTimeOffset.Now.AddDays(30));
         }
         #endregion
 
@@ -122,7 +122,7 @@ namespace DocumentationSamples
             await bus.ScheduleAsync(message, 30.Days());
 
             // Schedule the message to be processed at a certain time
-            await bus.ScheduleAsync(message, DateTime.UtcNow.AddDays(30));
+            await bus.ScheduleAsync(message, DateTimeOffset.Now.AddDays(30));
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace DocumentationSamples
             // message
             var @event = new InvoiceCreated
             {
-                Time = DateTime.UtcNow,
+                Time = DateTimeOffset.Now,
                 Purchaser = "Guy Fieri",
                 Amount = 112.34,
                 Item = "Cookbook"
@@ -151,7 +151,7 @@ namespace DocumentationSamples
             // message
             var @event = new InvoiceCreated
             {
-                Time = DateTime.UtcNow,
+                Time = DateTimeOffset.Now,
                 Purchaser = "Guy Fieri",
                 Amount = 112.34,
                 Item = "Cookbook"
@@ -167,7 +167,7 @@ namespace DocumentationSamples
         {
             var @event = new InvoiceCreated
             {
-                Time = DateTime.UtcNow,
+                Time = DateTimeOffset.Now,
                 Purchaser = "Guy Fieri",
                 Amount = 112.34,
                 Item = "Cookbook"
@@ -185,7 +185,7 @@ namespace DocumentationSamples
 
         public class InvoiceCreated
         {
-            public DateTime Time { get; set; }
+            public DateTimeOffset Time { get; set; }
             public string Purchaser { get; set; }
             public double Amount { get; set; }
             public string Item { get; set; }

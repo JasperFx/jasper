@@ -110,7 +110,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
     public Task ReceivedAsync(Uri uri, Envelope[] messages)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTimeOffset.Now;
 
         return ProcessReceivedMessagesAsync(now, uri, messages);
     }
@@ -121,7 +121,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
             ActivityKind.Consumer);
-        var now = DateTime.UtcNow;
+        var now = DateTimeOffset.Now;
         envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
 
         await _persistence.StoreIncomingAsync(envelope);
@@ -150,14 +150,17 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
     }
 
     // Separated for testing here.
-    public async Task ProcessReceivedMessagesAsync(DateTime now, Uri uri, Envelope[] envelopes)
+    public async Task ProcessReceivedMessagesAsync(DateTimeOffset now, Uri uri, Envelope[] envelopes)
     {
         if (_settings.Cancellation.IsCancellationRequested)
         {
             throw new OperationCanceledException();
         }
 
-        foreach (var envelope in envelopes) envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+        foreach (var envelope in envelopes)
+        {
+            envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
+        }
 
         await _persistence.StoreIncomingAsync(envelopes);
 

@@ -31,7 +31,7 @@ namespace Jasper.Testing.Runtime
         public async Task should_send_a_failure_ack()
         {
 
-            await theContinuation.ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
+            await theContinuation.ExecuteAsync(theContext, theRuntime, DateTimeOffset.Now);
 
             await theContext
                 .Received()
@@ -42,7 +42,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task logging_calls()
         {
-            await theContinuation.ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
+            await theContinuation.ExecuteAsync(theContext, theRuntime, DateTimeOffset.Now);
 
             theContext.Logger.Received().MessageFailed(theEnvelope, theException);
             theContext.Logger.Received().MovedToErrorQueue(theEnvelope, theException);

@@ -114,7 +114,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
 
     Task IListeningWorkerQueue.ReceivedAsync(Uri uri, Envelope[] messages)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTimeOffset.Now;
 
         return ProcessReceivedMessagesAsync(now, uri, messages);
     }
@@ -126,7 +126,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
             throw new InvalidOperationException("This worker queue has not been initialized with a listener");
         }
 
-        var now = DateTime.UtcNow;
+        var now = DateTimeOffset.Now;
         envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
 
         if (envelope.IsExpired())
@@ -154,7 +154,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
     }
 
     // Separated for testing here.
-    public async Task ProcessReceivedMessagesAsync(DateTime now, Uri uri, Envelope[] envelopes)
+    public async Task ProcessReceivedMessagesAsync(DateTimeOffset now, Uri uri, Envelope[] envelopes)
     {
         if (_settings.Cancellation.IsCancellationRequested)
         {
@@ -168,7 +168,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
 
         foreach (var envelope in envelopes)
         {
-            envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+            envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
             Enqueue(envelope);
             await _listener.CompleteAsync(envelope);
         }

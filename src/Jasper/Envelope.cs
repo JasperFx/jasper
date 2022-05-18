@@ -280,7 +280,7 @@ public partial class Envelope
     /// <returns></returns>
     public bool IsExpired()
     {
-        return DeliverBy.HasValue && DeliverBy <= DateTime.UtcNow;
+        return DeliverBy.HasValue && DeliverBy <= DateTimeOffset.Now;
     }
 
 

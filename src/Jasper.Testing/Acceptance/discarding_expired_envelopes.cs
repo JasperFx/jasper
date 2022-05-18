@@ -28,7 +28,7 @@ namespace Jasper.Testing.Acceptance
             var pipeline = runtime.Get<IHandlerPipeline>();
 
             var envelope = ObjectMother.Envelope();
-            envelope.DeliverBy = DateTime.UtcNow.Subtract(1.Minutes());
+            envelope.DeliverBy = DateTimeOffset.Now.Subtract(1.Minutes());
             var channel = Substitute.For<IChannelCallback>();
 
             await pipeline.InvokeAsync(envelope, channel);

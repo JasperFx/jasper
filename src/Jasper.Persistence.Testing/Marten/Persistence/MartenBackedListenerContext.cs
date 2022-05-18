@@ -120,7 +120,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ScheduledTime = DateTime.UtcNow.Add(1.Hours()),
+                ScheduledTime = DateTimeOffset.Now.Add(1.Hours()),
                 MessageType = "foo",
                 ContentType = EnvelopeConstants.JsonContentType
             };
@@ -135,7 +135,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var env = new Envelope
             {
                 Data = new byte[] {1, 2, 3, 4},
-                ScheduledTime = DateTime.UtcNow.Add(-1.Hours()),
+                ScheduledTime = DateTimeOffset.Now.Add(-1.Hours()),
                 ContentType = EnvelopeConstants.JsonContentType,
                 MessageType = "foo"
             };
@@ -147,7 +147,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
-            await theWorkerQueue.ProcessReceivedMessagesAsync(DateTime.UtcNow, theUri, theEnvelopes.ToArray());
+            await theWorkerQueue.ProcessReceivedMessagesAsync(DateTimeOffset.Now, theUri, theEnvelopes.ToArray());
 
             return await EnvelopeStorageAdmin.AllIncomingAsync();
         }

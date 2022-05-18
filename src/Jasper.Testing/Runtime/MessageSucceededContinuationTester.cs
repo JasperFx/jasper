@@ -19,7 +19,7 @@ namespace Jasper.Testing.Runtime
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
+                .ExecuteAsync(theContext, theRuntime, DateTimeOffset.Now);
         }
 
         private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
@@ -50,7 +50,7 @@ namespace Jasper.Testing.Runtime
             theContext.Envelope.Returns(theEnvelope);
 
             MessageSucceededContinuation.Instance
-                .ExecuteAsync(theContext, theRuntime, DateTime.UtcNow);
+                .ExecuteAsync(theContext, theRuntime, DateTimeOffset.Now);
         }
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();

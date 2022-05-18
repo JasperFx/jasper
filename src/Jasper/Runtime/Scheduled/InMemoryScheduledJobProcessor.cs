@@ -84,15 +84,15 @@ public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
             Envelope = envelope;
 
             _cancellation = new CancellationTokenSource();
-            var delayTime = ExecutionTime.Subtract(DateTime.UtcNow);
+            var delayTime = ExecutionTime.Subtract(DateTimeOffset.Now);
             _task = Task.Delay(delayTime, _cancellation.Token).ContinueWith(obj => publish(), TaskScheduler.Default);
 
-            ReceivedAt = DateTime.UtcNow;
+            ReceivedAt = DateTimeOffset.Now;
         }
 
         public DateTimeOffset ExecutionTime { get; }
 
-        public DateTime ReceivedAt { get; }
+        public DateTimeOffset ReceivedAt { get; }
 
         public Envelope Envelope { get; }
 

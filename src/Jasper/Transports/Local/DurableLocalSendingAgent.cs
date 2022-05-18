@@ -61,7 +61,7 @@ public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
         writeMessageData(envelope);
 
         // TODO -- have to watch this one
-        envelope.Status = envelope.IsScheduledForLater(DateTime.UtcNow)
+        envelope.Status = envelope.IsScheduledForLater(DateTimeOffset.Now)
             ? EnvelopeStatus.Scheduled
             : EnvelopeStatus.Incoming;
 

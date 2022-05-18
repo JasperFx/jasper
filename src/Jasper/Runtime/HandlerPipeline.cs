@@ -62,9 +62,9 @@ public class HandlerPipeline : IHandlerPipeline
             {
                 // TODO -- pass the activity into IContinuation?
                 var continuation = await executeAsync(context, envelope);
-                await continuation.ExecuteAsync(context, _runtime, DateTime.UtcNow);
+                await continuation.ExecuteAsync(context, _runtime, DateTimeOffset.Now);
             }
-            catch (Exception? e)
+            catch (Exception e)
             {
                 // TODO -- gotta do something on the envelope to get it out of the transport
 

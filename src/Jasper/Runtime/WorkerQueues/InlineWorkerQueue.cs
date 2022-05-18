@@ -43,7 +43,7 @@ public class InlineWorkerQueue : IListeningWorkerQueue
 
         try
         {
-            envelope.MarkReceived(uri, DateTime.UtcNow, _settings.UniqueNodeId);
+            envelope.MarkReceived(uri, DateTimeOffset.Now, _settings.UniqueNodeId);
             await _pipeline.InvokeAsync(envelope, Listener!, activity!);
             _logger.IncomingReceived(envelope, Listener!.Address);
 

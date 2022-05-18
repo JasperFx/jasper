@@ -134,7 +134,7 @@ public async Task ScheduleLocally(IExecutionContext bus, Guid invoiceId)
     await bus.Schedule(message, 30.Days());
 
     // Schedule the message to be processed at a certain time
-    await bus.Schedule(message, DateTime.UtcNow.AddDays(30));
+    await bus.Schedule(message, DateTimeOffset.Now.AddDays(30));
 }
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L140-L155' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_schedule_job_locally' title='Start of snippet'>anchor</a></sup>
@@ -190,7 +190,7 @@ public Task EnqueueToQueue(IExecutionContext bus)
 {
     var @event = new InvoiceCreated
     {
-        Time = DateTime.UtcNow,
+        Time = DateTimeOffset.Now,
         Purchaser = "Guy Fieri",
         Amount = 112.34,
         Item = "Cookbook"
