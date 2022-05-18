@@ -44,6 +44,11 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
+        public IEnumerable<IListener> ActiveListeners()
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddSendingAgent(ISendingAgent sendingAgent)
         {
             throw new NotImplementedException();

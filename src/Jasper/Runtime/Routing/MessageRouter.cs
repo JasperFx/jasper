@@ -6,20 +6,20 @@ using Jasper.Transports.Local;
 
 namespace Jasper.Runtime.Routing;
 
-internal class MultipleRouteMessageRouter<T> : MessageRouterBase<T>
+internal class MessageRouter<T> : MessageRouterBase<T>
 {
-    private readonly MessageRoute[] _routes;
-
-    public MultipleRouteMessageRouter(JasperRuntime runtime, IEnumerable<MessageRoute> routes) : base(runtime)
+    public MessageRouter(JasperRuntime runtime, IEnumerable<MessageRoute> routes) : base(runtime)
     {
-        _routes = routes.ToArray();
+        Routes = routes.ToArray();
 
-        foreach (var route in _routes.Where(x => x.Sender.Endpoint is LocalQueueSettings))
+        foreach (var route in Routes.Where(x => x.Sender.Endpoint is LocalQueueSettings))
         {
             route.Rules.Fill(HandlerRules);
         }
 
     }
+
+    public MessageRoute[] Routes { get; }
 
     public override Envelope[] RouteForSend(T message, DeliveryOptions? options)
     {
@@ -38,10 +38,10 @@ internal class MultipleRouteMessageRouter<T> : MessageRouterBase<T>
             throw new ArgumentNullException(nameof(message));
         }
 
-        var envelopes = new Envelope[_routes.Length];
+        var envelopes = new Envelope[Routes.Length];
         for (int i = 0; i < envelopes.Length; i++)
         {
-            envelopes[i] = _routes[i].CreateForSending(message, options, LocalDurableQueue, Runtime);
+            envelopes[i] = Routes[i].CreateForSending(message, options, LocalDurableQueue, Runtime);
         }
 
         return envelopes;

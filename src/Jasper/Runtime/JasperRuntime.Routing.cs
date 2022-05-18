@@ -60,7 +60,7 @@ public partial class JasperRuntime
         }
 
         var router = routes.Any()
-            ? typeof(MultipleRouteMessageRouter<>).CloseAndBuildAs<IMessageRouter>(this, routes, messageType)
+            ? typeof(MessageRouter<>).CloseAndBuildAs<IMessageRouter>(this, routes, messageType)
             : typeof(EmptyMessageRouter<>).CloseAndBuildAs<IMessageRouter>(this, messageType);
 
         _messageTypeRouting = _messageTypeRouting.AddOrUpdate(messageType, router);

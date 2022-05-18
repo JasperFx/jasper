@@ -45,6 +45,7 @@ namespace Jasper.RabbitMQ.Internal
 
             foreach (var binding in _bindings.Values)
             {
+                binding.Queue.Declare(channel);
                 binding.Declare(channel);
             }
 

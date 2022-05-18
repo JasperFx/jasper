@@ -48,6 +48,11 @@ public partial class JasperRuntime
         }
     }
 
+    public IEnumerable<IListener> ActiveListeners()
+    {
+        return _listeners;
+    }
+
     public void AddSendingAgent(ISendingAgent sendingAgent)
     {
         _senders = _senders.AddOrUpdate(sendingAgent.Destination, sendingAgent);
@@ -73,6 +78,8 @@ public partial class JasperRuntime
         }
     }
 
+    private readonly List<IListener> _listeners = new List<IListener>();
+
     public void AddListener(IListener listener, Endpoint endpoint)
     {
         object? worker = endpoint.Mode switch
@@ -92,6 +99,8 @@ public partial class JasperRuntime
         {
             q.StartListening(listener);
         }
+
+        _listeners.Add(listener);
 
         _disposables.Add(worker!);
     }

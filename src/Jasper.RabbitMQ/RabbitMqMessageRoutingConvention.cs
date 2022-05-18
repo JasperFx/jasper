@@ -43,6 +43,7 @@ namespace Jasper.RabbitMQ
 
                 var endpoint = transport.EndpointForQueue(queueName);
                 endpoint.Mode = Mode;
+                endpoint.IsListener = true;
                 var queue = transport.Queues[queueName];
 
                 var context = new RabbitMappingContext(messageType, transport, runtime, endpoint);

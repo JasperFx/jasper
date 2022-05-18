@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Jasper.Configuration;
 using Jasper.Logging;
@@ -33,6 +34,8 @@ public interface IJasperRuntime
 
     ISendingAgent GetOrBuildSendingAgent(Uri address, Action<Endpoint>? configureNewEndpoint = null);
     void AddListener(IListener listener, Endpoint endpoint);
+
+    IEnumerable<IListener> ActiveListeners();
 
     void AddSendingAgent(ISendingAgent sendingAgent);
 

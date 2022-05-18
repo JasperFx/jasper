@@ -20,11 +20,15 @@ namespace Jasper.RabbitMQ
         public string ExchangeName { get; }
 
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
+        public bool HasDeclared { get; private set; }
 
         internal void Declare(IModel channel)
         {
+            if (HasDeclared) return;
             Queue.Declare(channel);
             channel.QueueBind(Queue.Name, ExchangeName, BindingKey, Arguments);
+
+            HasDeclared = true;
         }
 
         public void Teardown(IModel channel)

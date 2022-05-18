@@ -11,7 +11,6 @@ namespace Jasper.RabbitMQ.Internal
 {
     public class RabbitMqListener : RabbitMqConnectionAgent, IListener
     {
-        private readonly RabbitMqEndpoint _endpoint;
         private readonly ILogger _logger;
         private readonly string _routingKey;
         private readonly RabbitMqSender _sender;
@@ -23,13 +22,15 @@ namespace Jasper.RabbitMQ.Internal
             RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection, transport, endpoint)
         {
             _logger = logger;
-            _endpoint = endpoint;
+            Endpoint = endpoint;
             Address = endpoint.Uri;
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
 
-            _sender = new RabbitMqSender(_endpoint, transport, RoutingMode.Static);
+            _sender = new RabbitMqSender(Endpoint, transport, RoutingMode.Static);
         }
+
+        public RabbitMqEndpoint Endpoint { get; }
 
         public override void Dispose()
         {
@@ -66,10 +67,10 @@ namespace Jasper.RabbitMQ.Internal
             EnsureConnected();
 
             _callback = callback ?? throw new ArgumentNullException(nameof(callback));
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, _endpoint, Address,
+            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, Endpoint, Address,
                 _cancellation);
 
-            Channel.BasicQos(_endpoint.PreFetchSize, _endpoint.PreFetchCount, false);
+            Channel.BasicQos(Endpoint.PreFetchSize, Endpoint.PreFetchCount, false);
 
             Channel.BasicConsume(_consumer, _routingKey);
         }
