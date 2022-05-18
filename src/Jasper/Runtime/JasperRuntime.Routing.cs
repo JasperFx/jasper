@@ -4,7 +4,6 @@ using Baseline;
 using Baseline.ImTools;
 using Jasper.Attributes;
 using Jasper.Runtime.Routing;
-using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Transports.Sending;

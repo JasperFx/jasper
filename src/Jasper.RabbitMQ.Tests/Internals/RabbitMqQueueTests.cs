@@ -1,4 +1,5 @@
 using System.Linq;
+using Baseline.Dates;
 using Baseline.Reflection;
 using Jasper.RabbitMQ.Internal;
 using NSubstitute;
@@ -20,6 +21,14 @@ namespace Jasper.RabbitMQ.Tests.Internals
             queue.IsExclusive.ShouldBeFalse();
             queue.AutoDelete.ShouldBeFalse();
             queue.Arguments.Any().ShouldBeFalse();
+        }
+
+        [Fact]
+        public void set_time_to_live()
+        {
+            var queue = new RabbitMqQueue("foo");
+            queue.TimeToLive(3.Minutes());
+            queue.Arguments["x-message-ttl"].ShouldBe(180000);
         }
 
         [Theory]

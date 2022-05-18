@@ -25,6 +25,16 @@ namespace Jasper.RabbitMQ.Internal
                 (e, p) => p.CorrelationId = e.CorrelationId);
             MapProperty(x => x.ContentType!, (e, p) => e.ContentType = p.ContentType,
                 (e, p) => p.ContentType = e.ContentType);
+
+            MapProperty(x => x.DeliverBy!, (_, _) => {}, (e, props) =>
+            {
+                if (e.DeliverBy.HasValue)
+                {
+                    var ttl = Convert.ToInt32(e.DeliverBy.Value.Subtract(DateTimeOffset.Now).TotalMilliseconds);
+                    props.Expiration = ttl.ToString();
+                }
+            });
+
             _parent = parent;
         }
 

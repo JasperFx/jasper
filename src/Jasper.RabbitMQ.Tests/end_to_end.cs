@@ -110,7 +110,10 @@ namespace Jasper.RabbitMQ.Tests
                 .TrackActivity()
                 .AlsoTrack(receiver)
                 .Timeout(30.Seconds()) // this one can be slow when it's in a group of tests
-                .SendMessageAndWaitAsync(new ColorChosen { Name = "Orange" });
+                .SendMessageAndWaitAsync(new ColorChosen { Name = "Orange" }, new DeliveryOptions
+                {
+                    DeliverWithin = 5.Minutes()
+                });
 
 
             receiver.Get<ColorHistory>().Name.ShouldBe("Orange");

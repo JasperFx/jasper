@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
 using Jasper.RabbitMQ.Internal;
 using Oakton.Resources;
 using Xunit;
@@ -29,16 +30,16 @@ namespace Jasper.RabbitMQ.Tests
                 exchange.ExchangeType = ExchangeType.Fanout;
             });
 
-            expression.DeclareQueue("queue1");
-            expression.DeclareQueue("queue2");
+            expression.DeclareQueue("xqueue1", q => q.TimeToLive(5.Minutes()));
+            expression.DeclareQueue("xqueue2");
 
             expression
                 .BindExchange("direct1")
-                .ToQueue("queue1", "key1");
+                .ToQueue("xqueue1", "key1");
 
             expression
                 .BindExchange("fan1")
-                .ToQueue("queue2", "key2");
+                .ToQueue("xqueue2", "key2");
         }
 
         [Fact]

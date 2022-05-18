@@ -22,6 +22,14 @@ namespace Jasper.RabbitMQ.Internal
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
         public bool HasDeclared { get; private set; }
 
+        /// <summary>
+        /// Create a "time to live" limit for messages in this queue
+        /// </summary>
+        /// <param name="limit"></param>
+        public void TimeToLive(TimeSpan limit)
+        {
+            Arguments["x-message-ttl"] = Convert.ToInt32(limit.TotalMilliseconds);
+        }
 
         /// <summary>
         /// Declare that Jasper should purge the existing queue
