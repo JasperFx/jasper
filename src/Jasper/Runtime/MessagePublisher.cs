@@ -66,6 +66,24 @@ public class MessagePublisher : CommandBus, IMessagePublisher
         return persistOrSendAsync(outgoing);
     }
 
+    public ValueTask SendToEndpointAsync(string endpointName, object message, DeliveryOptions? options = null)
+    {
+        if (endpointName == null)
+        {
+            throw new ArgumentNullException(nameof(endpointName));
+        }
+
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        var outgoing = Runtime.RoutingFor(message.GetType())
+            .RouteToEndpointByName(message, endpointName, options);
+
+        return persistOrSendAsync(outgoing);
+    }
+
     /// <summary>
     ///     Send to a specific destination rather than running the routing rules
     /// </summary>

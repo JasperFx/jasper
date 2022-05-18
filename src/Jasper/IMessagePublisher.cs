@@ -36,7 +36,14 @@ public interface IMessagePublisher : ICommandBus
     /// <returns></returns>
     ValueTask SendToTopicAsync(string topicName, object message, DeliveryOptions? options = null);
 
-    // TODO -- send to named endpoint
+    /// <summary>
+    /// Send a message to a specific, named endpoint
+    /// </summary>
+    /// <param name="endpointName"></param>
+    /// <param name="message"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    ValueTask SendToEndpointAsync(string endpointName, object message, DeliveryOptions? options = null);
 
     /// <summary>
     ///     Send to a specific destination rather than running the routing rules

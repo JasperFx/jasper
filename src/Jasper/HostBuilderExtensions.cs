@@ -194,6 +194,26 @@ public static class HostBuilderExtensions
     }
 
     /// <summary>
+    ///     Syntactical sugar for host.Services.GetRequiredService<IMessagePublisher>().Send(message)
+    /// </summary>
+    /// <param name="host"></param>
+    /// <param name="endpointName"></param>
+    /// <param name="message"></param>
+    /// <param name="options"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static ValueTask SendToEndpointAsync<T>(this IHost host, string endpointName, T message,
+        DeliveryOptions? options = null)
+    {
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        return host.Get<IMessagePublisher>().SendToEndpointAsync(endpointName, message, options);
+    }
+
+    /// <summary>
     /// Syntactical sugar to invoke a single message with the registered
     /// Jasper command bus for this host
     /// </summary>

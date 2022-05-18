@@ -173,4 +173,9 @@ public partial class JasperRuntime
         endpoint.Runtime ??= this; // This is important for serialization
         return endpoint.StartSending(this, transport.ReplyEndpoint()?.CorrectedUriForReplies());
     }
+
+    public Endpoint? EndpointByName(string endpointName)
+    {
+        return Options.AllEndpoints().FirstOrDefault(x => x.Name == endpointName);
+    }
 }

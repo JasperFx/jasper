@@ -12,7 +12,7 @@ using Jasper.Transports.Sending;
 
 namespace Jasper.Runtime.Routing;
 
-internal class MessageRoute
+internal class MessageRoute : IMessageRoute
 {
     private static ImHashMap<Type, IList<IEnvelopeRule>> _rulesByMessageType = ImHashMap<Type, IList<IEnvelopeRule>>.Empty;
 

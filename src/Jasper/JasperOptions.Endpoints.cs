@@ -88,6 +88,16 @@ public partial class JasperOptions : IEnumerable<ITransport>, IAsyncDisposable
     }
 
     /// <summary>
+    /// Create a sending endpoint with no subscriptions. This
+    /// can be useful for programmatic sending to named endpoints
+    /// </summary>
+    /// <returns></returns>
+    public PublishingExpression Publish()
+    {
+        return new PublishingExpression(this);
+    }
+
+    /// <summary>
     /// Shorthand syntax to route a single message type
     /// </summary>
     /// <typeparam name="TMessageType"></typeparam>

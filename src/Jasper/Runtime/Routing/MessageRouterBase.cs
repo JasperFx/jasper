@@ -17,6 +17,7 @@ internal abstract class MessageRouterBase<T> : IMessageRouter
 
     private ImHashMap<Uri, MessageRoute> _specificRoutes = ImHashMap<Uri, MessageRoute>.Empty;
     private ImHashMap<string, MessageRoute> _localRoutes = ImHashMap<string, MessageRoute>.Empty;
+    private ImHashMap<string, IMessageRoute> _routeByName = ImHashMap<string, IMessageRoute>.Empty;
 
     private readonly MessageRoute[] _topicRoutes;
 
@@ -72,8 +73,24 @@ internal abstract class MessageRouterBase<T> : IMessageRouter
 
     public Envelope RouteToEndpointByName(T message, string endpointName, DeliveryOptions? options)
     {
-        // Cache a message route by endpoint name
-        throw new NotImplementedException();
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
+
+        if (_routeByName.TryFind(endpointName, out var route))
+        {
+            return route.CreateForSending(message, options, LocalDurableQueue, Runtime);
+        }
+
+        var endpoint = Runtime.EndpointByName(endpointName);
+        route = endpoint == null
+            ? new NoNamedEndpointRoute(endpointName, Runtime.Options.AllEndpoints().Select(x => x.Name).ToArray())
+            : new MessageRoute(typeof(T), Runtime.GetOrBuildSendingAgent(endpoint.Uri).Endpoint);
+
+        _routeByName = _routeByName.AddOrUpdate(endpointName, route);
+
+        return route.CreateForSending(message, options, LocalDurableQueue, Runtime);
     }
 
     public Envelope RouteLocal(T message, DeliveryOptions? options)
