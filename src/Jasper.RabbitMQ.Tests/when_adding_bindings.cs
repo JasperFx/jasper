@@ -11,7 +11,8 @@ namespace Jasper.RabbitMQ.Tests
 
         public when_adding_bindings()
         {
-            theTransport.BindExchange("exchange3").ToQueue("queue3", "key3");
+            new RabbitMqTransportExpression(theTransport, new JasperOptions())
+                .BindExchange("exchange3").ToQueue("queue3", "key3");
         }
 
         [Fact]
@@ -26,7 +27,8 @@ namespace Jasper.RabbitMQ.Tests
         [Fact]
         public void add_binding_without_routing_key()
         {
-            theTransport.BindExchange("exchange3").ToQueue("queue1");
+            new RabbitMqTransportExpression(theTransport, new JasperOptions())
+                .BindExchange("exchange3").ToQueue("queue1");
 
             theTransport.Bindings().ShouldContain(x => x.BindingKey == "exchange3_queue1");
         }

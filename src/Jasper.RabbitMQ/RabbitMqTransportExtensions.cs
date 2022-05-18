@@ -8,8 +8,25 @@ namespace Jasper.RabbitMQ
 {
     public interface IRabbitMqTransportExpression
     {
+        /// <summary>
+        /// Opt into using conventional Rabbit MQ routing
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        IRabbitMqTransportExpression UseConventionalRouting(Action<RabbitMqMessageRoutingConvention>? configure = null);
+
         // TODO -- both options with environment = Development
+
+        /// <summary>
+        /// All Rabbit MQ exchanges, queues, and bindings should be declared at runtime by Jasper.
+        /// </summary>
+        /// <returns></returns>
         IRabbitMqTransportExpression AutoProvision();
+
+        /// <summary>
+        /// All queues should be purged of existing messages on first usage
+        /// </summary>
+        /// <returns></returns>
         IRabbitMqTransportExpression AutoPurgeOnStartup();
 
         /// <summary>
@@ -70,39 +87,39 @@ namespace Jasper.RabbitMQ
         ///     Configure connection and authentication information about the Rabbit MQ usage
         ///     within this Jasper application
         /// </summary>
-        /// <param name="endpoints"></param>
+        /// <param name="options"></param>
         /// <param name="configure"></param>
-        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions endpoints,
+        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions options,
             Action<ConnectionFactory> configure)
         {
-            var transport = endpoints.RabbitMqTransport();
+            var transport = options.RabbitMqTransport();
             configure(transport.ConnectionFactory);
 
-            return transport;
+            return new RabbitMqTransportExpression(transport, options);
         }
 
         /// <summary>
         ///     Connect to Rabbit MQ on the local machine with all the default
         ///     Rabbit MQ client options
         /// </summary>
-        /// <param name="endpoints"></param>
+        /// <param name="options"></param>
         /// <param name="rabbitMqUri">
         ///     Rabbit MQ Uri that designates the connection information. See
         ///     https://www.rabbitmq.com/uri-spec.html
         /// </param>
-        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions endpoints, Uri rabbitMqUri)
+        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions options, Uri rabbitMqUri)
         {
-            return endpoints.UseRabbitMq(factory => factory.Uri = rabbitMqUri);
+            return options.UseRabbitMq(factory => factory.Uri = rabbitMqUri);
         }
 
         /// <summary>
         ///     Connect to Rabbit MQ on the local machine with all the default
         ///     Rabbit MQ client options
         /// </summary>
-        /// <param name="endpoints"></param>
-        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions endpoints)
+        /// <param name="options"></param>
+        public static IRabbitMqTransportExpression UseRabbitMq(this JasperOptions options)
         {
-            return endpoints.UseRabbitMq(_ => { });
+            return options.UseRabbitMq(_ => { });
         }
 
         /// <summary>
@@ -117,7 +134,9 @@ namespace Jasper.RabbitMQ
             Action<RabbitMqQueue>? configure = null)
         {
             var transport = endpoints.RabbitMqTransport();
-            transport.DeclareQueue(queueName, configure);
+            var queue = transport.Queues[queueName];
+            configure?.Invoke(queue);
+
             var endpoint = transport.EndpointForQueue(queueName);
             endpoint.IsListener = true;
 
@@ -163,7 +182,9 @@ namespace Jasper.RabbitMQ
         {
             var transports = publishing.As<PublishingExpression>().Parent;
             var transport = transports.GetOrCreate<RabbitMqTransport>();
-            transport.DeclareQueue(queueName, configure);
+
+            var queue = transport.Queues[queueName];
+            configure?.Invoke(queue);
 
             var endpoint = transport.EndpointForQueue(queueName);
 
@@ -187,7 +208,8 @@ namespace Jasper.RabbitMQ
             var transports = publishing.As<PublishingExpression>().Parent;
             var transport = transports.GetOrCreate<RabbitMqTransport>();
 
-            transport.DeclareExchange(exchangeName, configure);
+            var exchange = transport.Exchanges[exchangeName];
+            configure?.Invoke(exchange);
 
             var endpoint = transport.EndpointForExchange(exchangeName);
 
@@ -212,11 +234,9 @@ namespace Jasper.RabbitMQ
             var transports = publishing.As<PublishingExpression>().Parent;
             var transport = transports.GetOrCreate<RabbitMqTransport>();
 
-            transport.DeclareExchange(exchangeName, e =>
-            {
-                configure?.Invoke(e);
-                e.ExchangeType = ExchangeType.Topic;
-            });
+            var exchange = transport.Exchanges[exchangeName];
+            configure?.Invoke(exchange);
+            exchange.ExchangeType = ExchangeType.Topic;
 
             var endpoint = transport.EndpointForExchange(exchangeName);
             endpoint.RoutingType = RoutingMode.ByTopic;

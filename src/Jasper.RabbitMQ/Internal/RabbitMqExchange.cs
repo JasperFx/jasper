@@ -121,7 +121,8 @@ namespace Jasper.RabbitMQ.Internal
             /// <param name="configureQueue">Optionally configure </param>
             public void ToQueue(string queueName, Action<RabbitMqQueue>? configureQueue = null)
             {
-                _exchange._parent.BindExchange(_exchange.Name).ToQueue(queueName, _topicPattern, configureQueue);
+                var binding = _exchange.BindQueue(queueName, _topicPattern);
+                configureQueue?.Invoke(binding.Queue);
             }
         }
     }

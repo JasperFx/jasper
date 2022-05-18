@@ -61,12 +61,6 @@ namespace Jasper.RabbitMQ.Internal
             _sendingConnection?.SafeDispose();
         }
 
-        public IBindingExpression BindExchange(string exchangeName, Action<RabbitMqExchange>? configure = null)
-        {
-            DeclareExchange(exchangeName, configure);
-            return new BindingExpression(exchangeName, this);
-        }
-
         protected override IEnumerable<RabbitMqEndpoint> endpoints()
         {
             return _endpoints;
@@ -156,44 +150,6 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        internal class BindingExpression : IBindingExpression
-        {
-            private readonly string _exchangeName;
-            private readonly RabbitMqTransport _parent;
-
-            internal BindingExpression(string exchangeName, RabbitMqTransport parent)
-            {
-                _exchangeName = exchangeName;
-                _parent = parent;
-            }
-
-            public IRabbitMqTransportExpression ToQueue(string queueName, Action<RabbitMqQueue>? configure = null,
-                Dictionary<string, object>? arguments = null)
-            {
-                _parent.DeclareQueue(queueName, configure);
-                ToQueue(queueName, $"{_exchangeName}_{queueName}");
-
-                return _parent;
-            }
-
-            public IRabbitMqTransportExpression ToQueue(string queueName, string bindingKey,
-                Action<RabbitMqQueue>? configure = null, Dictionary<string, object>? arguments = null)
-            {
-                _parent.DeclareQueue(queueName, configure);
-
-                var binding = _parent.Exchanges[_exchangeName].BindQueue(queueName, bindingKey);
-
-                if (arguments != null)
-                {
-                    foreach (var argument in arguments)
-                    {
-                        binding.Arguments[argument.Key] = argument.Value;
-                    }
-                }
-
-                return _parent;
-            }
-        }
 
         public IEnumerable<RabbitMqBinding> Bindings()
         {
