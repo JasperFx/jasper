@@ -10,5 +10,5 @@ namespace Jasper.Runtime.Routing;
 public interface IMessageRoutingConvention
 {
     void DiscoverListeners(IJasperRuntime runtime, IReadOnlyList<Type> handledMessageTypes);
-    IEnumerable<Endpoint> DiscoverSenders(IJasperRuntime runtime);
+    IEnumerable<Endpoint> DiscoverSenders(Type messageType, IJasperRuntime runtime);
 }

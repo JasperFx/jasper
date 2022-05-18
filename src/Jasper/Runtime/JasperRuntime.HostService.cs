@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -8,6 +9,7 @@ using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Lamar;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
@@ -72,6 +74,12 @@ public partial class JasperRuntime
         {
             await transport.InitializeAsync(this).ConfigureAwait(false);
             foreach (var endpoint in transport.Endpoints()) endpoint.Runtime = this; // necessary to locate serialization
+        }
+
+        // Let any registered routing conventions discover listener endpoints
+        foreach (var routingConvention in Options.RoutingConventions)
+        {
+            routingConvention.DiscoverListeners(this, Handlers.Chains.Select(x => x.MessageType).ToList());
         }
 
         foreach (var transport in Options)

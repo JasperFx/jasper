@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
+using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Oakton.Descriptions;
@@ -13,8 +14,7 @@ using Spectre.Console;
 
 namespace Jasper;
 
-public partial class JasperOptions : IEnumerable<ITransport>, IDescribedSystemPart, IWriteToConsole,
-    IAsyncDisposable
+public partial class JasperOptions : IEnumerable<ITransport>, IAsyncDisposable
 {
     private readonly Dictionary<string, ITransport> _transports = new();
 
@@ -33,23 +33,32 @@ public partial class JasperOptions : IEnumerable<ITransport>, IDescribedSystemPa
         }
     }
 
-    async Task IDescribedSystemPart.Write(TextWriter writer)
+    internal IList<IMessageRoutingConvention> RoutingConventions { get; } = new List<IMessageRoutingConvention>();
+
+    /// <summary>
+    /// Register a routing convention that Jasper will use to discover and apply
+    /// message routing
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public T RouteWith<T>() where T : IMessageRoutingConvention, new()
     {
-        foreach (var transport in _transports.Values.Where(x => x.Endpoints().Any()))
-        {
-            await writer.WriteLineAsync(transport.Name);
+        var convention = new T();
+        RouteWith(convention);
 
-            foreach (var endpoint in transport.Endpoints())
-            {
-                await writer.WriteLineAsync(
-                    $"{endpoint.Uri}, Incoming: {endpoint.IsListener}, Reply Uri: {endpoint.IsUsedForReplies}");
-            }
-
-            await writer.WriteLineAsync();
-        }
+        return convention;
     }
 
-    string IDescribedSystemPart.Title => "Jasper Messaging Endpoints";
+    /// <summary>
+    /// Register a routing convention that Jasper will use to discover and apply
+    /// message routing
+    /// </summary>
+    /// <param name="routingConvention"></param>
+    public void RouteWith(IMessageRoutingConvention routingConvention)
+    {
+        RoutingConventions.Add(routingConvention);
+    }
+
 
 
     /// <summary>
