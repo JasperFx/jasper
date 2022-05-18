@@ -138,12 +138,6 @@ namespace Jasper.RabbitMQ.Internal
             using var connection = BuildConnection();
             using var channel = connection.CreateModel();
 
-            foreach (var binding in Bindings)
-            {
-                Console.WriteLine($"Tearing down Rabbit MQ binding {binding}");
-                binding.Teardown(channel);
-            }
-
             foreach (var exchange in Exchanges)
             {
                 Console.WriteLine($"Tearing down Rabbit MQ exchange {exchange}");
@@ -179,12 +173,6 @@ namespace Jasper.RabbitMQ.Internal
                 exchange.Declare(channel);
             }
 
-            foreach (var binding in Bindings)
-            {
-                Console.WriteLine("Declaring Rabbit MQ binding " + binding);
-                binding.Declare(channel);
-            }
-
             channel.Close();
 
             connection.Close();
@@ -192,9 +180,7 @@ namespace Jasper.RabbitMQ.Internal
 
         private string[] allKnownQueueNames()
         {
-            var bindingQueueNames = Bindings.Where(x => x.QueueName != null).Select(x => x.QueueName);
-            return Queues.Select(x => x.Name)
-                .Concat(bindingQueueNames).Distinct().ToArray()!;
+            return Queues.Select(x => x.Name).ToArray()!;
         }
     }
 }

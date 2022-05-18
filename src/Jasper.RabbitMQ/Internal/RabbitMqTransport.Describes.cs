@@ -25,30 +25,31 @@ namespace Jasper.RabbitMQ.Internal
             if (Exchanges.Any())
             {
                 var exchangesNode = parentNode.AddNode("Exchanges");
-                foreach (var exchange in Exchanges) exchangesNode.AddNode(exchange.Name);
+                foreach (var exchange in Exchanges)
+                {
+                    var exchangeNode = exchangesNode.AddNode(exchange.Name);
+                    if (exchange.Bindings().Any())
+                    {
+                        var bindings = exchangeNode.AddNode("Bindings");
+
+                        var bindingTable = new Table();
+                        bindingTable.AddColumn("Key");
+                        bindingTable.AddColumn("Queue Name");
+                        bindingTable.AddColumn("Arguments");
+
+                        foreach (var binding in exchange.Bindings())
+                        {
+                            bindingTable.AddRow(binding.BindingKey ?? string.Empty, binding.Queue.Name ?? string.Empty,
+                                binding.Arguments.Select(pair => $"{pair.Key}={pair.Value}").Join(", "));
+                        }
+
+                        bindings.AddNode(bindingTable);
+                    }
+                }
             }
 
             var queueNode = parentNode.AddNode("Queues");
             foreach (var queue in Queues) queueNode.AddNode(queue.Name);
-
-            if (Bindings.Any())
-            {
-                var bindings = parentNode.AddNode("Bindings");
-
-                var bindingTable = new Table();
-                bindingTable.AddColumn("Key");
-                bindingTable.AddColumn("Exchange Name");
-                bindingTable.AddColumn("Queue Name");
-                bindingTable.AddColumn("Arguments");
-
-                foreach (var binding in Bindings)
-                {
-                    bindingTable.AddRow(binding.BindingKey ?? string.Empty, binding.ExchangeName ?? string.Empty, binding.QueueName ?? string.Empty,
-                        binding.Arguments.Select(pair => $"{pair.Key}={pair.Value}").Join(", "));
-                }
-
-                bindings.AddNode(bindingTable);
-            }
         }
     }
 }

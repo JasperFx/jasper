@@ -52,8 +52,6 @@ namespace Jasper.RabbitMQ.Internal
 
         public LightweightCache<string, RabbitMqQueue> Queues { get; } = new(name => new RabbitMqQueue(name));
 
-        public IList<Binding> Bindings { get; } = new List<Binding>();
-
         public void Dispose()
         {
             _listenerConnection?.Close();
@@ -183,24 +181,23 @@ namespace Jasper.RabbitMQ.Internal
             {
                 _parent.DeclareQueue(queueName, configure);
 
-                var binding = new Binding
-                {
-                    ExchangeName = _exchangeName,
-                    BindingKey = bindingKey,
-                    QueueName = queueName
-                };
+                var binding = _parent.Exchanges[_exchangeName].BindQueue(queueName, bindingKey);
 
                 if (arguments != null)
                 {
-                    binding.Arguments = arguments;
+                    foreach (var argument in arguments)
+                    {
+                        binding.Arguments[argument.Key] = argument.Value;
+                    }
                 }
-
-                binding.AssertValid();
-
-                _parent.Bindings.Add(binding);
 
                 return _parent;
             }
+        }
+
+        public IEnumerable<RabbitMqBinding> Bindings()
+        {
+            return Exchanges.SelectMany(x => x.Bindings());
         }
     }
 

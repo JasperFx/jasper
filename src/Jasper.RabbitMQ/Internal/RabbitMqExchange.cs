@@ -43,6 +43,11 @@ namespace Jasper.RabbitMQ.Internal
             var exchangeTypeName = ExchangeType.ToString().ToLower();
             channel.ExchangeDeclare(DeclaredName, exchangeTypeName, IsDurable, AutoDelete, Arguments);
 
+            foreach (var binding in _bindings.Values)
+            {
+                binding.Declare(channel);
+            }
+
             HasDeclared = true;
         }
 
@@ -54,9 +59,37 @@ namespace Jasper.RabbitMQ.Internal
                 return;
             }
 
+            foreach (var binding in _bindings.Values)
+            {
+                binding.Teardown(channel);
+            }
+
             channel.ExchangeDelete(DeclaredName);
         }
 
+        private readonly Dictionary<string, RabbitMqBinding> _bindings = new();
+
+        public IEnumerable<RabbitMqBinding> Bindings()
+        {
+            return _bindings.Values;
+        }
+
+        public RabbitMqBinding BindQueue(string queueName, string? bindingKey = null)
+        {
+            if (queueName == null)
+            {
+                throw new ArgumentNullException(nameof(queueName));
+            }
+
+            if (_bindings.TryGetValue(queueName, out var binding)) return binding;
+
+            var queue = _parent.Queues[queueName];
+
+            binding = new RabbitMqBinding(Name, queue, bindingKey);
+            _bindings[queueName] = binding;
+
+            return binding;
+        }
 
         /// <summary>
         /// Declare a Rabbit MQ binding with the supplied topic pattern to
