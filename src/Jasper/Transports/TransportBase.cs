@@ -32,7 +32,7 @@ public abstract class TransportBase<TEndpoint> : ITransport where TEndpoint : En
         return endpoints();
     }
 
-    public virtual ValueTask InitializeAsync(IJasperRuntime root)
+    public virtual ValueTask InitializeAsync(IJasperRuntime runtime)
     {
         // Nothing
         return ValueTask.CompletedTask;

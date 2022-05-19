@@ -1,6 +1,7 @@
 using System;
 using System.ServiceModel.Channels;
 using Jasper.RabbitMQ.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using RabbitMQ.Client;
 using Shouldly;
@@ -41,7 +42,7 @@ namespace Jasper.RabbitMQ.Tests
 
             theTransport.Queues["foo"].PurgeOnStartup = false;
 
-            theTransport.InitializeEndpoint(endpoint, theChannel);
+            theTransport.InitializeEndpoint(endpoint, theChannel, NullLogger.Instance);
 
             theChannel.DidNotReceiveWithAnyArgs().QueueDeclare("foo", true, true, true, null);
             theChannel.DidNotReceiveWithAnyArgs().ExchangeDeclare("bar", "fanout", true, false, null);
@@ -64,7 +65,7 @@ namespace Jasper.RabbitMQ.Tests
 
             theTransport.Queues["foo"].PurgeOnStartup = true;
 
-            theTransport.InitializeEndpoint(endpoint, theChannel);
+            theTransport.InitializeEndpoint(endpoint, theChannel, NullLogger.Instance);
 
             theChannel.DidNotReceiveWithAnyArgs().QueueDeclare("foo", true, true, true, null);
             theChannel.DidNotReceiveWithAnyArgs().ExchangeDeclare("bar", "fanout", true, false, null);
@@ -86,7 +87,7 @@ namespace Jasper.RabbitMQ.Tests
 
             theTransport.Queues["foo"].PurgeOnStartup = false;
 
-            theTransport.InitializeEndpoint(endpoint, theChannel);
+            theTransport.InitializeEndpoint(endpoint, theChannel, NullLogger.Instance);
 
             theChannel.DidNotReceiveWithAnyArgs().QueueDeclare("foo", true, true, true, null);
             theChannel.DidNotReceiveWithAnyArgs().ExchangeDeclare("bar", "fanout", true, false, null);
@@ -108,7 +109,7 @@ namespace Jasper.RabbitMQ.Tests
 
             theTransport.Queues["foo"].PurgeOnStartup = false;
 
-            theTransport.InitializeEndpoint(endpoint, theChannel);
+            theTransport.InitializeEndpoint(endpoint, theChannel, NullLogger.Instance);
 
             theChannel.Received().QueueDeclare("foo", true, false, false, theTransport.Queues["foo"].Arguments);
             theChannel.Received().ExchangeDeclare("bar", "fanout", true, false, theTransport.Exchanges["bar"].Arguments);
@@ -130,7 +131,7 @@ namespace Jasper.RabbitMQ.Tests
 
             theTransport.Queues["foo"].PurgeOnStartup = true;
 
-            theTransport.InitializeEndpoint(endpoint, theChannel);
+            theTransport.InitializeEndpoint(endpoint, theChannel, NullLogger.Instance);
 
             theChannel.Received().QueueDeclare("foo", true, false, false, theTransport.Queues["foo"].Arguments);
             theChannel.Received().ExchangeDeclare("bar", "fanout", true, false, theTransport.Exchanges["bar"].Arguments);

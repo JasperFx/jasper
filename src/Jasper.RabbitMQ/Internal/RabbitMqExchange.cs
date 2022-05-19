@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -31,7 +32,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
 
-        internal void Declare(IModel channel)
+        internal void Declare(IModel channel, ILogger logger)
         {
             if (DeclaredName == string.Empty)
             {
@@ -42,11 +43,12 @@ namespace Jasper.RabbitMQ.Internal
 
             var exchangeTypeName = ExchangeType.ToString().ToLower();
             channel.ExchangeDeclare(DeclaredName, exchangeTypeName, IsDurable, AutoDelete, Arguments);
+            logger.LogInformation("Declared Rabbit Mq exchange '{Name}', type = {Type}, IsDurable = {IsDurable}, AutoDelete={AutoDelete}", DeclaredName, exchangeTypeName, IsDurable, AutoDelete);
 
             foreach (var binding in _bindings.Values)
             {
-                binding.Queue.Declare(channel);
-                binding.Declare(channel);
+                binding.Queue.Declare(channel, logger);
+                binding.Declare(channel, logger);
             }
 
             HasDeclared = true;

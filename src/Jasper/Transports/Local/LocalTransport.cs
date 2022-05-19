@@ -37,12 +37,12 @@ public class LocalTransport : ITransport
         return _queues;
     }
 
-    public ValueTask InitializeAsync(IJasperRuntime root)
+    public ValueTask InitializeAsync(IJasperRuntime runtime)
     {
-        Root = root;
+        Root = runtime;
         foreach (var queue in _queues)
         {
-            queue.Runtime = root;
+            queue.Runtime = runtime;
         }
 
         // Nothing

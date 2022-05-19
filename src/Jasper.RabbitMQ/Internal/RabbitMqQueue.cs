@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -23,7 +24,7 @@ namespace Jasper.RabbitMQ.Internal
         public bool HasDeclared { get; private set; }
 
         /// <summary>
-        /// Create a "time to live" limit for messages in this queue
+        /// Create a "time to live" limit for messages in this queue. Sets the Rabbit MQ x-message-ttl argument on a queue
         /// </summary>
         /// <param name="limit"></param>
         public void TimeToLive(TimeSpan limit)
@@ -37,11 +38,13 @@ namespace Jasper.RabbitMQ.Internal
         /// </summary>
         public bool PurgeOnStartup { get; set; }
 
-        internal void Declare(IModel channel)
+        internal void Declare(IModel channel, ILogger logger)
         {
             if (HasDeclared) return;
 
             channel.QueueDeclare(Name, IsDurable, IsExclusive, AutoDelete, Arguments);
+            logger.LogInformation("Declared Rabbit MQ queue '{Name}' as IsDurable={IsDurable}, IsExclusive={IsExclusive}, AutoDelete={AutoDelete}", Name, IsDurable, IsExclusive, AutoDelete);
+
             HasDeclared = true;
         }
 

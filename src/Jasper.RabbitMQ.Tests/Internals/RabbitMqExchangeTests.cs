@@ -1,5 +1,6 @@
 using Baseline.Reflection;
 using Jasper.RabbitMQ.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using RabbitMQ.Client;
 using Shouldly;
@@ -30,7 +31,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
                 IsDurable = false
             };
 
-            exchange.Declare(channel);
+            exchange.Declare(channel, NullLogger.Instance);
 
             channel.Received().ExchangeDeclare("foo", "fanout", false, true, exchange.Arguments);
 
@@ -52,8 +53,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             var prop = ReflectionHelper.GetProperty<RabbitMqExchange>(x => x.HasDeclared);
             prop.SetValue(exchange, true);
 
-            exchange.Declare(channel);
-
+            exchange.Declare(channel, NullLogger.Instance);
 
             channel.DidNotReceiveWithAnyArgs();
 

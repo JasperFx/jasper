@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Baseline;
 using Jasper.RabbitMQ.Internal;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ
@@ -22,11 +23,12 @@ namespace Jasper.RabbitMQ
         public IDictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
         public bool HasDeclared { get; private set; }
 
-        internal void Declare(IModel channel)
+        internal void Declare(IModel channel, ILogger logger)
         {
             if (HasDeclared) return;
-            Queue.Declare(channel);
+            Queue.Declare(channel, logger);
             channel.QueueBind(Queue.Name, ExchangeName, BindingKey, Arguments);
+            logger.LogInformation("Declared a Rabbit Mq binding '{Key}' from exchange {Exchange} to {Queue}", BindingKey, ExchangeName, Queue.Name);
 
             HasDeclared = true;
         }

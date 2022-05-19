@@ -19,7 +19,7 @@ namespace Jasper.RabbitMQ.Internal
         private WorkerQueueMessageConsumer? _consumer;
 
         public RabbitMqListener(ILogger logger,
-            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection, transport, endpoint)
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection, transport, endpoint, logger)
         {
             _logger = logger;
             Endpoint = endpoint;
@@ -27,7 +27,7 @@ namespace Jasper.RabbitMQ.Internal
 
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
 
-            _sender = new RabbitMqSender(Endpoint, transport, RoutingMode.Static);
+            _sender = new RabbitMqSender(Endpoint, transport, RoutingMode.Static, logger);
         }
 
         public RabbitMqEndpoint Endpoint { get; }

@@ -80,9 +80,9 @@ public class TcpEndpoint : Endpoint
         runtime.AddListener(listener, this);
     }
 
-    protected override ISender CreateSender(IJasperRuntime root)
+    protected override ISender CreateSender(IJasperRuntime runtime)
     {
-        return new BatchedSender(Uri, new SocketSenderProtocol(), root.Advanced.Cancellation, root.Logger);
+        return new BatchedSender(Uri, new SocketSenderProtocol(), runtime.Advanced.Cancellation, runtime.Logger);
     }
 
     private IListener createListener(IJasperRuntime root)

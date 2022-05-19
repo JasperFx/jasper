@@ -198,9 +198,9 @@ namespace Jasper.RabbitMQ.Internal
             runtime.AddListener(listener, this);
         }
 
-        protected override ISender CreateSender(IJasperRuntime root)
+        protected override ISender CreateSender(IJasperRuntime runtime)
         {
-            return new RabbitMqSender(this, _parent, RoutingType);
+            return new RabbitMqSender(this, _parent, RoutingType, runtime.Logger);
         }
 
         protected override void writeOutgoingHeader(IBasicProperties outgoing, string key, string value)

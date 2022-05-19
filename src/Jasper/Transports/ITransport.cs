@@ -28,5 +28,5 @@ public interface ITransport
     Endpoint? TryGetEndpoint(Uri uri);
 
     IEnumerable<Endpoint> Endpoints();
-    ValueTask InitializeAsync(IJasperRuntime root);
+    ValueTask InitializeAsync(IJasperRuntime runtime);
 }

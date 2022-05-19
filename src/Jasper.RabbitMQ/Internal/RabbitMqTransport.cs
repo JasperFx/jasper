@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Jasper.Runtime;
 using Jasper.Transports;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -71,11 +72,11 @@ namespace Jasper.RabbitMQ.Internal
             return _endpoints[uri];
         }
 
-        public override ValueTask InitializeAsync(IJasperRuntime root)
+        public override ValueTask InitializeAsync(IJasperRuntime runtime)
         {
             if (AutoProvision)
             {
-                InitializeAllObjects();
+                InitializeAllObjects(runtime.Logger);
             }
 
             if (AutoPurgeAllQueues)
@@ -118,20 +119,20 @@ namespace Jasper.RabbitMQ.Internal
             return findEndpointByUri(temp.Uri);
         }
 
-        internal void InitializeEndpoint(RabbitMqEndpoint endpoint, IModel channel)
+        internal void InitializeEndpoint(RabbitMqEndpoint endpoint, IModel channel, ILogger logger)
         {
             if (AutoProvision)
             {
                 if (endpoint.ExchangeName.IsNotEmpty())
                 {
                     var exchange = Exchanges[endpoint.ExchangeName];
-                    exchange.Declare(channel!);
+                    exchange.Declare(channel!, logger);
                 }
 
                 if (endpoint.QueueName.IsNotEmpty())
                 {
                     var queue = Queues[endpoint.QueueName];
-                    queue.Declare(channel!);
+                    queue.Declare(channel!, logger);
 
                     if (queue.PurgeOnStartup || AutoPurgeAllQueues)
                     {

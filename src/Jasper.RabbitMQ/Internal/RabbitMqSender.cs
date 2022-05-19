@@ -5,6 +5,7 @@ using Jasper.Configuration;
 using Jasper.Runtime.Routing;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -18,8 +19,8 @@ namespace Jasper.RabbitMQ.Internal
         private Func<Envelope, string> _toRoutingKey;
 
         public RabbitMqSender(RabbitMqEndpoint endpoint, RabbitMqTransport transport,
-            RoutingMode routingType) : base(
-            transport.SendingConnection, transport, endpoint)
+            RoutingMode routingType, ILogger logger) : base(
+            transport.SendingConnection, transport, endpoint, logger)
         {
             _endpoint = endpoint;
             Destination = endpoint.Uri;

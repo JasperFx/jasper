@@ -26,9 +26,9 @@ public class StubTransport : TransportBase<StubEndpoint>
         return Endpoints[uri];
     }
 
-    public override ValueTask InitializeAsync(IJasperRuntime root)
+    public override ValueTask InitializeAsync(IJasperRuntime runtime)
     {
-        foreach (var endpoint in Endpoints) endpoint.Start(root.Pipeline, root.MessageLogger);
+        foreach (var endpoint in Endpoints) endpoint.Start(runtime.Pipeline, runtime.MessageLogger);
 
         return ValueTask.CompletedTask;
     }

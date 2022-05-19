@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Oakton.Resources;
 using RabbitMQ.Client.Exceptions;
 using Spectre.Console;
@@ -64,7 +67,7 @@ namespace Jasper.RabbitMQ.Internal
 
         public Task Setup(CancellationToken token)
         {
-            InitializeAllObjects();
+            InitializeAllObjects(new ConsoleLogger());
             return Task.CompletedTask;
         }
 
@@ -155,22 +158,21 @@ namespace Jasper.RabbitMQ.Internal
             connection.Close();
         }
 
-        internal void InitializeAllObjects()
+        internal void InitializeAllObjects(ILogger logger)
         {
             using var connection = BuildConnection();
             using var channel = connection.CreateModel();
 
-            // TODO -- use ILogger in all cases here
             foreach (var queue in Queues)
             {
                 Console.WriteLine("Declaring Rabbit MQ queue " + queue);
-                queue.Declare(channel);
+                queue.Declare(channel, logger);
             }
 
             foreach (var exchange in Exchanges)
             {
                 Console.WriteLine("Declaring Rabbit MQ exchange " + exchange);
-                exchange.Declare(channel);
+                exchange.Declare(channel, logger);
             }
 
             channel.Close();
@@ -181,6 +183,32 @@ namespace Jasper.RabbitMQ.Internal
         private string[] allKnownQueueNames()
         {
             return Queues.Select(x => x.Name).ToArray()!;
+        }
+    }
+
+    internal class ConsoleLogger : ILogger
+    {
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            Console.WriteLine(formatter(state, exception));
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return new Disposable();
+        }
+
+        internal class Disposable : IDisposable
+        {
+            public void Dispose()
+            {
+
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ public class LocalQueueSettings : Endpoint
         throw new NotSupportedException();
     }
 
-    protected override ISender CreateSender(IJasperRuntime root)
+    protected override ISender CreateSender(IJasperRuntime runtime)
     {
         throw new NotSupportedException();
     }

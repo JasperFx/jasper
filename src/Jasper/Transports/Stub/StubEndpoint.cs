@@ -108,7 +108,7 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
         // Nothing
     }
 
-    protected override ISender CreateSender(IJasperRuntime root)
+    protected override ISender CreateSender(IJasperRuntime runtime)
     {
         return this;
     }

@@ -1,5 +1,6 @@
 using System;
 using Baseline;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
@@ -9,14 +10,16 @@ namespace Jasper.RabbitMQ.Internal
         private readonly IConnection _connection;
         private readonly RabbitMqTransport _transport;
         private readonly RabbitMqEndpoint _endpoint;
+        private readonly ILogger _logger;
         protected readonly object Locker = new();
 
         protected RabbitMqConnectionAgent(IConnection connection, RabbitMqTransport transport,
-            RabbitMqEndpoint endpoint)
+            RabbitMqEndpoint endpoint, ILogger logger)
         {
             _connection = connection;
             _transport = transport;
             _endpoint = endpoint;
+            _logger = logger;
         }
 
         internal AgentState State { get; private set; } = AgentState.Disconnected;
@@ -52,7 +55,7 @@ namespace Jasper.RabbitMQ.Internal
 
                 startNewChannel();
 
-                _transport.InitializeEndpoint(_endpoint, _channel);
+                _transport.InitializeEndpoint(_endpoint, _channel!, _logger);
 
                 State = AgentState.Connected;
             }

@@ -2,6 +2,7 @@ using System.Linq;
 using Baseline.Dates;
 using Baseline.Reflection;
 using Jasper.RabbitMQ.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using RabbitMQ.Client;
 using Shouldly;
@@ -47,7 +48,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             queue.HasDeclared.ShouldBeFalse();
 
             var channel = Substitute.For<IModel>();
-            queue.Declare(channel);
+            queue.Declare(channel, NullLogger.Instance);
 
             channel.Received()
                 .QueueDeclare("foo", queue.IsDurable, queue.IsExclusive, queue.AutoDelete, queue.Arguments);
@@ -73,7 +74,7 @@ namespace Jasper.RabbitMQ.Tests.Internals
             prop.SetValue(queue, true);
 
             var channel = Substitute.For<IModel>();
-            queue.Declare(channel);
+            queue.Declare(channel, NullLogger.Instance);
 
             channel.DidNotReceiveWithAnyArgs().QueueDeclare("foo", isDurable, isExclusive, autoDelete, queue.Arguments);
             queue.HasDeclared.ShouldBeTrue();

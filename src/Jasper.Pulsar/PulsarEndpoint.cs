@@ -116,9 +116,9 @@ namespace Jasper.Pulsar
             runtime.AddListener(listener, this);
         }
 
-        protected override ISender CreateSender(IJasperRuntime root)
+        protected override ISender CreateSender(IJasperRuntime runtime)
         {
-            return new PulsarSender(this, _parent, root.Cancellation);
+            return new PulsarSender(this, _parent, runtime.Cancellation);
         }
 
     }

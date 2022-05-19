@@ -210,7 +210,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
         return runtime.CreateSendingAgent(replyUri, sender, this);
     }
 
-    protected abstract ISender CreateSender(IJasperRuntime root);
+    protected abstract ISender CreateSender(IJasperRuntime runtime);
 
     // This is only surviving to support testing
     internal void ApplyEnvelopeRules(Envelope envelope)
