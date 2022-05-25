@@ -20,14 +20,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
+    <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Data.Common" Version="4.3.0"/>
-    <PackageReference Include="Weasel.CommandLine" Version="5.4.0"/>
-    <PackageReference Include="Weasel.Core" Version="5.4.0"/>
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="Weasel.CommandLine" Version="5.4.0" />
+    <PackageReference Include="Weasel.Core" Version="5.5.0" />
   </ItemGroup>
 
-  <Import Project="../../Analysis.Build.props"/>
+  <Import Project="../../Analysis.Build.props" />
 </Project>

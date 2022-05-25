@@ -18,7 +18,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Marten" Version="5.1.0" />
+    <PackageReference Include="Marten" Version="5.4.0" />
     <PackageReference Include="Npgsql" Version="6.0.3" />
   </ItemGroup>
   <ItemGroup>
