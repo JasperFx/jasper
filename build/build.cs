@@ -221,6 +221,10 @@ documentation/compilation/frames/injected-fields/
 
             });
 
+            Target("pack", DependsOn("compile"), ForEach("./src/Jasper", "./src/Jasper.RabbitMQ", "./src/Jasper.Persistence.Database", "./src/Jasper.Persistence.Postgresql", "./src/Jasper.Persistence.Marten"), project =>
+                Run("dotnet", $"pack {project} -o ./artifacts --configuration Release"));
+
+
             RunTargetsAndExit(args);
         }
 
