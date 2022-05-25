@@ -1,0 +1,53 @@
+name: Publish Lamar IoC Nugets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Setup .NET 5
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build Jasper.sln --configuration Release
+
+    - name: Publish Jasper
+      uses: brandedoutcast/publish-nuget@v2.5.2
+      with:
+          PROJECT_FILE_PATH: src/Jasper/Jasper.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Jasper.RabbitMQ
+      uses: brandedoutcast/publish-nuget@v2.5.2
+      with:
+          PROJECT_FILE_PATH: src/Jasper.RabbitMQ/Jasper.RabbitMQ.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Jasper.Persistence.Database
+      uses: brandedoutcast/publish-nuget@v2.5.2
+      with:
+          PROJECT_FILE_PATH: src/Jasper.Persistence.Database/Jasper.Persistence.Database.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Jasper.Persistence.Postgresql
+      uses: brandedoutcast/publish-nuget@v2.5.2
+      with:
+          PROJECT_FILE_PATH: src/Jasper.Persistence.Postgresql/Jasper.Persistence.Postgresql.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Jasper.Persistence.Marten
+      uses: brandedoutcast/publish-nuget@v2.5.2
+      with:
+          PROJECT_FILE_PATH: src/Jasper.Persistence.Marten/Jasper.Persistence.Marten.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
