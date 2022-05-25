@@ -79,13 +79,13 @@ documentation/compilation/frames/injected-fields/
 
             Target("restore", () =>
             {
-                Run("dotnet", "restore");
+                Run("dotnet", "restore Jasper.sln");
             });
 
             Target("compile",  DependsOn("restore"),() =>
             {
                 Run("dotnet",
-                    $"build --no-restore");
+                    $"build Jasper.sln --no-restore");
             });
 
             Target("test", DependsOn("compile"),() =>
