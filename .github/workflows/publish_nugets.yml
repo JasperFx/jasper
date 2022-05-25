@@ -1,4 +1,4 @@
-name: Publish Lamar IoC Nugets
+name: Publish Jasper Nugets
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore Jasper.sln
     - name: Build
       run: dotnet build Jasper.sln --configuration Release
 
