@@ -15,8 +15,8 @@ namespace build
 {
     internal class Build
     {
-        private const string BUILD_VERSION = "5.0.0";
-        private const string GITHUB_REPO = "https://github.com/jasperfx/lamar.git";
+        private const string BUILD_VERSION = "6.0.0";
+        private const string GITHUB_REPO = "https://github.com/jasperfx/jasper.git";
 
         private const string Forwards = @"
 getting_started
@@ -291,7 +291,7 @@ documentation/compilation/frames/injected-fields/
 
         private static void RunCurrentProject(string args)
         {
-            Run("dotnet", $"run  --framework net5.0 --no-build --no-restore -- {args}");
+            Run("dotnet", $"run  --framework net6.0 --no-build --no-restore -- {args}");
         }
 
         private static void CopyFilesRecursively(string sourcePath, string targetPath)
@@ -345,7 +345,7 @@ documentation/compilation/frames/injected-fields/
 
         private static void RunTests(string projectName, string directoryName = "src")
         {
-            Run("dotnet", $"test -f net5.0 --no-build --no-restore {directoryName}/{projectName}/{projectName}.csproj");
+            Run("dotnet", $"test -f net6.0 --no-build --no-restore {directoryName}/{projectName}/{projectName}.csproj");
         }
 
         private static string GetEnvironmentVariable(string variableName)
