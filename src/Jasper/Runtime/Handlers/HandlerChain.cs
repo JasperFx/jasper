@@ -180,11 +180,11 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
             applyAttributesAndConfigureMethods(rules, container);
 
             foreach (var attribute in MessageType.GetTypeInfo()
-                         .GetCustomAttributes(typeof(ModifyHandlerChainAttribute))
-                         .OfType<ModifyHandlerChainAttribute>()) attribute.Modify(this, rules);
+                 .GetCustomAttributes(typeof(ModifyHandlerChainAttribute))
+                 .OfType<ModifyHandlerChainAttribute>()) attribute.Modify(this, rules);
 
             foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute))
-                         .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules, container);
+                .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules, container);
         }
 
         var cascadingHandlers = determineCascadingMessages().ToArray();
@@ -201,7 +201,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
         foreach (var handler in Handlers)
         foreach (var create in handler.Creates)
         {
-            if (create.IsNotCascadingMessage())
+            if (create.MessageDoesNotCascade())
             {
                 continue;
             }

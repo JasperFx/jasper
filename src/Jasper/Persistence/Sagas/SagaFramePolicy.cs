@@ -65,7 +65,7 @@ public class SagaFramePolicy : IHandlerPolicy
         var existingState = sagaHandler.Creates.FirstOrDefault(x => x.VariableType == sagaStateType);
 
         // Tells the handler chain codegen to not use this as a cascading message
-        existingState?.Properties.Add(HandlerChain.NotCascading, true);
+        existingState?.MarkAsNotCascaded();
 
         var persistenceFrame = sagaPersistenceFrameProvider.DeterminePersistenceFrame(container, chain, sagaHandler,
             existence, ref sagaIdVariable,
