@@ -1,7 +1,10 @@
 using System;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Persistence.Marten;
 using Jasper.Runtime.Handlers;
+using Lamar;
+using LamarCodeGeneration;
 using Marten.Schema;
 using NSubstitute;
 using Shouldly;
@@ -46,6 +49,26 @@ namespace Jasper.Persistence.Testing.Marten
         }
 
         [Fact]
+        public void throw_if_return_is_void_and_does_not_take_in_stream()
+        {
+            var chain = HandlerChain.For<InvoiceHandler>(x => x.Handle(default(Invalid1), default), new HandlerGraph());
+            Should.Throw<InvalidOperationException>(() =>
+            {
+                new MartenEventsAttribute().Modify(chain, new GenerationRules(), Container.Empty());
+            });
+        }
+
+        [Fact]
+        public void throw_if_return_is_Task_and_does_not_take_in_stream()
+        {
+            var chain = HandlerChain.For<InvoiceHandler>(x => x.Handle(default(Invalid2), default), new HandlerGraph());
+            Should.Throw<InvalidOperationException>(() =>
+            {
+                new MartenEventsAttribute().Modify(chain, new GenerationRules(), Container.Empty());
+            });
+        }
+
+        [Fact]
         public void determine_aggregate_id_from_command_type()
         {
             MartenEventsAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(ApproveInvoice))
@@ -67,6 +90,8 @@ namespace Jasper.Persistence.Testing.Marten
                 MartenEventsAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(BadCommand));
             });
         }
+
+
 
     }
 
@@ -95,5 +120,15 @@ namespace Jasper.Persistence.Testing.Marten
         {
             return new InvoiceApproved();
         }
+
+        public void Handle(Invalid1 command, Invoice invoice){}
+
+        public Task Handle(Invalid2 command, Invoice invoice)
+        {
+            return Task.CompletedTask;
+        }
     }
+
+    public record Invalid1(Guid InvoiceId);
+    public record Invalid2(Guid InvoiceId);
 }

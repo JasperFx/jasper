@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Baseline.Reflection;
+using LamarCodeGeneration.Frames;
+using LamarCodeGeneration.Model;
+using Marten.Events;
+using Oakton.Parsing;
+
+namespace Jasper.Persistence.Marten.Codegen;
+
+internal class LoadAggregateFrame<T> : MethodCall where T : class
+{
+    private readonly MartenEventsAttribute _att;
+    private Variable? _command;
+
+    public LoadAggregateFrame(MartenEventsAttribute att) : base(typeof(IEventStore), FindMethod(att))
+    {
+        _att = att;
+    }
+
+    public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
+    {
+        _command = chain.FindVariable(_att.CommandType);
+        yield return _command;
+
+        Arguments[0] = new MemberAccessVariable(_command, _att.AggregateIdMember!);
+        if (_att.LoadStyle == AggregateLoadStyle.Optimistic && _att.VersionMember != null)
+        {
+            Arguments[1] = new MemberAccessVariable(_command, _att.VersionMember);
+        }
+
+        foreach (var variable in base.FindVariables(chain))
+        {
+            yield return variable;
+        }
+
+
+    }
+
+    internal static MethodInfo FindMethod(MartenEventsAttribute att)
+    {
+        var isGuidIdentified = att.AggregateIdMember.GetMemberType() == typeof(Guid);
+
+        if (att.LoadStyle == AggregateLoadStyle.Exclusive)
+        {
+            return isGuidIdentified
+                ? ReflectionHelper.GetMethod<IEventStore>(x => x.FetchForExclusiveWriting<T>(Guid.Empty, default))
+                : ReflectionHelper.GetMethod<IEventStore>(x => x.FetchForExclusiveWriting<T>(string.Empty, default));
+        }
+
+        if (att.VersionMember == null)
+        {
+            return isGuidIdentified
+                ? ReflectionHelper.GetMethod<IEventStore>(x => x.FetchForWriting<T>(Guid.Empty, default))
+                : ReflectionHelper.GetMethod<IEventStore>(x => x.FetchForWriting<T>(string.Empty, default));
+        }
+
+        return isGuidIdentified
+            ? ReflectionHelper.GetMethod<IEventStore>(x => x.FetchForWriting<T>(Guid.Empty, Int64.MaxValue, default))
+            : ReflectionHelper.GetMethod<IEventStore>(x => x.FetchForWriting<T>(string.Empty, Int64.MaxValue, default));
+    }
+}
