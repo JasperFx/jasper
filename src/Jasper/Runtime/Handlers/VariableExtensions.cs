@@ -4,7 +4,7 @@ namespace Jasper.Runtime.Handlers;
 
 public static class VariableExtensions
 {
-    public static bool MessageDoesNotCascade(this Variable variable)
+    public static bool ShouldNotBeCascaded(this Variable variable)
     {
         return variable.Properties.ContainsKey(HandlerChain.NotCascading);
     }
