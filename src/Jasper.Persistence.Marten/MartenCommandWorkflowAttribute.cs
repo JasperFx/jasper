@@ -12,34 +12,39 @@ using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
-using Marten;
 using Marten.Events;
 using Marten.Events.Aggregation;
 using Marten.Schema;
-using Oakton.Parsing;
-using TypeExtensions = LamarCodeGeneration.Util.TypeExtensions;
 
 namespace Jasper.Persistence.Marten;
 
+/// <summary>
+/// Applies middleware to Jasper message actions to apply a workflow with concurrency protections for
+/// "command" messages that use a Marten projected aggregate to "decide" what
+/// on new events to persist to the aggregate stream.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class MartenEventsAttribute : ModifyChainAttribute
+public class MartenCommandWorkflowAttribute : ModifyChainAttribute
 {
     private static readonly Type _versioningBaseType = typeof(IAggregateVersioning).Assembly.DefinedTypes.Single(x => x.Name.StartsWith("AggregateVersioning"));
 
-    public AggregateLoadStyle LoadStyle { get; }
+    internal AggregateLoadStyle LoadStyle { get; }
 
-    public MartenEventsAttribute(AggregateLoadStyle loadStyle)
+    public MartenCommandWorkflowAttribute(AggregateLoadStyle loadStyle)
     {
         LoadStyle = loadStyle;
     }
 
-    public MartenEventsAttribute() : this(AggregateLoadStyle.Optimistic)
+    public MartenCommandWorkflowAttribute() : this(AggregateLoadStyle.Optimistic)
     {
     }
 
+    /// <summary>
+    /// Override or "help" Jasper to understand which type is the aggregate type
+    /// </summary>
     public Type? AggregateType { get; set; }
-    public MemberInfo? AggregateIdMember { get; set; }
-    public Type? CommandType { get; private set; }
+    internal MemberInfo? AggregateIdMember { get; set; }
+    internal Type? CommandType { get; private set; }
 
     public override void Modify(IChain chain, GenerationRules rules, IContainer container)
     {
@@ -49,10 +54,12 @@ public class MartenEventsAttribute : ModifyChainAttribute
         AggregateIdMember = DetermineAggregateIdMember(AggregateType, CommandType);
         VersionMember = DetermineVersionMember(AggregateType);
 
+        chain.Middleware.Add(new TransactionalFrame());
+
         var loader = generateLoadAggregateCode(chain);
 
         var firstCall = handlerChain.Handlers.First();
-        firstCall.ReturnVariable?.ShouldNotBeCascaded(); // Don't automatically cascade the methods
+        firstCall.ReturnVariable?.MarkAsNotCascaded(); // Don't automatically cascade the methods
         validateMethodSignatureForEmittedEvents(chain, firstCall, handlerChain);
         relayAggregateToHandlerMethod(loader, firstCall);
         captureEventsAndPersistSession(chain, firstCall);
@@ -64,11 +71,10 @@ public class MartenEventsAttribute : ModifyChainAttribute
         if (firstCall.ReturnVariable != null)
         {
             var register = typeof(RegisterEventsFrame<>).CloseAndBuildAs<MethodCall>(firstCall.ReturnVariable, AggregateType!);
-            chain.Postprocessors.Add(register);
-        }
+            var ifBlock = new IfBlock($"{firstCall.ReturnVariable.Usage} != null", register);
 
-        // Check that this isn't used in combination with [Transaction]
-        chain.Postprocessors.Add(MethodCall.For<IDocumentSession>(x => x.SaveChangesAsync(default)));
+            chain.Postprocessors.Add(ifBlock);
+        }
     }
 
     private void relayAggregateToHandlerMethod(MethodCall loader, MethodCall firstCall)
@@ -133,7 +139,7 @@ public class MartenEventsAttribute : ModifyChainAttribute
         }
 
         throw new InvalidOperationException(
-            $"Unable to determine a Marten aggregate type for {chain}. You may need to explicitly specify the aggregate type in a {nameof(MartenEventsAttribute)} attribute");
+            $"Unable to determine a Marten aggregate type for {chain}. You may need to explicitly specify the aggregate type in a {nameof(MartenCommandWorkflowAttribute)} attribute");
     }
 
     internal static MemberInfo DetermineAggregateIdMember(Type aggregateType, Type commandType)

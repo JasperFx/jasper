@@ -32,6 +32,8 @@ builder.Services.AddMarten(opts =>
 
     opts.Connection(Servers.PostgresConnectionString);
     opts.DatabaseSchemaName = "issues";
+
+    // I'm putting the inbox/outbox tables into a separate "issue_service" schema
 }).IntegrateWithJasper("issue_service");
 
 var app = builder.Build();

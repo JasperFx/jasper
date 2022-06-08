@@ -40,8 +40,6 @@ public class TransactionalFrame : Frame
 
     public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
     {
-        _store = chain.FindVariable(typeof(IDocumentStore));
-
         Session = chain.TryFindVariable(typeof(IDocumentSession), VariableSource.NotServices);
         if (Session == null)
         {
@@ -54,7 +52,6 @@ public class TransactionalFrame : Frame
         // Inside of messaging. Not sure how this is gonna work for HTTP yet
         _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
 
-        yield return _store;
         if (_context != null)
         {
             yield return _context;
@@ -73,11 +70,12 @@ public class TransactionalFrame : Frame
             writer.BlankLine();
             writer.WriteComment("Open a new document session");
             writer.Write(
-                $"BLOCK:using (var {Session!.Usage} = {_store!.Usage}.{nameof(IDocumentStore.LightweightSession)}())");
+                $"using var {Session!.Usage} = {_store!.Usage}.{nameof(IDocumentStore.LightweightSession)}();");
         }
 
         if (_context != null && _isUsingPersistence)
         {
+            writer.WriteComment("Enrolling this session with the outbox for the current Jasper envelope context");
             writer.Write(
                 $"await {typeof(ExecutionContextExtensions).FullName}.{nameof(ExecutionContextExtensions.EnlistInTransactionAsync)}({_context.Usage}, {Session!.Usage});");
         }
@@ -94,11 +92,6 @@ public class TransactionalFrame : Frame
         writer.WriteComment("Commit the unit of work");
         writer.Write(
             $"await {Session!.Usage}.{nameof(IDocumentSession.SaveChangesAsync)}(cancellation).ConfigureAwait(false);");
-
-        if (_createsSession)
-        {
-            writer.FinishBlock();
-        }
     }
 
     public class Loaded

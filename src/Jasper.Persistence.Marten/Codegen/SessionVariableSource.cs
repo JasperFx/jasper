@@ -24,6 +24,6 @@ public class SessionVariableSource : IVariableSource
             return MethodCall.For<ISessionFactory>(x => x.OpenSession()).ReturnVariable;
         }
 
-        throw new ArgumentOutOfRangeException();
+        throw new ArgumentOutOfRangeException(nameof(type));
     }
 }

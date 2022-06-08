@@ -21,5 +21,6 @@ internal class RegisterEventsFrame<T> : MethodCall
     public RegisterEventsFrame(Variable returnVariable) : base(typeof(IEventStream<T>), FindMethod(returnVariable.VariableType))
     {
         Arguments[0] = returnVariable;
+        CommentText = "Capturing any possible events returned from the command handlers";
     }
 }

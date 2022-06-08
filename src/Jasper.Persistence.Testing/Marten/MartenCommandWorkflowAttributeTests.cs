@@ -12,12 +12,12 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten
 {
-    public class MartenEventsAttributeTests
+    public class MartenCommandWorkflowAttributeTests
     {
         [Fact]
         public void determine_version_member_for_aggregate()
         {
-            var att = new MartenEventsAttribute ();
+            var att = new MartenCommandWorkflowAttribute ();
             att.DetermineVersionMember(typeof(Invoice))
                 .Name.ShouldBe(nameof(Invoice.Version));
         }
@@ -25,7 +25,7 @@ namespace Jasper.Persistence.Testing.Marten
         [Fact]
         public void determine_aggregate_type_when_it_is_explicitly_passed_in()
         {
-            new MartenEventsAttribute{AggregateType = typeof(Invoice)}
+            new MartenCommandWorkflowAttribute{AggregateType = typeof(Invoice)}
                 .DetermineAggregateType(Substitute.For<IChain>())
                 .ShouldBe(typeof(Invoice));
         }
@@ -34,7 +34,7 @@ namespace Jasper.Persistence.Testing.Marten
         public void determine_aggregate_by_second_parameter()
         {
             var chain = HandlerChain.For<InvoiceHandler>(x => x.Handle(default(ApproveInvoice), default(Invoice)), new HandlerGraph());
-            new MartenEventsAttribute().DetermineAggregateType(chain)
+            new MartenCommandWorkflowAttribute().DetermineAggregateType(chain)
                 .ShouldBe(typeof(Invoice));
         }
 
@@ -44,7 +44,7 @@ namespace Jasper.Persistence.Testing.Marten
             var chain = HandlerChain.For<InvoiceHandler>(x => x.Handle(default(ApproveInvoice)), new HandlerGraph());
             Should.Throw<InvalidOperationException>(() =>
             {
-                new MartenEventsAttribute().DetermineAggregateType(chain);
+                new MartenCommandWorkflowAttribute().DetermineAggregateType(chain);
             });
         }
 
@@ -54,7 +54,7 @@ namespace Jasper.Persistence.Testing.Marten
             var chain = HandlerChain.For<InvoiceHandler>(x => x.Handle(default(Invalid1), default), new HandlerGraph());
             Should.Throw<InvalidOperationException>(() =>
             {
-                new MartenEventsAttribute().Modify(chain, new GenerationRules(), Container.Empty());
+                new MartenCommandWorkflowAttribute().Modify(chain, new GenerationRules(), Container.Empty());
             });
         }
 
@@ -64,21 +64,21 @@ namespace Jasper.Persistence.Testing.Marten
             var chain = HandlerChain.For<InvoiceHandler>(x => x.Handle(default(Invalid2), default), new HandlerGraph());
             Should.Throw<InvalidOperationException>(() =>
             {
-                new MartenEventsAttribute().Modify(chain, new GenerationRules(), Container.Empty());
+                new MartenCommandWorkflowAttribute().Modify(chain, new GenerationRules(), Container.Empty());
             });
         }
 
         [Fact]
         public void determine_aggregate_id_from_command_type()
         {
-            MartenEventsAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(ApproveInvoice))
+            MartenCommandWorkflowAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(ApproveInvoice))
                 .Name.ShouldBe(nameof(ApproveInvoice.InvoiceId));
         }
 
         [Fact]
         public void determine_aggregate_id_with_identity_attribute_help()
         {
-            MartenEventsAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(RejectInvoice))
+            MartenCommandWorkflowAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(RejectInvoice))
                 .Name.ShouldBe(nameof(RejectInvoice.Something));
         }
 
@@ -87,7 +87,7 @@ namespace Jasper.Persistence.Testing.Marten
         {
             Should.Throw<InvalidOperationException>(() =>
             {
-                MartenEventsAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(BadCommand));
+                MartenCommandWorkflowAttribute.DetermineAggregateIdMember(typeof(Invoice), typeof(BadCommand));
             });
         }
 

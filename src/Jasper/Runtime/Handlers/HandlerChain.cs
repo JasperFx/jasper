@@ -201,7 +201,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
         foreach (var handler in Handlers)
         foreach (var create in handler.Creates)
         {
-            if (create.ShouldNotBeCascaded())
+            if (!create.ShouldBeCascaded())
             {
                 continue;
             }

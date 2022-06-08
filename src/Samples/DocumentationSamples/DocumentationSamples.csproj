@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
-      <ProjectReference Include="..\..\Jasper.Tcp\Jasper.Tcp.csproj" />
       <ProjectReference Include="..\..\Jasper\Jasper.csproj" />
       <ProjectReference Include="..\..\TestingSupport\TestingSupport.csproj" />
     </ItemGroup>

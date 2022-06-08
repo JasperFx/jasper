@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IntegrationTests;
+using Jasper.Attributes;
 using Jasper.Persistence.Marten;
 using Jasper.Tracking;
+using LamarCodeGeneration;
 using Marten;
 using Marten.Events;
 using Marten.Events.Projections;
+using Marten.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -16,13 +19,13 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten;
 
-public class marten_events_middleware : IDisposable
+public class marten_command_workflow_middleware : IDisposable
 {
     private readonly IHost theHost;
     private readonly IDocumentStore theStore;
     private Guid theStreamId;
 
-    public marten_events_middleware()
+    public marten_command_workflow_middleware()
     {
         theHost = JasperHost.For(x =>
         {
@@ -30,7 +33,10 @@ public class marten_events_middleware : IDisposable
             {
                 opts.Connection(Servers.PostgresConnectionString);
                 opts.Projections.SelfAggregate<LetterAggregate>(ProjectionLifecycle.Inline);
-            });
+            }).IntegrateWithJasper().ApplyAllDatabaseChangesOnStartup();
+
+            //x.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
+
         });
 
         theStore = theHost.Services.GetRequiredService<IDocumentStore>();
@@ -168,9 +174,21 @@ public class marten_events_middleware : IDisposable
         });
     }
 
-
-    // 7. void & does not take IEventStream, should blow up
-    // 8. Task and does not take IEventStream, should blow up
+    // TODO -- this is a Marten implementation issue?
+    // [Fact]
+    // public async Task just_do_not_blow_up_if_no_event_is_returned()
+    // {
+    //     await GivenAggregate();
+    //     await theHost.TrackActivity().SendMessageAndWaitAsync(new IncrementNone(theStreamId));
+    //
+    //     await OnAggregate(a =>
+    //     {
+    //         a.ACount.ShouldBe(0);
+    //         a.BCount.ShouldBe(0);
+    //         a.CCount.ShouldBe(0);
+    //         a.DCount.ShouldBe(0);
+    //     });
+    // }
 
 
 }
@@ -216,10 +234,13 @@ public class LetterAggregate
     }
 }
 
-public class SpecialLetterHandler
+public static class SpecialLetterHandler
 {
-    [MartenEvents(AggregateLoadStyle.Exclusive)]
-    public IEnumerable<object> Handle(IncrementAB command, LetterAggregate aggregate)
+    // This can be done as a policy at the application level and not
+    // on a handler by handler basis too
+    [RetryLater(typeof(ConcurrencyException), 1,2,5)]
+    [MartenCommandWorkflow(AggregateLoadStyle.Exclusive)]
+    public static IEnumerable<object> Handle(IncrementAB command, LetterAggregate aggregate)
     {
         command.LetterAggregateId.ShouldBe(aggregate.Id);
         yield return new AEvent();
@@ -227,7 +248,7 @@ public class SpecialLetterHandler
     }
 }
 
-[MartenEvents]
+[MartenCommandWorkflow]
 public class LetterHandler
 {
     // No event returned

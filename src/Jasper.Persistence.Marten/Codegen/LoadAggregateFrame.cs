@@ -11,12 +11,13 @@ namespace Jasper.Persistence.Marten.Codegen;
 
 internal class LoadAggregateFrame<T> : MethodCall where T : class
 {
-    private readonly MartenEventsAttribute _att;
+    private readonly MartenCommandWorkflowAttribute _att;
     private Variable? _command;
 
-    public LoadAggregateFrame(MartenEventsAttribute att) : base(typeof(IEventStore), FindMethod(att))
+    public LoadAggregateFrame(MartenCommandWorkflowAttribute att) : base(typeof(IEventStore), FindMethod(att))
     {
         _att = att;
+        CommentText = "Loading Marten aggregate";
     }
 
     public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
@@ -38,7 +39,7 @@ internal class LoadAggregateFrame<T> : MethodCall where T : class
 
     }
 
-    internal static MethodInfo FindMethod(MartenEventsAttribute att)
+    internal static MethodInfo FindMethod(MartenCommandWorkflowAttribute att)
     {
         var isGuidIdentified = att.AggregateIdMember.GetMemberType() == typeof(Guid);
 
