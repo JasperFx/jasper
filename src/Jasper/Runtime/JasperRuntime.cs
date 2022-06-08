@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using Baseline.ImTools;
 using Jasper.ErrorHandling;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
@@ -57,6 +58,18 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
     internal HandlerGraph Handlers { get; }
 
     public CancellationToken Cancellation { get; }
+
+    private ImHashMap<Type, object?> _extensions = ImHashMap<Type, object?>.Empty;
+
+    public T? TryFindExtension<T>() where T : class
+    {
+        if (_extensions.TryFind(typeof(T), out var raw)) return (T)raw;
+
+        var extension = Options.AppliedExtensions.OfType<T>().FirstOrDefault();
+        _extensions = _extensions.AddOrUpdate(typeof(T), extension);
+
+        return extension;
+    }
 
     public AdvancedSettings Advanced { get; }
 

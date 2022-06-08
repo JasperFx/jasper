@@ -28,7 +28,6 @@ namespace Jasper;
 public sealed partial class JasperOptions
 {
     private static Assembly? _rememberedCallingAssembly;
-    private readonly List<IJasperExtension> _appliedExtensions = new();
     private readonly IList<Type> _extensionTypes = new List<Type>();
 
     private readonly IDictionary<string, IMessageSerializer>
@@ -181,6 +180,8 @@ public sealed partial class JasperOptions
         }
     }
 
+    internal List<IJasperExtension> AppliedExtensions { get; } = new();
+
     internal void ApplyExtensions(IJasperExtension[] extensions)
     {
         // Apply idempotency
@@ -189,7 +190,7 @@ public sealed partial class JasperOptions
         foreach (var extension in extensions)
         {
             extension.Configure(this);
-            _appliedExtensions.Add(extension);
+            AppliedExtensions.Add(extension);
         }
 
         _extensionTypes.Fill(extensions.Select(x => x.GetType()));

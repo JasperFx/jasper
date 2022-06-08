@@ -41,6 +41,13 @@ public interface IJasperRuntime
 
     Endpoint? EndpointFor(Uri uri);
     IMessageRouter RoutingFor(Type messageType);
+
+    /// <summary>
+    /// Try to find an applied extension of type T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    T? TryFindExtension<T>() where T : class;
 }
 
 // This was for testing

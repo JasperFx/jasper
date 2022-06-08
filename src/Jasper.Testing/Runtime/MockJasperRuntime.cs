@@ -64,6 +64,11 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
+        public T TryFindExtension<T>() where T : class
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
             throw new NotSupportedException();

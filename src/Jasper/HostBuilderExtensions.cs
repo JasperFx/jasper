@@ -78,7 +78,11 @@ public static class HostBuilderExtensions
             services.AddSingleton(s =>
             {
                 var extensions = s.GetServices<IJasperExtension>();
-                foreach (var extension in extensions) extension.Configure(options);
+                foreach (var extension in extensions)
+                {
+                    extension.Configure(options);
+                    options.AppliedExtensions.Add(extension);
+                }
 
                 var environment = s.GetService<IHostEnvironment>();
                 var directory = environment?.ContentRootPath ?? AppContext.BaseDirectory;
