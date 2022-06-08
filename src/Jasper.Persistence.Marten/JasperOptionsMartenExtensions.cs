@@ -23,7 +23,7 @@ public static class JasperOptionsMartenExtensions
         });
 
         expression.Services.AddSingleton<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
-        expression.Services.AddSingleton<IJasperExtension>(new MartenMiddlewareExtension());
+        expression.Services.AddSingleton<IJasperExtension>(new MartenIntegration());
 
         expression.Services.AddSingleton(s =>
         {

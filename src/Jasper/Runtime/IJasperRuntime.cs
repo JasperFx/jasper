@@ -43,7 +43,8 @@ public interface IJasperRuntime
     IMessageRouter RoutingFor(Type messageType);
 }
 
-public static class JasperRuntimeExtensions
+// This was for testing
+internal static class JasperRuntimeExtensions
 {
     /// <summary>
     /// Shortcut to preview the routing for a single message

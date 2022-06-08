@@ -35,7 +35,7 @@ namespace Jasper.Persistence.Testing.Marten
                 .Default.ImplementationType.ShouldBe(typeof(PostgresqlEnvelopePersistence));
 
             container.Model.For<IJasperExtension>().Instances
-                .Any(x => x.ImplementationType == typeof(MartenMiddlewareExtension))
+                .Any(x => x.ImplementationType == typeof(MartenIntegration))
                 .ShouldBeTrue();
 
             container.GetInstance<PostgresqlSettings>()
@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Testing.Marten
                 .Default.ImplementationType.ShouldBe(typeof(PostgresqlEnvelopePersistence));
 
             container.Model.For<IJasperExtension>().Instances
-                .Any(x => x.ImplementationType == typeof(MartenMiddlewareExtension))
+                .Any(x => x.ImplementationType == typeof(MartenIntegration))
                 .ShouldBeTrue();
 
             container.GetInstance<PostgresqlSettings>()

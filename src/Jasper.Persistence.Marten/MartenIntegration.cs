@@ -4,7 +4,7 @@ using Jasper.Persistence.Sagas;
 
 namespace Jasper.Persistence.Marten;
 
-internal class MartenMiddlewareExtension : IJasperExtension
+internal class MartenIntegration : IJasperExtension
 {
     public void Configure(JasperOptions options)
     {
