@@ -16,6 +16,7 @@ public class TransactionalFrame : Frame
     private bool _createsSession;
     private bool _isUsingPersistence;
     private Variable? _store;
+    private Variable? _factory;
 
     public TransactionalFrame() : base(true)
     {
@@ -45,6 +46,9 @@ public class TransactionalFrame : Frame
         {
             _createsSession = true;
             Session = new Variable(typeof(IDocumentSession), this);
+
+            _factory = chain.FindVariable(typeof(ISessionFactory));
+            yield return _factory;
         }
 
         _isUsingPersistence = chain.IsUsingMartenPersistence();
@@ -70,7 +74,7 @@ public class TransactionalFrame : Frame
             writer.BlankLine();
             writer.WriteComment("Open a new document session");
             writer.Write(
-                $"using var {Session!.Usage} = {_store!.Usage}.{nameof(IDocumentStore.LightweightSession)}();");
+                $"using var {Session!.Usage} = {_factory!.Usage}.{nameof(ISessionFactory.OpenSession)}();");
         }
 
         if (_context != null && _isUsingPersistence)
