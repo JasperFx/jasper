@@ -59,7 +59,7 @@ public class TransactionalFrame : AsyncFrame
     public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
     {
         writer.Write(
-            $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInTransactionAsync)}({_executionContext!.Usage}, {_dbContext!.Usage});");
+            $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInOutboxAsync)}({_executionContext!.Usage}, {_dbContext!.Usage});");
 
         foreach (var loaded in _loadedDocs) loaded.Write(writer, _dbContext);
 

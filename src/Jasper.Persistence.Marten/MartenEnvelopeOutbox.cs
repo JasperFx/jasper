@@ -9,13 +9,13 @@ using Marten.Services;
 
 namespace Jasper.Persistence.Marten;
 
-public class MartenEnvelopeTransaction : IEnvelopeTransaction
+public class MartenEnvelopeOutbox : IEnvelopeOutbox
 {
     private readonly int _nodeId;
     private readonly IDocumentSession _session;
     private readonly PostgresqlSettings _settings;
 
-    public MartenEnvelopeTransaction(IDocumentSession session, IExecutionContext bus)
+    public MartenEnvelopeOutbox(IDocumentSession session, IExecutionContext bus)
     {
         if (bus.Persistence is PostgresqlEnvelopePersistence persistence)
         {
@@ -50,7 +50,7 @@ public class MartenEnvelopeTransaction : IEnvelopeTransaction
         return Task.CompletedTask;
     }
 
-    public Task CopyToAsync(IEnvelopeTransaction other)
+    public Task CopyToAsync(IEnvelopeOutbox other)
     {
         throw new NotSupportedException();
     }

@@ -7,12 +7,12 @@ using Jasper.Transports;
 
 namespace Jasper.Persistence.Database;
 
-public class DatabaseEnvelopeTransaction : IEnvelopeTransaction, IDisposable
+public class DatabaseEnvelopeOutbox : IEnvelopeOutbox, IDisposable
 {
     private readonly IDatabaseBackedEnvelopePersistence _persistence;
     private readonly DbTransaction _tx;
 
-    public DatabaseEnvelopeTransaction(IExecutionContext context, DbTransaction tx)
+    public DatabaseEnvelopeOutbox(IExecutionContext context, DbTransaction tx)
     {
         _persistence = context.Persistence as IDatabaseBackedEnvelopePersistence ??
                        throw new InvalidOperationException(
@@ -48,7 +48,7 @@ public class DatabaseEnvelopeTransaction : IEnvelopeTransaction, IDisposable
         return _persistence.StoreIncoming(_tx, new[] { envelope });
     }
 
-    public Task CopyToAsync(IEnvelopeTransaction other)
+    public Task CopyToAsync(IEnvelopeOutbox other)
     {
         throw new NotSupportedException(
             $"Cannot copy data from an existing Sql Server envelope transaction to {other}. You may have erroneously enlisted an IMessageContext in a transaction twice.");

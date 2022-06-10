@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
 
-public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTransaction
+public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeOutbox
 {
     private readonly IList<Envelope> _scheduled = new List<Envelope>();
     private IChannelCallback? _channel;
@@ -21,25 +21,25 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
     {
     }
 
-    Task IEnvelopeTransaction.PersistAsync(Envelope envelope)
+    Task IEnvelopeOutbox.PersistAsync(Envelope envelope)
     {
         _outstanding.Fill(envelope);
         return Task.CompletedTask;
     }
 
-    Task IEnvelopeTransaction.PersistAsync(Envelope[] envelopes)
+    Task IEnvelopeOutbox.PersistAsync(Envelope[] envelopes)
     {
         _outstanding.Fill(envelopes);
         return Task.CompletedTask;
     }
 
-    Task IEnvelopeTransaction.ScheduleJobAsync(Envelope envelope)
+    Task IEnvelopeOutbox.ScheduleJobAsync(Envelope envelope)
     {
         _scheduled.Fill(envelope);
         return Task.CompletedTask;
     }
 
-    async Task IEnvelopeTransaction.CopyToAsync(IEnvelopeTransaction other)
+    async Task IEnvelopeOutbox.CopyToAsync(IEnvelopeOutbox other)
     {
         await other.PersistAsync(_outstanding.ToArray());
 
@@ -154,7 +154,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeTr
     {
         if (!ReferenceEquals(this, Transaction))
         {
-            await EnlistInTransactionAsync(this);
+            await EnlistInOutboxAsync(this);
         }
     }
 

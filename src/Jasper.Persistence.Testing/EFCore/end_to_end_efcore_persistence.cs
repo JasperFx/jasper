@@ -66,7 +66,7 @@ namespace Jasper.Persistence.Testing.EFCore
             var context = Host.Services.GetRequiredService<SampleDbContext>();
             var messaging = Host.Services.GetRequiredService<IExecutionContext>();
 
-            var transaction = new EFCoreEnvelopeTransaction(context, messaging);
+            var transaction = new EfCoreEnvelopeOutbox(context, messaging);
 
             await transaction.PersistAsync(envelope);
             await context.SaveChangesAndFlushMessagesAsync(messaging);
@@ -107,7 +107,7 @@ namespace Jasper.Persistence.Testing.EFCore
             var context = Host.Services.GetRequiredService<SampleDbContext>();
             var messaging = Host.Services.GetRequiredService<IExecutionContext>();
 
-            var transaction = new EFCoreEnvelopeTransaction(context, messaging);
+            var transaction = new EfCoreEnvelopeOutbox(context, messaging);
 
             await transaction.ScheduleJobAsync(envelope);
             await context.SaveChangesAndFlushMessagesAsync(messaging);

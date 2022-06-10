@@ -60,11 +60,11 @@ public static class JasperEnvelopeEntityFrameworkCoreExtensions
     /// <param name="messaging"></param>
     /// <param name="dbContext"></param>
     /// <returns></returns>
-    public static Task EnlistInTransactionAsync(this IMessagePublisher messaging, DbContext dbContext)
+    public static Task EnlistInOutboxAsync(this IMessagePublisher messaging, DbContext dbContext)
     {
         var executionContext = messaging.As<IExecutionContext>();
-        var transaction = new EFCoreEnvelopeTransaction(dbContext, executionContext);
+        var transaction = new EfCoreEnvelopeOutbox(dbContext, executionContext);
 
-        return executionContext.EnlistInTransactionAsync(transaction);
+        return executionContext.EnlistInOutboxAsync(transaction);
     }
 }

@@ -108,7 +108,7 @@ public class EFCorePersistenceFrameProvider : BaseSagaPersistenceFrameProvider, 
         {
             writer.WriteComment("Enroll the DbContext & IMessagingContext in the outgoing Jasper outbox transaction");
             writer.Write(
-                $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInTransactionAsync)}({_context!.Usage}, {_dbContext!.Usage});");
+                $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInOutboxAsync)}({_context!.Usage}, {_dbContext!.Usage});");
 
             Next?.GenerateCode(method, writer);
         }

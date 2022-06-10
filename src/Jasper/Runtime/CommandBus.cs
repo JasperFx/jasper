@@ -39,7 +39,7 @@ public class CommandBus : ICommandBus
 
     public IEnumerable<Envelope> Outstanding => _outstanding;
 
-    public IEnvelopeTransaction? Transaction { get; protected set; }
+    public IEnvelopeOutbox? Transaction { get; protected set; }
 
 
     public Task InvokeAsync(object message, CancellationToken cancellation = default)
@@ -184,18 +184,18 @@ public class CommandBus : ICommandBus
         await envelope.StoreAndForwardAsync();
     }
 
-    public void StartTransaction(IEnvelopeTransaction transaction)
+    public void StartTransaction(IEnvelopeOutbox outbox)
     {
-        Transaction = transaction;
+        Transaction = outbox;
     }
 
-    public Task EnlistInTransactionAsync(IEnvelopeTransaction transaction)
+    public Task EnlistInOutboxAsync(IEnvelopeOutbox outbox)
     {
         var original = Transaction;
-        Transaction = transaction;
+        Transaction = outbox;
 
         return original == null
             ? Task.CompletedTask
-            : original.CopyToAsync(transaction);
+            : original.CopyToAsync(outbox);
     }
 }

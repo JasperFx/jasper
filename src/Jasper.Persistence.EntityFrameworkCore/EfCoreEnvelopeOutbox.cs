@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace Jasper.Persistence.EntityFrameworkCore;
 
 // ReSharper disable once InconsistentNaming
-public class EFCoreEnvelopeTransaction : IEnvelopeTransaction
+public class EfCoreEnvelopeOutbox : IEnvelopeOutbox
 {
     private readonly DbContext _db;
     private readonly DatabaseSettings _settings;
 
-    public EFCoreEnvelopeTransaction(DbContext db, IExecutionContext messaging)
+    public EfCoreEnvelopeOutbox(DbContext db, IExecutionContext messaging)
     {
         if (messaging.Persistence is IDatabaseBackedEnvelopePersistence persistence)
         {
@@ -80,7 +80,7 @@ public class EFCoreEnvelopeTransaction : IEnvelopeTransaction
         await builder.ExecuteNonQueryAsync(conn, tx: tx);
     }
 
-    public Task CopyToAsync(IEnvelopeTransaction other)
+    public Task CopyToAsync(IEnvelopeOutbox other)
     {
         throw new NotSupportedException();
     }

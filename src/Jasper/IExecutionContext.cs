@@ -33,7 +33,7 @@ public interface IExecutionContext : IMessagePublisher
     /// <summary>
     ///     Current outbox transaction
     /// </summary>
-    IEnvelopeTransaction? Transaction { get; }
+    IEnvelopeOutbox? Transaction { get; }
 
     /// <summary>
     ///     If a messaging context is enlisted in a transaction, calling this
@@ -48,15 +48,15 @@ public interface IExecutionContext : IMessagePublisher
     ///     transaction so that messages are only sent if the transaction succeeds.
     ///     Jasper's "Outbox" support
     /// </summary>
-    /// <param name="transaction"></param>
+    /// <param name="outbox"></param>
     /// <returns></returns>
-    Task EnlistInTransactionAsync(IEnvelopeTransaction transaction);
+    Task EnlistInOutboxAsync(IEnvelopeOutbox outbox);
 
     /// <summary>
     /// Start a new transaction. This is not valid if already enlisted in an envelope transaction
     /// </summary>
-    /// <param name="transaction"></param>
-    void StartTransaction(IEnvelopeTransaction transaction);
+    /// <param name="outbox"></param>
+    void StartTransaction(IEnvelopeOutbox outbox);
 
     /// <summary>
     ///     Opt into using an in memory transaction for the execution context.

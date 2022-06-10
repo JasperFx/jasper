@@ -20,18 +20,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj"/>
-    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
+    <ProjectReference Include="..\Jasper.Persistence.Database\Jasper.Persistence.Database.csproj" />
+    <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0"/>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="obj\Debug\netstandard2.1"/>
+    <Folder Include="obj\Debug\netstandard2.1" />
   </ItemGroup>
 
-  <Import Project="../../Analysis.Build.props"/>
+  <Import Project="../../Analysis.Build.props" />
 </Project>

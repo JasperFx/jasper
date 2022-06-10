@@ -5,9 +5,9 @@ namespace Jasper.Persistence.Database;
 
 public static class DbOutboxExtensions
 {
-    public static Task EnlistInTransactionAsync(this IExecutionContext context, DbTransaction tx)
+    public static Task EnlistInOutboxAsync(this IExecutionContext context, DbTransaction tx)
     {
-        var transaction = new DatabaseEnvelopeTransaction(context, tx);
-        return context.EnlistInTransactionAsync(transaction);
+        var transaction = new DatabaseEnvelopeOutbox(context, tx);
+        return context.EnlistInOutboxAsync(transaction);
     }
 }

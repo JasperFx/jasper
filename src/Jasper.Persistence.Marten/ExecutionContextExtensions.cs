@@ -13,17 +13,17 @@ public static class ExecutionContextExtensions
     /// <param name="context"></param>
     /// <param name="session"></param>
     /// <returns></returns>
-    public static Task EnlistInTransactionAsync(this IExecutionContext context, IDocumentSession session)
+    public static Task EnlistInOutboxAsync(this IExecutionContext context, IDocumentSession session)
     {
-        if (context.Transaction is MartenEnvelopeTransaction)
+        if (context.Transaction is MartenEnvelopeOutbox)
         {
             throw new InvalidOperationException(
-                "This execution context is already enrolled in a Marten Envelope Transaction");
+                "This execution context is already enrolled in a Marten Envelope Outbox");
         }
 
-        var persistence = new MartenEnvelopeTransaction(session, context);
+        var persistence = new MartenEnvelopeOutbox(session, context);
         session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));
 
-        return context.EnlistInTransactionAsync(persistence);
+        return context.EnlistInOutboxAsync(persistence);
     }
 }

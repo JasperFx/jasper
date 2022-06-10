@@ -23,7 +23,7 @@ public class OutboxedSessionFactory
     public IDocumentSession OpenSession(IExecutionContext context)
     {
         var session = _factory.OpenSession();
-        context.StartTransaction(new MartenEnvelopeTransaction(session, context));
+        context.StartTransaction(new MartenEnvelopeOutbox(session, context));
         // TODO -- alternatively put in a listener for event publishing???
 
         session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));

@@ -22,7 +22,7 @@ public class ConfirmReservationHandler
     public async Task Handle(ConfirmReservation command, IDocumentSession session, IExecutionContext publisher)
     {
         // Start the outbox...
-        await publisher.EnlistInTransactionAsync(session);
+        await publisher.EnlistInOutboxAsync(session);
 
         var reservation = await session.LoadAsync<Reservation>(command.ReservationId);
 
