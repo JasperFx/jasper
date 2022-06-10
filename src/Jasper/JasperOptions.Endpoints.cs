@@ -110,9 +110,6 @@ public partial class JasperOptions : IEnumerable<ITransport>, IAsyncDisposable
 
         };
 
-        // TODO -- you need a separate PublishingExpression so that
-        // customizations are only applied to this message type
-
         expression.Message<TMessageType>();
 
         return expression;

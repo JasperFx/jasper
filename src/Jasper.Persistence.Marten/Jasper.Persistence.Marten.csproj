@@ -24,6 +24,9 @@
     <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj" />
     <ProjectReference Include="..\Jasper\Jasper.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Publishing" />
+  </ItemGroup>
 
   <Import Project="../../Analysis.Build.props" />
 </Project>
