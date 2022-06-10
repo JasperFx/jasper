@@ -1,4 +1,5 @@
 ﻿using System;
+using Jasper.Persistence.Marten.Publishing;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Marten;
@@ -21,7 +22,7 @@ public class SessionVariableSource : IVariableSource
 
         if (type == typeof(IDocumentSession))
         {
-            return MethodCall.For<ISessionFactory>(x => x.OpenSession()).ReturnVariable;
+            return MethodCall.For<OutboxedSessionFactory>(x => x.OpenSession(null!)).ReturnVariable;
         }
 
         throw new ArgumentOutOfRangeException(nameof(type));

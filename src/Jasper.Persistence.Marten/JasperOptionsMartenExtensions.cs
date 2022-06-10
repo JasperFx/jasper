@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Jasper.Persistence.Durability;
+using Jasper.Persistence.Marten.Publishing;
 using Jasper.Persistence.Postgresql;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ public static class JasperOptionsMartenExtensions
 
         expression.Services.AddSingleton<IEnvelopePersistence, PostgresqlEnvelopePersistence>();
         expression.Services.AddSingleton<IJasperExtension>(new MartenIntegration());
+        expression.Services.AddSingleton<OutboxedSessionFactory>();
 
         expression.Services.AddSingleton(s =>
         {

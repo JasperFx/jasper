@@ -30,7 +30,7 @@ public class DbTransactionFrame<TTransaction, TConnection> : AsyncFrame
         if (_context != null && _isUsingPersistence)
         {
             writer.Write(
-                $"await {typeof(DbOutboxExtensions).FullName}.{nameof(DbOutboxExtensions.EnlistInTransaction)}({_context.Usage}, {Transaction.Usage});");
+                $"await {typeof(DbOutboxExtensions).FullName}.{nameof(DbOutboxExtensions.EnlistInTransactionAsync)}({_context.Usage}, {Transaction.Usage});");
         }
 
 

@@ -52,6 +52,11 @@ public interface IExecutionContext : IMessagePublisher
     /// <returns></returns>
     Task EnlistInTransactionAsync(IEnvelopeTransaction transaction);
 
+    /// <summary>
+    /// Start a new transaction. This is not valid if already enlisted in an envelope transaction
+    /// </summary>
+    /// <param name="transaction"></param>
+    void StartTransaction(IEnvelopeTransaction transaction);
 
     /// <summary>
     ///     Opt into using an in memory transaction for the execution context.

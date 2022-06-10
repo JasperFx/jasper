@@ -4,6 +4,7 @@ using Oakton.Parsing;
 
 namespace Jasper.Persistence.Marten.Codegen;
 
+// TODO -- this should be in LamarCodeGeneration
 public class MemberAccessVariable : Variable
 {
     private readonly Variable _parent;

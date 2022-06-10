@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jasper.Persistence.Marten.Publishing;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
@@ -14,8 +15,6 @@ public class TransactionalFrame : Frame
     private readonly IList<Variable> _saved = new List<Variable>();
     private Variable? _context;
     private bool _createsSession;
-    private bool _isUsingPersistence;
-    private Variable? _store;
     private Variable? _factory;
 
     public TransactionalFrame() : base(true)
@@ -47,11 +46,9 @@ public class TransactionalFrame : Frame
             _createsSession = true;
             Session = new Variable(typeof(IDocumentSession), this);
 
-            _factory = chain.FindVariable(typeof(ISessionFactory));
+            _factory = chain.FindVariable(typeof(OutboxedSessionFactory));
             yield return _factory;
         }
-
-        _isUsingPersistence = chain.IsUsingMartenPersistence();
 
         // Inside of messaging. Not sure how this is gonna work for HTTP yet
         _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
@@ -74,14 +71,7 @@ public class TransactionalFrame : Frame
             writer.BlankLine();
             writer.WriteComment("Open a new document session");
             writer.Write(
-                $"using var {Session!.Usage} = {_factory!.Usage}.{nameof(ISessionFactory.OpenSession)}();");
-        }
-
-        if (_context != null && _isUsingPersistence)
-        {
-            writer.WriteComment("Enrolling this session with the outbox for the current Jasper envelope context");
-            writer.Write(
-                $"await {typeof(ExecutionContextExtensions).FullName}.{nameof(ExecutionContextExtensions.EnlistInTransactionAsync)}({_context.Usage}, {Session!.Usage});");
+                $"using var {Session!.Usage} = {_factory!.Usage}.{nameof(OutboxedSessionFactory.OpenSession)}({_context!.Usage});");
         }
 
         foreach (var loaded in _loadedDocs) loaded.Write(writer, Session!);
@@ -90,7 +80,9 @@ public class TransactionalFrame : Frame
 
 
         foreach (var saved in _saved)
+        {
             writer.Write($"{Session!.Usage}.{nameof(IDocumentSession.Store)}({saved.Usage});");
+        }
 
         writer.BlankLine();
         writer.WriteComment("Commit the unit of work");

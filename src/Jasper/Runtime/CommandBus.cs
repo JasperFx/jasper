@@ -184,6 +184,11 @@ public class CommandBus : ICommandBus
         await envelope.StoreAndForwardAsync();
     }
 
+    public void StartTransaction(IEnvelopeTransaction transaction)
+    {
+        Transaction = transaction;
+    }
+
     public Task EnlistInTransactionAsync(IEnvelopeTransaction transaction)
     {
         var original = Transaction;
