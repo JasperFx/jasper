@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Jasper.Persistence.Testing.Marten;
 
-public class marten_command_workflow_middleware : IDisposable
+public class marten_command_workflow_middleware : PostgresqlContext, IDisposable
 {
     private readonly IHost theHost;
     private readonly IDocumentStore theStore;

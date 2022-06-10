@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.Marten.Persistence.Operations;
 using Jasper.Persistence.Postgresql;
 using Marten;
-using Marten.Services;
 
 namespace Jasper.Persistence.Marten;
 
@@ -53,27 +51,5 @@ public class MartenEnvelopeOutbox : IEnvelopeOutbox
     public Task CopyToAsync(IEnvelopeOutbox other)
     {
         throw new NotSupportedException();
-    }
-}
-
-public class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
-{
-    private readonly IExecutionContext _bus;
-
-    public FlushOutgoingMessagesOnCommit(IExecutionContext bus)
-    {
-        _bus = bus;
-    }
-
-    public override void AfterCommit(IDocumentSession session, IChangeSet commit)
-    {
-#pragma warning disable VSTHRD002
-        _bus.FlushOutgoingMessagesAsync().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002
-    }
-
-    public override Task AfterCommitAsync(IDocumentSession session, IChangeSet commit, CancellationToken token)
-    {
-        return _bus.FlushOutgoingMessagesAsync();
     }
 }

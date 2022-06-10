@@ -52,7 +52,12 @@ public static class JasperOptionsMartenExtensions
         return descriptor?.ImplementationInstance as MartenIntegration;
     }
 
-    public static MartenServiceCollectionExtensions.MartenConfigurationExpression UseEventPublishing(this MartenServiceCollectionExtensions.MartenConfigurationExpression expression, Action<IEventPublishingOptions> configure)
+    /// <summary>
+    /// Enable publishing of events to Jasper message routing when captured in Marten sessions that are enrolled in a Jasper outbox
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
+    public static MartenServiceCollectionExtensions.MartenConfigurationExpression EventForwardingToJasper(this MartenServiceCollectionExtensions.MartenConfigurationExpression expression)
     {
         var integration = expression.Services.FindMartenIntegration();
         if (integration == null)
@@ -61,19 +66,8 @@ public static class JasperOptionsMartenExtensions
             integration = expression.Services.FindMartenIntegration();
         }
 
-        integration!.PublishingConfiguration = configure;
+        integration!.ShouldPublishEvents = true;
 
         return expression;
-    }
-
-    /// <summary>
-    /// Automatically publish all events that are captured in sessions with the Jasper outbox enabled
-    /// </summary>
-    /// <param name="expression"></param>
-    /// <returns></returns>
-    public static MartenServiceCollectionExtensions.MartenConfigurationExpression PublishAllEvents(
-        this MartenServiceCollectionExtensions.MartenConfigurationExpression expression)
-    {
-        return expression.UseEventPublishing(x => x.PublishAllEvents());
     }
 }

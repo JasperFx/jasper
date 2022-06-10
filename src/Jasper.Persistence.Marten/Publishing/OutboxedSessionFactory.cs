@@ -1,3 +1,4 @@
+using Jasper.Runtime;
 using Marten;
 
 namespace Jasper.Persistence.Marten.Publishing;
@@ -5,10 +6,12 @@ namespace Jasper.Persistence.Marten.Publishing;
 public class OutboxedSessionFactory
 {
     private readonly ISessionFactory _factory;
+    private readonly bool _shouldPublishEvents;
 
-    public OutboxedSessionFactory(ISessionFactory factory)
+    public OutboxedSessionFactory(ISessionFactory factory, IJasperRuntime runtime)
     {
         _factory = factory;
+        _shouldPublishEvents = runtime.TryFindExtension<MartenIntegration>()?.ShouldPublishEvents ?? false;
     }
 
     /// <summary>Build new instances of IQuerySession on demand</summary>
@@ -24,10 +27,13 @@ public class OutboxedSessionFactory
     {
         var session = _factory.OpenSession();
         context.StartTransaction(new MartenEnvelopeOutbox(session, context));
-        // TODO -- alternatively put in a listener for event publishing???
+
+        if (_shouldPublishEvents)
+        {
+            session.Listeners.Add(new PublishIncomingEventsBeforeCommit(context));
+        }
 
         session.Listeners.Add(new FlushOutgoingMessagesOnCommit(context));
-
 
         return session;
     }
