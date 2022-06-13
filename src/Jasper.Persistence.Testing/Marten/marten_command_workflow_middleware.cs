@@ -6,7 +6,6 @@ using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Persistence.Marten;
 using Jasper.Tracking;
-using LamarCodeGeneration;
 using Marten;
 using Marten.Events;
 using Marten.Events.Projections;
@@ -233,6 +232,9 @@ public class LetterAggregate
         DCount++;
     }
 }
+
+
+
 
 public static class SpecialLetterHandler
 {

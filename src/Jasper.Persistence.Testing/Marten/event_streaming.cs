@@ -1,10 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Persistence.Marten;
-using Jasper.Tracking;
 using Jasper.Transports.Tcp;
 using Jasper.Transports.Util;
 using Marten;

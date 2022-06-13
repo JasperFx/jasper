@@ -129,13 +129,20 @@ public class MartenCommandWorkflowAttribute : ModifyChainAttribute
     {
         if (AggregateType != null) return AggregateType;
 
-        var parameters = chain.HandlerCalls().First().Method.GetParameters();
+        var firstCall = chain.HandlerCalls().First();
+        var parameters = firstCall.Method.GetParameters();
         var stream = parameters.FirstOrDefault(x => x.ParameterType.Closes(typeof(IEventStream<>)));
         if (stream != null) return stream.ParameterType.GetGenericArguments().Single();
 
         if (parameters.Length >= 2 && parameters[1].ParameterType.IsConcrete())
         {
             return parameters[1].ParameterType;
+        }
+
+        // Assume that the handler type itself is the aggregate
+        if (firstCall.HandlerType.HasAttribute<MartenCommandWorkflowAttribute>())
+        {
+            return firstCall.HandlerType;
         }
 
         throw new InvalidOperationException(

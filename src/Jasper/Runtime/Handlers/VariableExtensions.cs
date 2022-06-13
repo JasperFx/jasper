@@ -11,6 +11,6 @@ public static class VariableExtensions
 
     public static void MarkAsNotCascaded(this Variable variable)
     {
-        variable.Properties.Add(HandlerChain.NotCascading, true);
+        variable.Properties[HandlerChain.NotCascading] = true;
     }
 }

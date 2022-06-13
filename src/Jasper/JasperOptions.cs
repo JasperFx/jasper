@@ -34,6 +34,12 @@ public sealed partial class JasperOptions
         _serializers = new Dictionary<string, IMessageSerializer>();
 
     private IMessageSerializer? _defaultSerializer;
+    private readonly AdvancedSettings _advanced;
+    private TimeSpan _defaultExecutionTimeout = 60.Seconds();
+    private readonly ServiceRegistry _services = new();
+    private Assembly? _applicationAssembly;
+    private readonly HandlerGraph _handlerGraph = new();
+    private readonly List<IJasperExtension> _appliedExtensions = new();
 
 
     public JasperOptions() : this(null)
@@ -52,7 +58,7 @@ public sealed partial class JasperOptions
 
         establishApplicationAssembly(assemblyName);
 
-        Advanced = new AdvancedSettings(ApplicationAssembly);
+        _advanced = new AdvancedSettings(ApplicationAssembly);
 
         deriveServiceName();
     }
@@ -61,26 +67,41 @@ public sealed partial class JasperOptions
     ///     Advanced configuration options for Jasper message processing,
     ///     job scheduling, validation, and resiliency features
     /// </summary>
-    public AdvancedSettings Advanced { get; }
+    public AdvancedSettings Advanced => _advanced;
 
     /// <summary>
     ///     The default message execution timeout. This uses a CancellationTokenSource
     ///     behind the scenes, and the timeout enforcement is dependent on the usage within handlers
     /// </summary>
-    public TimeSpan DefaultExecutionTimeout { get; set; } = 60.Seconds();
+    public TimeSpan DefaultExecutionTimeout
+    {
+        get => _defaultExecutionTimeout;
+        set => _defaultExecutionTimeout = value;
+    }
 
 
     /// <summary>
     ///     Register additional services to the underlying IoC container
     /// </summary>
-    public ServiceRegistry Services { get; } = new();
+    public ServiceRegistry Services => _services;
 
     /// <summary>
     ///     The main application assembly for this Jasper system
     /// </summary>
-    public Assembly? ApplicationAssembly { get; internal set; }
+    public Assembly? ApplicationAssembly
+    {
+        get => _applicationAssembly;
+        internal set
+        {
+            _applicationAssembly = value;
+            if (Advanced != null)
+            {
+                Advanced.CodeGeneration.ApplicationAssembly = value;
+            }
+        }
+    }
 
-    internal HandlerGraph HandlerGraph { get; } = new();
+    internal HandlerGraph HandlerGraph => _handlerGraph;
 
     /// <summary>
     ///     Options to control how Jasper discovers message handler actions, error
@@ -180,7 +201,7 @@ public sealed partial class JasperOptions
         }
     }
 
-    internal List<IJasperExtension> AppliedExtensions { get; } = new();
+    internal List<IJasperExtension> AppliedExtensions => _appliedExtensions;
 
     internal void ApplyExtensions(IJasperExtension[] extensions)
     {
