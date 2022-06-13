@@ -6,10 +6,12 @@ using IntegrationTests;
 using Jasper.Attributes;
 using Jasper.Persistence.Marten;
 using Jasper.Tracking;
+using LamarCodeGeneration;
 using Marten;
 using Marten.Events;
 using Marten.Events.Projections;
 using Marten.Exceptions;
+using Marten.Internal.Sessions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -33,9 +35,12 @@ public class marten_command_workflow_middleware : PostgresqlContext, IDisposable
             {
                 opts.Connection(Servers.PostgresConnectionString);
                 opts.Projections.SelfAggregate<LetterAggregate>(ProjectionLifecycle.Inline);
-            }).IntegrateWithJasper().ApplyAllDatabaseChangesOnStartup();
+            })
+                .UseLightweightSessions()
+                .IntegrateWithJasper()
+                .ApplyAllDatabaseChangesOnStartup();
 
-            //x.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
+            x.Advanced.CodeGeneration.TypeLoadMode = TypeLoadMode.Auto;
 
         });
 
@@ -261,8 +266,10 @@ public class LetterHandler
     }
 
     // Synchronous, one event, no other services
-    public AEvent Handle(IncrementA command, LetterAggregate aggregate)
+    public AEvent Handle(IncrementA command, LetterAggregate aggregate, IQuerySession session)
     {
+        // Just proving that we're getting the same session that's used in the middleware
+        session.ShouldBeOfType<LightweightSession>();
         command.LetterAggregateId.ShouldBe(aggregate.Id);
         return new AEvent();
     }
@@ -276,8 +283,10 @@ public class LetterHandler
     }
 
     // Synchronous, many events
-    public IEnumerable<object> Handle(IncrementMany command, LetterAggregate aggregate)
+    public IEnumerable<object> Handle(IncrementMany command, LetterAggregate aggregate, IDocumentSession session)
     {
+        // Just proving that we're getting the same session that's used in the middleware
+        session.ShouldBeOfType<LightweightSession>();
         command.LetterAggregateId.ShouldBe(aggregate.Id);
         foreach (var letter in command.Letters)
         {
@@ -302,10 +311,10 @@ public class LetterHandler
         }
     }
 
-    public Task<object[]> Handle(IncrementManyAsync command, LetterAggregate aggregate)
+    public Task<object[]> Handle(IncrementManyAsync command, LetterAggregate aggregate, IDocumentSession session)
     {
         command.LetterAggregateId.ShouldBe(aggregate.Id);
-        var events = Handle(new IncrementMany(command.LetterAggregateId, command.Letters), aggregate);
+        var events = Handle(new IncrementMany(command.LetterAggregateId, command.Letters), aggregate, session);
         return Task.FromResult(events.ToArray());
     }
 

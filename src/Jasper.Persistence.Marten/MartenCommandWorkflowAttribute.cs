@@ -7,11 +7,13 @@ using Baseline.Reflection;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Persistence.Marten.Codegen;
+using Jasper.Persistence.Marten.Publishing;
 using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
+using Marten;
 using Marten.Events;
 using Marten.Events.Aggregation;
 using Marten.Schema;
@@ -54,15 +56,28 @@ public class MartenCommandWorkflowAttribute : ModifyChainAttribute
         AggregateIdMember = DetermineAggregateIdMember(AggregateType, CommandType);
         VersionMember = DetermineVersionMember(AggregateType);
 
-        chain.Middleware.Add(new TransactionalFrame());
-
-        var loader = generateLoadAggregateCode(chain);
+        var sessionCreator = MethodCall.For<OutboxedSessionFactory>(x => x.OpenSession(null!));
+        chain.Middleware.Add(sessionCreator);
 
         var firstCall = handlerChain.Handlers.First();
+
+        var loader = generateLoadAggregateCode(chain);
+        if (AggregateType == firstCall.HandlerType)
+        {
+            chain.Middleware.Add(new MissingAggregateCheckFrame(AggregateType, CommandType, AggregateIdMember, loader.ReturnVariable));
+        }
+
+
+
+        // Use the active document session as an IQuerySession instead of creating a new one
+        firstCall.TrySetArgument(new Variable(typeof(IQuerySession), sessionCreator.ReturnVariable.Usage));
+
         firstCall.ReturnVariable?.MarkAsNotCascaded(); // Don't automatically cascade the methods
         validateMethodSignatureForEmittedEvents(chain, firstCall, handlerChain);
         relayAggregateToHandlerMethod(loader, firstCall);
         captureEventsAndPersistSession(chain, firstCall);
+
+        handlerChain.Postprocessors.Add(MethodCall.For<IDocumentSession>(x => x.SaveChangesAsync(default)));
     }
 
     private void captureEventsAndPersistSession(IChain chain, MethodCall firstCall)
