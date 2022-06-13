@@ -12,6 +12,7 @@ using Marten.Events.Projections;
 using Marten.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -267,9 +268,10 @@ public class LetterHandler
     }
 
     // Asynchronous, one event, no other services
-    public Task<BEvent> Handle(IncrementB command, LetterAggregate aggregate)
+    public Task<BEvent> Handle(IncrementB command, LetterAggregate aggregate, ILogger<LetterHandler> logger)
     {
         command.LetterAggregateId.ShouldBe(aggregate.Id);
+        logger.ShouldNotBeNull();
         return Task.FromResult(new BEvent());
     }
 

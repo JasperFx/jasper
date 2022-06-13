@@ -10,6 +10,7 @@ using Marten.Events;
 using Marten.Events.Projections;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Shouldly;
 using TestingSupport;
 using Xunit;
@@ -144,8 +145,9 @@ public class SelfLetteredAggregate
     }
 
     // Synchronous, one event, no other services
-    public AEvent Handle(IncrementA2 command)
+    public AEvent Handle(IncrementA2 command, ILogger<SelfLetteredAggregate> logger)
     {
+        logger.ShouldNotBeNull();
         return new AEvent();
     }
 
