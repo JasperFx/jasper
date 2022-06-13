@@ -34,4 +34,22 @@ namespace TestMessages
         public int FailThisManyTimes = 0;
         public Guid Id = Guid.NewGuid();
     }
+
+    public class InvokedMessage
+    {
+        public int FailThisManyTimes = 0;
+        public Guid Id = Guid.NewGuid();
+    }
+
+    [RetryNow(typeof(DivideByZeroException), 5, 10, 25)]
+    public class InvokedMessageHandler
+    {
+        public void Handle(InvokedMessage message, Envelope envelope)
+        {
+            if (envelope.Attempts <= message.FailThisManyTimes)
+            {
+                throw new DivideByZeroException();
+            }
+        }
+    }
 }

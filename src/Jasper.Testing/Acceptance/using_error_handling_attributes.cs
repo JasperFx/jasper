@@ -27,7 +27,7 @@ namespace Jasper.Testing.Acceptance
         {
         }
 
-        [RetryNow(typeof(DivideByZeroException))]
+        [RetryNow(typeof(DivideByZeroException), 10, 20, 50)]
         public void Handle(Message2 message)
         {
         }
@@ -42,7 +42,7 @@ namespace Jasper.Testing.Acceptance
         {
         }
 
-        [RetryLater(typeof(DivideByZeroException), 5)]
+        [ScheduleRetry(typeof(DivideByZeroException), 5)]
         public void Handle(Message5 message)
         {
         }

@@ -23,15 +23,15 @@ namespace DocumentationSamples
                     // On a SqlException, reschedule the message to be retried
                     // at 3 seconds, then 15, then 30 seconds later
                     opts.Handlers.OnException<SqlException>()
-                        .RetryLater(3.Seconds(), 15.Seconds(), 30.Seconds());
+                        .ScheduleRetry(3.Seconds(), 15.Seconds(), 30.Seconds());
 
                     // This is another equivalent option
                     opts.Handlers.OnException<TimeoutException>()
                         .TakeActions(x =>
                         {
-                            x.RetryLater(3.Seconds());
-                            x.RetryLater(15.Seconds());
-                            x.RetryLater(30.Seconds());
+                            x.ScheduleRetry(3.Seconds());
+                            x.ScheduleRetry(15.Seconds());
+                            x.ScheduleRetry(30.Seconds());
 
                             // Jasper will automatically move the
                             // message to the dead letter queue
@@ -61,7 +61,7 @@ namespace DocumentationSamples
 
                             // On the 3rd failure, retry the message again after a configurable
                             // cool-off period. This schedules the message
-                            x.RetryLater(15.Seconds());
+                            x.ScheduleRetry(15.Seconds());
 
                             // On the 4th failure, move the message to the dead letter queue
                             x.MoveToErrorQueue();

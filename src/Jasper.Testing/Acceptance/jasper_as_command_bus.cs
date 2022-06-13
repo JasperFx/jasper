@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
+using TestingSupport;
 using TestMessages;
 using Xunit;
 
@@ -36,6 +37,8 @@ namespace Jasper.Testing.Acceptance
                 opts.Services.AddSingleton<ILogger<JasperRuntime>>(this);
 
                 opts.Handlers.OnException<DivideByZeroException>().Requeue();
+
+                opts.Handlers.IncludeType<InvokedMessageHandler>();
 
                 opts.Handlers.Retries.MaximumAttempts = 3;
             });
@@ -117,6 +120,15 @@ namespace Jasper.Testing.Acceptance
             await Publisher.InvokeAsync(message);
 
             theTracker.LastMessage.ShouldBeSameAs(message);
+        }
+
+        [Fact]
+        public async Task use_retry_in_invoke()
+        {
+            configure();
+            var message = new InvokedMessage { FailThisManyTimes = 2 };
+
+            await Publisher.InvokeAsync(message);
         }
 
         [Fact]

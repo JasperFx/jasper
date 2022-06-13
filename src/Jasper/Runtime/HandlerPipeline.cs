@@ -8,7 +8,6 @@ using Jasper.Logging;
 using Jasper.Runtime.Handlers;
 using Jasper.Transports;
 using Microsoft.Extensions.ObjectPool;
-using Polly;
 
 namespace Jasper.Runtime;
 
@@ -24,8 +23,8 @@ public class HandlerPipeline : IHandlerPipeline
 
     private readonly AdvancedSettings _settings;
 
-    private ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>?> _executors =
-        ImHashMap<Type, Func<IExecutionContext, Task<IContinuation>>?>.Empty;
+    private ImHashMap<Type, Executor?> _executors =
+        ImHashMap<Type,Executor?>.Empty;
 
 
     public HandlerPipeline(HandlerGraph graph, IMessageLogger logger,
@@ -93,8 +92,8 @@ public class HandlerPipeline : IHandlerPipeline
 
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryProcessSpanName!, envelope);
 
-        var handler = _graph.HandlerFor(envelope.Message.GetType());
-        if (handler == null)
+        var executor = ExecutorFor(envelope.Message.GetType());
+        if (executor == null)
         {
             // TODO -- mark it as unhandled on the activity
             throw new ArgumentOutOfRangeException(nameof(envelope),
@@ -104,16 +103,16 @@ public class HandlerPipeline : IHandlerPipeline
         var context = _contextPool.Get();
         context.ReadEnvelope(envelope, InvocationCallback.Instance);
 
+        envelope.Attempts = 1;
+
         try
         {
-            await handler.HandleAsync(context, cancellation);
+            while (await executor.InvokeAsync(context, cancellation) == InvokeResult.TryAgain)
+            {
+                envelope.Attempts++;
+            }
 
-            await context.FlushOutgoingMessagesAsync();
-        }
-        catch (Exception? e)
-        {
-            Logger.LogException(e, message: $"Invocation of {envelope} failed!");
-            throw;
+            await MessageSucceededContinuation.Instance.ExecuteAsync(context, _runtime, DateTimeOffset.Now);
         }
         finally
         {
@@ -165,7 +164,7 @@ public class HandlerPipeline : IHandlerPipeline
 
         if (envelope.Message == null)
         {
-            throw new ArgumentNullException("envelope", $"{nameof(envelope.Message)} is missing");
+            throw new ArgumentNullException(nameof(envelope), $"{nameof(envelope.Message)} is missing");
         }
 
         Logger.ExecutionStarted(envelope);
@@ -176,13 +175,13 @@ public class HandlerPipeline : IHandlerPipeline
             return _noHandlers;
         }
 
-        var continuation = await executor(context);
+        var continuation = await executor.ExecuteAsync(context, _cancellation).ConfigureAwait(false);
         Logger.ExecutionFinished(envelope);
 
         return continuation;
     }
 
-    public Func<IExecutionContext, Task<IContinuation>>? ExecutorFor(Type messageType)
+    internal Executor? ExecutorFor(Type messageType)
     {
         if (_executors.TryFind(messageType, out var executor))
         {
@@ -198,86 +197,10 @@ public class HandlerPipeline : IHandlerPipeline
             return null;
         }
 
-        var policy = handler.Chain!.Retries.BuildPolicy(_graph.Retries);
-
-        var timeoutSpan = handler.Chain.DetermineMessageTimeout(_runtime.Options);
-
-        if (policy == null)
-        {
-            executor = async messageContext =>
-            {
-                messageContext.Envelope!.Attempts++;
-
-                using var timeout = new CancellationTokenSource(timeoutSpan);
-                using var combined = CancellationTokenSource.CreateLinkedTokenSource(timeout.Token, _cancellation);
-
-                try
-                {
-                    try
-                    {
-                        await handler.HandleAsync(messageContext, combined.Token);
-                    }
-                    catch (Exception e)
-                    {
-                        MarkFailure(messageContext, e);
-                        return new MoveToErrorQueue(e);
-                    }
-
-                    return MessageSucceededContinuation.Instance;
-                }
-                catch (Exception? e)
-                {
-                    MarkFailure(messageContext, e);
-                    return new MoveToErrorQueue(e);
-                }
-            };
-        }
-        else
-        {
-            executor = async messageContext =>
-            {
-                messageContext.Envelope!.Attempts++;
-
-                try
-                {
-                    var pollyContext = new Context();
-                    pollyContext.Store(messageContext);
-
-
-                    return await policy.ExecuteAsync(async c =>
-                    {
-                        var context = c.MessageContext();
-                        try
-                        {
-                            await handler.HandleAsync(context, _cancellation);
-                        }
-                        catch (Exception? e)
-                        {
-                            MarkFailure(messageContext, e);
-                            throw;
-                        }
-
-                        return MessageSucceededContinuation.Instance;
-                    }, pollyContext);
-                }
-                catch (Exception? e)
-                {
-                    MarkFailure(messageContext, e);
-                    return new MoveToErrorQueue(e);
-                }
-            };
-        }
-
+        executor = Executor.Build(_runtime, _graph, messageType);
 
         _executors = _executors.AddOrUpdate(messageType, executor);
 
         return executor;
-    }
-
-    internal void MarkFailure(IExecutionContext context, Exception ex)
-    {
-        _runtime.MessageLogger.LogException(ex, context.Envelope!.Id, "Failure during message processing execution");
-        _runtime.MessageLogger
-            .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
     }
 }

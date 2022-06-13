@@ -39,9 +39,9 @@ namespace Jasper.Testing.ErrorHandling
 
 
         [Fact]
-        public void retry_later()
+        public void schedule_retry()
         {
-            theFactory.RetryLater(3.Seconds());
+            theFactory.ScheduleRetry(3.Seconds());
 
             theFactory.Build(theEnvelope, theException)
                 .ShouldBe(new ScheduledRetryContinuation(3.Seconds()));
@@ -72,7 +72,7 @@ namespace Jasper.Testing.ErrorHandling
         {
             theFactory.RetryNow();
             theFactory.Requeue();
-            theFactory.RetryLater(5.Seconds());
+            theFactory.ScheduleRetry(5.Seconds());
 
             theEnvelope.Attempts = 1;
             theFactory.Build(theEnvelope, theException)

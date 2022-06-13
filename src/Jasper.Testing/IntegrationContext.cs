@@ -5,6 +5,7 @@ using Jasper.Tracking;
 using Microsoft.Extensions.Hosting;
 using TestingSupport;
 using TestingSupport.Compliance;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.Testing
@@ -16,6 +17,7 @@ namespace Jasper.Testing
             Host = JasperHost.For(x =>
             {
                 x.Handlers.IncludeType<MessageConsumer>();
+                x.Handlers.IncludeType<InvokedMessageHandler>();
             });
         }
 

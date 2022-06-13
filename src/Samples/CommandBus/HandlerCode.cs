@@ -44,7 +44,7 @@ public interface IRestaurantProxy
 
 // What about error handling?
 [LocalQueue("Notifications")]
-[RetryLater(typeof(HttpRequestException), 1, 2, 5)]
+[ScheduleRetry(typeof(HttpRequestException), 1, 2, 5)]
 public class ReservationConfirmedHandler
 {
     public async Task Handle(ReservationConfirmed confirmed, IQuerySession session, IRestaurantProxy restaurant)

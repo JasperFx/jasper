@@ -8,8 +8,6 @@ using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Retry;
 
 namespace Jasper.Runtime.WorkerQueues;
 
@@ -17,7 +15,6 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 {
     private readonly ILogger _logger;
     private readonly IEnvelopePersistence _persistence;
-    private readonly AsyncRetryPolicy _policy;
     private readonly ActionBlock<Envelope> _receiver;
     private readonly AdvancedSettings _settings;
     private IListener? _listener;
@@ -45,18 +42,32 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
                 logger.LogError(e, "Unexpected pipeline invocation error");
             }
         }, endpoint.ExecutionOptions);
+    }
 
-        _policy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryForeverAsync(i => (i * 100).Milliseconds()
-                , (e, _) => _logger.LogError(e, "Unexpected failure"));
+    private async Task executeWithRetriesAsync(Func<Task> action)
+    {
+        var i = 0;
+        while (true)
+        {
+            try
+            {
+                await action().ConfigureAwait(false);
+                return;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected failure");
+                i++;
+                await Task.Delay(i * 100).ConfigureAwait(false);
+            }
+        }
     }
 
     public Uri? Address { get; set; }
 
     public async ValueTask CompleteAsync(Envelope envelope)
     {
-        await _policy.ExecuteAsync(() => _persistence.DeleteIncomingEnvelopeAsync(envelope));
+        await executeWithRetriesAsync(() => _persistence.DeleteIncomingEnvelopeAsync(envelope));
     }
 
     public async ValueTask DeferAsync(Envelope envelope)
@@ -65,14 +76,14 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
         Enqueue(envelope);
 
-        await _policy.ExecuteAsync(() => _persistence.IncrementIncomingEnvelopeAttemptsAsync(envelope));
+        await executeWithRetriesAsync(() => _persistence.IncrementIncomingEnvelopeAttemptsAsync(envelope));
     }
 
     public Task MoveToErrorsAsync(Envelope envelope, Exception exception)
     {
         var errorReport = new ErrorReport(envelope, exception);
 
-        return _policy.ExecuteAsync(() => _persistence.MoveToDeadLetterStorageAsync(new[] { errorReport }));
+        return executeWithRetriesAsync(() => _persistence.MoveToDeadLetterStorageAsync(new[] { errorReport }));
     }
 
     public Task MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
@@ -81,7 +92,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
         envelope.ScheduledTime = time;
         envelope.Status = EnvelopeStatus.Scheduled;
 
-        return _policy.ExecuteAsync(() => _persistence.ScheduleExecutionAsync(new[] { envelope }));
+        return executeWithRetriesAsync(() => _persistence.ScheduleExecutionAsync(new[] { envelope }));
     }
 
     public int QueuedCount => _receiver.InputCount;

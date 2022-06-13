@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Baseline.Dates;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Retry;
 
 namespace Jasper.Persistence.Durability;
 
@@ -17,7 +15,6 @@ public class DurableSendingAgent : SendingAgent
 {
     private readonly ILogger _logger;
     private readonly IEnvelopePersistence _persistence;
-    private readonly AsyncRetryPolicy _policy;
 
     private IList<Envelope> _queued = new List<Envelope>();
 
@@ -28,18 +25,36 @@ public class DurableSendingAgent : SendingAgent
         _logger = logger;
 
         _persistence = persistence;
+    }
 
-        _policy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryForeverAsync(i => (i * 100).Milliseconds()
-                , (e, _) => { _logger.LogError(e, "Failed while trying to enqueue a message batch for retries"); });
+    private async Task executeWithRetriesAsync(Func<Task> action, CancellationToken cancellation)
+    {
+        var i = 0;
+        while (true)
+        {
+            if (cancellation.IsCancellationRequested) return;
+
+            try
+            {
+                await action().ConfigureAwait(false);
+                return;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed while trying to enqueue a message batch for retries");
+                if (cancellation.IsCancellationRequested) return;
+
+                i++;
+                await Task.Delay(i * 100, cancellation).ConfigureAwait(false);
+            }
+        }
     }
 
     public override bool IsDurable { get; } = true;
 
     public override Task EnqueueForRetryAsync(OutgoingMessageBatch batch)
     {
-        return _policy.ExecuteAsync(_ => enqueueForRetryAsync(batch), _settings.Cancellation);
+        return executeWithRetriesAsync(() => enqueueForRetryAsync(batch), _settings.Cancellation);
     }
 
     private async Task enqueueForRetryAsync(OutgoingMessageBatch batch)
@@ -85,13 +100,13 @@ public class DurableSendingAgent : SendingAgent
 
     public override Task MarkSuccessfulAsync(OutgoingMessageBatch outgoing)
     {
-        return _policy.ExecuteAsync(_ => _persistence.DeleteOutgoingAsync(outgoing.Messages.ToArray()),
+        return executeWithRetriesAsync(() => _persistence.DeleteOutgoingAsync(outgoing.Messages.ToArray()),
             _settings.Cancellation);
     }
 
     public override Task MarkSuccessfulAsync(Envelope outgoing)
     {
-        return _policy.ExecuteAsync(_ => _persistence.DeleteOutgoingAsync(outgoing), _settings.Cancellation);
+        return executeWithRetriesAsync(() => _persistence.DeleteOutgoingAsync(outgoing), _settings.Cancellation);
     }
 
     protected override async Task storeAndForwardAsync(Envelope envelope)

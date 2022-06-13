@@ -2,19 +2,19 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Runtime;
-using Polly;
 
 namespace Jasper.ErrorHandling;
 
 public class PolicyExpression
 {
     private readonly RetryPolicyCollection _parent;
-    private PolicyBuilder<IContinuation> _builder;
 
-    internal PolicyExpression(RetryPolicyCollection parent, PolicyBuilder<IContinuation> builder)
+    private IExceptionMatch _match;
+
+    internal PolicyExpression(RetryPolicyCollection parent, IExceptionMatch match)
     {
         _parent = parent;
-        _builder = builder;
+        _match = match;
     }
 
 
@@ -25,7 +25,8 @@ public class PolicyExpression
     /// <returns>The PolicyBuilder instance.</returns>
     public PolicyExpression Or<TException>() where TException : Exception
     {
-        _builder = _builder.Or<TException>();
+        _match = _match.Or(new TypeMatch<TException>());
+
         return this;
     }
 
@@ -34,10 +35,11 @@ public class PolicyExpression
     ///     type.
     /// </summary>
     /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
+    /// <param name="description">Optional description of the filter for diagnostic purposes</param>
     /// <returns>The PolicyBuilder instance.</returns>
-    public PolicyExpression Or(Func<Exception, bool> exceptionPredicate)
+    public PolicyExpression Or(Func<Exception, bool> exceptionPredicate, string description = "User supplied filter")
     {
-        _builder = _builder.Or(exceptionPredicate);
+        _match = _match.Or(new UserSupplied(exceptionPredicate, description));
         return this;
     }
 
@@ -48,11 +50,12 @@ public class PolicyExpression
     /// </summary>
     /// <typeparam name="TException">The type of the exception.</typeparam>
     /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
+    /// <param name="description">Optional description of the filter for diagnostic purposes</param>
     /// <returns>The PolicyBuilder instance.</returns>
-    public PolicyExpression Or<TException>(Func<TException, bool> exceptionPredicate)
+    public PolicyExpression Or<TException>(Func<TException, bool> exceptionPredicate, string description = "User supplied filter")
         where TException : Exception
     {
-        _builder = _builder.Or(exceptionPredicate);
+        _match = _match.Or(new UserSupplied<TException>(exceptionPredicate, description));
         return this;
     }
 
@@ -64,7 +67,7 @@ public class PolicyExpression
     /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
     public PolicyExpression OrInner<TException>() where TException : Exception
     {
-        _builder = _builder.OrInner<TException>();
+        _match.Or(new InnerMatch(new TypeMatch<TException>()));
         return this;
     }
 
@@ -75,11 +78,12 @@ public class PolicyExpression
     ///     <see cref="AggregateException" />.
     /// </summary>
     /// <typeparam name="TException">The type of the exception to handle.</typeparam>
+    /// <param name="description">Optional description of the filter for diagnostic purposes</param>
     /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
-    public PolicyExpression OrInner<TException>(Func<TException, bool> exceptionPredicate)
+    public PolicyExpression OrInner<TException>(Func<TException, bool> exceptionPredicate, string description = "User supplied filter")
         where TException : Exception
     {
-        _builder = _builder.OrInner(exceptionPredicate);
+        _match = _match.Or(new InnerMatch(new UserSupplied<TException>(exceptionPredicate, description)));
         return this;
     }
 
@@ -102,15 +106,8 @@ public class PolicyExpression
     /// <param name="continuationSource"></param>
     public void With(Func<Envelope, Exception, IContinuation> continuationSource)
     {
-        var policy = _builder.FallbackAsync((result, context, _) =>
-        {
-            var envelope = context.MessageContext().Envelope;
-            var continuation = continuationSource(envelope!, result.Exception);
-
-            return Task.FromResult(continuation);
-        }, (_, _) => Task.CompletedTask);
-
-        _parent.Add(policy);
+        var rule = new ExceptionRule(_match.ToFilter(), continuationSource);
+        _parent.Add(rule);
     }
 
     /// <summary>
@@ -148,7 +145,7 @@ public class PolicyExpression
     /// </summary>
     /// <param name="delays"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public void RetryLater(params TimeSpan[] delays)
+    public void ScheduleRetry(params TimeSpan[] delays)
     {
         if (!delays.Any())
         {
@@ -169,6 +166,18 @@ public class PolicyExpression
     {
         With((e, ex) => e.Attempts < maxAttempts
             ? RetryNowContinuation.Instance
+            : new MoveToErrorQueue(ex));
+    }
+
+    /// <summary>
+    /// Retry message failures a define number of times with user-specified cooldown times
+    /// between events. This allows for "exponential backoff" strategies
+    /// </summary>
+    /// <param name="maxAttempts"></param>
+    public void RetryWithCooldown(params TimeSpan[] delays)
+    {
+        With((e, ex) => e.Attempts <= delays.Length
+            ? new RetryNowContinuation(delays[e.Attempts - 1])
             : new MoveToErrorQueue(ex));
     }
 }

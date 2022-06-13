@@ -1,71 +1,65 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Jasper.Runtime;
-using Polly;
 
 namespace Jasper.ErrorHandling;
 
-public class RetryPolicyCollection : IEnumerable<IAsyncPolicy<IContinuation>>
+public class RetryPolicyCollection : IEnumerable<ExceptionRule>
 {
-    private readonly IList<IAsyncPolicy<IContinuation>> _policies = new List<IAsyncPolicy<IContinuation>>();
+    private readonly List<ExceptionRule> _rules = new();
 
     /// <summary>
     ///     Maximum number of attempts allowed for this message type
     /// </summary>
     public int? MaximumAttempts { get; set; }
 
-
-    public IEnumerator<IAsyncPolicy<IContinuation>> GetEnumerator()
-    {
-        return _policies.GetEnumerator();
-    }
-
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
 
-    public void Add(IAsyncPolicy<IContinuation> policy)
+    public IEnumerator<ExceptionRule> GetEnumerator()
     {
-        _policies.Add(policy);
+        return _rules.GetEnumerator();
     }
-
 
     public void Clear()
     {
-        _policies.Clear();
+        _rules.Clear();
     }
 
-    private IEnumerable<IAsyncPolicy<IContinuation>> combine(RetryPolicyCollection parent)
+    internal IEnumerable<ExceptionRule> CombineRules(RetryPolicyCollection parent)
     {
-        foreach (var policy in _policies) yield return policy;
+        foreach (var rule in _rules) yield return rule;
 
         if (MaximumAttempts.HasValue)
         {
-            yield return Policy<IContinuation>.Handle<Exception>().Requeue(MaximumAttempts.Value);
+            yield return BuildRequeueRuleForMaximumAttempts(MaximumAttempts.Value);
         }
 
-        foreach (var policy in parent._policies) yield return policy;
+        foreach (var rule in parent._rules) yield return rule;
 
         if (parent.MaximumAttempts.HasValue)
         {
-            yield return Policy<IContinuation>.Handle<Exception>().Requeue(parent.MaximumAttempts.Value);
+            yield return BuildRequeueRuleForMaximumAttempts(parent.MaximumAttempts.Value);
         }
     }
 
-    internal IAsyncPolicy<IContinuation>? BuildPolicy(RetryPolicyCollection parent)
+    public static ExceptionRule BuildRequeueRuleForMaximumAttempts(int maximumAttempts)
     {
-        var policies = combine(parent).Reverse().ToArray();
-
-        if (policies.Length != 0)
+        return new ExceptionRule(e => true, (e, ex) =>
         {
-            return policies.Length == 1
-                ? policies[0]
-                : Policy.WrapAsync(policies);
-        }
+            if (e.Attempts < maximumAttempts)
+            {
+                return RequeueContinuation.Instance;
+            }
 
-        return null;
+            return new MoveToErrorQueue(ex);
+        });
+    }
+
+    public void Add(ExceptionRule rule)
+    {
+        _rules.Add(rule);
     }
 }

@@ -36,14 +36,14 @@ namespace Jasper.Testing.Runtime.Samples
             using var host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    opts.Handlers.OnException<TimeoutException>().RetryLater(5.Seconds());
+                    opts.Handlers.OnException<TimeoutException>().ScheduleRetry(5.Seconds());
                     opts.Handlers.OnException<SecurityException>().MoveToErrorQueue();
 
                     // You can also apply an additional filter on the
                     // exception type for finer grained policies
                     opts.Handlers
                         .OnException<SocketException>(ex => ex.Message.Contains("not responding"))
-                        .RetryLater(5.Seconds());
+                        .ScheduleRetry(5.Seconds());
                 }).StartAsync();
 
             #endregion
@@ -57,7 +57,6 @@ namespace Jasper.Testing.Runtime.Samples
                 .UseJasper(opts =>
                 {
                     opts.Handlers
-                        // You have all the available exception matching capabilities of Polly
                         .OnException<SqlException>()
                         .Or<InvalidOperationException>(ex => ex.Message.Contains("Intermittent message of some kind"))
                         .OrInner<BadImageFormatException>()
@@ -92,7 +91,7 @@ namespace Jasper.Testing.Runtime.Samples
                     // attempts
                     opts.Handlers
                         .OnException<SqlException>()
-                        .RetryLater(3.Seconds(), 10.Seconds(), 20.Seconds());
+                        .ScheduleRetry(3.Seconds(), 10.Seconds(), 20.Seconds());
 
                     // Put the message back into the queue where it will be
                     // attempted again
@@ -187,8 +186,8 @@ namespace Jasper.Testing.Runtime.Samples
 
     public class AttributeUsingHandler
     {
-        [RetryLater(typeof(IOException), 5)]
-        [RetryNow(typeof(SqlException))]
+        [ScheduleRetry(typeof(IOException), 5)]
+        [RetryNow(typeof(SqlException), 50, 100, 250)]
         [RequeueOn(typeof(InvalidOperationException))]
         [MoveToErrorQueueOn(typeof(DivideByZeroException))]
         [MaximumAttempts(2)]

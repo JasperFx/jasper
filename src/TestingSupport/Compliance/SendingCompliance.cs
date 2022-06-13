@@ -105,7 +105,7 @@ namespace TestingSupport.Compliance
                 .Requeue(3);
 
             options.Handlers.OnException<BadImageFormatException>()
-                .RetryLater(3.Seconds());
+                .ScheduleRetry(3.Seconds());
 
 
             options.Services.AddSingleton(new ColorHistory());
@@ -391,7 +391,7 @@ namespace TestingSupport.Compliance
         }
 
         [Fact]
-        public async Task can_retry_later()
+        public async Task can_schedule_retry()
         {
             throwOnAttempt<BadImageFormatException>(1);
 

@@ -19,7 +19,7 @@ namespace DocumentationSamples
                     // Configure handler policies
                     opts.Handlers
                         .OnException<SqlException>()
-                        .RetryLater(3.Seconds());
+                        .ScheduleRetry(3.Seconds());
 
                     // Declare published messages
                     opts.Publish(x =>

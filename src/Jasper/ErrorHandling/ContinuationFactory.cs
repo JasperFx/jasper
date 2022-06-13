@@ -27,7 +27,7 @@ public interface IContinuationFactory
     ///     Schedule the message for additional attempts with a delay. Use this
     ///     method to effect an "exponential backoff" policy
     /// </summary>
-    void RetryLater(TimeSpan delay);
+    void ScheduleRetry(TimeSpan delay);
 
     /// <summary>
     ///     Immediately move the message to the error queue when the exception
@@ -76,7 +76,7 @@ public class ContinuationFactory : IContinuationFactory
     ///     Schedule the message for additional attempts with a delay. Use this
     ///     method to effect an "exponential backoff" policy
     /// </summary>
-    public void RetryLater(TimeSpan delay)
+    public void ScheduleRetry(TimeSpan delay)
     {
         _sources.Add((_, _) => new ScheduledRetryContinuation(delay));
     }
