@@ -17,22 +17,19 @@ public class Reservation
     public bool IsConfirmed { get; set; }
 }
 
-public class ConfirmReservationHandler
+public static class ConfirmReservationHandler
 {
-    public async Task Handle(ConfirmReservation command, IDocumentSession session, IExecutionContext publisher)
+    [Transactional]
+    public static async Task<ReservationConfirmed> Handle(ConfirmReservation command, IDocumentSession session)
     {
-        // Start the outbox...
-        await publisher.EnlistInOutboxAsync(session);
-
         var reservation = await session.LoadAsync<Reservation>(command.ReservationId);
 
         reservation!.IsConfirmed = true;
 
-        // Watch out, this could be a race condition!!!!
-        await publisher.PublishAsync(new ReservationConfirmed(reservation.Id));
+        session.Store(reservation);
 
-        // We're coming back to this in a bit......
-        await session.SaveChangesAsync();
+        // Kicking out a "cascaded" message
+        return new ReservationConfirmed(reservation.Id);
     }
 }
 
@@ -44,7 +41,7 @@ public interface IRestaurantProxy
 
 // What about error handling?
 [LocalQueue("Notifications")]
-[ScheduleRetry(typeof(HttpRequestException), 1, 2, 5)]
+[RetryNow(typeof(HttpRequestException), 50, 100, 250)]
 public class ReservationConfirmedHandler
 {
     public async Task Handle(ReservationConfirmed confirmed, IQuerySession session, IRestaurantProxy restaurant)
