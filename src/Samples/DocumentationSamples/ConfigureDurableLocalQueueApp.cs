@@ -21,6 +21,20 @@ namespace DocumentationSamples
 
             #endregion
         }
+
+
+        public static async Task ConfigureDefaultQueue()
+        {
+            #region sample_ConfigureDefaultQueue
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.DefaultLocalQueue.MaximumParallelMessages(3);
+                }).StartAsync();
+
+            #endregion
+        }
     }
 
 }
