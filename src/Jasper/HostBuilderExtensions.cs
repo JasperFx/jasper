@@ -138,7 +138,16 @@ public static class HostBuilderExtensions
             services.AddSingleton<ICodeFileCollection>(c =>
             {
                 var handlers = c.GetRequiredService<HandlerGraph>();
-                handlers.Container = (IContainer)c;
+                var container = (IContainer)c;
+                handlers.Container = container;
+
+                if (handlers.Rules == null)
+                {
+                    handlers.CompileAsync(container.GetInstance<JasperOptions>(), container)
+                        .GetAwaiter().GetResult();
+                }
+
+                handlers.Rules ??= c.GetRequiredService<JasperOptions>().Advanced.CodeGeneration;
 
                 return handlers;
             });

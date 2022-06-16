@@ -39,6 +39,15 @@ public interface IRestaurantProxy
     Task NotifyRestaurant(Reservation? reservation);
 }
 
+public class RealRestaurantProxy : IRestaurantProxy
+{
+    public Task NotifyRestaurant(Reservation? reservation)
+    {
+        Console.WriteLine("Sending the reservation to a restaurant");
+        return Task.CompletedTask;
+    }
+}
+
 // What about error handling?
 [LocalQueue("Notifications")]
 [RetryNow(typeof(HttpRequestException), 50, 100, 250)]

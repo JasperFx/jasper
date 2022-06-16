@@ -9,6 +9,11 @@ using Oakton;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.ApplyOaktonExtensions();
+
+builder.Services.AddSingleton<IRestaurantProxy, RealRestaurantProxy>();
+
+// Normal Marten integration
 builder.Services.AddMarten(opts =>
 {
     opts.Connection("Host=localhost;Port=5433;Database=postgres;Username=postgres;password=postgres");

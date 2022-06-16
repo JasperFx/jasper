@@ -13,5 +13,5 @@ public partial class HandlerGraph
 
     string ICodeFileCollection.ChildNamespace { get; } = "JasperHandlers";
 
-    public GenerationRules? Rules { get; private set; }
+    public GenerationRules? Rules { get; internal set; }
 }
