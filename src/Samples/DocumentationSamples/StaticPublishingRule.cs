@@ -1,3 +1,4 @@
+using System.Net.NetworkInformation;
 using Jasper;
 using Jasper.Transports.Tcp;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +16,19 @@ namespace DocumentationSamples
             using var host = Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
+                    // Route a single message type
+                    opts.PublishMessage<PingMessage>()
+                        .ToServerAndPort("server", 1111);
+
+                    // Send every possible message to a TCP listener
+                    // on this box at port 2222
+                    opts.PublishAllMessages().ToPort(2222);
+
+                    // Or use a more fluent interface style
+                    opts.Publish().MessagesFromAssembly(typeof(PingMessage).Assembly)
+                        .ToPort(3333);
+
+                    // Complicated rules, I don't think folks will use this much
                     opts.Publish(rule =>
                     {
                         // Apply as many message matching

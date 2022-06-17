@@ -37,17 +37,26 @@ module.exports = {
 function tableOfContents() {
     return [
       {text: "As Mediator", link: '/guide/mediator'},
-      {text: "As In Memory Message Bus", link: '/guide/in-memory-bus'},
+      {text: "As Command Bus", link: '/guide/in-memory-bus'},
       {
         text: "As Messaging Bus",
         link: '/guide/messaging/',
         children: [
-          {text: "With Rabbit MQ", link: '/guide/messaging/rabbitmq'},
-          {text: "With Pulsar", link: '/guide/messaging/pulsar'},
-          {text: "With TCP", link: '/guide/messaging/tcp'},
-          {text: "MassTransit Interop", link: '/guide/messaging/masstransit'}
-
+          {text: "Endpoint Configuration", link: '/guide/messaging/endpoints'},
+          {text: "Message Routing", link: '/guide/messaging/routing'},
+          {text: "Publishing and Sending", link: '/guide/messaging/pubsub'},
+          {text: "Message Expiration", link: '/guide/messaging/expiration'},
+          {text: "Transports", link: '/guide/messaging/transports/', children: [
+              {text: "With Rabbit MQ", link: '/guide/messaging/rabbitmq'},
+              {text: "With Pulsar", link: '/guide/messaging/pulsar'},
+              {text: "With TCP", link: '/guide/messaging/tcp'},
+              {text: "MassTransit Interop", link: '/guide/messaging/masstransit'}
+            ]},
+          {text: "Scheduled Delivery", link: '/guide/messaging/scheduled'},
+          {text: "Message Correlation", link: '/guide/messaging/correlation'},
         ]
+
+
       },
       {
         text: "Persistent Messaging",
@@ -73,6 +82,7 @@ function tableOfContents() {
 
         ]
       },
+      {text: "Scheduled", link: '/guide/scheduled'},
       {text: "Configuration", link: '/guide/configuration'},
       {text: "Instrumentation, Diagnostics, and Logging", link: '/guide/logging'},
       {text: "Test Automation Support", link: '/guide/testing'},

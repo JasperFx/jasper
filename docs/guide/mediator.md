@@ -40,8 +40,8 @@ builder.Host.UseJasper(opts =>
 {
     // TODO -- use single helper that can read the connection string
     // from the DbContext
-    opts.Extensions.PersistMessagesWithSqlServer(connectionString);
-    opts.Extensions.UseEntityFrameworkCorePersistence();
+    opts.PersistMessagesWithSqlServer(connectionString);
+    opts.UseEntityFrameworkCorePersistence();
 });
 
 // Register the EF Core DbContext
@@ -159,7 +159,7 @@ public class DoItAllMyselfItemController : ControllerBase
     public async Task Create([FromBody] CreateItemCommand command)
     {
         // Start the "Outbox" transaction
-        await _messaging.EnlistInTransaction(_db);
+        await _messaging.EnlistInOutboxAsync(_db);
 
         // Create a new Item entity
         var item = new Item
@@ -192,7 +192,7 @@ public class DoItAllMyselfItemController : ControllerBase
 
         // After the DbContext transaction succeeds, kick out
         // the persisted messages in the context "outbox"
-        await _messaging.SendAllQueuedOutgoingMessages();
+        await _messaging.FlushOutgoingMessagesAsync();
     }
 }
 ```

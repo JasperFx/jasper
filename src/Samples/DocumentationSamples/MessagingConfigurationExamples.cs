@@ -106,13 +106,10 @@ namespace DocumentationSamples
             using var host = await Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
-                    // Publish the message Message2 the "important"
+                    // Publish Message2 messages to the "important"
                     // local queue
-                    opts.Publish(x =>
-                    {
-                        x.Message<Message2>();
-                        x.ToLocalQueue("important");
-                    });
+                    opts.PublishMessage<Message2>()
+                        .ToLocalQueue("important");
                 }).StartAsync();
 
             #endregion

@@ -19,7 +19,7 @@ This makes Jasper relatively easy to use in combination with many of the most po
 
 ## Your First Jasper Application
 
-TODO -- link to the GitHub sample att here
+Also see the full [quickstart code](https://github.com/JasperFx/jasper/tree/master/src/Samples/Quickstart) on GitHub.
 
 For a first application, let's say that we're building a very simple issue tracking system for
 our own usage. If you're reading this web page, it's a pretty safe bet you spend quite a bit of time
@@ -56,35 +56,6 @@ public record CreateIssue(Guid OriginatorId, string Title, string Description);
 public record CreateIssue(Guid OriginatorId, string Title, string Description);
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/CreateIssue.cs#L3-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_commands-1' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
-To keep things dirt simple, all the issue and user storage is just in memory right now
-with singleton scoped repository classes like this:
-
-<!-- snippet: sample_Quickstart_IssueRepository -->
-<a id='snippet-sample_quickstart_issuerepository'></a>
-```cs
-public class IssueRepository
-{
-    private readonly Dictionary<Guid, Issue> _issues = new Dictionary<Guid, Issue>();
-
-    public void Store(Issue issue)
-    {
-        _issues[issue.Id] = issue;
-    }
-
-    public Issue Get(Guid id)
-    {
-        if (_issues.TryGetValue(id, out var issue))
-        {
-            return issue;
-        }
-
-        throw new ArgumentOutOfRangeException(nameof(id), "Issue does not exist");
-    }
-}
-```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/IssueRepository.cs#L3-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_issuerepository' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Let's jump right into the `Program.cs` file of our new web service:
@@ -127,7 +98,7 @@ Alright, let's talk about what's going on up above:
 2. I registered the `UserRepository` and `IssueRepository` services
 3. I created a couple [Minimal API](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis?view=aspnetcore-6.0) endpoints
 
-TODO -- link to jasper as command bus
+See also: [Jasper as Command Bus](/guide/in-memory-bus)
 
 The two Web API functions directly delegate to Jasper's `ICommandBus.InvokeAsync()` method.
 In that method, Jasper will direct the command to the correct handler and invoke that handler
@@ -234,8 +205,4 @@ years before the ASP.Net team got around to it:-)*
 
 This page introduced the basic usage of Jasper, how to wire Jasper
 into .Net applications, and some rudimentary `Handler` usage. There's much more
-of course, so learn more with:
-
-TODO -- add content to learn more
-
-TODO -- link to Handler discovery
+of course, so learn more about [Handlers and Messages](/guide/messages/).
