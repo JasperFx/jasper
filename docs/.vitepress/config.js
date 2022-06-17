@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Jasper',
-    description: 'WHAT SHOULD BE HERE?',
+    description: 'Next Generation Command and Message Bus for .NET',
     head: [],
     themeConfig: {
         logo: null,

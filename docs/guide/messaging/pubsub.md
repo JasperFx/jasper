@@ -62,6 +62,27 @@ public ValueTask PublishMessage(IExecutionContext bus)
 
 TODO -- more text here
 
-snippet: sample_SendMessagesWithDeliveryOptions
+<!-- snippet: sample_SendMessagesWithDeliveryOptions -->
+<a id='snippet-sample_sendmessageswithdeliveryoptions'></a>
+```cs
+public static async Task SendMessagesWithDeliveryOptions(IMessagePublisher publisher)
+{
+    await publisher.PublishAsync(new Message1(), new DeliveryOptions
+    {
+        AckRequested = true,
+        ContentType = "text/xml", // you can do this, but I'm not sure why you'd want to override this
+        DeliverBy = DateTimeOffset.Now.AddHours(1), // set a message expiration date
+        DeliverWithin = 1.Hours(), // convenience method to set the deliver-by expiration date
+        ScheduleDelay = 1.Hours(), // Send this in one hour, or...
+        ScheduledTime = DateTimeOffset.Now.AddHours(1),
+        ResponseType = typeof(Message2) // ask the receiver to send this message back to you if it can
+    }
+        // There's a chained fluent interface for adding header values too
+        .WithHeader("tenant", "one"));
+
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/CustomizingMessageDelivery.cs#L9-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_sendmessageswithdeliveryoptions' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
