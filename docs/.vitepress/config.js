@@ -42,7 +42,7 @@ function tableOfContents() {
         text: "As Messaging Bus",
         link: '/guide/messaging/',
         children: [
-          {text: "Endpoint Configuration", link: '/guide/messaging/endpoints'},
+          {text: "Configuring Messaging", link: '/guide/messaging/configuration'},
           {text: "Message Routing", link: '/guide/messaging/routing'},
           {text: "Publishing and Sending", link: '/guide/messaging/pubsub'},
           {text: "Message Expiration", link: '/guide/messaging/expiration'},

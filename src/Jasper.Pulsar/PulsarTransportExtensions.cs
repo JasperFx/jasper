@@ -27,7 +27,7 @@ namespace Jasper.Pulsar
         /// </summary>
         /// <param name="endpoints"></param>
         /// <param name="configure"></param>
-        public static void ConfigurePulsar(this JasperOptions endpoints, Action<IPulsarClientBuilder> configure)
+        public static void UsePulsar(this JasperOptions endpoints, Action<IPulsarClientBuilder> configure)
         {
             configure(endpoints.PulsarTransport().Builder);
         }
@@ -36,9 +36,9 @@ namespace Jasper.Pulsar
         /// Connect to a local, standalone Pulsar broker at the default port
         /// </summary>
         /// <param name="endpoints"></param>
-        public static void ConnectToLocalPulsar(this JasperOptions endpoints)
+        public static void UsePulsar(this JasperOptions endpoints)
         {
-            endpoints.ConfigurePulsar(_ => {});
+            endpoints.UsePulsar(_ => {});
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Jasper.Pulsar
         /// <param name="publishing"></param>
         /// <param name="topicPath">Pulsar topic of the form "persistent|non-persistent://tenant/namespace/topic"</param>
         /// <returns></returns>
-        public static PulsarSubscriberConfiguration ToPulsar(this IPublishToExpression publishing, string topicPath)
+        public static PulsarSubscriberConfiguration ToPulsarTopic(this IPublishToExpression publishing, string topicPath)
         {
             var transports = publishing.As<PublishingExpression>().Parent;
             var transport = transports.GetOrCreate<PulsarTransport>();

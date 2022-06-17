@@ -23,16 +23,16 @@ namespace Jasper.Pulsar.Tests
 
             await ReceiverIs(opts =>
             {
-                opts.ConnectToLocalPulsar();
+                opts.UsePulsar();
                 opts.ListenToPulsarTopic(topicPath).ProcessInline();
             });
 
             await SenderIs(opts =>
             {
                 var replyPath = $"persistent://public/default/replies-{topic}";
-                opts.ConnectToLocalPulsar();
+                opts.UsePulsar();
                 opts.ListenToPulsarTopic(replyPath).UseForReplies().ProcessInline();
-                opts.PublishAllMessages().ToPulsar(topicPath).SendInline();
+                opts.PublishAllMessages().ToPulsarTopic(topicPath).SendInline();
             });
         }
 

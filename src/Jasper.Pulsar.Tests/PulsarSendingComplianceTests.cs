@@ -25,13 +25,13 @@ namespace Jasper.Pulsar.Tests
             await SenderIs(opts =>
             {
                 var listener = $"persistent://public/default/replies{topic}";
-                opts.ConfigurePulsar(e => {});
+                opts.UsePulsar(e => {});
                 opts.ListenToPulsarTopic(listener).UseForReplies();
             });
 
             await ReceiverIs(opts =>
             {
-                opts.ConnectToLocalPulsar();
+                opts.UsePulsar();
                 opts.ListenToPulsarTopic(topicPath);
             });
         }
