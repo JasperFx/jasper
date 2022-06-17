@@ -1,8 +1,7 @@
 # Jasper as Command Bus
 
 ::: tip
-The in memory queueing feature is automatically enabled for all Jasper applications, and any possible message can
-be enqueued locally.
+The in memory queueing feature is automatically enabled for all known message types within all Jasper applications.
 :::
 
 Jasper can be used as an in-memory, command bus where messages can be processed either immediately or through
@@ -13,11 +12,10 @@ As such, you have a fair amount of control over parallelization and even some ba
 ## Enqueueing Messages Locally
 
 ::: tip warning
-The `IMessagePublisher` and `IExecutionContext` interfaces both implement the `ICommandBus` interface, and truth be told,
-it's just one underlying concrete class and the interfaces just expose narrower or broader options.
+The `IMessagePublisher` and `IExecutionContext` interfaces both implement the `ICommandBus` interface as well.
 :::
 
-You can queue up messages to be executed asynchronously:
+You can queue up messages to be executed locally and asynchronously in a background thread:
 
 <!-- snippet: sample_enqueue_locally -->
 <a id='snippet-sample_enqueue_locally'></a>
@@ -38,7 +36,7 @@ Some things to know about the local queues:
 
 * Local worker queues can be durable, meaning that the enqueued messages are persisted first so that they aren't lost if the application is shut down before they're processed. More on that below.
 * You can use any number of named local queues, and they don't even have to be declared upfront (might want to be careful with that though)
-* Local worker queues utilize Jasper's [error handling](/guide/messages/error-handling) policies to selectively handle any detected exceptions from the [message handlers](http://localhost:5050/guide/messages/handlers).
+* Local worker queues utilize Jasper's [error handling](/guide/messages/error-handling) policies to selectively handle any detected exceptions from the [message handlers](/guide/messages/handlers).
 * You can control the priority and parallelization of each individual local queue
 * Message types can be routed to particular queues
 * [Cascading messages](/guide/messages/handlers.html#cascading-messages-from-actions) can be used with the local queues
@@ -132,6 +130,10 @@ See [Persistent Messaging](http://localhost:5050/guide/persistence/) for more in
 
 
 ## Scheduling Local Execution
+
+:::tip
+If you need the command scheduling to be persistent or be persisted across service restarts, you'll need to enable the [message persistence](/guide/persistence/) within Jasper.
+:::
 
 The "scheduled execution" feature can be used with local execution within the same application. See [Scheduled Messages](/guide/scheduled) for more information. Use the `ICommandBus.ScheduleAsync()` methods like this:
 
