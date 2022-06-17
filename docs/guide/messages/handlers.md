@@ -217,6 +217,24 @@ like in this example:
 <!-- snippet: sample_PingHandler -->
 <a id='snippet-sample_pinghandler'></a>
 ```cs
+using Jasper;
+using Messages;
+using Microsoft.Extensions.Logging;
+
+namespace Ponger;
+
+public class PingHandler
+{
+    public ValueTask Handle(Ping ping, ILogger<PingHandler> logger, IExecutionContext context)
+    {
+        logger.LogInformation("Got Ping #{Number}", ping.Number);
+        return context.RespondToSenderAsync(new Pong { Number = ping.Number });
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/PingPong/Ponger/PingHandler.cs#L1-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_pinghandler' title='Start of snippet'>anchor</a></sup>
+<a id='snippet-sample_pinghandler-1'></a>
+```cs
 public static class PingHandler
 {
     // Simple message handler for the PingMessage message type
@@ -244,5 +262,5 @@ public static class PingHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/PingPongWithRabbitMq/Ponger/PingHandler.cs#L8-L37' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_pinghandler' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/PingPongWithRabbitMq/Ponger/PingHandler.cs#L8-L37' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_pinghandler-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->

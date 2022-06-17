@@ -1,3 +1,5 @@
+#region sample_PongHandler
+
 using Messages;
 
 namespace Pinger;
@@ -9,3 +11,5 @@ public class PongHandler
         logger.LogInformation("Received Pong #{Number}", pong.Number);
     }
 }
+
+#endregion

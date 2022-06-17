@@ -1,3 +1,5 @@
+#region sample_PingHandler
+
 using Jasper;
 using Messages;
 using Microsoft.Extensions.Logging;
@@ -12,3 +14,6 @@ public class PingHandler
         return context.RespondToSenderAsync(new Pong { Number = ping.Number });
     }
 }
+
+
+#endregion
