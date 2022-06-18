@@ -1,13 +1,13 @@
 <!--title:TCP Transport-->
 
 ::: tip warning
- This transport works by sending traffic directly via sockets and may not be acceptable in your IT department policies. It is load tested and is based on the older [LightningQueues](https://github.com/LightningQueues/LightningQueues) project that was happily used in high volume systems, so we feel like it's plenty robust. 
+ This transport works by sending traffic directly via sockets and may not be acceptable in your IT department policies. It is load tested and is based on the older [LightningQueues](https://github.com/LightningQueues/LightningQueues) project that was happily used in high volume systems, so we feel like it's plenty robust.
 :::
 
 
 ## Lightweight, fire and forget
 
-The TCP transport without durability is meant for scenarios where message delivery speed and throughput is important **and** guaranteed delivery is not required. We originally conceived this option as a .Net equivalent to [ZeroMQ](http://zeromq.org/).
+The TCP transport without durability is meant for scenarios where message delivery speed and throughput is important **and** guaranteed delivery is not required. We originally conceived this option as a .NET equivalent to [ZeroMQ](http://zeromq.org/).
 
 To set up a Jasper application to listen for incoming and outgoing messages through the TCP transport in the lightweight mode, see this example:
 
@@ -30,6 +30,6 @@ snippet: sample_DurableTransportApp
 ## Uri Pattern
 
 The `Uri` structure for this transport is `tcp://[server]:[port]` for fire and forget, and `tcp://[server]:[port]/durable`
-if the endpoint should be durable. 
+if the endpoint should be durable.
 
 

@@ -1,21 +1,21 @@
 # Getting Started
 
 ::: tip
-Jasper targets .Net 6 and above.
+Jasper targets .NET 6 and above.
 :::
 
-Jasper is a toolset for command execution and message handling within .Net Core applications.
+Jasper is a toolset for command execution and message handling within .NET Core applications.
 The killer feature of Jasper (we think) is its very efficient command execution pipeline that
 can be used as:
 
 1. An inline "mediator" pipeline for executing commands
-2. An in memory messaging bus and command executor within .Net applications
+2. An in memory messaging bus and command executor within .NET applications
 3. When used in conjunction with low level messaging infrastructure tools like RabbitMQ, a full fledged asynchronous messaging platform for robust communication and interaction between services
 
-Jasper tries very hard to be a good citizen within the .Net ecosystem and even when used in
-"headless" services, uses many elements of ASP.Net Core (logging, configuration, bootstrapping, hosted services)
-rather than try to reinvent something new. Jasper utilizes the new .Net Generic Host for bootstrapping and application teardown.
-This makes Jasper relatively easy to use in combination with many of the most popular .Net tools.
+Jasper tries very hard to be a good citizen within the .NET ecosystem and even when used in
+"headless" services, uses many elements of ASP.NET Core (logging, configuration, bootstrapping, hosted services)
+rather than try to reinvent something new. Jasper utilizes the new .NET Generic Host for bootstrapping and application teardown.
+This makes Jasper relatively easy to use in combination with many of the most popular .NET tools.
 
 ## Your First Jasper Application
 
@@ -141,12 +141,12 @@ Jasper uses a naming convention to automatically discover message handler action
 application assembly, so at no point did we have to explicitly register the
 `CreateIssueHandler` in any way.
 
-We didn't have to use any kind of base class, marker interface, or .Net attribute to designame
+We didn't have to use any kind of base class, marker interface, or .NET attribute to designame
 any part of the behavior of the `CreateIssueHandler` class. In the `Handle()` method, the
 first argument is always assumed to be the message type for the handler action. It's not apparent
 in any of the quick start samples, but Jasper message handler methods can be asynchronous as
 well as synchronous, depending on what makes sense in each handler. So no littering your code
-with extraneous `return Task.Completed;` code like you'd have to with other .Net tools.
+with extraneous `return Task.Completed;` code like you'd have to with other .NET tools.
 
 As I mentioned earlier, we want our API to create an email whenever a new issue is created. In
 this case I'm opting to have that email generation and email sending happen in a second
@@ -192,12 +192,12 @@ handler actions. And also notice that the `Handle()` method takes in an argument
 for `IssueRepository`. Jasper always assumes that the first argument of an handler
 method is the message type, but other arguments are inferred to be services from the
 system's underlying IoC container. By supporting [method injection](https://betterprogramming.pub/the-3-types-of-dependency-injection-141b40d2cebc) like this, Jasper
-is able to cut down on even more of the typical cruft code forced upon you by other .Net tools.
+is able to cut down on even more of the typical cruft code forced upon you by other .NET tools.
 
 *You might be saying that this sounds like the behavior of the conventional method injection
-behavior of Minimal API in .Net 6, and it is. But I'd like to point out that Jasper had this
-years before the ASP.Net team got around to it:-)*
+behavior of Minimal API in .NET 6, and it is. But I'd like to point out that Jasper had this
+years before the ASP.NET team got around to it:-)*
 
 This page introduced the basic usage of Jasper, how to wire Jasper
-into .Net applications, and some rudimentary `Handler` usage. There's much more
+into .NET applications, and some rudimentary `Handler` usage. There's much more
 of course, so learn more about [Handlers and Messages](/guide/messages/).

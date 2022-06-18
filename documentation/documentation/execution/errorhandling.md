@@ -5,7 +5,7 @@ Jasper uses [Polly](https://github.com/App-vNext/Polly) under the covers for the
 will be able to use all of Polly's many, many features with Jasper messaging retries.
 :::
 
-The sad truth is that Jasper will not unfrequently hit exceptions as it processes messages. In all cases, Jasper will first log the exception using the standard ASP.Net Core `ILogger` abstraction. After that, it walks through the configured error handling policies to
+The sad truth is that Jasper will not unfrequently hit exceptions as it processes messages. In all cases, Jasper will first log the exception using the standard ASP.NET Core `ILogger` abstraction. After that, it walks through the configured error handling policies to
 determine what to do next with the message. In the absence of any configured error handling policies,
 Jasper will move any message that causes an exception into the error queue for the
 transport that the message arrived from on the first attempt.

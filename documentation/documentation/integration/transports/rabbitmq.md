@@ -1,12 +1,12 @@
 <!--title:RabbitMQ Transport-->
 
 ::: tip
-Jasper uses the [Rabbit MQ .Net Client](https://www.rabbitmq.com/dotnet.html) to connect to Rabbit MQ. 
+Jasper uses the [Rabbit MQ .NET Client](https://www.rabbitmq.com/dotnet.html) to connect to Rabbit MQ.
 :::
 
 ## Quick Start
 
-If you're starting a fresh project, you can quickly spin up a new Jasper project using Rabbit MQ with a `dotnet new` template. 
+If you're starting a fresh project, you can quickly spin up a new Jasper project using Rabbit MQ with a `dotnet new` template.
 
 First install the `JasperTemplates` nuget like so:
 
@@ -30,7 +30,7 @@ To use [RabbitMQ](http://www.rabbitmq.com/) as a transport with Jasper, first in
 
 snippet: sample_BootstrappingRabbitMQ
 
-See the [Rabbit MQ .Net Client documentation](https://www.rabbitmq.com/dotnet-api-guide.html#connecting) for more information about configuring the `ConnectionFactory` to connect to Rabbit MQ.
+See the [Rabbit MQ .NET Client documentation](https://www.rabbitmq.com/dotnet-api-guide.html#connecting) for more information about configuring the `ConnectionFactory` to connect to Rabbit MQ.
 
 All the calls to `Declare*****()` are optional helpers for auto-provisioning Rabbit MQ objects on application startup. This is probably only useful for development or testing, but it's there.
 

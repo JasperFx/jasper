@@ -5,7 +5,7 @@ All of the code on this page is from [the InMemoryMediator sample project](https
 :::
 
 Recently there's been some renewed interest in the old [Gof Mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) as a way to isolate
-the actual functionality of web services and applications from the mechanics of HTTP request handling. In more concrete terms for .Net developers,
+the actual functionality of web services and applications from the mechanics of HTTP request handling. In more concrete terms for .NET developers,
 a mediator tool allows you to keep MVC Core code ceremony out of your application business logic and service layer. It wasn't the original motivation of the project,
 but Jasper can be used as a full-featured mediator tool.
 
@@ -117,7 +117,7 @@ app.MapPost("/items/create", (CreateItemCommand cmd, ICommandBus bus) => bus.Inv
 <!-- endSnippet -->
 
 There isn't much to this code -- and that's the entire point! When Jasper registers itself into
-a .Net Core application, it adds the `ICommandBus` service to the underlying system IoC container
+a .NET Core application, it adds the `ICommandBus` service to the underlying system IoC container
 so it can be injected into controller classes or Minimal API endpoint as shown above.The `ICommandBus.InvokeAsync(message)`
 method takes the message passed in, finds the correct execution path for the message type, and
 executes the correct Jasper handler(s) as well as any of the registered [Jasper middleware](/guide/messages/middleware).

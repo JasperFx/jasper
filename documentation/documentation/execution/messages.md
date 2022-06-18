@@ -1,7 +1,7 @@
 <!--title:Reading, Writing, and Versioning Messages, Commands, and Events-->
 
 Jasper ultimately needs to be able to dehydrate any published message to a `byte[]` then ship that information along with the related header
-metadata to the receiving application that will ultimately hydrate that `byte[]` back to a .Net object. Out of the box, Jasper comes with support for using [Newtonsoft.Json](https://www.newtonsoft.com/json) to serialize and deserialize objects for
+metadata to the receiving application that will ultimately hydrate that `byte[]` back to a .NET object. Out of the box, Jasper comes with support for using [Newtonsoft.Json](https://www.newtonsoft.com/json) to serialize and deserialize objects for
 transport across the wire. The easiest, and likely starting point, for using Jasper for messaging is to use a shared DTO (Data Transfer Object) library that
 exposes the shared message types that can easily be serialized and deserialized from and to Json.
 
@@ -24,8 +24,8 @@ First though, it might help to understand how Jasper reads the message when it r
 1. It first looks at the `message-type` header in the incoming `Envelope`
 1. Using that value, it finds all the available `IMessageSerializer` strategies that match that message type, and
    tries to select one that matches the value of the `content-type` header
-1. Invoke the matching reader to read the raw `byte[]` data into a .Net object
-1. Now that you know the actual .Net type for the message, select the proper message handler and off it goes
+1. Invoke the matching reader to read the raw `byte[]` data into a .NET object
+1. Now that you know the actual .NET type for the message, select the proper message handler and off it goes
 
 ## Message Type Identity
 
@@ -33,7 +33,7 @@ Let's say that you have a basic message structure like this:
 
 snippet: sample_PersonBorn1
 
-By default, Jasper will identify this type by just using the .Net full name like so:
+By default, Jasper will identify this type by just using the .NET full name like so:
 
 snippet: sample_ootb_message_alias
 
@@ -86,7 +86,7 @@ snippet: sample_RegisteringCustomReadersAndWriters
 
 ## Custom Serializers
 
-To use additional .Net serializers, you just need to create a new implementation of the `Jasper.Conneg.ISerializerFactory` interface and register
+To use additional .NET serializers, you just need to create a new implementation of the `Jasper.Conneg.ISerializerFactory` interface and register
 that into the IoC service container.
 
 snippet: sample_ISerializer

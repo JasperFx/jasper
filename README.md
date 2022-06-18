@@ -7,19 +7,19 @@ Jasper
 
 The [documentation is published here](http://jasperfx.github.io/).
 
-Jasper is a next generation application development framework for distributed server side development in .Net. At the moment, Jasper can be used as:
+Jasper is a next generation application development framework for distributed server side development in .NET. At the moment, Jasper can be used as:
 
 1. An in-memory command runner
 1. A robust, but lightweight asynchronous messaging framework (call it a service bus if you have to, but know that there's no centralized broker)
-1. An alternative for authoring HTTP services within ASP.Net Core
+1. An alternative for authoring HTTP services within ASP.NET Core
 1. A dessert topping (just kidding)
 
-In all cases, Jasper can be used by itself or as an addon to an ASP.Net Core application. As much as possible, Jasper tries to leverage existing ASP.Net Core infrastructure.
+In all cases, Jasper can be used by itself or as an addon to an ASP.NET Core application. As much as possible, Jasper tries to leverage existing ASP.NET Core infrastructure.
 
 
 ## Working with the Code
 
-The main solution file is `Jasper.sln`, and you should be good to go to simply open the code up in Rider, Visual Studio.Net, or VS Code and just go. In its current form, all the integration tests, including the Storyteller specifications, require [Docker](https://www.docker.com/) to be running on your development machine. For the docker dependencies (Postgresql, Rabbit MQ, Sql Server, etc.), run:
+The main solution file is `Jasper.sln`, and you should be good to go to simply open the code up in Rider, Visual Studio.NET, or VS Code and just go. In its current form, all the integration tests, including the Storyteller specifications, require [Docker](https://www.docker.com/) to be running on your development machine. For the docker dependencies (Postgresql, Rabbit MQ, Sql Server, etc.), run:
 
 ```bash
 docker compose up -d
@@ -58,7 +58,7 @@ The basic steps:
 1. Start a new project named *Jasper.{transport name}* and a matching *Jasper.{transport name}.Testing* project under the `/src` folder of the repository,
   but under the logical `/Transports` folder of the solution please.
 
-1. Add a project reference to Jasper itself and a Nuget reference to the .Net adapter library for that transport. E.g., *DotPulsar* or *RabbitMQ.Client*
+1. Add a project reference to Jasper itself and a Nuget reference to the .NET adapter library for that transport. E.g., *DotPulsar* or *RabbitMQ.Client*
 1. You'll need a custom subclass for `Endpoint` that represents either an address you're publishing to and/or listening for incoming messages. This will need to parse a custom Uri
   structure for the transport that identifies the transport type (the Uri scheme) and common properties like queue or topic names. See [RabbitMqEndpoint](https://github.com/JasperFx/jasper/blob/master/src/Jasper.RabbitMQ/Internal/RabbitMqEndpoint.cs) for an example
 1. Add a custom implementation of the `IListener` interface
