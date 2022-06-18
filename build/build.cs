@@ -16,7 +16,7 @@ namespace build
     internal class Build
     {
         private const string BUILD_VERSION = "6.0.0";
-        private const string GITHUB_REPO = "https://github.com/jasperfx/jasper.git";
+        private const string GITHUB_REPO = "https://github.com/jasperfx/jasperfx.github.io.git";
 
         private const string Forwards = @"
 getting_started
@@ -181,7 +181,7 @@ documentation/compilation/frames/injected-fields/
             Target("publish-docs", DependsOn("docs-build"), () =>
             {
                 var docTargetDir = "doc-target";
-                var branchName = "gh-pages";
+                var branchName = "master";
                 Run("git", $"clone -b {branchName} {GITHUB_REPO} {InitializeDirectory(docTargetDir)}");
                 // if you are not using git --global config, un-comment the block below, update and use it
                 // Run("git", "config user.email user_email", docTargetDir);
