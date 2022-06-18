@@ -1,6 +1,6 @@
 <!--title:Writing Message Handlers -->
 
-Jasper purposely eschews the typical `IHandler<T>` approach that most .Net messaging frameworks take in favor of a more flexible
+Jasper purposely eschews the typical `IHandler<T>` approach that most .NET messaging frameworks take in favor of a more flexible
 model that relies on naming conventions. This might throw some users that are used to being guided by implementing an expected interface
 or base class, but it allows Jasper to be much more flexible and reduces code noise.
 
@@ -70,7 +70,7 @@ See <[linkto:documentation/ioc]> for more information about how Jasper integrate
 
 ## Method Injection
 
-Similar to ASP.Net MVC Core, Jasper supports the concept of [method injection](https://www.martinfowler.com/articles/injection.html) in handler methods where you can just accept additional
+Similar to ASP.NET MVC Core, Jasper supports the concept of [method injection](https://www.martinfowler.com/articles/injection.html) in handler methods where you can just accept additional
 arguments that will be passed into your method by Jasper when a new message is being handled.
 
 Below is an example action method that takes in a dependency on an `IDocumentSession` from [Marten](http://jasperfx.github.io/marten):
@@ -101,7 +101,7 @@ See <[linkto:documentation/integration/customizing_envelopes]> for more informat
 ## Using the Current IMessageContext
 
 If you want to access or use the current `IMessageContext` for the message being handled to send response messages
-or maybe to enqueue local commands within the current outbox scope, just take in `IMessageContext` as a method argument 
+or maybe to enqueue local commands within the current outbox scope, just take in `IMessageContext` as a method argument
 like in this example:
 
 snippet: sample_PingHandler

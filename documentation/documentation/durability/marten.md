@@ -57,7 +57,7 @@ before being sent to the outgoing transports. The purpose of this pattern is to 
 between the outgoing messages and the current transaction without being forced to use distributed, two phase transactions
 between your application database and the outgoing queues like [RabbitMQ](https://www.rabbitmq.com/).
 
-To see the outbox pattern in action, consider this [ASP.Net Core MVC controller](https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/adding-controller?view=aspnetcore-2.1) action method:
+To see the outbox pattern in action, consider this [ASP.NET Core MVC controller](https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/adding-controller?view=aspnetcore-2.1) action method:
 
 snippet: sample_using_outbox_with_marten_in_mvc_action
 
@@ -105,8 +105,8 @@ The saga state documents are all persisted as Marten documents.
 By default, using `[Transactional]` or just injecting an `IDocumentSession` with the Marten integration will create a lightweight session in Marten using the `IDocumentStore.LightweightSession()`
 call. However, [Marten](http://jasperfx.github.io/marten) has many other options to create sessions
 with different transaction levels, heavier identity map behavior, or by attaching custom listeners. To allow you to use the full range of Marten behavior, you can choose to override the mechanics of how
-a session is opened for any given message handler by just placing a method called `OpenSession()` on 
-your handler class that returns an `IDocumentSession`. If Jasper sees that method exists, it will call that method to create your session. 
+a session is opened for any given message handler by just placing a method called `OpenSession()` on
+your handler class that returns an `IDocumentSession`. If Jasper sees that method exists, it will call that method to create your session.
 
 Here's an example from the tests:
 

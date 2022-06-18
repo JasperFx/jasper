@@ -15,7 +15,7 @@ Jasper internally uses the concept of semantic logging for messaging events with
 
 snippet: sample_IMessageLogger
 
-The default implementation just writes formatted string messages to the built in ASP.Net Core `ILogger` mechanisms. You can of course substitute in your own custom logging to track more structured logging by writing your own custom `IMessageLogger`. The easiest way to do that is to subclass `MessageLogger` and just intercept the events you care about as in this example:
+The default implementation just writes formatted string messages to the built in ASP.NET Core `ILogger` mechanisms. You can of course substitute in your own custom logging to track more structured logging by writing your own custom `IMessageLogger`. The easiest way to do that is to subclass `MessageLogger` and just intercept the events you care about as in this example:
 
 snippet: sample_CustomMessageLogger
 

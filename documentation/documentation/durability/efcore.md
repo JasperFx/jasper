@@ -2,16 +2,16 @@
 
 The `Jasper.Persistence.EntityFrameworkCore` Nuget can be used with a Jasper application to add support for
 using [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/) in the Jasper:
- 
-* `[Transactional]` middleware 
+
+* `[Transactional]` middleware
 * [Outbox](https://microservices.io/patterns/data/transactional-outbox.html) support
 * <[linkto:documentation/execution/sagas;title=Saga persistence]>
 
 Note that you will **also** need
 to use one of the database backed message persistence mechanisms like <[linkto:documentation/durability/sqlserver;title=Jasper.Persistence.SqlServer]> or <[linkto:documentation/durability/postgresql;title=Jasper.Persistence.Postgresql]> in conjunction with the EF Core integration.
 
-As an example of using the EF Core integration with Sql Server inside a Jasper application, 
-see the [the InMemoryMediator sample project](https://github.com/JasperFx/JasperSamples/tree/master/InMemoryMediator). 
+As an example of using the EF Core integration with Sql Server inside a Jasper application,
+see the [the InMemoryMediator sample project](https://github.com/JasperFx/JasperSamples/tree/master/InMemoryMediator).
 
 Assuming that `Jasper.Persistence.EntityFrameworkCore` is referenced by your application, here's a custom
 [DbContext]() type from the [sample project](https://github.com/JasperFx/JasperSamples/tree/master/InMemoryMediator):
@@ -25,7 +25,7 @@ the `ItemsDbContext` objects to enroll in Jasper outbox transactions.
 
 ::: tip warning
 You will have to explicitly opt into a specific database persistence for the messaging **and**
-also explicitly add in the EF Core transactional support. 
+also explicitly add in the EF Core transactional support.
 :::
 
 Now, to wire up EF Core into our Jasper application and add Sql Server-backed message persistence, use
@@ -37,10 +37,10 @@ There's a couple things to note in the code above:
 
 * The call to `Extensions.PersistMessagesWithSqlServer()` sets up the Sql Server backed message persistence
 * The `AddDbContext<ItemsDbContext>()` call is just the normal EF Core set up, with one difference. **It's
-  a possibly significant performance optimization to mark `optionsLifetime` as singleton scoped** because 
+  a possibly significant performance optimization to mark `optionsLifetime` as singleton scoped** because
   Jasper will be able to generate more efficient handler pipeline code for message handlers that use
   your EF Core `DbContext`.
-  
+
 ## Transactional Support and Outbox Usage
 
 First, let's look at using the EF Core-backed outbox usage in the following MVC controller method that:
@@ -68,11 +68,11 @@ handler that takes advantage of the `[Transactional]` middleware:
 
 snippet: sample_InMemoryMediator_Items
 
-The code above effectively does the same thing as the `DoItAllMyselfItemController` shown earlier, 
+The code above effectively does the same thing as the `DoItAllMyselfItemController` shown earlier,
 but Jasper is generating some middleware code around the `ItemHandler.Handle()` method to enlist
 the scoped `IMessageContext` object into the scoped `ItemsDbContext` unit of work. That same middleware is
 coming behind the call to `Item.Handler()` and both saving the changes in `ItemsDbContext` and pushing out
-any newly persisted cascading messages. 
+any newly persisted cascading messages.
 
 
 
@@ -86,4 +86,4 @@ as the <[linkto:documentation/execution/sagas;title=saga persistence mechanism]>
 1. Jasper analyzes the dependency tree of your `StatefulSagaOf<TState>` handler class for a Lamar dependency that inherits
    from `DbContext`, and if it finds exactly 1 dependency, that is assumed to be used for persisting the state
 1. All saga message handlers are automatically wrapped with the transactional middleware
-1. You will have to have EF Core mapping for the .Net state type of your saga handler
+1. You will have to have EF Core mapping for the .NET state type of your saga handler

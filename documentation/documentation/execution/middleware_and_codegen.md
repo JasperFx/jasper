@@ -20,7 +20,7 @@ Likewise, for the message handling:
 * `MessageHandler` is the common base class for the runtime-generated classes that handle messages at runtime. These classes are generated based
    on the configuration of its matching `HandlerChain`
 * `HandlerGraph` is a collection of all the `HandlerChain` objects for the system
-* `IHandlerPolicy` provides a facility to allow for user-defined conventions or policies by directly modifying the `HandlerGraph` model before the 
+* `IHandlerPolicy` provides a facility to allow for user-defined conventions or policies by directly modifying the `HandlerGraph` model before the
   `MessageHandler` classes are generated
 
 Jasper's internal middleware is the [Frame model](https://jasperfx.github.io/lamar/documentation/compilation/frames/) from the closely related [Lamar](https://jasperfx.github.io/lamar) project. During application bootstrapping, Jasper builds up both the `RouteGraph` and `HandlerGraph` models that essentially model a collection of Lamar `Frame` objects that get compiled into the `RouteHandler` and `MessageHandler` classes at runtime.
@@ -32,11 +32,11 @@ snippet: sample_IChain
 
 For the HTTP routes in `Jasper.Http`:
 
-* `RouteChain` is the configuration-time model for the Url pattern, the endpoint action method that executes the route, and any configured middleware 
+* `RouteChain` is the configuration-time model for the Url pattern, the endpoint action method that executes the route, and any configured middleware
    or post processing operations
 * `RouteHandler` is the common base class for handling the HTTP routes. These classes are generated based on the configuration of its matching `RouteChain`
 * `RouteGraph` is a collection of all the `RouteChain` objects for the system
-* `IRoutePolicy` provides a facility to allow for user-defined conventions or policies by directly modifying the `RouteGraph` model before the 
+* `IRoutePolicy` provides a facility to allow for user-defined conventions or policies by directly modifying the `RouteGraph` model before the
   `RouteHandler` classes are generated
 
 
@@ -47,7 +47,7 @@ For the HTTP routes in `Jasper.Http`:
 This whole code compilation model is pretty new and there aren't enough examples yet. Feel very free to ask questions in the Gitter room linked in the top bar of this page.
 :::
 
-Jasper supports the "Russian Doll" model of middleware, similar in concept to ASP.Net Core but very different in implementation. Jasper's middleware uses runtime code generation and compilation with [LamarCompiler](https://jasperfx.github.io/lamar/documentation/compilation/). What this means is that "middleware" in Jasper is code that is woven right into the message and route handlers.
+Jasper supports the "Russian Doll" model of middleware, similar in concept to ASP.NET Core but very different in implementation. Jasper's middleware uses runtime code generation and compilation with [LamarCompiler](https://jasperfx.github.io/lamar/documentation/compilation/). What this means is that "middleware" in Jasper is code that is woven right into the message and route handlers.
 
 As an example, let's say you want to build some custom middleware that is a simple performance timing of either HTTP route execution or message execution. In essence, you want to inject code like this:
 
@@ -63,21 +63,21 @@ snippet: sample_StopwatchFrame
 
 Okay, great, but the next question is "how do I stick this middleware on routes or message handlers?". You've got three options:
 
-1. Use custom attributes 
+1. Use custom attributes
 1. Use a custom `IRoutePolicy` or `IHandlerPolicy` class
-1. Expose a static `Configure(chain)` method on handler classes 
+1. Expose a static `Configure(chain)` method on handler classes
 
 Even though one of the original design goals of FubuMVC and now Jasper was to eliminate or at least reduce the number of attributes users had to spew out into their application code, let's start with using an attribute.
 
 ## Custom Attributes
 
-To attach our `StopwatchFrame` as middleware to any route or message handler, we can write a custom attribute based on Jasper's 
+To attach our `StopwatchFrame` as middleware to any route or message handler, we can write a custom attribute based on Jasper's
 `ModifyChainAttribute` class as shown below:
 
 snippet: sample_StopwatchAttribute
 
 This attribute can now be placed either on a specific HTTP route endpoint method or message handler method to **only** apply to
-that specific action, or it can be placed on a `Handler` or `Endpoint` class to apply to all methods exported by that type. 
+that specific action, or it can be placed on a `Handler` or `Endpoint` class to apply to all methods exported by that type.
 
 Here's an example:
 
