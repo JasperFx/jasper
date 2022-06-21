@@ -1,23 +1,23 @@
+using Baseline.Dates;
 using Jasper;
 using Jasper.RabbitMQ;
+using Oakton;
 
-IHost host = Host.CreateDefaultBuilder(args)
+return await Host.CreateDefaultBuilder(args)
     .UseJasper(opts =>
     {
-        opts
-            .ListenToRabbitQueue("pings")
-
-            // With the Rabbit MQ transport, you probably
-            // want to explicitly designate a specific queue or topic
-            // for replies
-            .UseForReplies();
+        // Going to listen to a queue named "pings", but disregard any messages older than
+        // 15 seconds
+        opts.ListenToRabbitQueue("pings", queue => queue.TimeToLive(15.Seconds()));
 
         // Configure Rabbit MQ connections and optionally declare Rabbit MQ
         // objects through an extension method on JasperOptions.Endpoints
-        opts.UseRabbitMq().AutoProvision();
-
-        opts.UseRabbitMq();
+        opts.UseRabbitMq() // This is short hand to connect locally
+            .DeclareExchange("pings", exchange =>
+            {
+                // Also declares the queue too
+                exchange.BindQueue("pings");
+            })
+            .AutoProvision();
     })
-    .Build();
-
-await host.RunAsync();
+    .RunOaktonCommands(args);

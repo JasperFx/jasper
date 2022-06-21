@@ -15,7 +15,28 @@ builder.Host.UseJasper(opts =>
     opts.PublishAllMessages()
         .ToRabbitQueue("issue_events");
 
-    opts.UseRabbitMq()
+    opts.UseRabbitMq(factory =>
+        {
+            // Just connecting with defaults, but showing
+            // how you *could* customize the connection to Rabbit MQ
+            factory.HostName = "localhost";
+            factory.Port = 5672;
+
+            // Other possibilities
+            // factory.UserName = builder.Configuration["rabbit_user"];
+            // factory.Password = builder.Configuration["rabbit_password"];
+
+        })
+        // Let Jasper try to build all known Rabbit MQ objects as configured
+        .AutoProvision()
+
+        // Think this is mostly just good for testing,
+        // but purge all known queues at start up time
+        .AutoPurgeOnStartup();
+
+    // Or, if you prefer
+    var rabbitUri = new Uri(builder.Configuration["rabbit_uri"]);
+    opts.UseRabbitMq(rabbitUri)
         .AutoProvision()
         .AutoPurgeOnStartup();
 
@@ -40,4 +61,4 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
 
-app.RunOaktonCommandsSynchronously(args);
+await app.RunOaktonCommands(args);
