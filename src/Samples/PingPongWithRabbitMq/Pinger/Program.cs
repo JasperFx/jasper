@@ -1,3 +1,4 @@
+using System.Net.NetworkInformation;
 using Jasper;
 using Jasper.RabbitMQ;
 using Oakton;
@@ -15,7 +16,7 @@ return await Host.CreateDefaultBuilder(args)
             .UseForReplies();
 
         // Publish messages to the pings queue
-        opts.PublishAllMessages().ToRabbitExchange("pings");
+        opts.PublishMessage<Ping>().ToRabbitExchange("pings");
 
         // Configure Rabbit MQ connection properties programmatically
         // against a ConnectionFactory
@@ -24,7 +25,10 @@ return await Host.CreateDefaultBuilder(args)
             // Using a local installation of Rabbit MQ
             // via a running Docker image
             rabbit.HostName = "localhost";
-        }).AutoProvision();
+        })
+            // Directs Jasper to build any declared queues, exchanges, or
+            // bindings with the Rabbit MQ broker as part of bootstrapping time
+            .AutoProvision();
 
         // This will send ping messages on a continuous
         // loop

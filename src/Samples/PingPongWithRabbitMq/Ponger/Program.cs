@@ -18,6 +18,10 @@ return await Host.CreateDefaultBuilder(args)
                 // Also declares the queue too
                 exchange.BindQueue("pings");
             })
-            .AutoProvision();
+            .AutoProvision()
+
+            // Option to blow away existing messages in
+            // all queues on application startup
+            .AutoPurgeOnStartup();
     })
     .RunOaktonCommands(args);
