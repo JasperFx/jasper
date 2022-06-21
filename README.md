@@ -5,7 +5,7 @@ Jasper
 [![Build status](https://ci.appveyor.com/api/projects/status/o23fp3diks7024x9?svg=true)](https://ci.appveyor.com/project/jasper-ci/jasper)
 
 
-The [documentation is published here](http://jasperfx.github.io/documentation).
+The [documentation is published here](http://jasperfx.github.io/).
 
 Jasper is a next generation application development framework for distributed server side development in .Net. At the moment, Jasper can be used as:
 
