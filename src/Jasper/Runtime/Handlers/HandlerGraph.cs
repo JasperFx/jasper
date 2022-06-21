@@ -42,8 +42,6 @@ public partial class HandlerGraph : ICodeFileCollection, IHandlerConfiguration
         // All of this is to seed the handler and its associated retry policies
         // for scheduling outgoing messages
         _handlers = _handlers.AddOrUpdate(typeof(Envelope), new ScheduledSendEnvelopeHandler(this));
-
-        GlobalPolicy<SagaFramePolicy>();
     }
 
     internal IContainer? Container { get; set; }
@@ -210,7 +208,7 @@ public partial class HandlerGraph : ICodeFileCollection, IHandlerConfiguration
 
             _calls.Where(x => x.MessageType.IsConcrete())
                 .GroupBy(x => x.MessageType)
-                .Select(group => new HandlerChain(group, this))
+                .Select(buildHandlerChain)
                 .Each(chain => { _chains = _chains.AddOrUpdate(chain.MessageType, chain); });
 
             _calls.Where(x => !x.MessageType.IsConcrete())
@@ -224,6 +222,18 @@ public partial class HandlerGraph : ICodeFileCollection, IHandlerConfiguration
             _hasGrouped = true;
         }
     }
+
+    private HandlerChain buildHandlerChain(IGrouping<Type, HandlerCall> @group)
+    {
+        if (@group.Any(x => x.HandlerType.CanBeCastTo<Saga>()))
+        {
+            return new SagaChain(@group, this);
+        }
+
+        return new HandlerChain(@group, this);
+    }
+
+
 
     internal void AddForwarders(Forwarders forwarders)
     {

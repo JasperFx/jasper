@@ -3,6 +3,7 @@ using Jasper.Attributes;
 using Jasper.Runtime.Handlers;
 using Shouldly;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Jasper.Testing.Persistence.Sagas
 {
@@ -10,21 +11,24 @@ namespace Jasper.Testing.Persistence.Sagas
     public class saga_action_discovery : IntegrationContext
     {
         private DefaultApp _fixture;
+        private readonly ITestOutputHelper _output;
 
-        public saga_action_discovery(DefaultApp @default) : base(@default)
+        public saga_action_discovery(DefaultApp @default, ITestOutputHelper output) : base(@default)
         {
             _fixture = @default;
+            _output = output;
         }
 
         private new HandlerChain chainFor<T>()
         {
-            return _fixture.ChainFor<T>();
+            var handlerChain = _fixture.ChainFor<T>();
+            if (handlerChain != null) _output.WriteLine(handlerChain.SourceCode);
+            return handlerChain;
         }
 
         [Fact]
         public void finds_actions_on_saga_state_handler_classes()
         {
-
             chainFor<SagaMessage2>().ShouldNotBeNull();
         }
 
@@ -41,8 +45,10 @@ namespace Jasper.Testing.Persistence.Sagas
         }
     }
 
-    public class MySagaStateGuy : StatefulSagaOf<MySagaState>
+    public class MySagaStateGuy : Saga
     {
+        public Guid Id { get; set; }
+
         public void Orchestrates(SagaMessage1 message)
         {
         }
@@ -51,9 +57,8 @@ namespace Jasper.Testing.Persistence.Sagas
         {
         }
 
-        public MySagaState Start(SagaStarter starter)
+        public void Start(SagaStarter starter)
         {
-            return new MySagaState();
         }
     }
 
@@ -67,11 +72,6 @@ namespace Jasper.Testing.Persistence.Sagas
 
     public class SagaMessage2 : Message2
     {
-    }
-
-    public class MySagaState
-    {
-        public Guid Id { get; set; }
     }
 
     [MessageIdentity("Message1")]

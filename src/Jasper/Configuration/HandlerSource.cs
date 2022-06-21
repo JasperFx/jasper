@@ -7,6 +7,7 @@ using Baseline;
 using Baseline.Reflection;
 using BaselineTypeDiscovery;
 using Jasper.Attributes;
+using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Handlers;
 using Jasper.Util;
 
@@ -21,7 +22,7 @@ public sealed class HandlerSource
     private readonly CompositeFilter<Type> _typeFilters = new();
 
     private readonly string[] _validMethods =
-        { "Handle", "Handles", "Consume", "Consumes", "Orchestrate", "Orchestrates", "Start", "Starts" };
+        { HandlerChain.Handle, HandlerChain.Handles, HandlerChain.Consume, HandlerChain.Consumes, SagaChain.Orchestrate, SagaChain.Orchestrates, SagaChain.Start, SagaChain.Starts, SagaChain.StartOrHandle, SagaChain.StartsOrHandles, SagaChain.NotFound };
 
     private bool _conventionalDiscoveryDisabled;
 
@@ -32,10 +33,10 @@ public sealed class HandlerSource
 
         _methodFilters.Includes += m => _validMethods.Contains(m.Name);
 
-        IncludeClassesSuffixedWith("Handler");
-        IncludeClassesSuffixedWith("Consumer");
+        IncludeClassesSuffixedWith(HandlerChain.HandlerSuffix);
+        IncludeClassesSuffixedWith(HandlerChain.ConsumerSuffix);
 
-        IncludeTypes(x => x.Closes(typeof(StatefulSagaOf<>)));
+        IncludeTypes(x => x.CanBeCastTo<Saga>());
 
         _typeFilters.Excludes += t => t.HasAttribute<JasperIgnoreAttribute>();
     }

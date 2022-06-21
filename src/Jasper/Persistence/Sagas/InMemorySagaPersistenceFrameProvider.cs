@@ -1,33 +1,74 @@
 ﻿using System;
-using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
+using Oakton.Parsing;
 
 namespace Jasper.Persistence.Sagas;
 
-public class InMemorySagaPersistenceFrameProvider : BaseSagaPersistenceFrameProvider
+public class InMemorySagaPersistenceFrameProvider : ISagaPersistenceFrameProvider
 {
-    public override Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain,
-        MethodCall sagaHandler,
-        Variable document,
-        Type sagaHandlerType)
+    public Type DetermineSagaIdType(Type sagaType, IContainer container)
     {
-        return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
+        return SagaChain.DetermineSagaIdMember(sagaType)?.GetMemberType() ?? typeof(object);
     }
 
-    protected override Frame buildPersistenceFrame(IContainer container, HandlerChain chain,
-        SagaStateExistence existence, ref Variable sagaId, Type sagaStateType,
-        Variable existingState,
-        ref Variable loadedState)
+    public Frame DetermineLoadFrame(IContainer container, Type sagaType, Variable sagaId)
     {
-        var frame = new InMemorySagaPersistenceFrame(sagaStateType, sagaId, existence);
+        var method = typeof(InMemorySagaPersistor).GetMethod(nameof(InMemorySagaPersistor.Load))!
+            .MakeGenericMethod(sagaType);
 
-        if (existence == SagaStateExistence.Existing)
+        var call = new MethodCall(typeof(InMemorySagaPersistor), method)
         {
-            loadedState = frame.Document;
-        }
+            Arguments =
+            {
+                [0] = sagaId
+            }
+        };
 
-        return frame;
+        return call;
     }
+
+    public Frame DetermineInsertFrame(Variable saga, IContainer container)
+    {
+        var method = typeof(InMemorySagaPersistor).GetMethod(nameof(InMemorySagaPersistor.Store))!
+            .MakeGenericMethod(saga.VariableType);
+        var call = new MethodCall(typeof(InMemorySagaPersistor), method)
+        {
+            Arguments =
+            {
+                [0] = saga
+            }
+        };
+
+        return call;
+    }
+
+    public Frame CommitUnitOfWorkFrame(Variable saga, IContainer container)
+    {
+        return new CommentFrame("No unit of work");
+    }
+
+    public Frame DetermineUpdateFrame(Variable saga, IContainer container)
+    {
+        return DetermineInsertFrame(saga, container);
+    }
+
+    public Frame DetermineDeleteFrame(Variable sagaId, Variable saga, IContainer container)
+    {
+        var method = typeof(InMemorySagaPersistor).GetMethod(nameof(InMemorySagaPersistor.Delete))!
+            .MakeGenericMethod(saga.VariableType);
+        var call = new MethodCall(typeof(InMemorySagaPersistor), method)
+        {
+            Arguments =
+            {
+                [0] = sagaId
+            }
+        };
+
+        return call;
+    }
+
+
+
 }

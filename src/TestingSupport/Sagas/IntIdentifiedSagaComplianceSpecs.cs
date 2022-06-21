@@ -5,40 +5,49 @@ using Jasper.Persistence.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Persistence.Sagas
+namespace TestingSupport.Sagas
 {
     [JasperIgnore]
-    public class GuidBasicWorkflow : BasicWorkflow<GuidWorkflowState, GuidStart, GuidCompleteThree, Guid>
+    public class IntBasicWorkflow : BasicWorkflow<IntStart, IntCompleteThree, int>
     {
-        public GuidWorkflowState Starts(WildcardStart start)
+        public void Starts(WildcardStart start)
         {
-            var sagaId = Guid.Parse(start.Id);
-            return new GuidWorkflowState
-            {
-                Id = sagaId,
-                Name = start.Name
-            };
+            var sagaId = int.Parse(start.Id);
+            Id = sagaId;
+            Name = start.Name;
         }
 
-        public void Handles(GuidDoThree message)
+
+        public void Handles(IntDoThree message)
         {
-            State.ThreeCompleted = true;
+            ThreeCompleted = true;
+        }
+
+        public CompleteFour Start(StartAndDoThings message)
+        {
+            return new CompleteFour();
         }
     }
 
-    public class GuidDoThree
+    public class StartAndDoThings
     {
-        [SagaIdentity] public Guid TheSagaId { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = "Whisper";
     }
 
-    public class basic_mechanics_with_guid : SagaTestHarness<GuidBasicWorkflow, GuidWorkflowState>
+    public class IntDoThree
     {
-        private readonly Guid stateId = Guid.NewGuid();
+        [SagaIdentity] public int TheSagaId { get; set; }
+    }
+
+    public class IntIdentifiedSagaComplianceSpecs<T> : SagaTestHarness<IntBasicWorkflow> where T : ISagaHost, new()
+    {
+        private readonly int stateId = new Random().Next();
 
         [Fact]
         public async Task complete()
         {
-            await send(new GuidStart
+            await send(new IntStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -46,13 +55,13 @@ namespace Jasper.Testing.Persistence.Sagas
 
             await send(new FinishItAll(), stateId);
 
-            LoadState(stateId).ShouldBeNull();
+            (await LoadState(stateId)).ShouldBeNull();
         }
 
         [Fact]
         public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
         {
-            await send(new GuidStart
+            await send(new IntStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -60,7 +69,7 @@ namespace Jasper.Testing.Persistence.Sagas
 
             await send(new CompleteOne(), stateId);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.OneCompleted.ShouldBeTrue();
             state.TwoCompleted.ShouldBeTrue();
         }
@@ -68,13 +77,13 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public async Task start_1()
         {
-            await send(new GuidStart
+            await send(new IntStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("Croaker");
@@ -89,7 +98,7 @@ namespace Jasper.Testing.Persistence.Sagas
                 Name = "One Eye"
             });
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("One Eye");
@@ -98,27 +107,27 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public async Task straight_up_update_with_the_saga_id_on_the_message()
         {
-            await send(new GuidStart
+            await send(new IntStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var message = new GuidCompleteThree
+            var message = new IntCompleteThree
             {
                 SagaId = stateId
             };
 
             await send(message);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
         }
 
         [Fact]
         public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
         {
-            await send(new GuidStart
+            await send(new IntStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -126,27 +135,27 @@ namespace Jasper.Testing.Persistence.Sagas
 
             await send(new CompleteFour(), stateId);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.FourCompleted.ShouldBeTrue();
         }
 
         [Fact]
         public async Task update_with_message_that_uses_saga_identity_attributed_property()
         {
-            await send(new GuidStart
+            await send(new IntStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var message = new GuidDoThree
+            var message = new IntDoThree
             {
                 TheSagaId = stateId
             };
 
             await send(message);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
         }
 
@@ -164,8 +173,12 @@ namespace Jasper.Testing.Persistence.Sagas
         {
             await Should.ThrowAsync<IndeterminateSagaStateIdException>(async () =>
             {
-                await invoke(new GuidCompleteThree());
+                await invoke(new IntCompleteThree());
             });
+        }
+
+        public IntIdentifiedSagaComplianceSpecs() : base(new T())
+        {
         }
     }
 }

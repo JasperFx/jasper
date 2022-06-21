@@ -6,52 +6,55 @@ using Baseline;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
+using Oakton.Parsing;
 
 namespace Jasper.Persistence.Sagas;
 
 public class PullSagaIdFromMessageFrame : SyncFrame
 {
     private readonly Type _messageType;
-    private readonly PropertyInfo _sagaIdProperty;
+    private readonly MemberInfo _sagaIdMember;
     private Variable? _envelope;
     private Variable? _message;
+    private readonly Type? _sagaIdType;
 
-    public PullSagaIdFromMessageFrame(Type messageType, PropertyInfo sagaIdProperty)
+    public PullSagaIdFromMessageFrame(Type messageType, MemberInfo sagaIdMember)
     {
         _messageType = messageType;
-        _sagaIdProperty = sagaIdProperty;
+        _sagaIdMember = sagaIdMember;
 
-        if (!SagaFramePolicy.ValidSagaIdTypes.Contains(_sagaIdProperty.PropertyType))
+        _sagaIdType = sagaIdMember.GetMemberType();
+        if (!SagaFramePolicy.ValidSagaIdTypes.Contains(_sagaIdType))
         {
             throw new ArgumentOutOfRangeException(nameof(messageType),
-                $"SagaId must be one of {SagaFramePolicy.ValidSagaIdTypes.Select(x => x.NameInCode()).Join(", ")}");
+                $"SagaId must be one of {SagaFramePolicy.ValidSagaIdTypes.Select(x => x.NameInCode()).Join(", ")}, but was {_sagaIdType.NameInCode()}");
         }
 
-        SagaId = new Variable(sagaIdProperty.PropertyType, SagaFramePolicy.SagaIdVariableName, this);
+        SagaId = new Variable(_sagaIdType, SagaFramePolicy.SagaIdVariableName, this);
     }
 
     public Variable SagaId { get; }
 
     public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
     {
-        if (_sagaIdProperty.PropertyType == typeof(string))
+        if (_sagaIdType == typeof(string))
         {
             writer.Write(
-                $"{_sagaIdProperty.PropertyType.NameInCode()} {SagaFramePolicy.SagaIdVariableName} = {_envelope!.Usage}.{nameof(Envelope.SagaId)} ?? {_message!.Usage}.{_sagaIdProperty.Name};");
+                $"{_sagaIdType.NameInCode()} {SagaFramePolicy.SagaIdVariableName} = {_envelope!.Usage}.{nameof(Envelope.SagaId)} ?? {_message!.Usage}.{_sagaIdMember.Name};");
             writer.Write(
                 $"if (string.{nameof(string.IsNullOrEmpty)}({SagaFramePolicy.SagaIdVariableName})) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");
         }
         else
         {
-            var typeNameInCode = _sagaIdProperty.PropertyType == typeof(Guid)
+            var typeNameInCode = _sagaIdType == typeof(Guid)
                 ? typeof(Guid).FullName
-                : _sagaIdProperty.PropertyType.NameInCode();
+                : _sagaIdType.NameInCode();
 
 
             writer.Write(
-                $"if (!{typeNameInCode}.TryParse({_envelope!.Usage}.{nameof(Envelope.SagaId)}, out {typeNameInCode} sagaId)) sagaId = {_message!.Usage}.{_sagaIdProperty.Name};");
+                $"if (!{typeNameInCode}.TryParse({_envelope!.Usage}.{nameof(Envelope.SagaId)}, out {typeNameInCode} sagaId)) sagaId = {_message!.Usage}.{_sagaIdMember.Name};");
 
-            if (_sagaIdProperty.PropertyType == typeof(Guid))
+            if (_sagaIdType == typeof(Guid))
             {
                 writer.Write(
                     $"if ({SagaId.Usage} == System.Guid.Empty) throw new {typeof(IndeterminateSagaStateIdException).FullName}({_envelope.Usage});");

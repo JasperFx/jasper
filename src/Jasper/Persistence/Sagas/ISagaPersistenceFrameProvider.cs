@@ -1,5 +1,4 @@
 ﻿using System;
-using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
@@ -8,15 +7,10 @@ namespace Jasper.Persistence.Sagas;
 
 public interface ISagaPersistenceFrameProvider
 {
-    Frame DeterminePersistenceFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
-        SagaStateExistence existence,
-        ref Variable sagaId,
-        Type sagaStateType,
-        Variable existingState, out Variable loadedState);
-
-    Type DetermineSagaIdType(Type sagaStateType);
-
-    Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
-        Variable document,
-        Type sagaHandlerType);
+    Type DetermineSagaIdType(Type sagaType, IContainer container);
+    Frame DetermineLoadFrame(IContainer container, Type sagaType, Variable sagaId);
+    Frame DetermineInsertFrame(Variable saga, IContainer container);
+    Frame CommitUnitOfWorkFrame(Variable saga, IContainer container);
+    Frame DetermineUpdateFrame(Variable saga, IContainer container);
+    Frame DetermineDeleteFrame(Variable sagaId, Variable saga, IContainer container);
 }

@@ -3,54 +3,44 @@ using System.Linq;
 using Jasper.Configuration;
 using Jasper.Persistence.Marten.Codegen;
 using Jasper.Persistence.Sagas;
-using Jasper.Runtime.Handlers;
 using Lamar;
 using LamarCodeGeneration.Frames;
 using LamarCodeGeneration.Model;
 using Marten;
-using Marten.Schema;
-using Oakton.Parsing;
 
 namespace Jasper.Persistence.Marten.Persistence.Sagas;
 
 public class MartenSagaPersistenceFrameProvider : ISagaPersistenceFrameProvider, ITransactionFrameProvider
 {
-    public Frame DeterminePersistenceFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
-        SagaStateExistence existence,
-        ref Variable sagaId, Type sagaStateType,
-        Variable existingState, out Variable loadedState)
+    public Type DetermineSagaIdType(Type sagaType, IContainer container)
     {
-        var frame = new TransactionalFrame();
-        if (existence == SagaStateExistence.Existing)
-        {
-            var doc = frame.LoadDocument(sagaStateType, sagaId);
-            loadedState = doc;
-        }
-        else
-        {
-            var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
-
-            sagaId = new Variable(mapping.IdMember.GetMemberType(),
-                existingState.Usage + "." + mapping.IdMember.Name);
-
-
-            loadedState = existingState;
-        }
-
-        return frame;
+        var store = container.GetInstance<IDocumentStore>();
+        return store.Options.FindOrResolveDocumentType(sagaType).IdType;
     }
 
-    public Type DetermineSagaIdType(Type sagaStateType)
+    public Frame DetermineLoadFrame(IContainer container, Type sagaType, Variable sagaId)
     {
-        var mapping = new DocumentMapping(sagaStateType, new StoreOptions());
-        return mapping.IdMember.GetMemberType();
+        return new LoadDocumentFrame(sagaType, sagaId);
     }
 
-    public Frame DetermineStoreOrDeleteFrame(IContainer container, HandlerChain chain, MethodCall sagaHandler,
-        Variable document,
-        Type sagaHandlerType)
+    public Frame DetermineInsertFrame(Variable saga, IContainer container)
     {
-        return new StoreOrDeleteSagaStateFrame(document, sagaHandlerType);
+        return new DocumentSessionOperationFrame(saga, nameof(IDocumentSession.Insert));
+    }
+
+    public Frame CommitUnitOfWorkFrame(Variable saga, IContainer container)
+    {
+        return MethodCall.For<IDocumentSession>(x => x.SaveChangesAsync(default));
+    }
+
+    public Frame DetermineUpdateFrame(Variable saga, IContainer container)
+    {
+        return new DocumentSessionOperationFrame(saga, nameof(IDocumentSession.Update));
+    }
+
+    public Frame DetermineDeleteFrame(Variable sagaId, Variable saga, IContainer container)
+    {
+        return new DocumentSessionOperationFrame(saga, nameof(IDocumentSession.Delete));
     }
 
     public void ApplyTransactionSupport(IChain chain, IContainer container)

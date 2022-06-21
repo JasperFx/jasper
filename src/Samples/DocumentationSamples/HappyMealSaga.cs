@@ -3,28 +3,6 @@ using Jasper.Persistence.Sagas;
 
 namespace DocumentationSamples
 {
-    #region sample_HappyMealOrderState
-    public class HappyMealOrderState
-    {
-        // Jasper wants you to make the saga state
-        // document have an "Id" property, but
-        // that can be overridden
-        public int Id { get; set; }
-        public HappyMealOrder Order { get; set; }
-
-        public bool DrinkReady { get; set; }
-        public bool ToyReady { get; set; }
-        public bool SideReady { get; set; }
-        public bool MainReady { get; set; }
-
-        // The order is complete if *everything*
-        // is complete
-        public bool IsOrderComplete()
-        {
-            return DrinkReady && ToyReady && SideReady && MainReady;
-        }
-    }
-    #endregion
 
     #region sample_HappyMealOrder
     public class HappyMealOrder
@@ -69,23 +47,38 @@ namespace DocumentationSamples
     ///     This is being done completely in memory, which you most likely wouldn't
     ///     do in "real" systems
     /// </summary>
-    public class HappyMealSaga : StatefulSagaOf<HappyMealOrderState>
+    public class HappyMealSaga : Saga
     {
+        // Jasper wants you to make the saga state
+        // document have an "Id" property, but
+        // that can be overridden
+        public int Id { get; set; }
+        public HappyMealOrder Order { get; set; }
+
+        public bool DrinkReady { get; set; }
+        public bool ToyReady { get; set; }
+        public bool SideReady { get; set; }
+        public bool MainReady { get; set; }
+
+        // The order is complete if *everything*
+        // is complete
+        public bool IsOrderComplete()
+        {
+            return DrinkReady && ToyReady && SideReady && MainReady;
+        }
+
         private int _orderIdSequence;
 
         // This is a little bit cute, but the HappyMealOrderState type
         // is known to be the saga state document, so it'll be treated as
         // the state document, while the object[] will be treated as
         // cascading messages
-        public (HappyMealOrderState, object[]) Starts(HappyMealOrder order)
+        public object[] Starts(HappyMealOrder order)
         {
-            var state = new HappyMealOrderState
-            {
-                Order = order,
-                Id = ++_orderIdSequence
-            };
+            Order = order;
+            Id = ++_orderIdSequence;
 
-            return (state, chooseActions(order, state.Id).ToArray());
+            return chooseActions(order, Id).ToArray();
         }
 
         private IEnumerable<object> chooseActions(HappyMealOrder order, int stateId)
@@ -102,53 +95,79 @@ namespace DocumentationSamples
     #endregion
 
 
-    public class HappyMealSagaNoTuple : StatefulSagaOf<HappyMealOrderState>
+    public class HappyMealSagaNoTuple : Saga
     {
         private int _orderIdSequence;
 
+        // Jasper wants you to make the saga state
+        // document have an "Id" property, but
+        // that can be overridden
+        public int Id { get; set; }
+        public HappyMealOrder Order { get; set; }
+
+        public bool DrinkReady { get; set; }
+        public bool ToyReady { get; set; }
+        public bool SideReady { get; set; }
+        public bool MainReady { get; set; }
+
+        // The order is complete if *everything*
+        // is complete
+        public bool IsOrderComplete()
+        {
+            return DrinkReady && ToyReady && SideReady && MainReady;
+        }
+
         #region sample_HappyMealSaga1NoTuple
 
-        public async Task<HappyMealOrderState> Starts(
+        public async Task Starts(
             HappyMealOrder order, // The first argument is assumed to be the message type
-            IExecutionContext context) // Additional arguments are assumed to be services
+            IMessagePublisher context) // Additional arguments are assumed to be services
         {
-            var state = new HappyMealOrderState
-            {
-                Order = order,
-                Id = ++_orderIdSequence
-            };
+            Order = order;
+            Id = ++_orderIdSequence;
 
-            if (order.Drink == "Soda") await context.SendAsync(new SodaRequested {OrderId = state.Id});
+            if (order.Drink == "Soda") await context.SendAsync(new SodaRequested {OrderId = Id});
 
             // And other outgoing messages to coordinate gathering up the happy meal
-
-            return state;
         }
 
         #endregion
     }
 
-    public class HappyMealSagaAllLocal : StatefulSagaOf<HappyMealOrderState>
+    public class HappyMealSagaAllLocal : Saga
     {
+        // Jasper wants you to make the saga state
+        // document have an "Id" property, but
+        // that can be overridden
+        public int Id { get; set; }
+        public HappyMealOrder Order { get; set; }
+
+        public bool DrinkReady { get; set; }
+        public bool ToyReady { get; set; }
+        public bool SideReady { get; set; }
+        public bool MainReady { get; set; }
+
+        // The order is complete if *everything*
+        // is complete
+        public bool IsOrderComplete()
+        {
+            return DrinkReady && ToyReady && SideReady && MainReady;
+        }
+
         private int _orderIdSequence;
 
         #region sample_HappyMealSaga1Local
 
-        public async Task<HappyMealOrderState> Starts(
+        public async Task Starts(
             HappyMealOrder order, // The first argument is assumed to be the message type
-            IExecutionContext context) // Additional arguments are assumed to be services
+            IMessagePublisher context) // Additional arguments are assumed to be services
         {
-            var state = new HappyMealOrderState
-            {
-                Order = order,
-                Id = ++_orderIdSequence
-            };
+            Order = order;
+            Id = ++_orderIdSequence;
 
-            if (order.Drink == "Soda") await context.EnqueueAsync(new SodaRequested {OrderId = state.Id});
+            if (order.Drink == "Soda") await context.EnqueueAsync(new SodaRequested {OrderId = Id});
 
             // And other outgoing messages to coordinate gathering up the happy meal
-
-            return state;
         }
 
         #endregion
@@ -171,28 +190,39 @@ namespace DocumentationSamples
     ///     This is being done completely in memory, which you most likely wouldn't
     ///     do in "real" systems
     /// </summary>
-    public class HappyMealSaga2 : StatefulSagaOf<HappyMealOrderState>
+    public class HappyMealSaga2 : Saga
     {
+        // Jasper wants you to make the saga state
+        // document have an "Id" property, but
+        // that can be overridden
+        public int Id { get; set; }
+        public HappyMealOrder Order { get; set; }
+
+        public bool DrinkReady { get; set; }
+        public bool ToyReady { get; set; }
+        public bool SideReady { get; set; }
+        public bool MainReady { get; set; }
+
+        // The order is complete if *everything*
+        // is complete
+        public bool IsOrderComplete()
+        {
+            return DrinkReady && ToyReady && SideReady && MainReady;
+        }
+
         private int _orderIdSequence;
 
         // This is a little bit cute, but the HappyMealOrderState type
         // is known to be the saga state document, so it'll be treated as
         // the state document, while the object[] will be treated as
         // cascading messages
-        public async Task<HappyMealOrderState> Starts(HappyMealOrder order, IExecutionContext context)
+        public async Task Starts(HappyMealOrder order, IMessagePublisher publisher)
         {
-            var state = new HappyMealOrderState
-            {
-                Order = order,
-                Id = ++_orderIdSequence
-            };
+            Order = order;
+            Id = ++_orderIdSequence;
 
-
-            // You can explicitly call the IMessageContext if you prefer
-            if (order.Drink == "Soda") await context.SendAsync(new SodaRequested {OrderId = state.Id});
-
-
-            return state;
+            // You can explicitly call the IMessagePublisher or IExecutionContext if you prefer
+            if (order.Drink == "Soda") await publisher.SendAsync(new SodaRequested {OrderId = Id});
         }
     }
 
@@ -227,22 +257,40 @@ namespace DocumentationSamples
     #endregion
 
 
-    public class HappyMealSaga3 : StatefulSagaOf<HappyMealOrderState>
+    public class HappyMealSaga3 : Saga
     {
+        // Jasper wants you to make the saga state
+        // document have an "Id" property, but
+        // that can be overridden
+        public int Id { get; set; }
+        public HappyMealOrder Order { get; set; }
+
+        public bool DrinkReady { get; set; }
+        public bool ToyReady { get; set; }
+        public bool SideReady { get; set; }
+        public bool MainReady { get; set; }
+
+        // The order is complete if *everything*
+        // is complete
+        public bool IsOrderComplete()
+        {
+            return DrinkReady && ToyReady && SideReady && MainReady;
+        }
+
         #region sample_completing_saga
         public void Handle(
             SodaFetched soda, // The first argument is the message type
             IOrderService service // Additional arguments are injected services
         )
         {
-            State.DrinkReady = true;
+            DrinkReady = true;
 
             // Determine if the happy meal is completely ready
-            if (State.IsOrderComplete())
+            if (IsOrderComplete())
             {
                 // Maybe you need to remove this
                 // order from some kind of screen display
-                service.Close(State.Id);
+                service.Close(Id);
 
                 // And we're done here, so let's mark the Saga as complete
                 MarkCompleted();
@@ -254,14 +302,14 @@ namespace DocumentationSamples
         #region sample_passing_saga_state_id_through_message
         public void Handle(ToyOnTray toyReady)
         {
-            State.ToyReady = true;
-            if (State.IsOrderComplete()) MarkCompleted();
+            ToyReady = true;
+            if (IsOrderComplete()) MarkCompleted();
         }
 
         public void Handle(BurgerReady burgerReady)
         {
-            State.MainReady = true;
-            if (State.IsOrderComplete()) MarkCompleted();
+            MainReady = true;
+            if (IsOrderComplete()) MarkCompleted();
         }
 
         #endregion

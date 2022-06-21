@@ -12,10 +12,10 @@ public class IndeterminateSagaStateIdException : Exception
     }
 }
 
-public class UnknownSagaStateException : Exception
+public class UnknownSagaException : Exception
 {
-    public UnknownSagaStateException(Type sagaStateType, object stateId) : base(
-        $"Could not find an expected state document of type {sagaStateType.FullNameInCode()} for id '{stateId}'")
+    public UnknownSagaException(Type sagaStateType, object stateId) : base(
+        $"Could not find an expected saga document of type {sagaStateType.FullNameInCode()} for id '{stateId}'")
     {
         Debug.WriteLine("something");
     }

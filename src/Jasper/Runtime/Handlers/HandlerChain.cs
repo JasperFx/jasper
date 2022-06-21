@@ -19,7 +19,14 @@ namespace Jasper.Runtime.Handlers;
 
 public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasRetryPolicies, ICodeFile
 {
+    public const string HandlerSuffix = "Handler";
+    public const string ConsumerSuffix = "Consumer";
+    public const string Handle = "Handle";
+    public const string Handles = "Handles";
+    public const string Consume = "Consume";
+    public const string Consumes = "Consumes";
     public const string NotCascading = "NotCascading";
+
     private readonly HandlerGraph _parent;
 
     public readonly List<MethodCall> Handlers = new();
@@ -33,7 +40,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
         _parent = parent;
         MessageType = messageType ?? throw new ArgumentNullException(nameof(messageType));
 
-        TypeName = messageType.ToSuffixedTypeName("Handler");
+        TypeName = messageType.ToSuffixedTypeName(HandlerSuffix);
 
         Description = "Message Handler for " + MessageType.FullNameInCode();
     }
@@ -47,6 +54,14 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
     public HandlerChain(IGrouping<Type, HandlerCall> grouping, HandlerGraph parent) : this(grouping.Key, parent)
     {
         Handlers.AddRange(grouping);
+
+        var i = 0;
+
+        foreach (var handler in Handlers)
+        foreach (var create in handler.Creates)
+        {
+            i = DisambiguateOutgoingVariableName(create, i);
+        }
     }
 
     /// <summary>
@@ -165,7 +180,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
     /// <param name="container"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    internal List<Frame> DetermineFrames(GenerationRules rules, IContainer container)
+    internal virtual List<Frame> DetermineFrames(GenerationRules rules, IContainer container)
     {
         if (!Handlers.Any())
         {
@@ -173,19 +188,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
                                                 MessageType.FullName);
         }
 
-        if (!_hasConfiguredFrames)
-        {
-            _hasConfiguredFrames = true;
-
-            applyAttributesAndConfigureMethods(rules, container);
-
-            foreach (var attribute in MessageType.GetTypeInfo()
-                 .GetCustomAttributes(typeof(ModifyHandlerChainAttribute))
-                 .OfType<ModifyHandlerChainAttribute>()) attribute.Modify(this, rules);
-
-            foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute))
-                .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules, container);
-        }
+        applyCustomizations(rules, container);
 
         var cascadingHandlers = determineCascadingMessages().ToArray();
 
@@ -194,10 +197,25 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
         return Middleware.Concat(Handlers).Concat(cascadingHandlers).Concat(Postprocessors).ToList();
     }
 
+    protected void applyCustomizations(GenerationRules rules, IContainer container)
+    {
+        if (!_hasConfiguredFrames)
+        {
+            _hasConfiguredFrames = true;
+
+            applyAttributesAndConfigureMethods(rules, container);
+
+            foreach (var attribute in MessageType.GetTypeInfo()
+                         .GetCustomAttributes(typeof(ModifyHandlerChainAttribute))
+                         .OfType<ModifyHandlerChainAttribute>()) attribute.Modify(this, rules);
+
+            foreach (var attribute in MessageType.GetTypeInfo().GetCustomAttributes(typeof(ModifyChainAttribute))
+                         .OfType<ModifyChainAttribute>()) attribute.Modify(this, rules, container);
+        }
+    }
+
     private IEnumerable<CaptureCascadingMessages> determineCascadingMessages()
     {
-        var i = 0;
-
         foreach (var handler in Handlers)
         foreach (var create in handler.Creates)
         {
@@ -206,13 +224,11 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
                 continue;
             }
 
-            i = disambiguateOutgoingVariableName(create, i);
-
             yield return new CaptureCascadingMessages(create);
         }
     }
 
-    private static int disambiguateOutgoingVariableName(Variable create, int i)
+    internal static int DisambiguateOutgoingVariableName(Variable create, int i)
     {
         if (create.VariableType == typeof(object) || create.VariableType == typeof(object[]) ||
             create.VariableType == typeof(IEnumerable<object>))

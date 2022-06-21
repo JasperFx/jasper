@@ -1,35 +1,8 @@
 ﻿using System;
+using Jasper;
 
-namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
+namespace TestingSupport.Sagas
 {
-    public abstract class WorkflowState<T>
-    {
-        public T Id { get; set; }
-
-        public bool OneCompleted { get; set; }
-        public bool TwoCompleted { get; set; }
-        public bool ThreeCompleted { get; set; }
-        public bool FourCompleted { get; set; }
-
-        public string Name { get; set; }
-    }
-
-    public class GuidWorkflowState : WorkflowState<Guid>
-    {
-    }
-
-    public class IntWorkflowState : WorkflowState<int>
-    {
-    }
-
-    public class LongWorkflowState : WorkflowState<long>
-    {
-    }
-
-    public class StringWorkflowState : WorkflowState<string>
-    {
-    }
-
     public abstract class Start<T>
     {
         public T Id { get; set; }
@@ -98,39 +71,47 @@ namespace Jasper.Persistence.Testing.Marten.Persistence.Sagas
         public string Name { get; set; }
     }
 
-    public class BasicWorkflow<TState, TStart, TCompleteThree, TId> : StatefulSagaOf<TState>
+    public class BasicWorkflow<TStart, TCompleteThree, TId> : Saga
         where TCompleteThree : CompleteThree<TId>
         where TStart : Start<TId>
-        where TState : WorkflowState<TId>, new()
-
     {
-        public TState Start(TStart starting)
-        {
-            var state = new TState {Id = starting.Id, Name = starting.Name};
 
-            return state;
+        public TId Id { get; set; }
+
+        public bool OneCompleted { get; set; }
+        public bool TwoCompleted { get; set; }
+        public bool ThreeCompleted { get; set; }
+        public bool FourCompleted { get; set; }
+
+        public string Name { get; set; }
+
+
+        public void Start(TStart starting)
+        {
+            Id = starting.Id;
+            Name = starting.Name;
         }
 
         public CompleteTwo Handle(CompleteOne one)
         {
-            State.OneCompleted = true;
+            OneCompleted = true;
             return new CompleteTwo();
         }
 
         public void Handle(CompleteTwo message)
         {
-            State.TwoCompleted = true;
+            TwoCompleted = true;
         }
 
         public void Handle(CompleteFour message)
         {
-            State.FourCompleted = true;
+            FourCompleted = true;
         }
 
 
         public void Handle(TCompleteThree three)
         {
-            State.ThreeCompleted = true;
+            ThreeCompleted = true;
         }
 
         public void Handle(FinishItAll finish)

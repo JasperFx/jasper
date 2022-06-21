@@ -1,5 +1,5 @@
-using Jasper.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TestingSupport.Sagas;
 
 namespace Jasper.Persistence.Testing.EFCore.Sagas
 {
@@ -14,9 +14,8 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<GuidWorkflowState>(map =>
+            modelBuilder.Entity<GuidBasicWorkflow>(map =>
             {
-
                 map.ToTable("GuidWorkflowState");
                 map.HasKey(x => x.Id);
                 map.Property(x => x.OneCompleted).HasColumnName("one");
@@ -25,9 +24,8 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
                 map.Property(x => x.FourCompleted).HasColumnName("four");
             });
 
-            modelBuilder.Entity<IntWorkflowState>(map =>
+            modelBuilder.Entity<IntBasicWorkflow>(map =>
             {
-
                 map.ToTable("IntWorkflowState");
                 map.HasKey(x => x.Id);
                 map.Property(x => x.OneCompleted).HasColumnName("one");
@@ -36,9 +34,8 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
                 map.Property(x => x.FourCompleted).HasColumnName("four");
             });
 
-            modelBuilder.Entity<StringWorkflowState>(map =>
+            modelBuilder.Entity<StringBasicWorkflow>(map =>
             {
-
                 map.ToTable("StringWorkflowState");
                 map.HasKey(x => x.Id);
                 map.Property(x => x.OneCompleted).HasColumnName("one");
@@ -47,7 +44,7 @@ namespace Jasper.Persistence.Testing.EFCore.Sagas
                 map.Property(x => x.FourCompleted).HasColumnName("four");
             });
 
-            modelBuilder.Entity<LongWorkflowState>(map =>
+            modelBuilder.Entity<LongBasicWorkflow>(map =>
             {
                 map.ToTable("LongWorkflowState");
                 map.HasKey(x => x.Id);

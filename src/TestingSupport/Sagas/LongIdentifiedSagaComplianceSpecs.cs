@@ -5,40 +5,37 @@ using Jasper.Persistence.Sagas;
 using Shouldly;
 using Xunit;
 
-namespace Jasper.Testing.Persistence.Sagas
+namespace TestingSupport.Sagas
 {
     [JasperIgnore]
-    public class StringBasicWorkflow : BasicWorkflow<StringWorkflowState, StringStart, StringCompleteThree, string>
+    public class LongBasicWorkflow : BasicWorkflow<LongStart, LongCompleteThree, long>
     {
-        public StringWorkflowState Starts(WildcardStart start)
+        public void Starts(WildcardStart start)
         {
-            var sagaId = start.Id;
-            return new StringWorkflowState
-            {
-                Id = sagaId,
-                Name = start.Name
-            };
+            var sagaId = long.Parse(start.Id);
+            Id = sagaId;
+            Name = start.Name;
         }
 
-        public void Handles(StringDoThree message, StringWorkflowState state)
+        public void Handles(LongDoThree message)
         {
-            state.ThreeCompleted = true;
+            ThreeCompleted = true;
         }
     }
 
-    public class StringDoThree
+    public class LongDoThree
     {
-        [SagaIdentity] public string TheSagaId { get; set; }
+        [SagaIdentity] public long TheSagaId { get; set; }
     }
 
-    public class basic_mechanics_with_String : SagaTestHarness<StringBasicWorkflow, StringWorkflowState>
+    public class LongIdentifiedSagaComplianceSpecs<T> : SagaTestHarness<LongBasicWorkflow> where T : ISagaHost, new()
     {
-        private readonly string stateId = Guid.NewGuid().ToString();
+        private readonly long stateId = new Random().Next();
 
         [Fact]
         public async Task complete()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -46,13 +43,13 @@ namespace Jasper.Testing.Persistence.Sagas
 
             await send(new FinishItAll(), stateId);
 
-            LoadState(stateId).ShouldBeNull();
+            (await LoadState(stateId)).ShouldBeNull();
         }
 
         [Fact]
         public async Task handle_a_saga_message_with_cascading_messages_passes_along_the_saga_id_in_header()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -60,7 +57,7 @@ namespace Jasper.Testing.Persistence.Sagas
 
             await send(new CompleteOne(), stateId);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.OneCompleted.ShouldBeTrue();
             state.TwoCompleted.ShouldBeTrue();
         }
@@ -68,13 +65,13 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public async Task start_1()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("Croaker");
@@ -85,11 +82,11 @@ namespace Jasper.Testing.Persistence.Sagas
         {
             await send(new WildcardStart
             {
-                Id = stateId,
+                Id = stateId.ToString(),
                 Name = "One Eye"
             });
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
 
             state.ShouldNotBeNull();
             state.Name.ShouldBe("One Eye");
@@ -98,39 +95,27 @@ namespace Jasper.Testing.Persistence.Sagas
         [Fact]
         public async Task straight_up_update_with_the_saga_id_on_the_message()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var message = new StringCompleteThree
+            var message = new LongCompleteThree
             {
                 SagaId = stateId
             };
 
             await send(message);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
-        }
-
-        [Fact]
-        public async Task unknown_state()
-        {
-            await Should.ThrowAsync<UnknownSagaStateException>(async () =>
-            {
-                await invoke(new StringCompleteThree
-                {
-                    SagaId = "unknown"
-                });
-            });
         }
 
         [Fact]
         public async Task update_expecting_the_saga_id_to_be_on_the_envelope()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
@@ -138,27 +123,27 @@ namespace Jasper.Testing.Persistence.Sagas
 
             await send(new CompleteFour(), stateId);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.FourCompleted.ShouldBeTrue();
         }
 
         [Fact]
         public async Task update_with_message_that_uses_saga_identity_attributed_property()
         {
-            await send(new StringStart
+            await send(new LongStart
             {
                 Id = stateId,
                 Name = "Croaker"
             });
 
-            var message = new StringDoThree
+            var message = new LongDoThree
             {
                 TheSagaId = stateId
             };
 
             await send(message);
 
-            var state = LoadState(stateId);
+            var state = await LoadState(stateId);
             state.ThreeCompleted.ShouldBeTrue();
         }
 
@@ -176,8 +161,12 @@ namespace Jasper.Testing.Persistence.Sagas
         {
             await Should.ThrowAsync<IndeterminateSagaStateIdException>(async () =>
             {
-                await invoke(new StringCompleteThree());
+                await invoke(new LongCompleteThree());
             });
+        }
+
+        public LongIdentifiedSagaComplianceSpecs() : base(new T())
+        {
         }
     }
 }

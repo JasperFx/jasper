@@ -1,45 +1,39 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Jasper.Persistence.Sagas;
+using Jasper;
 using Jasper.Runtime.Handlers;
 using Jasper.Tracking;
-using Jasper.Transports;
 using Microsoft.Extensions.Hosting;
-using TestingSupport;
 
-namespace Jasper.Testing.Persistence.Sagas
+namespace TestingSupport.Sagas
 {
-    public abstract class SagaTestHarness<TSagaHandler, TSagaState> : IDisposable
-        where TSagaHandler : StatefulSagaOf<TSagaState> where TSagaState : class
+    public class SagaTestHarness<T> : IDisposable
+        where T : Saga
     {
+        public ISagaHost SagaHost { get; }
         private IHost _host;
+
+        public SagaTestHarness(ISagaHost sagaHost)
+        {
+            SagaHost = sagaHost;
+        }
 
         public void Dispose()
         {
             _host?.Dispose();
         }
 
+
+
         protected void withApplication()
         {
-            _host = JasperHost.For(opts =>
-            {
-                opts.Handlers.DisableConventionalDiscovery().IncludeType<TSagaHandler>();
-
-                opts.PublishAllMessages().To(TransportConstants.LocalUri);
-
-                configure(opts);
-            });
+            _host = SagaHost.BuildHost<T>();
 
         }
 
         protected string codeFor<T>()
         {
             return _host.Get<HandlerGraph>().HandlerFor<T>().Chain.SourceCode;
-        }
-
-        protected virtual void configure(JasperOptions options)
-        {
-            // nothing
         }
 
         protected async Task invoke<T>(T message)
@@ -61,9 +55,24 @@ namespace Jasper.Testing.Persistence.Sagas
             return _host.SendMessageAndWaitAsync(message, new DeliveryOptions { SagaId = sagaId.ToString() }, 10000);
         }
 
-        protected TSagaState LoadState(object id)
+        protected Task<T> LoadState(Guid id)
         {
-            return _host.Get<InMemorySagaPersistor>().Load<TSagaState>(id);
+            return SagaHost.LoadState<T>(id);
+        }
+
+        protected Task<T> LoadState(string id)
+        {
+            return SagaHost.LoadState<T>(id);
+        }
+
+        protected Task<T> LoadState(int id)
+        {
+            return SagaHost.LoadState<T>(id);
+        }
+
+        protected Task<T> LoadState(long id)
+        {
+            return SagaHost.LoadState<T>(id);
         }
     }
 
