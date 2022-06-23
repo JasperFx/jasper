@@ -3,6 +3,8 @@ using Jasper;
 using Jasper.Persistence.Marten;
 using Jasper.RabbitMQ;
 using Marten;
+using MartenAndRabbitIssueService;
+using MartenAndRabbitMessages;
 using Oakton;
 using Oakton.Resources;
 
@@ -12,37 +14,32 @@ builder.Host.ApplyOaktonExtensions();
 
 builder.Host.UseJasper(opts =>
 {
+    // I'm setting this up to publish to the same process
+    // just to see things work
     opts.PublishAllMessages()
-        .ToRabbitQueue("issue_events");
+        .ToRabbitExchange("issue_events", exchange => exchange.BindQueue("issue_events"))
+        .UseDurableOutbox();
+
+    opts.ListenToRabbitQueue("issue_events").UseInbox();
 
     opts.UseRabbitMq(factory =>
-        {
-            // Just connecting with defaults, but showing
-            // how you *could* customize the connection to Rabbit MQ
-            factory.HostName = "localhost";
-            factory.Port = 5672;
-
-            // Other possibilities
-            // factory.UserName = builder.Configuration["rabbit_user"];
-            // factory.Password = builder.Configuration["rabbit_password"];
-
-        })
-        // Let Jasper try to build all known Rabbit MQ objects as configured
-        .AutoProvision()
-
-        // Think this is mostly just good for testing,
-        // but purge all known queues at start up time
-        .AutoPurgeOnStartup();
-
-    // Or, if you prefer
-    var rabbitUri = new Uri(builder.Configuration["rabbit_uri"]);
-    opts.UseRabbitMq(rabbitUri)
-        .AutoProvision()
-        .AutoPurgeOnStartup();
-
+    {
+        // Just connecting with defaults, but showing
+        // how you *could* customize the connection to Rabbit MQ
+        factory.HostName = "localhost";
+        factory.Port = 5672;
+    });
 });
 
+// This is actually important, this directs
+// the app to build out all declared Postgresql and
+// Rabbit MQ objects on start up if they do not already
+// exist
 builder.Services.AddResourceSetupOnStartup();
+
+// Just pumping out a bunch of messages so we can see
+// statistics
+builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddMarten(opts =>
 {
@@ -54,6 +51,10 @@ builder.Services.AddMarten(opts =>
     opts.Connection(Servers.PostgresConnectionString);
     opts.DatabaseSchemaName = "issues";
 
+    // Just letting Marten know there's a document type
+    // so we can see the tables and functions created on startup
+    opts.RegisterDocumentType<Issue>();
+
     // I'm putting the inbox/outbox tables into a separate "issue_service" schema
 }).IntegrateWithJasper("issue_service");
 
@@ -61,4 +62,5 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
 
-await app.RunOaktonCommands(args);
+// Actually important to return the exit code here!
+return await app.RunOaktonCommands(args);

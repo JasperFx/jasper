@@ -24,8 +24,8 @@ namespace Jasper.Testing.Configuration
             {
                 x.ListenForMessagesFrom("local://one").Sequential().Named("one");
                 x.ListenForMessagesFrom("local://two").MaximumParallelMessages(11);
-                x.ListenForMessagesFrom("local://three").DurablyPersistedLocally();
-                x.ListenForMessagesFrom("local://four").DurablyPersistedLocally().BufferedInMemory();
+                x.ListenForMessagesFrom("local://three").UseInbox();
+                x.ListenForMessagesFrom("local://four").UseInbox().BufferedInMemory();
                 x.ListenForMessagesFrom("local://five").ProcessInline();
 
             }).Build();
@@ -96,7 +96,7 @@ namespace Jasper.Testing.Configuration
         public void mark_durable()
         {
             theOptions.ListenForMessagesFrom("stub://1111")
-                .DurablyPersistedLocally();
+                .UseInbox();
 
             var endpoint = findEndpoint("stub://1111");
             endpoint.ShouldNotBeNull();
@@ -155,7 +155,7 @@ namespace Jasper.Testing.Configuration
             theOptions
 
                 .ListenForMessagesFrom("local://three")
-                .DurablyPersistedLocally();
+                .UseInbox();
 
 
             localQueue("three")

@@ -17,4 +17,8 @@
         <Link>Servers.cs</Link>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MartenAndRabbitMessages\MartenAndRabbitMessages.csproj" />
+    </ItemGroup>
 </Project>

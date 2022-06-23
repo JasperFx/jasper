@@ -30,8 +30,8 @@ builder.Host.UseJasper(opts =>
         .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
 
     // NEW! Apply the durable inbox/outbox functionality to the two in-memory queues
-    opts.DefaultLocalQueue.DurablyPersistedLocally();
-    opts.LocalQueue("Notifications").DurablyPersistedLocally();
+    opts.DefaultLocalQueue.UseInbox();
+    opts.LocalQueue("Notifications").UseInbox();
 
     // And I just opened a GitHub issue to make this config easier...
 });

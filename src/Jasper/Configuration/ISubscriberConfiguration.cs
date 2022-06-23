@@ -11,7 +11,7 @@ public interface ISubscriberConfiguration<T> where T : ISubscriberConfiguration<
     /// outgoing messages in the active, persistent envelope outbox
     /// </summary>
     /// <returns></returns>
-    T Durably();
+    T UseDurableOutbox();
 
     /// <summary>
     ///     By default, messages on this worker queue will not be persisted until

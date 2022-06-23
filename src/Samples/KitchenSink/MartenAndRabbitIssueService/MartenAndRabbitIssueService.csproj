@@ -10,7 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
       <ProjectReference Include="..\..\..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
-      <ProjectReference Include="..\..\..\KitchenSink\MartenAndRabbitMessages\MartenAndRabbitMessages.csproj" />
+      <ProjectReference Include="..\MartenAndRabbitMessages\MartenAndRabbitMessages.csproj" />
     </ItemGroup>
 
     <ItemGroup>

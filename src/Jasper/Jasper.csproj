@@ -7,7 +7,7 @@
     <AssemblyName>Jasper</AssemblyName>
     <PackageId>Jasper</PackageId>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/10048186?v=3&amp;s=200</PackageIconUrl>
-    <PackageProjectUrl>http://jasperfx.github.io</PackageProjectUrl>
+    <PackageProjectUrl>https://jasperfx.github.io</PackageProjectUrl>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
@@ -36,7 +36,7 @@
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="Oakton" Version="4.5.0" />
+    <PackageReference Include="Oakton" Version="4.6.1" />
   </ItemGroup>
 
   <Import Project="../../Analysis.Build.props" />

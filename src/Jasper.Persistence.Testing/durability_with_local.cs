@@ -67,7 +67,7 @@ namespace Jasper.Persistence.Testing
 
             opts.PublishAllMessages()
                 .ToLocalQueue("one")
-                .DurablyPersistedLocally();
+                .UseInbox();
 
             opts.Services.AddMarten(Servers.PostgresConnectionString)
                 .IntegrateWithJasper();

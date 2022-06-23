@@ -75,6 +75,11 @@ namespace Jasper.RabbitMQ.Internal
         {
             var queues = allKnownQueueNames();
 
+            if (!queues.Any())
+            {
+                return Task.FromResult((IRenderable)new Markup("[gray]No known queues.[/]"));
+            }
+
             var table = new Table();
             table.Alignment = Justify.Left;
             table.AddColumn("Queue");

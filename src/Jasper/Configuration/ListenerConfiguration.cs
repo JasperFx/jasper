@@ -38,7 +38,7 @@ public class ListenerConfiguration<TSelf, TEndpoint> : IListenerConfiguration<TS
         return this.As<TSelf>();
     }
 
-    public TSelf DurablyPersistedLocally()
+    public TSelf UseInbox()
     {
         endpoint.Mode = EndpointMode.Durable;
         return this.As<TSelf>();

@@ -25,7 +25,7 @@ public interface IListenerConfiguration<T>
     ///     Force any messages enqueued to this worker queue to be durable
     /// </summary>
     /// <returns></returns>
-    T DurablyPersistedLocally();
+    T UseInbox();
 
     /// <summary>
     ///     Incoming messages are immediately moved into an in-memory queue
