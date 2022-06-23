@@ -50,12 +50,7 @@ The two *commands* for the POST endpoints are below:
 ```cs
 public record CreateIssue(Guid OriginatorId, string Title, string Description);
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/KitchenSink/MartenAndRabbitMessages/CreateIssue.cs#L3-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_commands' title='Start of snippet'>anchor</a></sup>
-<a id='snippet-sample_quickstart_commands-1'></a>
-```cs
-public record CreateIssue(Guid OriginatorId, string Title, string Description);
-```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/CreateIssue.cs#L3-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_commands-1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/Quickstart/CreateIssue.cs#L3-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_quickstart_commands' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Let's jump right into the `Program.cs` file of our new web service:

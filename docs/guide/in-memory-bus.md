@@ -115,11 +115,11 @@ using var host = await Host.CreateDefaultBuilder()
     .UseJasper(opts =>
     {
         // Make the default local queue durable
-        opts.DefaultLocalQueue.DurablyPersistedLocally();
+        opts.DefaultLocalQueue.UseInbox();
 
         // Or do just this by name
         opts.LocalQueue("important")
-            .DurablyPersistedLocally();
+            .UseInbox();
     }).StartAsync();
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessagingConfigurationExamples.cs#L124-L137' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localdurabletransportapp' title='Start of snippet'>anchor</a></sup>
@@ -195,7 +195,7 @@ using var host = await Host.CreateDefaultBuilder()
         // And finally, this enrolls a queue into the persistent inbox
         // so that messages can happily be retained and processed
         // after the service is restarted
-        opts.LocalQueue("four").DurablyPersistedLocally();
+        opts.LocalQueue("four").UseInbox();
     }).StartAsync();
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L12-L47' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localqueuesapp' title='Start of snippet'>anchor</a></sup>

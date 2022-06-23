@@ -4,8 +4,10 @@ using Jasper;
 using Jasper.ErrorHandling;
 using Jasper.Persistence.Marten;
 using Marten;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using Oakton;
+using Oakton.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +36,13 @@ builder.Host.UseJasper(opts =>
     opts.LocalQueue("Notifications").UseInbox();
 
     // And I just opened a GitHub issue to make this config easier...
+
+    // BOO! Got to do this at least temporarily to help out a test runner
+    opts.ApplicationAssembly = typeof(Program).Assembly;
 });
+
+builder.Services.AddResourceSetupOnStartup();
+builder.Services.AddMvcCore(); // for JSON formatters
 
 var app = builder.Build();
 

@@ -91,12 +91,13 @@ public sealed partial class JasperOptions
     public Assembly? ApplicationAssembly
     {
         get => _applicationAssembly;
-        internal set
+        set
         {
             _applicationAssembly = value;
             if (Advanced != null)
             {
                 Advanced.CodeGeneration.ApplicationAssembly = value;
+                Advanced.CodeGeneration.ReferenceAssembly(value);
             }
         }
     }
@@ -179,7 +180,7 @@ public sealed partial class JasperOptions
     {
         if (assemblyName.IsNotEmpty())
         {
-            ApplicationAssembly = Assembly.Load(assemblyName);
+            ApplicationAssembly ??= Assembly.Load(assemblyName);
         }
         else if (GetType() == typeof(JasperOptions) || GetType() == typeof(JasperOptions))
         {
@@ -188,11 +189,11 @@ public sealed partial class JasperOptions
                 _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
             }
 
-            ApplicationAssembly = _rememberedCallingAssembly;
+            ApplicationAssembly ??= _rememberedCallingAssembly;
         }
         else
         {
-            ApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+            ApplicationAssembly ??= CallingAssembly.DetermineApplicationAssembly(this);
         }
 
         if (ApplicationAssembly == null)

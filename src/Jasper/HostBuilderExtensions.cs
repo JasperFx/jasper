@@ -13,6 +13,7 @@ using Lamar;
 using Lamar.Microsoft.DependencyInjection;
 using LamarCodeGeneration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 using Oakton;
@@ -119,7 +120,7 @@ public static class HostBuilderExtensions
             services.AddSingleton<IDescribedSystemPart>(s => s.GetRequiredService<JasperOptions>().HandlerGraph);
             services.AddSingleton<IDescribedSystemPart>(s => s.GetRequiredService<JasperOptions>());
 
-            services.AddSingleton<IEnvelopePersistence, NullEnvelopePersistence>();
+            services.TryAddSingleton<IEnvelopePersistence, NullEnvelopePersistence>();
             services.AddSingleton<InMemorySagaPersistor>();
 
             services.MessagingRootService(x => x.Pipeline);

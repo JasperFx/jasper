@@ -96,6 +96,10 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
         handleMethod.Sources.Add(new MessageHandlerVariableSource(MessageType));
         handleMethod.Frames.AddRange(DetermineFrames(assembly.Rules, _parent.Container!));
 
+        // TODO -- this is temporary, but there's a bug in LamarCodeGeneration that uses await using
+        // when the method returns IAsyncDisposable
+        handleMethod.AsyncMode = AsyncMode.AsyncTask;
+
         handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
             $"context.{nameof(IExecutionContext.Envelope)}"));
     }
