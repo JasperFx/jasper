@@ -1,12 +1,11 @@
-using Jasper;
 using Jasper.Attributes;
-using Jasper.Persistence.Marten;
 using Marten;
-using Npgsql;
 
 namespace CommandBusSamples;
 
+public record AddReservation(string RestaurantName, DateTime Time);
 public record ConfirmReservation(Guid ReservationId);
+public record ReservationAdded(Guid ReservationId);
 public record ReservationConfirmed(Guid ReservationId);
 
 public class Reservation
@@ -15,6 +14,35 @@ public class Reservation
     public DateTimeOffset Time { get; set; }
     public string RestaurantName { get; set; }
     public bool IsConfirmed { get; set; }
+}
+
+public static class AddReservationHandler
+{
+    [Transactional]
+    public static  ReservationAdded Handle(AddReservation command, IDocumentSession session)
+    {
+        var reservation = new Reservation{
+            Id = Guid.NewGuid(),
+            Time = DateTime.Today.AddHours(18).AddMinutes(30),  // command.Time,
+            RestaurantName = command.RestaurantName,
+            IsConfirmed = false
+        };
+        session.Store(reservation);
+        return new ReservationAdded(reservation.Id);
+    }
+}
+
+[LocalQueue("Notifications")]
+[RetryNow(typeof(HttpRequestException), 50, 100, 250)]
+public class ReservationAddedHandler
+{
+    public async Task Handle(ReservationAdded added, IQuerySession session)
+    {
+        // add some interesting code here...
+        Console.WriteLine($"Apparently a new reservation with ID=${added.ReservationId} got added");
+        // simulate some work
+        await Task.Delay(200);
+    }
 }
 
 public static class ConfirmReservationHandler
