@@ -48,6 +48,7 @@ var app = builder.Build();
 
 // This isn't *quite* the most efficient way to do this,
 // but it's simple to understand, so please just let it go...
+app.MapPost("/reservations", (AddReservation command, ICommandBus bus) => bus.EnqueueAsync(command));
 app.MapPost("/reservations/confirm", (ConfirmReservation command, ICommandBus bus) => bus.EnqueueAsync(command));
 
 // This opts into using Oakton for extended command line options for this app

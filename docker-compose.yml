@@ -4,6 +4,11 @@ services:
     image: "clkao/postgres-plv8:latest"
     ports:
      - "5433:5432"
+    environment:
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  
   rabbitmq:
     image: "rabbitmq:3-management"
     ports:
@@ -24,3 +29,10 @@ services:
       - "8080:8080"
     command: bin/pulsar standalone
 
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    ports:
+      - 80:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=SuperSecret
