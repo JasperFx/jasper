@@ -16,7 +16,7 @@ return await Host.CreateDefaultBuilder(args)
             .UseForReplies();
 
         // Publish messages to the pings queue
-        opts.PublishMessage<Ping>().ToRabbitExchange("pings");
+        opts.PublishMessage<PingMessage>().ToRabbitExchange("pings");
 
         // Configure Rabbit MQ connection properties programmatically
         // against a ConnectionFactory
