@@ -203,7 +203,6 @@ namespace Jasper.Testing.Acceptance
         }
     }
 
-
     public class WorkTracker
     {
         private readonly TaskCompletionSource<Message1> _message1 = new TaskCompletionSource<Message1>();

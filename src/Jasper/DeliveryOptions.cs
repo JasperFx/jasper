@@ -56,8 +56,18 @@ public class DeliveryOptions
             envelope.Headers[header.Key] = header.Value;
         }
 
-        if (DeliverBy.HasValue) envelope.DeliverBy = DeliverBy;
-        if (ScheduledTime.HasValue) envelope.ScheduledTime = ScheduledTime;
+        // The status should be a state machine set by the deliver by or scheduled time setters
+        if (DeliverBy.HasValue)
+        {
+            envelope.DeliverBy = DeliverBy;
+            envelope.Status = EnvelopeStatus.Scheduled;
+        }
+
+        if (ScheduledTime.HasValue)
+        {
+            envelope.ScheduledTime = ScheduledTime;
+            envelope.Status = EnvelopeStatus.Scheduled;
+        }
         if (AckRequested.HasValue) envelope.AckRequested = AckRequested.Value;
         if (ResponseType != null) envelope.ReplyRequested = ResponseType.ToMessageTypeName();
         if (SagaId != null) envelope.SagaId = SagaId;
