@@ -30,13 +30,15 @@ internal class RunScheduledJobs : IMessagingAction
     public async Task ExecuteAtTimeAsync(IEnvelopePersistence storage, IDurabilityAgent agent,
         DateTimeOffset utcNow)
     {
+        await storage.Session.BeginAsync();
+
         var hasLock = await storage.Session.TryGetGlobalLockAsync(TransportConstants.ScheduledJobLockId);
         if (!hasLock)
         {
+            await storage.Session.RollbackAsync();
             return;
         }
 
-        await storage.Session.BeginAsync();
 
         try
         {

@@ -29,21 +29,23 @@ public class RecoverIncomingMessages : IMessagingAction
 
         await storage.Session.BeginAsync();
 
-
         var incoming = await determineIncomingAsync(storage);
 
-        _logger.RecoveredIncoming(incoming);
-
-        foreach (var envelope in incoming)
+        if (incoming.Count > 0)
         {
-            envelope.OwnerId = _settings.UniqueNodeId;
-            _workers.Enqueue(envelope);
-        }
+            _logger.RecoveredIncoming(incoming);
 
-        // TODO -- this should be smart enough later to check for back pressure before rescheduling
-        if (incoming.Count == _settings.RecoveryBatchSize)
-        {
-            agent.RescheduleIncomingRecovery();
+            foreach (var envelope in incoming)
+            {
+                envelope.OwnerId = _settings.UniqueNodeId;
+                _workers.Enqueue(envelope);
+            }
+
+            // TODO -- this should be smart enough later to check for back pressure before rescheduling
+            if (incoming.Count == _settings.RecoveryBatchSize)
+            {
+                agent.RescheduleIncomingRecovery();
+            }
         }
     }
 
