@@ -47,7 +47,7 @@ public class SagaChain : HandlerChain
         var members = messageType.GetFields().OfType<MemberInfo>().Concat(messageType.GetProperties());
         return members.FirstOrDefault(x => x.HasAttribute<SagaIdentityAttribute>())
                        ?? members.FirstOrDefault(x => x.Name == SagaIdMemberName) ??
-                       members.FirstOrDefault(x => x.Name == "Id");
+                       members.FirstOrDefault(x => x.Name.EqualsIgnoreCase("Id"));
     }
 
     public MemberInfo? SagaIdMember { get; set; }
@@ -100,11 +100,19 @@ public class SagaChain : HandlerChain
         var saga = load.Creates.Single();
         Postprocessors.Add(load);
 
-        var startingFrames = DetermineSagaDoesNotExistSteps(sagaId, saga, frameProvider, container).ToArray();
-        var existingFrames = DetermineSagaExistsSteps(sagaId, saga, frameProvider, container).ToArray();
-        var ifNullBlock = new IfNullGuard(saga, startingFrames,
-            existingFrames);
-        Postprocessors.Add(ifNullBlock);
+        if (saga.VariableType.CanBeCastTo<TimeoutMessage>())
+        {
+            Postprocessors.Add(new DisregardIfStateDoesNotExistFrame(saga));
+        }
+        else
+        {
+            var startingFrames = DetermineSagaDoesNotExistSteps(sagaId, saga, frameProvider, container).ToArray();
+            var existingFrames = DetermineSagaExistsSteps(sagaId, saga, frameProvider, container).ToArray();
+            var ifNullBlock = new IfNullGuard(saga, startingFrames,
+                existingFrames);
+
+            Postprocessors.Add(ifNullBlock);
+        }
     }
 
     private void generateForOnlyStartingSaga(IContainer container, ISagaPersistenceFrameProvider frameProvider)

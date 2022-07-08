@@ -15,7 +15,7 @@ namespace SampleTests
         public async Task can_post_without_errors()
         {
             OaktonEnvironment.AutoStartHost = true;
-            using var host = await AlbaHost.For<global::Program>(x => { });
+            using var host = await AlbaHost.For<Program>(x => { });
 
             var store = host.Services.GetRequiredService<IDocumentStore>();
             var reservation = new Reservation();

@@ -32,7 +32,7 @@ services:
   pgadmin4:
     image: dpage/pgadmin4:latest
     ports:
-      - 80:80
+      - 81:80
     environment:
       - PGADMIN_DEFAULT_EMAIL=user@domain.com
       - PGADMIN_DEFAULT_PASSWORD=SuperSecret
