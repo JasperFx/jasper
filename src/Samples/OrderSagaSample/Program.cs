@@ -35,7 +35,7 @@ var app = builder.Build();
 
 // Just delegating to Jasper's local command bus for all
 app.MapPost("/start", (StartOrder start, ICommandBus bus) => bus.InvokeAsync(start));
-app.MapPost("/complete", (StartOrder start, ICommandBus bus) => bus.InvokeAsync(start));
+app.MapPost("/complete", (CompleteOrder start, ICommandBus bus) => bus.InvokeAsync(start));
 app.MapGet("/all", (IQuerySession session) => session.Query<Order>().ToListAsync());
 app.MapGet("/", (HttpResponse response) =>
 {
