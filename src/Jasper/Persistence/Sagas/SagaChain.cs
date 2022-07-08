@@ -100,19 +100,14 @@ public class SagaChain : HandlerChain
         var saga = load.Creates.Single();
         Postprocessors.Add(load);
 
-        if (saga.VariableType.CanBeCastTo<TimeoutMessage>())
-        {
-            Postprocessors.Add(new DisregardIfStateDoesNotExistFrame(saga));
-        }
-        else
-        {
-            var startingFrames = DetermineSagaDoesNotExistSteps(sagaId, saga, frameProvider, container).ToArray();
-            var existingFrames = DetermineSagaExistsSteps(sagaId, saga, frameProvider, container).ToArray();
-            var ifNullBlock = new IfNullGuard(saga, startingFrames,
-                existingFrames);
 
-            Postprocessors.Add(ifNullBlock);
-        }
+
+        var startingFrames = DetermineSagaDoesNotExistSteps(sagaId, saga, frameProvider, container).ToArray();
+        var existingFrames = DetermineSagaExistsSteps(sagaId, saga, frameProvider, container).ToArray();
+        var ifNullBlock = new IfNullGuard(saga, startingFrames,
+            existingFrames);
+
+        Postprocessors.Add(ifNullBlock);
     }
 
     private void generateForOnlyStartingSaga(IContainer container, ISagaPersistenceFrameProvider frameProvider)
@@ -135,6 +130,12 @@ public class SagaChain : HandlerChain
 
     internal IEnumerable<Frame> DetermineSagaDoesNotExistSteps(Variable sagaId, Variable saga, ISagaPersistenceFrameProvider frameProvider, IContainer container)
     {
+        if (MessageType.CanBeCastTo<TimeoutMessage>())
+        {
+            yield return new ReturnFrame();
+            yield break;
+        }
+
         if (StartingCalls.Any())
         {
             yield return new CreateMissingSagaFrame(saga);

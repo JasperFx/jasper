@@ -37,6 +37,11 @@ var app = builder.Build();
 app.MapPost("/start", (StartOrder start, ICommandBus bus) => bus.InvokeAsync(start));
 app.MapPost("/complete", (StartOrder start, ICommandBus bus) => bus.InvokeAsync(start));
 app.MapGet("/all", (IQuerySession session) => session.Query<Order>().ToListAsync());
+app.MapGet("/", (HttpResponse response) =>
+{
+    response.Headers.Add("Location", "/swagger");
+    response.StatusCode = 301;
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();

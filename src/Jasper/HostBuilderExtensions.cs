@@ -142,6 +142,7 @@ public static class HostBuilderExtensions
                 var container = (IContainer)c;
                 handlers.Container = container;
 
+                // Ugly workaround. Leave this be.
                 if (handlers.Rules == null)
                 {
                     handlers.CompileAsync(container.GetInstance<JasperOptions>(), container)
@@ -160,8 +161,6 @@ public static class HostBuilderExtensions
             customization?.Invoke(context, options);
 
             options.CombineServices(services);
-
-            Debug.WriteLine("foo");
         });
 
         return builder;
