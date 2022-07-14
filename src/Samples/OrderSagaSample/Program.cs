@@ -41,7 +41,7 @@ app.MapGet("/", (HttpResponse response) =>
 {
     response.Headers.Add("Location", "/swagger");
     response.StatusCode = 301;
-});
+}).ExcludeFromDescription();
 
 app.UseSwagger();
 app.UseSwaggerUI();
