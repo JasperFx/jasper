@@ -8,6 +8,7 @@ using Baseline.ImTools;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization;
+using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Oakton.Descriptions;
 
@@ -201,7 +202,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
 
     public abstract void Parse(Uri uri);
 
-    public abstract void StartListening(IJasperRuntime runtime);
+    public abstract IListener BuildListener(IJasperRuntime runtime, IReceiver receiver);
 
     protected internal ISendingAgent StartSending(IJasperRuntime runtime,
         Uri? replyUri)

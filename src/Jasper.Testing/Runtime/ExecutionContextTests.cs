@@ -54,7 +54,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task reschedule_with_native_scheduling()
         {
-            var callback = Substitute.For<IChannelCallback, IHasNativeScheduling>();
+            var callback = Substitute.For<IChannelCallback, ISupportNativeScheduling>();
             var scheduledTime = DateTime.Today.AddHours(8);
 
             theContext.ReadEnvelope(theEnvelope, callback);
@@ -64,7 +64,7 @@ namespace Jasper.Testing.Runtime
             theEnvelope.ScheduledTime.ShouldBe(scheduledTime);
 
             await theContext.Persistence.DidNotReceive().ScheduleJobAsync(theEnvelope);
-            await callback.As<IHasNativeScheduling>().Received()
+            await callback.As<ISupportNativeScheduling>().Received()
                 .MoveToScheduledUntilAsync(theEnvelope, scheduledTime);
         }
 
@@ -86,7 +86,7 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task move_to_dead_letter_queue_with_native_dead_letter()
         {
-            var callback = Substitute.For<IChannelCallback, IHasDeadLetterQueue>();
+            var callback = Substitute.For<IChannelCallback, ISupportDeadLetterQueue>();
 
             theContext.ReadEnvelope(theEnvelope, callback);
 
@@ -94,7 +94,7 @@ namespace Jasper.Testing.Runtime
 
             await theContext.MoveToDeadLetterQueueAsync(exception);
 
-            await callback.As<IHasDeadLetterQueue>().Received()
+            await callback.As<ISupportDeadLetterQueue>().Received()
                 .MoveToErrorsAsync(theEnvelope, exception);
 
             await theRuntime.Persistence.DidNotReceive()

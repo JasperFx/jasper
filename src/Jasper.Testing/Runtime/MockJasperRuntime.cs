@@ -44,7 +44,7 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IListener> ActiveListeners()
+        public IEnumerable<IListeningAgent> ActiveListeners()
         {
             throw new NotImplementedException();
         }
@@ -129,7 +129,7 @@ namespace Jasper.Testing.Runtime
             return Task.CompletedTask;
         }
 
-        public IListeningWorkerQueue BuildDurableListener(IListener agent)
+        public IReceiver BuildDurableListener(IListener agent)
         {
             throw new NotImplementedException();
         }

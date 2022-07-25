@@ -17,9 +17,11 @@ namespace Jasper.Pulsar
         private Task? _receivingLoop;
         private CancellationToken _cancellation;
         private readonly PulsarSender _sender;
-        private IListeningWorkerQueue? _callback;
+        private IReceiver _receiver;
+        private readonly CancellationTokenSource _localCancellation;
 
-        public PulsarListener(PulsarEndpoint endpoint, PulsarTransport transport, CancellationToken cancellation)
+        public PulsarListener(PulsarEndpoint endpoint, IReceiver receiver, PulsarTransport transport,
+            CancellationToken cancellation)
         {
             _endpoint = endpoint;
             _transport = transport;
@@ -28,6 +30,12 @@ namespace Jasper.Pulsar
             Address = endpoint.Uri;
 
             _sender = new PulsarSender(endpoint, transport, _cancellation);
+
+            _receiver = receiver;
+
+            _localCancellation = new CancellationTokenSource();
+
+            Start(receiver, _cancellation);
         }
 
         public ValueTask CompleteAsync(Envelope envelope)
@@ -54,6 +62,8 @@ namespace Jasper.Pulsar
 
         public async ValueTask DisposeAsync()
         {
+            _localCancellation.Cancel();
+
             if (_consumer != null)
             {
                 await _consumer.DisposeAsync();
@@ -66,30 +76,40 @@ namespace Jasper.Pulsar
 
         public Uri Address { get; }
 
-        // TODO -- make the transitions happen with methods
+        public async ValueTask StopAsync()
+        {
+            if (_consumer != null)
+            {
+                await _consumer.DisposeAsync();
+
+                _consumer = null;
+            }
+
+            Status = ListeningStatus.Stopped;
+        }
+
+        public ValueTask RestartAsync()
+        {
+            Start(_receiver!, _cancellation);
+            Status = ListeningStatus.Accepting;
+
+            return ValueTask.CompletedTask;
+        }
+
         public ListeningStatus Status
         {
-            get => _consumer != null ? ListeningStatus.Accepting : ListeningStatus.TooBusy;
-            set
-            {
-                switch (value)
-                {
-                    case ListeningStatus.TooBusy when _consumer != null:
-                        // TODO -- no mix and matching. Rather have an inner object that either exists, or does not
-                        _consumer?.DisposeAsync();
-
-                        _consumer = null;
-                        break;
-                    case ListeningStatus.Accepting when _consumer == null:
-                        Start(_callback, _cancellation);
-                        break;
-                }
-            }
+            get;
+            private set;
         }
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+
+        [Obsolete("goes away")]
+        public void Start(IReceiver callback, CancellationToken cancellation)
         {
             _cancellation = cancellation;
-            _callback = callback;
+
+            var combined = CancellationTokenSource.CreateLinkedTokenSource(_cancellation, _localCancellation.Token);
+
+            _receiver = callback;
 
             _consumer = _transport.Client!.NewConsumer()
                 .SubscriptionName("Jasper")
@@ -100,9 +120,8 @@ namespace Jasper.Pulsar
 
             _receivingLoop = Task.Run(async () =>
             {
-                await foreach (var message in _consumer.Messages(cancellationToken: cancellation))
+                await foreach (var message in _consumer.Messages(cancellationToken: combined.Token))
                 {
-                    Debug.WriteLine(message.MessageId);
                     var envelope = new PulsarEnvelope(message);
 
                     // TODO -- invoke the deserialization here. A
@@ -111,9 +130,9 @@ namespace Jasper.Pulsar
 
                     // TODO -- the worker queue should already have the Uri,
                     // so just take in envelope
-                    await callback!.ReceivedAsync(Address, envelope);
+                    await callback!.ReceivedAsync(this, envelope);
                 }
-            }, cancellation);
+            }, combined.Token);
         }
 
         public async Task<bool> TryRequeueAsync(Envelope envelope)

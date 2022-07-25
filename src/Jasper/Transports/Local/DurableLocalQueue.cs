@@ -11,20 +11,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Local;
 
-public class DurableLocalSendingAgent : DurableWorkerQueue, ISendingAgent
+internal class DurableLocalQueue : DurableReceiver, ISendingAgent
 {
     private readonly IMessageLogger _messageLogger;
     private readonly IEnvelopePersistence _persistence;
     private readonly IMessageSerializer _serializer;
     private readonly AdvancedSettings _settings;
 
-    public DurableLocalSendingAgent(Endpoint endpoint, IHandlerPipeline pipeline,
-        AdvancedSettings settings, IEnvelopePersistence persistence, ILogger logger,
-        IMessageLogger messageLogger) : base(endpoint, pipeline, settings, persistence, logger)
+    public DurableLocalQueue(Endpoint endpoint, IJasperRuntime runtime) : base(endpoint, runtime)
     {
-        _settings = settings;
-        _persistence = persistence;
-        _messageLogger = messageLogger;
+        _settings = runtime.Advanced;
+        _persistence = runtime.Persistence;
+        _messageLogger = runtime.MessageLogger;
         _serializer = endpoint.DefaultSerializer ??
                       throw new ArgumentOutOfRangeException(nameof(endpoint),
                           "No default serializer for this Endpoint");

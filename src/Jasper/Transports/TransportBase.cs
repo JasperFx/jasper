@@ -57,11 +57,6 @@ public abstract class TransportBase<TEndpoint> : ITransport where TEndpoint : En
         foreach (var endpoint in endpoints().Where(x => x.Subscriptions.Any())) endpoint.StartSending(root, replyUri);
     }
 
-    public void StartListeners(IJasperRuntime root)
-    {
-        foreach (var endpoint in endpoints()) endpoint.StartListening(root);
-    }
-
     public Endpoint ListenTo(Uri uri)
     {
         uri = canonicizeUri(uri);

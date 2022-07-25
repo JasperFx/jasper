@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending;
 
-public class LightweightSendingAgent : SendingAgent
+internal class LightweightSendingAgent : SendingAgent
 {
     private List<Envelope> _queued = new();
 
@@ -16,7 +16,7 @@ public class LightweightSendingAgent : SendingAgent
     {
     }
 
-    public override bool IsDurable { get; } = false;
+    public override bool IsDurable => false;
 
     public override Task EnqueueForRetryAsync(OutgoingMessageBatch batch)
     {

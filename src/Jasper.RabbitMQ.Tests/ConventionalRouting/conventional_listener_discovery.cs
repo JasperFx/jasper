@@ -56,7 +56,7 @@ namespace Jasper.RabbitMQ.Tests.ConventionalRouting
             var endpoint = theRuntime.EndpointFor(uri);
             endpoint.ShouldBeNull();
 
-            theRuntime.ActiveListeners().Any(x => x.Address == uri)
+            theRuntime.ActiveListeners().Any(x => x.Uri == uri)
                 .ShouldBeFalse();
         }
 
@@ -79,7 +79,7 @@ namespace Jasper.RabbitMQ.Tests.ConventionalRouting
         {
             ConfigureConventions(c => c.InboxedListenersAndOutboxedSenders());
 
-            var listeners = theRuntime.ActiveListeners().OfType<RabbitMqListener>();
+            var listeners = theRuntime.ActiveListeners().Where(x => x.Uri.Scheme == RabbitMqTransport.ProtocolName);
             listeners.Any().ShouldBeTrue();
             foreach (var listener in listeners)
             {
@@ -92,7 +92,7 @@ namespace Jasper.RabbitMQ.Tests.ConventionalRouting
         {
             ConfigureConventions(c => c.InlineListenersAndSenders());
 
-            var listeners = theRuntime.ActiveListeners().OfType<RabbitMqListener>();
+            var listeners = theRuntime.ActiveListeners().Where(x => x.Uri.Scheme == RabbitMqTransport.ProtocolName);
             listeners.Any().ShouldBeTrue();
             foreach (var listener in listeners)
             {

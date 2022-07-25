@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 
 namespace Jasper.Transports;
 
-public interface IListener : IChannelCallback
+public interface IListener : IChannelCallback, IAsyncDisposable
 {
     Uri Address { get; }
-    ListeningStatus Status { get; set; }
-    void Start(IListeningWorkerQueue callback, CancellationToken cancellation);
+    ListeningStatus Status { get; }
+    void Start(IReceiver callback, CancellationToken cancellation);
 
-    Task<bool> TryRequeueAsync(Envelope envelope);
+    [Obsolete]
+    ValueTask StopAsync();
+    [Obsolete] ValueTask RestartAsync();
 }

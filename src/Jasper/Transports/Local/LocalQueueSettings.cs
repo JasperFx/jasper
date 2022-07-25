@@ -30,7 +30,7 @@ public class LocalQueueSettings : Endpoint
         return Mode == EndpointMode.Durable ? $"local://durable/{Name}".ToUri() : $"local://{Name}".ToUri();
     }
 
-    public override void StartListening(IJasperRuntime runtime)
+    public override IListener BuildListener(IJasperRuntime runtime, IReceiver receiver)
     {
         throw new NotSupportedException();
     }

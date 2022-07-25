@@ -192,7 +192,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeOu
         }
 
         Envelope.ScheduledTime = scheduledTime;
-        if (_channel is IHasNativeScheduling c)
+        if (_channel is ISupportNativeScheduling c)
         {
             await c.MoveToScheduledUntilAsync(Envelope, Envelope.ScheduledTime.Value);
         }
@@ -209,7 +209,7 @@ public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeOu
             throw new InvalidOperationException("No Envelope is active for this context");
         }
 
-        if (_channel is IHasDeadLetterQueue c)
+        if (_channel is ISupportDeadLetterQueue c)
         {
             await c.MoveToErrorsAsync(Envelope, exception);
         }

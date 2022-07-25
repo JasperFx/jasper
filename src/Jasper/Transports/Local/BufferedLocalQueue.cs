@@ -10,15 +10,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Local;
 
-public class LightweightLocalSendingAgent : LightweightWorkerQueue, ISendingAgent
+internal class BufferedLocalQueue : BufferedReceiver, ISendingAgent
 {
     private readonly IMessageLogger _messageLogger;
 
-    public LightweightLocalSendingAgent(Endpoint endpoint, ILogger logger,
-        IHandlerPipeline pipeline, AdvancedSettings settings, IMessageLogger messageLogger) : base(endpoint, logger,
-        pipeline, settings)
+    public BufferedLocalQueue(Endpoint endpoint, IJasperRuntime runtime) : base(endpoint, runtime)
     {
-        _messageLogger = messageLogger;
+        _messageLogger = runtime.MessageLogger;
         Destination = Address = endpoint.Uri;
         Endpoint = endpoint;
     }

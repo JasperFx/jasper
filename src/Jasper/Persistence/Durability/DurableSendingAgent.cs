@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Persistence.Durability;
 
-public class DurableSendingAgent : SendingAgent
+internal class DurableSendingAgent : SendingAgent
 {
     private readonly ILogger _logger;
     private readonly IEnvelopePersistence _persistence;

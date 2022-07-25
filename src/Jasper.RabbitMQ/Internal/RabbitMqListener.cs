@@ -14,12 +14,12 @@ namespace Jasper.RabbitMQ.Internal
         private readonly ILogger _logger;
         private readonly string _routingKey;
         private readonly RabbitMqSender _sender;
-        private IListeningWorkerQueue? _callback;
+        private IReceiver _receiver;
         private CancellationToken _cancellation = CancellationToken.None;
         private WorkerQueueMessageConsumer? _consumer;
 
         public RabbitMqListener(ILogger logger,
-            RabbitMqEndpoint endpoint, RabbitMqTransport transport) : base(transport.ListeningConnection, transport, endpoint, logger)
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport, IReceiver receiver) : base(transport.ListeningConnection, transport, endpoint, logger)
         {
             _logger = logger;
             Endpoint = endpoint;
@@ -28,51 +28,65 @@ namespace Jasper.RabbitMQ.Internal
             _routingKey = endpoint.RoutingKey ?? endpoint.QueueName ?? "";
 
             _sender = new RabbitMqSender(Endpoint, transport, RoutingMode.Static, logger);
+
+            Start(receiver, _cancellation);
         }
 
         public RabbitMqEndpoint Endpoint { get; }
 
         public override void Dispose()
         {
-            _callback?.Dispose();
+            _receiver?.Dispose();
             base.Dispose();
             _sender.Dispose();
         }
 
-        public ListeningStatus Status
+        public ValueTask DisposeAsync()
         {
-            get => _consumer != null ? ListeningStatus.Accepting : ListeningStatus.TooBusy;
-            set
-            {
-                switch (value)
-                {
-                    case ListeningStatus.TooBusy when _consumer != null:
-                        _consumer.Dispose();
-
-                        Channel.BasicCancel(_consumer.ConsumerTags.FirstOrDefault());
-                        _consumer = null;
-                        break;
-                    case ListeningStatus.Accepting when _consumer == null:
-                        Start(_callback!, _cancellation);
-                        break;
-                }
-            }
+            Dispose();
+            return ValueTask.CompletedTask;
         }
 
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+        public ValueTask StopAsync()
+        {
+            Status = ListeningStatus.Stopped;
+            if (_consumer == null) return ValueTask.CompletedTask;
+            _consumer.Dispose();
+
+            Channel.BasicCancel(_consumer.ConsumerTags.FirstOrDefault());
+            _consumer = null;
+
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask RestartAsync()
+        {
+            Start(_receiver!, _cancellation);
+            return ValueTask.CompletedTask;
+        }
+
+        public ListeningStatus Status
+        {
+            get;
+            private set;
+        }
+
+        [Obsolete]
+        public void Start(IReceiver callback, CancellationToken cancellation)
         {
             _cancellation = cancellation;
             _cancellation.Register(teardownChannel);
 
             EnsureConnected();
 
-            _callback = callback ?? throw new ArgumentNullException(nameof(callback));
+            _receiver = callback ?? throw new ArgumentNullException(nameof(callback));
             _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, Endpoint, Address,
                 _cancellation);
 
             Channel.BasicQos(Endpoint.PreFetchSize, Endpoint.PreFetchCount, false);
 
             Channel.BasicConsume(_consumer, _routingKey);
+            Status = ListeningStatus.Accepting;
         }
 
         public async Task<bool> TryRequeueAsync(Envelope envelope)

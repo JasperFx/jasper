@@ -27,8 +27,8 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         protected SqlServerSettings mssqlSettings;
         protected SqlServerEnvelopePersistence thePersistence;
         protected AdvancedSettings theSettings;
-        protected DurableWorkerQueue theWorkerQueue;
-        private IHandlerPipeline thePipeline;
+        internal DurableReceiver theReceiver;
+        private IHandlerPipeline thePipeline = Substitute.For<IHandlerPipeline>();
 
 
         public SqlServerBackedListenerContext()
@@ -42,10 +42,14 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
             thePersistence = new SqlServerEnvelopePersistence(mssqlSettings, theSettings, new NullLogger<SqlServerEnvelopePersistence>());
 
+            var runtime = Substitute.For<IJasperRuntime>();
+            runtime.Persistence.Returns(thePersistence);
+            runtime.Pipeline.Returns(thePipeline);
+            runtime.Advanced.Returns(theSettings);
 
-            thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings, thePersistence, NullLogger.Instance);
-            theWorkerQueue.StartListening(Substitute.For<IListener>());
+
+            theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime);
+            theReceiver.StartListening(Substitute.For<IListener>());
         }
 
         protected Envelope notScheduledEnvelope()
@@ -95,19 +99,21 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
         protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
-            await theWorkerQueue.ProcessReceivedMessagesAsync(DateTimeOffset.Now, theUri, theEnvelopes.ToArray());
+            var listener = Substitute.For<IListener>();
+            listener.Address.Returns(theUri);
+            await theReceiver.ProcessReceivedMessagesAsync(DateTimeOffset.Now, listener, theEnvelopes.ToArray());
 
             return await thePersistence.Admin.AllIncomingAsync();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)
         {
-            thePipeline.Received().InvokeAsync(envelope, theWorkerQueue);
+            thePipeline.Received().InvokeAsync(envelope, theReceiver);
         }
 
         protected void assertEnvelopeWasNotEnqueued(Envelope envelope)
         {
-            thePipeline.DidNotReceive().InvokeAsync(envelope, theWorkerQueue);
+            thePipeline.DidNotReceive().InvokeAsync(envelope, theReceiver);
         }
     }
 }

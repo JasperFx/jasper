@@ -12,14 +12,16 @@ namespace Jasper.RabbitMQ.Internal
     public class ParallelRabbitMqListener : IListener, IDisposable
     {
         private readonly IList<RabbitMqListener> _listeners = new List<RabbitMqListener>();
+        private IReceiver? _callback;
+        private CancellationToken _cancellation;
 
         public ParallelRabbitMqListener(ILogger logger,
-            RabbitMqEndpoint endpoint, RabbitMqTransport transport)
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport, IReceiver receiver)
         {
             Address = endpoint.Uri;
             for (var i = 0; i < endpoint.ListenerCount; i++)
             {
-                var listener = new RabbitMqListener(logger, endpoint, transport);
+                var listener = new RabbitMqListener(logger, endpoint, transport, receiver);
                 _listeners.Add(listener);
             }
         }
@@ -29,21 +31,41 @@ namespace Jasper.RabbitMQ.Internal
             foreach (var listener in _listeners) listener.SafeDispose();
         }
 
+        public ValueTask DisposeAsync()
+        {
+            Dispose();
+            return ValueTask.CompletedTask;
+        }
+
         public Uri Address { get; }
 
 
-        public ListeningStatus Status
+        public ListeningStatus Status => _listeners[0].Status;
+
+        public async ValueTask StopAsync()
         {
-            get => _listeners[0].Status;
-            set
+            foreach (var listener in _listeners)
             {
-                foreach (var listener in _listeners) listener.Status = value;
+                await listener.StopAsync();
             }
         }
 
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+        public async ValueTask RestartAsync()
         {
-            foreach (var listener in _listeners) listener.Start(callback, cancellation);
+            foreach (var listener in _listeners)
+            {
+                await listener.RestartAsync();
+            }
+        }
+
+        public void Start(IReceiver callback, CancellationToken cancellation)
+        {
+            _callback = callback;
+            _cancellation = cancellation;
+            foreach (var listener in _listeners)
+            {
+                listener.Start(callback, cancellation);
+            }
         }
 
         public Task<bool> TryRequeueAsync(Envelope envelope)

@@ -7,7 +7,7 @@ namespace Jasper.Transports;
 ///     Marks an IChannelCallback as supporting a native dead letter queue
 ///     functionality
 /// </summary>
-public interface IHasDeadLetterQueue
+public interface ISupportDeadLetterQueue
 {
     Task MoveToErrorsAsync(Envelope envelope, Exception exception);
 }
@@ -15,7 +15,7 @@ public interface IHasDeadLetterQueue
 /// <summary>
 ///     Marks an IChannelCallback as supporting native scheduled send
 /// </summary>
-public interface IHasNativeScheduling
+public interface ISupportNativeScheduling
 {
     /// <summary>
     ///     Move the current message represented by the envelope to a
@@ -38,9 +38,19 @@ public interface IChannelCallback
 
 
     /// <summary>
-    ///     Requeue the message for later processing
+    /// Mark the incoming message as not processed
     /// </summary>
     /// <param name="envelope"></param>
     /// <returns></returns>
     ValueTask DeferAsync(Envelope envelope);
+
+    /// <summary>
+    /// Attempt to place this message back at the end of the channel queue
+    /// </summary>
+    /// <param name="envelope"></param>
+    /// <returns></returns>
+    Task<bool> TryRequeueAsync(Envelope envelope)
+    {
+        return Task.FromResult(false);
+    }
 }

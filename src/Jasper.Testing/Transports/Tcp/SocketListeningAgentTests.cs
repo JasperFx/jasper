@@ -19,10 +19,10 @@ namespace Jasper.Testing.Transports.Tcp
         {
             var stream = new MemoryStream();
 
-            var agent = new SocketListener(NullLogger.Instance, IPAddress.Any, 5500, CancellationToken.None);
+            var agent = new SocketListener(Substitute.For<IReceiver>(), NullLogger.Instance, IPAddress.Any, 5500, CancellationToken.None);
             agent.Status = ListeningStatus.TooBusy;
 
-            var callback = Substitute.For<IListeningWorkerQueue>();
+            var callback = Substitute.For<IReceiver>();
 
             await agent.HandleStreamAsync(callback, stream);
 
@@ -37,7 +37,7 @@ namespace Jasper.Testing.Transports.Tcp
         [Fact]
         public void status_is_accepting_by_default()
         {
-            new SocketListener(NullLogger.Instance, IPAddress.Any, 5500, CancellationToken.None)
+            new SocketListener(Substitute.For<IReceiver>(), NullLogger.Instance, IPAddress.Any, 5500, CancellationToken.None)
                 .Status.ShouldBe(ListeningStatus.Accepting);
         }
     }

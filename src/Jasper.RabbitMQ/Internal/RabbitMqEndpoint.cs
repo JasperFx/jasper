@@ -184,18 +184,11 @@ namespace Jasper.RabbitMQ.Internal
             }
         }
 
-        public override void StartListening(IJasperRuntime runtime)
+        public override IListener BuildListener(IJasperRuntime runtime, IReceiver receiver)
         {
-            if (!IsListener)
-            {
-                return;
-            }
-
-            IListener listener = ListenerCount > 1
-                ? new ParallelRabbitMqListener(runtime.Logger, this, _parent)
-                : new RabbitMqListener(runtime.Logger, this, _parent);
-
-            runtime.AddListener(listener, this);
+            return ListenerCount > 1
+                ? new ParallelRabbitMqListener(runtime.Logger, this, _parent, receiver)
+                : new RabbitMqListener(runtime.Logger, this, _parent, receiver);
         }
 
         protected override ISender CreateSender(IJasperRuntime runtime)

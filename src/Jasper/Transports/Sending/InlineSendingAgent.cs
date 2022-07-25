@@ -5,7 +5,7 @@ using Jasper.Logging;
 
 namespace Jasper.Transports.Sending;
 
-public class InlineSendingAgent : ISendingAgent
+internal class InlineSendingAgent : ISendingAgent
 {
     private readonly IMessageLogger _logger;
     private readonly ISender _sender;

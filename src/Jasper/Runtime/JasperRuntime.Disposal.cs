@@ -28,16 +28,9 @@ public partial class JasperRuntime : IAsyncDisposable
             }
         }
 
-        foreach (var listener in _disposables)
+        foreach (var value in _listeners.Values)
         {
-            if (listener is IAsyncDisposable ad)
-            {
-                await ad.DisposeAsync();
-            }
-            else if (listener is IDisposable d)
-            {
-                d.SafeDispose();
-            }
+            await value.DisposeAsync();
         }
 
         Advanced.Cancel();

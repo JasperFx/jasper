@@ -39,7 +39,7 @@ namespace Jasper.RabbitMQ.Tests.ConventionalRouting
         [Fact]
         public void should_be_an_active_listener()
         {
-            theRuntime.ActiveListeners().Any(x => x.Address == theExpectedUri)
+            theRuntime.ActiveListeners().Any(x => x.Uri == theExpectedUri)
                 .ShouldBeTrue();
         }
 

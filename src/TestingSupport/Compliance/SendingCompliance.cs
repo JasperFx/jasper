@@ -7,10 +7,13 @@ using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
+using Jasper.Runtime;
 using Jasper.Serialization;
 using Jasper.Tracking;
+using Jasper.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Oakton.Resources;
 using Shouldly;
 using TestingSupport.ErrorHandling;
@@ -171,6 +174,16 @@ namespace TestingSupport.Compliance
         public T Fixture { get; }
 
         [Fact]
+        public void all_listeners_say_they_are_accepting_on_startup()
+        {
+            var runtime = (theReceiver ?? theSender).Get<IJasperRuntime>();
+            foreach (var listener in runtime.ActiveListeners())
+            {
+                listener.Status.ShouldBe(ListeningStatus.Accepting);
+            }
+        }
+
+        [Fact]
         public virtual async Task can_apply_requeue_mechanics()
         {
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
@@ -187,6 +200,36 @@ namespace TestingSupport.Compliance
         [Fact]
         public async Task can_send_from_one_node_to_another_by_destination()
         {
+            var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
+                .AlsoTrack(theReceiver)
+                .DoNotAssertOnExceptionsDetected()
+                .ExecuteAndWaitAsync(c => c.SendAsync(theOutboundAddress, new Message1()));
+
+
+            session.FindSingleTrackedMessageOfType<Message1>(EventType.MessageSucceeded)
+                .ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task can_stop_and_restart_listeners()
+        {
+            var receiving = (theReceiver ?? theSender);
+            var runtime = receiving.Get<IJasperRuntime>();
+
+            foreach (var listener in runtime.ActiveListeners())
+            {
+                await listener.StopAsync();
+
+                listener.Status.ShouldBe(ListeningStatus.Stopped);
+            }
+
+            foreach (var listener in runtime.ActiveListeners())
+            {
+                await listener.StartAsync();
+
+                listener.Status.ShouldBe(ListeningStatus.Accepting);
+            }
+
             var session = await theSender.TrackActivity(Fixture.DefaultTimeout)
                 .AlsoTrack(theReceiver)
                 .DoNotAssertOnExceptionsDetected()

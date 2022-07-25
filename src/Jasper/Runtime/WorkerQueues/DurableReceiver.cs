@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Baseline.Dates;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
@@ -11,22 +10,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime.WorkerQueues;
 
-public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling, IHasDeadLetterQueue, IAsyncDisposable
+internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeScheduling, ISupportDeadLetterQueue, IAsyncDisposable
 {
     private readonly ILogger _logger;
     private readonly IEnvelopePersistence _persistence;
     private readonly ActionBlock<Envelope> _receiver;
     private readonly AdvancedSettings _settings;
-    private IListener? _listener;
 
-    public DurableWorkerQueue(Endpoint endpoint, IHandlerPipeline pipeline,
-        AdvancedSettings settings, IEnvelopePersistence persistence, ILogger logger)
+    public DurableReceiver(Endpoint endpoint, IJasperRuntime runtime)
     {
-        _settings = settings;
-        _persistence = persistence;
-        _logger = logger;
+        _settings = runtime.Advanced;
+        _persistence = runtime.Persistence;
+        _logger = runtime.Logger;
+        var pipeline = runtime.Pipeline;
 
-        endpoint.ExecutionOptions.CancellationToken = settings.Cancellation;
+        endpoint.ExecutionOptions.CancellationToken = _settings.Cancellation;
 
         _receiver = new ActionBlock<Envelope>(async envelope =>
         {
@@ -38,8 +36,10 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
             }
             catch (Exception? e)
             {
+                // TODO -- how does this get recovered?
+
                 // This *should* never happen, but of course it will
-                logger.LogError(e, "Unexpected pipeline invocation error");
+                _logger.LogError(e, "Unexpected pipeline invocation error");
             }
         }, endpoint.ExecutionOptions);
     }
@@ -95,45 +95,44 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
         return executeWithRetriesAsync(() => _persistence.ScheduleExecutionAsync(new[] { envelope }));
     }
 
-    public int QueuedCount => _receiver.InputCount;
-
     public void Enqueue(Envelope envelope)
     {
         envelope.ReplyUri = envelope.ReplyUri ?? Address;
         _receiver.Post(envelope);
     }
 
-    public void ScheduleExecution(Envelope envelope)
-    {
-        // Should never be called, this is only used by lightweight
-        // worker queues
-        throw new NotSupportedException();
-    }
-
+    [Obsolete]
     public void StartListening(IListener listener)
     {
-        _listener = listener;
-        _listener.Start(this, _settings.Cancellation);
+        listener.Start(this, _settings.Cancellation);
 
-        Address = _listener.Address;
+        Address = listener.Address;
     }
 
 
-    public Task ReceivedAsync(Uri uri, Envelope[] messages)
+    public ValueTask ReceivedAsync(IListener listener, Envelope[] messages)
     {
         var now = DateTimeOffset.Now;
 
-        return ProcessReceivedMessagesAsync(now, uri, messages);
+        return ProcessReceivedMessagesAsync(now, listener, messages);
     }
 
-    public async ValueTask ReceivedAsync(Uri uri, Envelope envelope)
+    public async ValueTask ReceivedAsync(IListener listener, Envelope envelope)
     {
-        if (_listener == null) throw new InvalidOperationException($"Worker queue for {uri} has not been started");
+        if (listener == null)
+        {
+            throw new ArgumentNullException(nameof(listener));
+        }
+
+        if (envelope == null)
+        {
+            throw new ArgumentNullException(nameof(envelope));
+        }
 
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
             ActivityKind.Consumer);
         var now = DateTimeOffset.Now;
-        envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
+        envelope.MarkReceived(listener, now, _settings);
 
         await _persistence.StoreIncomingAsync(envelope);
 
@@ -142,7 +141,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
             Enqueue(envelope);
         }
 
-        await _listener.CompleteAsync(envelope);
+        await listener.CompleteAsync(envelope);
 
         _logger.IncomingReceived(envelope, Address);
     }
@@ -161,7 +160,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
     }
 
     // Separated for testing here.
-    public async Task ProcessReceivedMessagesAsync(DateTimeOffset now, Uri uri, Envelope[] envelopes)
+    public async ValueTask ProcessReceivedMessagesAsync(DateTimeOffset now, IListener listener, Envelope[] envelopes)
     {
         if (_settings.Cancellation.IsCancellationRequested)
         {
@@ -170,7 +169,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
 
         foreach (var envelope in envelopes)
         {
-            envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
+            envelope.MarkReceived(listener, now, _settings);
         }
 
         await _persistence.StoreIncomingAsync(envelopes);
@@ -178,7 +177,7 @@ public class DurableWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeSche
         foreach (var message in envelopes)
         {
             Enqueue(message);
-            await _listener!.CompleteAsync(message);
+            await listener.CompleteAsync(message);
         }
 
         _logger.IncomingBatchReceived(envelopes);

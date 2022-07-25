@@ -156,12 +156,14 @@ namespace Jasper.Testing
             envelope.ScheduledTime = null;
 
             var uri = TransportConstants.LocalUri;
-            var uniqueNodeId = 3;
+            var settings = new AdvancedSettings(null);
 
-            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
+            var listener = Substitute.For<IListener>();
+            listener.Address.Returns(uri);
+            envelope.MarkReceived(listener, DateTimeOffset.Now, settings);
 
             envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
-            envelope.OwnerId.ShouldBe(uniqueNodeId);
+            envelope.OwnerId.ShouldBe(settings.UniqueNodeId);
 
         }
 
@@ -172,9 +174,12 @@ namespace Jasper.Testing
             envelope.ScheduledTime = DateTimeOffset.Now.AddDays(-1);
 
             var uri = TransportConstants.LocalUri;
-            var uniqueNodeId = 3;
+            var settings = new AdvancedSettings(null);
 
-            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
+            var listener = Substitute.For<IListener>();
+            listener.Address.Returns(uri);
+
+            envelope.MarkReceived(listener, DateTimeOffset.Now, settings);
 
             envelope.Destination.ShouldBe(uri);
         }
@@ -187,12 +192,15 @@ namespace Jasper.Testing
             envelope.ScheduledTime = DateTimeOffset.Now.AddDays(-1);
 
             var uri = TransportConstants.LocalUri;
-            var uniqueNodeId = 3;
+            var listener = Substitute.For<IListener>();
+            listener.Address.Returns(uri);
 
-            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
+            var settings = new AdvancedSettings(null);
+
+            envelope.MarkReceived(listener, DateTimeOffset.Now, settings);
 
             envelope.Status.ShouldBe(EnvelopeStatus.Incoming);
-            envelope.OwnerId.ShouldBe(uniqueNodeId);
+            envelope.OwnerId.ShouldBe(settings.UniqueNodeId);
 
         }
 
@@ -203,9 +211,12 @@ namespace Jasper.Testing
             envelope.ScheduledTime = DateTimeOffset.Now.AddDays(1);
 
             var uri = TransportConstants.LocalUri;
-            var uniqueNodeId = 3;
+            var listener = Substitute.For<IListener>();
+            listener.Address.Returns(uri);
 
-            envelope.MarkReceived(uri, DateTimeOffset.Now, uniqueNodeId);
+            var settings = new AdvancedSettings(null);
+
+            envelope.MarkReceived(listener, DateTimeOffset.Now, settings);
 
             envelope.Status.ShouldBe(EnvelopeStatus.Scheduled);
             envelope.OwnerId.ShouldBe(TransportConstants.AnyNode);

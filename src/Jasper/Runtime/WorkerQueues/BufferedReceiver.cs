@@ -10,26 +10,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime.WorkerQueues;
 
-public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNativeScheduling
+internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeScheduling
 {
     private readonly ILogger _logger;
-    private readonly ActionBlock<Envelope> _receiver;
+    private readonly ActionBlock<Envelope> _receivingBlock;
     private readonly InMemoryScheduledJobProcessor _scheduler;
     private readonly AdvancedSettings _settings;
-    private IListener? _listener;
 
-    public LightweightWorkerQueue(Endpoint endpoint, ILogger logger,
-        IHandlerPipeline pipeline, AdvancedSettings settings)
+    public BufferedReceiver(Endpoint endpoint, IJasperRuntime runtime)
     {
-        _logger = logger;
-        _settings = settings;
-        Pipeline = pipeline;
+        _logger = runtime.Logger;
+        _settings = runtime.Advanced;
+        Pipeline = runtime.Pipeline;
 
         _scheduler = new InMemoryScheduledJobProcessor(this);
 
-        endpoint.ExecutionOptions.CancellationToken = settings.Cancellation;
+        endpoint.ExecutionOptions.CancellationToken = _settings.Cancellation;
 
-        _receiver = new ActionBlock<Envelope>(async envelope =>
+        _receivingBlock = new ActionBlock<Envelope>(async envelope =>
         {
             try
             {
@@ -43,7 +41,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
             catch (Exception? e)
             {
                 // This *should* never happen, but of course it will
-                logger.LogError(e, "Unexpected error in Pipeline invocation");
+                _logger.LogError(e, "Unexpected error in Pipeline invocation");
             }
         }, endpoint.ExecutionOptions);
     }
@@ -59,28 +57,26 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
 
     async ValueTask IChannelCallback.DeferAsync(Envelope envelope)
     {
-        if (_listener == null)
+        if (envelope.Listener == null)
         {
             Enqueue(envelope);
             return;
         }
 
-        var nativelyRequeued = await _listener.TryRequeueAsync(envelope);
+        var nativelyRequeued = await envelope.Listener.TryRequeueAsync(envelope);
         if (!nativelyRequeued)
         {
             Enqueue(envelope);
         }
     }
 
-    Task IHasNativeScheduling.MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
+    Task ISupportNativeScheduling.MoveToScheduledUntilAsync(Envelope envelope, DateTimeOffset time)
     {
         envelope.ScheduledTime = time;
         ScheduleExecution(envelope);
 
         return Task.CompletedTask;
     }
-
-    public int QueuedCount => _receiver.InputCount;
 
     public void Enqueue(Envelope envelope)
     {
@@ -89,7 +85,7 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
             return;
         }
 
-        _receiver.Post(envelope);
+        _receivingBlock.Post(envelope);
     }
 
     public void ScheduleExecution(Envelope envelope)
@@ -103,31 +99,37 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
         _scheduler.Enqueue(envelope.ScheduledTime.Value, envelope);
     }
 
-
+    [Obsolete]
     public void StartListening(IListener listener)
     {
-        _listener = listener;
-        _listener.Start(this, _settings.Cancellation);
+        listener.Start(this, _settings.Cancellation);
 
-        Address = _listener.Address;
+        Address = listener.Address;
     }
 
-    Task IListeningWorkerQueue.ReceivedAsync(Uri uri, Envelope[] messages)
+    async ValueTask IReceiver.ReceivedAsync(IListener listener, Envelope[] messages)
     {
         var now = DateTimeOffset.Now;
 
-        return ProcessReceivedMessagesAsync(now, uri, messages);
-    }
-
-    public async ValueTask ReceivedAsync(Uri uri, Envelope envelope)
-    {
-        if (_listener == null)
+        if (_settings.Cancellation.IsCancellationRequested)
         {
-            throw new InvalidOperationException("This worker queue has not been initialized with a listener");
+            throw new OperationCanceledException();
         }
 
+        foreach (var envelope in messages)
+        {
+            envelope.MarkReceived(listener, now, _settings);
+            Enqueue(envelope);
+            await listener.CompleteAsync(envelope);
+        }
+
+        _logger.IncomingBatchReceived(messages);
+    }
+
+    public async ValueTask ReceivedAsync(IListener listener, Envelope envelope)
+    {
         var now = DateTimeOffset.Now;
-        envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
+        envelope.MarkReceived(listener, now, _settings);
 
         if (envelope.IsExpired())
         {
@@ -143,36 +145,13 @@ public class LightweightWorkerQueue : IWorkerQueue, IChannelCallback, IHasNative
             Enqueue(envelope);
         }
 
-        await _listener.CompleteAsync(envelope);
+        await listener.CompleteAsync(envelope);
 
         _logger.IncomingReceived(envelope, Address);
     }
 
     public void Dispose()
     {
-        _receiver.Complete();
-    }
-
-    // Separated for testing here.
-    public async Task ProcessReceivedMessagesAsync(DateTimeOffset now, Uri uri, Envelope[] envelopes)
-    {
-        if (_settings.Cancellation.IsCancellationRequested)
-        {
-            throw new OperationCanceledException();
-        }
-
-        if (_listener == null)
-        {
-            throw new InvalidOperationException("This worker queue has not been initialized with a listener");
-        }
-
-        foreach (var envelope in envelopes)
-        {
-            envelope.MarkReceived(uri, now, _settings.UniqueNodeId);
-            Enqueue(envelope);
-            await _listener.CompleteAsync(envelope);
-        }
-
-        _logger.IncomingBatchReceived(envelopes);
+        _receivingBlock.Complete();
     }
 }

@@ -7,45 +7,39 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime.WorkerQueues;
 
-public class InlineWorkerQueue : IListeningWorkerQueue
+public class InlineReceiver : IReceiver
 {
     private readonly ILogger _logger;
     private readonly IHandlerPipeline _pipeline;
     private readonly AdvancedSettings _settings;
 
-    public InlineWorkerQueue(IHandlerPipeline pipeline, ILogger logger, IListener listener,
-        AdvancedSettings settings)
+    public InlineReceiver(IJasperRuntime runtime)
     {
-        Listener = listener;
-        _pipeline = pipeline;
-        _logger = logger;
-        _settings = settings;
-
-        Listener.Start(this, settings.Cancellation);
+        _pipeline = runtime.Pipeline;
+        _logger = runtime.Logger;
+        _settings = runtime.Advanced;
     }
-
-    public IListener? Listener { get; private set; }
 
     public void Dispose()
     {
-        Listener = null; // making sure the listener can be released
+        // Nothing
     }
 
-    public async Task ReceivedAsync(Uri uri, Envelope[] messages)
+    public async ValueTask ReceivedAsync(IListener listener, Envelope[] messages)
     {
-        foreach (var envelope in messages) await ReceivedAsync(uri, envelope);
+        foreach (var envelope in messages) await ReceivedAsync(listener, envelope);
     }
 
-    public async ValueTask ReceivedAsync(Uri uri, Envelope envelope)
+    public async ValueTask ReceivedAsync(IListener listener, Envelope envelope)
     {
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
             ActivityKind.Consumer);
 
         try
         {
-            envelope.MarkReceived(uri, DateTimeOffset.Now, _settings.UniqueNodeId);
-            await _pipeline.InvokeAsync(envelope, Listener!, activity!);
-            _logger.IncomingReceived(envelope, Listener!.Address);
+            envelope.MarkReceived(listener, DateTimeOffset.UtcNow, _settings);
+            await _pipeline.InvokeAsync(envelope, listener, activity!);
+            _logger.IncomingReceived(envelope, listener.Address);
 
             // TODO -- mark success on the activity?
         }
@@ -56,7 +50,7 @@ public class InlineWorkerQueue : IListeningWorkerQueue
 
             try
             {
-                await Listener!.DeferAsync(envelope);
+                await listener.DeferAsync(envelope);
             }
             catch (Exception? ex)
             {

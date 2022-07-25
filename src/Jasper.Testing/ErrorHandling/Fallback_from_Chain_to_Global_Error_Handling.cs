@@ -35,7 +35,7 @@ namespace Jasper.Testing.ErrorHandling
             record.ShouldHaveSucceededOnAttempt(3);
         }
 
-        [Fact]
+        [Fact] // this blinks some times with timing issues. Grrr.
         public async Task chain_specific_rules_catch()
         {
             throwOnAttempt<DivideByZeroException>(1);

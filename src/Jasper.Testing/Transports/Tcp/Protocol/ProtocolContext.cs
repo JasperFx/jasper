@@ -84,7 +84,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
     }
 
 
-    public class StubReceiverCallback : IListeningWorkerQueue
+    public class StubReceiverCallback : IReceiver
     {
         public bool ThrowErrorOnReceived;
 
@@ -97,16 +97,16 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         public Uri Address { get; }
         public ListeningStatus Status { get; set; }
 
-        Task IListeningWorkerQueue.ReceivedAsync(Uri uri, Envelope[] messages)
+        ValueTask IReceiver.ReceivedAsync(IListener listener, Envelope[] messages)
         {
             if (ThrowErrorOnReceived) throw new DivideByZeroException();
 
             MessagesReceived = messages;
 
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        public ValueTask ReceivedAsync(Uri uri, Envelope envelope)
+        public ValueTask ReceivedAsync(IListener listener, Envelope envelope)
         {
             throw new NotImplementedException();
         }

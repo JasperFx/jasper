@@ -33,9 +33,8 @@ public interface IJasperRuntime
     ISendingAgent CreateSendingAgent(Uri? replyUri, ISender sender, Endpoint endpoint);
 
     ISendingAgent GetOrBuildSendingAgent(Uri address, Action<Endpoint>? configureNewEndpoint = null);
-    void AddListener(IListener listener, Endpoint endpoint);
 
-    IEnumerable<IListener> ActiveListeners();
+    IEnumerable<IListeningAgent> ActiveListeners();
 
     void AddSendingAgent(ISendingAgent sendingAgent);
 

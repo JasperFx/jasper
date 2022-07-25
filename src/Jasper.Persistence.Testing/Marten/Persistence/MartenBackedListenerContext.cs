@@ -58,9 +58,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         protected readonly IList<Envelope> theEnvelopes = new List<Envelope>();
         protected readonly DocumentStore theStore;
         protected readonly Uri theUri = "tcp://localhost:1111".ToUri();
-        private IHandlerPipeline thePipeline;
+        private IHandlerPipeline thePipeline = Substitute.For<IHandlerPipeline>();
         protected AdvancedSettings theSettings;
-        protected DurableWorkerQueue theWorkerQueue;
+        internal DurableReceiver theReceiver;
 
 
         public MartenBackedListenerContext()
@@ -81,13 +81,18 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             var persistence =
                 new PostgresqlEnvelopePersistence(
                     new PostgresqlSettings {ConnectionString = Servers.PostgresConnectionString}, theSettings, new NullLogger<PostgresqlEnvelopePersistence>());
-            thePipeline = Substitute.For<IHandlerPipeline>();
-            theWorkerQueue = new DurableWorkerQueue(new LocalQueueSettings("temp"), thePipeline, theSettings,
-                persistence, NullLogger.Instance);
+
+            var runtime = Substitute.For<IJasperRuntime>();
+            runtime.Persistence.Returns(persistence);
+            runtime.Pipeline.Returns(thePipeline);
+            runtime.Advanced.Returns(theSettings);
+
+
+            theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime);
 
 
             var agent = Substitute.For<IListener>();
-            theWorkerQueue.StartListening(agent);
+            theReceiver.StartListening(agent);
         }
 
         public Task DisposeAsync()
@@ -147,19 +152,21 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
         protected async Task<IReadOnlyList<Envelope>> afterReceivingTheEnvelopes()
         {
-            await theWorkerQueue.ProcessReceivedMessagesAsync(DateTimeOffset.Now, theUri, theEnvelopes.ToArray());
+            var listener = Substitute.For<IListener>();
+            listener.Address.Returns(theUri);
+            await theReceiver.ProcessReceivedMessagesAsync(DateTimeOffset.Now,listener, theEnvelopes.ToArray());
 
             return await EnvelopeStorageAdmin.AllIncomingAsync();
         }
 
         protected void assertEnvelopeWasEnqueued(Envelope envelope)
         {
-            thePipeline.Received().InvokeAsync(envelope, theWorkerQueue);
+            thePipeline.Received().InvokeAsync(envelope, theReceiver);
         }
 
         protected void assertEnvelopeWasNotEnqueued(Envelope envelope)
         {
-            thePipeline.DidNotReceive().InvokeAsync(envelope, theWorkerQueue);
+            thePipeline.DidNotReceive().InvokeAsync(envelope, theReceiver);
         }
     }
 }

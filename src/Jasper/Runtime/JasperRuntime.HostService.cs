@@ -59,7 +59,7 @@ public partial class JasperRuntime
     private void startInMemoryScheduledJobs()
     {
         ScheduledJobs =
-            new InMemoryScheduledJobProcessor((IWorkerQueue)AgentForLocalQueue(TransportConstants.Replies));
+            new InMemoryScheduledJobProcessor((ILocalQueue)AgentForLocalQueue(TransportConstants.Replies));
 
         // Bit of a hack, but it's necessary. Came up in compliance tests
         if (Persistence is NullEnvelopePersistence p)
@@ -87,9 +87,14 @@ public partial class JasperRuntime
             transport.StartSenders(this);
         }
 
-        foreach (var transport in Options)
+        var listeningEndpoints = Options.SelectMany(x => x.Endpoints())
+            .Where(x => x.IsListener).Where(x => x is not LocalQueueSettings);
+
+        foreach (var endpoint in listeningEndpoints)
         {
-            transport.StartListeners(this);
+            var agent = new ListeningAgent(endpoint, this);
+            await agent.StartAsync().ConfigureAwait(false);
+            _listeners[agent.Uri] = agent;
         }
     }
 
@@ -102,8 +107,7 @@ public partial class JasperRuntime
             var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
             // TODO -- use the worker queue for Retries?
-            var worker = new DurableWorkerQueue(new LocalQueueSettings("scheduled"), Pipeline, Advanced, Persistence,
-                Logger);
+            var worker = new DurableReceiver(new LocalQueueSettings("scheduled"), this);
 
             Durability = new DurabilityAgent(this, Logger, durabilityLogger, worker, Persistence,
                 Options.Advanced);
