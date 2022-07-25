@@ -33,31 +33,34 @@ public class AppointmentDurationProjection : EventProjection
         table.AddColumn<DateTimeOffset>("end");
 
         SchemaObjects.Add(table);
+
+        // This is to let Marten know that we want the data
+        // in this table wiped out before doing a rebuild
+        // of this projection
+        Options.DeleteDataInTableOnTeardown(table.Identifier);
     }
 
-    // more in second...
+    public void Apply(
+        IEvent<AppointmentStarted> @event,
+        IDocumentOperations ops)
+    {
+        var sql = "insert into appointment_duration "
+            + "(id, start) values (?, ?)";
+        ops.QueueSqlCommand(sql,
+            @event.Id,
+            @event.Timestamp);
+    }
 
-public void Apply(
-    IEvent<AppointmentStarted> @event,
-    IDocumentOperations ops)
-{
-    var sql = "insert into appointment_duration "
-        + "(id, start) values (?, ?)";
-    ops.QueueSqlCommand(sql,
-        @event.Id,
-        @event.Timestamp);
-}
-
-public void Apply(
-    IEvent<AppointmentFinished> @event,
-    IDocumentOperations ops)
-{
-    var sql = "update appointment_duration "
-              + "set end = ? where id = ?";
-    ops.QueueSqlCommand(sql,
-        @event.Timestamp,
-        @event.Id);
-}
+    public void Apply(
+        IEvent<AppointmentFinished> @event,
+        IDocumentOperations ops)
+    {
+        var sql = "update appointment_duration "
+                  + "set end = ? where id = ?";
+        ops.QueueSqlCommand(sql,
+            @event.Timestamp,
+            @event.Id);
+    }
 }
 
 public enum AppointmentStatus
