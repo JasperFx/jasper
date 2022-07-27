@@ -29,7 +29,17 @@ namespace Jasper.RabbitMQ.Internal
 
             _sender = new RabbitMqSender(Endpoint, transport, RoutingMode.Static, logger);
 
-            Start(receiver, _cancellation);
+            _cancellation.Register(teardownChannel);
+
+            EnsureConnected();
+
+            _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
+            _consumer = new WorkerQueueMessageConsumer(receiver, _logger, this, Endpoint, Address,
+                _cancellation);
+
+            Channel.BasicQos(Endpoint.PreFetchSize, Endpoint.PreFetchCount, false);
+
+            Channel.BasicConsume(_consumer, _routingKey);
         }
 
         public RabbitMqEndpoint Endpoint { get; }
@@ -45,48 +55,6 @@ namespace Jasper.RabbitMQ.Internal
         {
             Dispose();
             return ValueTask.CompletedTask;
-        }
-
-        public ValueTask StopAsync()
-        {
-            Status = ListeningStatus.Stopped;
-            if (_consumer == null) return ValueTask.CompletedTask;
-            _consumer.Dispose();
-
-            Channel.BasicCancel(_consumer.ConsumerTags.FirstOrDefault());
-            _consumer = null;
-
-            return ValueTask.CompletedTask;
-        }
-
-        public ValueTask RestartAsync()
-        {
-            Start(_receiver!, _cancellation);
-            return ValueTask.CompletedTask;
-        }
-
-        public ListeningStatus Status
-        {
-            get;
-            private set;
-        }
-
-        [Obsolete]
-        public void Start(IReceiver callback, CancellationToken cancellation)
-        {
-            _cancellation = cancellation;
-            _cancellation.Register(teardownChannel);
-
-            EnsureConnected();
-
-            _receiver = callback ?? throw new ArgumentNullException(nameof(callback));
-            _consumer = new WorkerQueueMessageConsumer(callback, _logger, this, Endpoint, Address,
-                _cancellation);
-
-            Channel.BasicQos(Endpoint.PreFetchSize, Endpoint.PreFetchCount, false);
-
-            Channel.BasicConsume(_consumer, _routingKey);
-            Status = ListeningStatus.Accepting;
         }
 
         public async Task<bool> TryRequeueAsync(Envelope envelope)

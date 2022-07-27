@@ -49,7 +49,6 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
 
 
             theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime);
-            theReceiver.StartListening(Substitute.For<IListener>());
         }
 
         protected Envelope notScheduledEnvelope()

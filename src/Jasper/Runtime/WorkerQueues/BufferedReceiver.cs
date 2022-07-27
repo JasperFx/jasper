@@ -99,14 +99,6 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
         _scheduler.Enqueue(envelope.ScheduledTime.Value, envelope);
     }
 
-    [Obsolete]
-    public void StartListening(IListener listener)
-    {
-        listener.Start(this, _settings.Cancellation);
-
-        Address = listener.Address;
-    }
-
     async ValueTask IReceiver.ReceivedAsync(IListener listener, Envelope[] messages)
     {
         var now = DateTimeOffset.Now;

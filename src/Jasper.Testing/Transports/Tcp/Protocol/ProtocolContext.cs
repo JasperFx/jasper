@@ -20,7 +20,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         protected static int NextPort = 6005;
         private readonly IPAddress theAddress = IPAddress.Loopback;
         private readonly int thePort = ++NextPort;
-        private readonly ListeningAgent _listener;
+        private readonly TestingListeningAgent _listener;
         public readonly Uri Destination;
         private readonly OutgoingMessageBatch theMessageBatch;
 
@@ -31,7 +31,7 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
         public ProtocolContext()
         {
             Destination = $"durable://localhost:{thePort}/incoming".ToUri();
-            _listener = new ListeningAgent(theReceiver, theAddress, thePort, "durable", CancellationToken.None);
+            _listener = new TestingListeningAgent(theReceiver, theAddress, thePort, "durable", CancellationToken.None);
 
 
             var messages = new[]

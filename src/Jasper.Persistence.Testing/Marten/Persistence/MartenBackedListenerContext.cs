@@ -89,10 +89,6 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
 
 
             theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime);
-
-
-            var agent = Substitute.For<IListener>();
-            theReceiver.StartListening(agent);
         }
 
         public Task DisposeAsync()

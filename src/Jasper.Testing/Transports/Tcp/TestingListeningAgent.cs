@@ -14,7 +14,7 @@ namespace Jasper.Testing.Transports.Tcp
     // This is only really used in the automated testing now
     // to test out the wire protocol. Otherwise, this has been superceded
     // by SocketListeningAgent
-    public class ListeningAgent : IDisposable, IListener
+    public class TestingListeningAgent : IDisposable, IListener
     {
         private readonly IReceiver _callback;
         private readonly CancellationToken _cancellationToken;
@@ -23,7 +23,7 @@ namespace Jasper.Testing.Transports.Tcp
         private readonly Uri _uri;
         private Task _receivingLoop;
 
-        public ListeningAgent(IReceiver callback, IPAddress ipaddr, int port, string protocol,
+        public TestingListeningAgent(IReceiver callback, IPAddress ipaddr, int port, string protocol,
             CancellationToken cancellationToken)
         {
             Port = port;
@@ -82,21 +82,5 @@ namespace Jasper.Testing.Transports.Tcp
 
         Uri IListener.Address => _uri;
 
-        ListeningStatus IListener.Status => ListeningStatus.Accepting;
-
-        void IListener.Start(IReceiver callback, CancellationToken cancellation)
-        {
-            throw new NotImplementedException();
-        }
-
-        ValueTask IListener.StopAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        ValueTask IListener.RestartAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

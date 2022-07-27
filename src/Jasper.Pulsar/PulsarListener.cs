@@ -1,6 +1,5 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using DotPulsar.Abstractions;
@@ -35,7 +34,32 @@ namespace Jasper.Pulsar
 
             _localCancellation = new CancellationTokenSource();
 
-            Start(receiver, _cancellation);
+            var combined = CancellationTokenSource.CreateLinkedTokenSource(_cancellation, _localCancellation.Token);
+
+            _receiver = receiver;
+
+            _consumer = _transport.Client!.NewConsumer()
+                .SubscriptionName("Jasper")
+                // TODO -- more options here. Give the user complete
+                // control over the Pulsar usage. Maybe expose ConsumerOptions on endpoint
+                .Topic(_endpoint.PulsarTopic())
+                .Create();
+
+            _receivingLoop = Task.Run(async () =>
+            {
+                await foreach (var message in _consumer.Messages(cancellationToken: combined.Token))
+                {
+                    var envelope = new PulsarEnvelope(message);
+
+                    // TODO -- invoke the deserialization here. A
+                    envelope.Data = message.Data.ToArray();
+                    _endpoint.MapIncomingToEnvelope(envelope, message);
+
+                    // TODO -- the worker queue should already have the Uri,
+                    // so just take in envelope
+                    await receiver!.ReceivedAsync(this, envelope);
+                }
+            }, combined.Token);
         }
 
         public ValueTask CompleteAsync(Envelope envelope)
@@ -75,65 +99,6 @@ namespace Jasper.Pulsar
         }
 
         public Uri Address { get; }
-
-        public async ValueTask StopAsync()
-        {
-            if (_consumer != null)
-            {
-                await _consumer.DisposeAsync();
-
-                _consumer = null;
-            }
-
-            Status = ListeningStatus.Stopped;
-        }
-
-        public ValueTask RestartAsync()
-        {
-            Start(_receiver!, _cancellation);
-            Status = ListeningStatus.Accepting;
-
-            return ValueTask.CompletedTask;
-        }
-
-        public ListeningStatus Status
-        {
-            get;
-            private set;
-        }
-
-        [Obsolete("goes away")]
-        public void Start(IReceiver callback, CancellationToken cancellation)
-        {
-            _cancellation = cancellation;
-
-            var combined = CancellationTokenSource.CreateLinkedTokenSource(_cancellation, _localCancellation.Token);
-
-            _receiver = callback;
-
-            _consumer = _transport.Client!.NewConsumer()
-                .SubscriptionName("Jasper")
-                // TODO -- more options here. Give the user complete
-                // control over the Pulsar usage. Maybe expose ConsumerOptions on endpoint
-                .Topic(_endpoint.PulsarTopic())
-                .Create();
-
-            _receivingLoop = Task.Run(async () =>
-            {
-                await foreach (var message in _consumer.Messages(cancellationToken: combined.Token))
-                {
-                    var envelope = new PulsarEnvelope(message);
-
-                    // TODO -- invoke the deserialization here. A
-                    envelope.Data = message.Data.ToArray();
-                    _endpoint.MapIncomingToEnvelope(envelope, message);
-
-                    // TODO -- the worker queue should already have the Uri,
-                    // so just take in envelope
-                    await callback!.ReceivedAsync(this, envelope);
-                }
-            }, combined.Token);
-        }
 
         public async Task<bool> TryRequeueAsync(Envelope envelope)
         {

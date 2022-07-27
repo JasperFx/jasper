@@ -130,20 +130,4 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender, IListener
 
     Uri IListener.Address => Destination;
 
-    ListeningStatus IListener.Status => ListeningStatus.Accepting;
-
-    void IListener.Start(IReceiver callback, CancellationToken cancellation)
-    {
-        // Nothing
-    }
-
-    ValueTask IListener.StopAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    ValueTask IListener.RestartAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
 }

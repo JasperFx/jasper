@@ -101,15 +101,6 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         _receiver.Post(envelope);
     }
 
-    [Obsolete]
-    public void StartListening(IListener listener)
-    {
-        listener.Start(this, _settings.Cancellation);
-
-        Address = listener.Address;
-    }
-
-
     public ValueTask ReceivedAsync(IListener listener, Envelope[] messages)
     {
         var now = DateTimeOffset.Now;

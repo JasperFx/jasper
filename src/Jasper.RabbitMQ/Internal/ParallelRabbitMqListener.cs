@@ -12,8 +12,6 @@ namespace Jasper.RabbitMQ.Internal
     public class ParallelRabbitMqListener : IListener, IDisposable
     {
         private readonly IList<RabbitMqListener> _listeners = new List<RabbitMqListener>();
-        private IReceiver? _callback;
-        private CancellationToken _cancellation;
 
         public ParallelRabbitMqListener(ILogger logger,
             RabbitMqEndpoint endpoint, RabbitMqTransport transport, IReceiver receiver)
@@ -38,35 +36,6 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         public Uri Address { get; }
-
-
-        public ListeningStatus Status => _listeners[0].Status;
-
-        public async ValueTask StopAsync()
-        {
-            foreach (var listener in _listeners)
-            {
-                await listener.StopAsync();
-            }
-        }
-
-        public async ValueTask RestartAsync()
-        {
-            foreach (var listener in _listeners)
-            {
-                await listener.RestartAsync();
-            }
-        }
-
-        public void Start(IReceiver callback, CancellationToken cancellation)
-        {
-            _callback = callback;
-            _cancellation = cancellation;
-            foreach (var listener in _listeners)
-            {
-                listener.Start(callback, cancellation);
-            }
-        }
 
         public Task<bool> TryRequeueAsync(Envelope envelope)
         {

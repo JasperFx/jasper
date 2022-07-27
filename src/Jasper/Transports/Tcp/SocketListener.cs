@@ -34,16 +34,9 @@ public class SocketListener : IListener, IDisposable
 
         Address = $"tcp://{ipaddr}:{port}/".ToUri();
 
-        Start(receiver, cancellationToken);
-    }
+        _receiver = receiver;
 
-    [Obsolete]
-    public void Start(IReceiver callback, CancellationToken cancellation)
-    {
-
-        _receiver = callback;
-
-        startListening(callback);
+        startListening(receiver);
     }
 
     private void startListening(IReceiver callback)
@@ -79,35 +72,6 @@ public class SocketListener : IListener, IDisposable
         }, _cancellationToken);
     }
 
-    public async ValueTask StopAsync()
-    {
-        _listenerCancellation.Cancel();
-        Status = ListeningStatus.Stopped;
-        _listener?.Stop();
-        _listener = null;
-
-        if (_receivingLoop != null)
-        {
-            await _receivingLoop;
-            _receivingLoop.Dispose();
-            _receivingLoop = null;
-        }
-
-        if (_socketHandling != null)
-        {
-            _socketHandling.Complete();
-            _socketHandling = null;
-        }
-    }
-
-    public ValueTask RestartAsync()
-    {
-        startListening(_receiver);
-        Status = ListeningStatus.Accepting;
-
-        return ValueTask.CompletedTask;
-    }
-
     public Task<bool> TryRequeueAsync(Envelope envelope)
     {
         return Task.FromResult(false);
@@ -126,7 +90,6 @@ public class SocketListener : IListener, IDisposable
     public async ValueTask DisposeAsync()
     {
         _listenerCancellation.Cancel();
-        Status = ListeningStatus.Stopped;
         _listener?.Stop();
         _listener = null;
 
@@ -144,8 +107,6 @@ public class SocketListener : IListener, IDisposable
         }
     }
 
-    public ListeningStatus Status { get; internal set; } = ListeningStatus.Accepting;
-
     public ValueTask CompleteAsync(Envelope envelope)
     {
         return ValueTask.CompletedTask;
@@ -156,10 +117,8 @@ public class SocketListener : IListener, IDisposable
         return ValueTask.CompletedTask;
     }
 
-    public Task HandleStreamAsync(IReceiver? callback, Stream stream)
+    public Task HandleStreamAsync(IReceiver receiver, Stream stream)
     {
-        return Status == ListeningStatus.TooBusy
-            ? stream.SendBufferAsync(WireProtocol.ProcessingFailureBuffer)
-            : WireProtocol.ReceiveAsync(this, _logger, stream, callback);
+        return WireProtocol.ReceiveAsync(this, _logger, stream, receiver);
     }
 }
