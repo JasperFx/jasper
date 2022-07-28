@@ -16,7 +16,7 @@ internal enum InvokeResult
 
 internal class Executor
 {
-    private readonly MessageHandler _handler;
+    private readonly IMessageHandler _handler;
     private readonly TimeSpan _timeout;
     private readonly IReadOnlyList<ExceptionRule> _rules;
     private readonly IMessageLogger _logger;
@@ -31,7 +31,7 @@ internal class Executor
         return new Executor(runtime, handler, rules, timeoutSpan);
     }
 
-    public Executor(IJasperRuntime runtime, MessageHandler handler, IEnumerable<ExceptionRule> rules, TimeSpan timeout)
+    public Executor(IJasperRuntime runtime, IMessageHandler handler, IEnumerable<ExceptionRule> rules, TimeSpan timeout)
     {
         _handler = handler;
         _timeout = timeout;

@@ -5,7 +5,12 @@ namespace Jasper.Runtime.Handlers;
 
 #region sample_MessageHandler
 
-public abstract class MessageHandler
+public interface IMessageHandler
+{
+    Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
+}
+
+public abstract class MessageHandler : IMessageHandler
 {
     public HandlerChain? Chain { get; set; }
 
