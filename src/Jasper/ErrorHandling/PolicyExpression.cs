@@ -140,6 +140,16 @@ public class PolicyExpression
     }
 
     /// <summary>
+    /// Pause all processing for the specified time. Will also requeue the
+    /// failed message that caused this to trip off
+    /// </summary>
+    /// <param name="pauseTime"></param>
+    public void RequeueAndPauseProcessing(TimeSpan pauseTime)
+    {
+        With((_, _) => new PauseListenerContinuation(pauseTime));
+    }
+
+    /// <summary>
     ///     Schedule the message for additional attempts with a delay. Use this
     ///     method to effect an "exponential backoff" policy
     /// </summary>

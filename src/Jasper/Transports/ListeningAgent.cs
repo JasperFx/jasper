@@ -15,7 +15,7 @@ public interface IListeningAgent
     Endpoint Endpoint { get; }
     ValueTask StopAsync();
     ValueTask StartAsync();
-    Task PauseAsync(TimeSpan pauseTime);
+    ValueTask PauseAsync(TimeSpan pauseTime);
 }
 
 internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
@@ -60,7 +60,7 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         return ValueTask.CompletedTask;
     }
 
-    public async Task PauseAsync(TimeSpan pauseTime)
+    public async ValueTask PauseAsync(TimeSpan pauseTime)
     {
         await StopAsync();
 

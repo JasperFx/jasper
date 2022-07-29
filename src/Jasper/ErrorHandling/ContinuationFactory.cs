@@ -18,6 +18,13 @@ public interface IContinuationFactory
     /// </summary>
     void RetryNow();
 
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    void PauseProcessing(TimeSpan timeSpan);
+
     /// <summary>
     ///     Requeue the message back to the incoming transport on this attempt
     /// </summary>
@@ -109,5 +116,10 @@ public class ContinuationFactory : IContinuationFactory
         return envelope.Attempts > _sources.Count
             ? new MoveToErrorQueue(ex)
             : _sources[envelope.Attempts - 1](envelope, ex);
+    }
+
+    public void PauseProcessing(TimeSpan timeSpan)
+    {
+        _sources.Add((_, _) => new PauseListenerContinuation(timeSpan));
     }
 }

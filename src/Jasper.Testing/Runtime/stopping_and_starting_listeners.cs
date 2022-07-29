@@ -2,11 +2,13 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper.ErrorHandling;
 using Jasper.Testing.Transports.Tcp;
 using Jasper.Tracking;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
 using Jasper.Util;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
@@ -32,6 +34,9 @@ namespace Jasper.Testing.Runtime
                 opts.ListenAtPort(_port1).Named("one");
                 opts.ListenAtPort(_port2).Named("two");
                 opts.ListenAtPort(_port3).Named("three");
+
+                opts.Handlers.OnException<DivideByZeroException>()
+                    .RequeueAndPauseProcessing(3.Seconds());
             });
 
 
@@ -130,9 +135,48 @@ namespace Jasper.Testing.Runtime
             agent.Status.ShouldBe(ListeningStatus.Accepting);
         }
 
+        [Fact]
+        public async Task pause_listener_on_matching_error_condition()
+        {
+            var publisher = theListener.Services.GetRequiredService<IMessagePublisher>();
+            await publisher.SendToEndpointAsync("one", new PausingMessage());
+
+            var runtime = theListener.GetRuntime();
+            var agent = runtime.FindListeningAgent("one");
+            agent.Status.ShouldBe(ListeningStatus.Stopped);
+
+            // should restart
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            while (stopwatch.Elapsed < 10.Seconds())
+            {
+                if (agent.Status == ListeningStatus.Accepting)
+                {
+                    stopwatch.Stop();
+                    return;
+                }
+            }
+
+            agent.Status.ShouldBe(ListeningStatus.Accepting);
+        }
+
         public void Dispose()
         {
             theListener?.Dispose();
+        }
+    }
+
+    public class PausingMessage{}
+
+    public class PausingMessageHandler
+    {
+        public static void Handle(PausingMessage message, Envelope envelope)
+        {
+            if (envelope.Attempts <= 1)
+            {
+                throw new DivideByZeroException("boom");
+            }
         }
     }
 
