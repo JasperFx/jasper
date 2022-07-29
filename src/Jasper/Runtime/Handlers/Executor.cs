@@ -14,14 +14,20 @@ internal enum InvokeResult
     TryAgain
 }
 
-internal class Executor
+internal interface IExecutor
+{
+    Task<IContinuation> ExecuteAsync(IExecutionContext context, CancellationToken cancellation);
+    Task<InvokeResult> InvokeAsync(IExecutionContext context, CancellationToken cancellation);
+}
+
+internal class Executor : IExecutor
 {
     private readonly IMessageHandler _handler;
     private readonly TimeSpan _timeout;
     private readonly IReadOnlyList<ExceptionRule> _rules;
     private readonly IMessageLogger _logger;
 
-    public static Executor? Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
+    public static Executor Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
     {
         var handler = handlerGraph.HandlerFor(messageType);
         if (handler == null) return null; // TODO: later let's have it return an executor that calls missing handlers
@@ -65,6 +71,8 @@ internal class Executor
 
     public async Task<InvokeResult> InvokeAsync(IExecutionContext context, CancellationToken cancellation)
     {
+        if (context.Envelope == null) throw new ArgumentOutOfRangeException(nameof(context.Envelope));
+
         try
         {
             await _handler.HandleAsync(context, cancellation);
@@ -73,8 +81,6 @@ internal class Executor
         catch (Exception e)
         {
             _logger.LogException(e, message: $"Invocation of {context.Envelope} failed!");
-            _logger
-                .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
 
             var match = _rules.FirstOrDefault(x => x.Filter(e));
             if (match == null) throw;

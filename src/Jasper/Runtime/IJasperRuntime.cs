@@ -9,6 +9,7 @@ using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime;
 

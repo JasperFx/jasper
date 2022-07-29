@@ -16,6 +16,7 @@ using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using NSubstitute;
 using ExecutionContext = Jasper.Runtime.ExecutionContext;

@@ -180,7 +180,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public async Task invoke_with_expected_response_when_there_is_no_receiver()
         {
-            await Should.ThrowAsync<ArgumentOutOfRangeException>(async () =>
+            await Should.ThrowAsync<NotSupportedException>(async () =>
             {
                 await Bus.InvokeAsync<Answer>(new QuestionWithNoHandler());
             });

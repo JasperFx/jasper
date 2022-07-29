@@ -97,7 +97,7 @@ public partial class JasperRuntime
                     Persistence, endpoint);
 
             case EndpointMode.BufferedInMemory:
-                return new LightweightSendingAgent(Logger, MessageLogger, sender, Advanced, endpoint);
+                return new BufferedSendingAgent(Logger, MessageLogger, sender, Advanced, endpoint);
 
             case EndpointMode.Inline:
                 return new InlineSendingAgent(sender, endpoint, MessageLogger, Advanced);

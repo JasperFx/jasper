@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending;
 
-internal class LightweightSendingAgent : SendingAgent
+internal class BufferedSendingAgent : SendingAgent
 {
     private List<Envelope> _queued = new();
 
-    public LightweightSendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender,
+    public BufferedSendingAgent(ILogger logger, IMessageLogger messageLogger, ISender sender,
         AdvancedSettings settings, Endpoint endpoint) : base(logger, messageLogger, sender, settings, endpoint)
     {
     }

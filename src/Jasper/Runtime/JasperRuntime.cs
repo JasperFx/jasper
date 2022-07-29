@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Baseline.ImTools;
@@ -39,12 +40,10 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
         _serviceName = options.ServiceName ?? "JasperService";
 
         var provider = container.GetInstance<ObjectPoolProvider>();
-        var pool = provider.Create(this);
+        ExecutionPool = provider.Create(this);
 
         // TODO -- might make NoHandlerContinuation lazy!
-        Pipeline = new HandlerPipeline(Handlers, this,
-            new NoHandlerContinuation(container.GetAllInstances<IMissingHandler>().ToArray(), this),
-            this, pool);
+        Pipeline = new HandlerPipeline(this);
 
         _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
@@ -52,6 +51,13 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 
         Cancellation = Advanced.Cancellation;
     }
+
+    internal IReadOnlyList<IMissingHandler> MissingHandlers()
+    {
+        return _container.GetAllInstances<IMissingHandler>();
+    }
+
+    public ObjectPool<ExecutionContext> ExecutionPool { get; }
 
     public DurabilityAgent? Durability { get; private set; }
 
