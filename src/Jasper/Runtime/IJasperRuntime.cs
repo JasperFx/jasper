@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
@@ -48,6 +49,22 @@ public interface IJasperRuntime
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     T? TryFindExtension<T>() where T : class;
+
+    /// <summary>
+    /// Try to find a listening agent by Uri
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <returns></returns>
+    IListeningAgent? FindListeningAgent(Uri uri);
+
+    /// <summary>
+    /// Try to find a listening agent by endpoint name
+    /// </summary>
+    /// <param name="endpointName"></param>
+    /// <returns></returns>
+    IListeningAgent? FindListeningAgent(string endpointName);
+
+
 }
 
 // This was for testing

@@ -70,6 +70,26 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
+        public IListeningAgent? FindListeningAgent(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IListeningAgent? FindListeningAgent(string endpointName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask StopListenerAsync(Uri uri, TimeSpan? restart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ListeningStatus ListeningStatusFor(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryFindMessageType(string? messageTypeName, out Type messageType)
         {
             throw new NotSupportedException();

@@ -36,6 +36,8 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
                     envelope.ContentType = EnvelopeConstants.JsonContentType;
                 }
 
+                // TODO -- see if it's latched here
+
                 await Pipeline.InvokeAsync(envelope, this);
             }
             catch (Exception? e)

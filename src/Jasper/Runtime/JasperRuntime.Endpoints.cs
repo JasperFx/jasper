@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.Persistence.Durability;
@@ -149,5 +151,20 @@ public partial class JasperRuntime
     public Endpoint? EndpointByName(string endpointName)
     {
         return Options.AllEndpoints().FirstOrDefault(x => x.Name == endpointName);
+    }
+
+    public IListeningAgent? FindListeningAgent(Uri uri)
+    {
+        if (_listeners.TryGetValue(uri, out var agent))
+        {
+            return agent;
+        }
+
+        return null;
+    }
+
+    public IListeningAgent? FindListeningAgent(string endpointName)
+    {
+        return _listeners.Values.FirstOrDefault(x => x.Endpoint.Name.EqualsIgnoreCase(endpointName));
     }
 }

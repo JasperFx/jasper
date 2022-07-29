@@ -1,5 +1,7 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
@@ -13,6 +15,7 @@ public interface IListeningAgent
     Endpoint Endpoint { get; }
     ValueTask StopAsync();
     ValueTask StartAsync();
+    Task PauseAsync(TimeSpan pauseTime);
 }
 
 internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
@@ -20,6 +23,7 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     private readonly IJasperRuntime _runtime;
     private IListener? _listener;
     private IReceiver? _receiver;
+    private Restarter? _restarter;
 
     public ListeningAgent(Endpoint endpoint, IJasperRuntime runtime)
     {
@@ -36,12 +40,17 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 
     public async ValueTask StopAsync()
     {
+        if (Status == ListeningStatus.Stopped) return;
+
+        // TODO -- needs to drain outstanding messages in the listener
         await DisposeAsync();
         Status = ListeningStatus.Stopped;
     }
 
     public ValueTask StartAsync()
     {
+        if (Status == ListeningStatus.Accepting) return ValueTask.CompletedTask;
+
         _receiver = buildReceiver();
 
         _listener = Endpoint.BuildListener(_runtime, _receiver);
@@ -49,6 +58,14 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         Status = ListeningStatus.Accepting;
 
         return ValueTask.CompletedTask;
+    }
+
+    public async Task PauseAsync(TimeSpan pauseTime)
+    {
+        await StopAsync();
+
+        _restarter = new Restarter(this, pauseTime);
+
     }
 
     private IReceiver buildReceiver()
@@ -76,10 +93,36 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 
     public async ValueTask DisposeAsync()
     {
+        _restarter?.SafeDispose();
+
         if (_listener != null) await _listener.DisposeAsync();
         _receiver?.Dispose();
 
         _listener = null;
         _receiver = null;
+    }
+
+    internal class Restarter : IDisposable
+    {
+        private readonly CancellationTokenSource _cancellation;
+        private readonly Task<Task> _task;
+
+        public Restarter(ListeningAgent parent, TimeSpan timeSpan)
+        {
+            _cancellation = new CancellationTokenSource();
+            _task = Task.Delay(timeSpan, _cancellation.Token)
+                .ContinueWith(async t =>
+                {
+                    if (_cancellation.IsCancellationRequested) return;
+                    await parent.StartAsync();
+                }, TaskScheduler.Default);
+        }
+
+
+        public void Dispose()
+        {
+            _cancellation.Cancel();
+            _task.SafeDispose();
+        }
     }
 }
