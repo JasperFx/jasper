@@ -161,7 +161,7 @@ public class HandlerPipeline : IHandlerPipeline
     {
         if (envelope.IsExpired())
         {
-            return DiscardExpiredEnvelope.Instance;
+            return DiscardEnvelope.Instance;
         }
 
         if (envelope.Message == null)

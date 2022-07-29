@@ -240,6 +240,7 @@ namespace TestingSupport.Compliance
                 .ShouldNotBeNull();
         }
 
+
         [Fact]
         public async Task can_send_from_one_node_to_another_by_publishing_rule()
         {

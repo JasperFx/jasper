@@ -136,7 +136,7 @@ public class PolicyExpression
     /// </summary>
     public void Discard()
     {
-        With((_, _) => DiscardExpiredEnvelope.Instance);
+        With((_, _) => DiscardEnvelope.Instance);
     }
 
     /// <summary>

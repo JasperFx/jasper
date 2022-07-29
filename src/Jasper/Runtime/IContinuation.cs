@@ -21,13 +21,3 @@ public interface IContinuation
 }
 
 #endregion
-
-internal class NullContinuation : IContinuation
-{
-    public static readonly NullContinuation Instance = new NullContinuation();
-
-    public ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
-    {
-        return ValueTask.CompletedTask;
-    }
-}

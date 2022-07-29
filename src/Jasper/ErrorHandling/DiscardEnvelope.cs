@@ -4,11 +4,11 @@ using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
-public class DiscardExpiredEnvelope : IContinuation
+public class DiscardEnvelope : IContinuation
 {
-    public static readonly DiscardExpiredEnvelope Instance = new();
+    public static readonly DiscardEnvelope Instance = new();
 
-    private DiscardExpiredEnvelope()
+    private DiscardEnvelope()
     {
     }
 

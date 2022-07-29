@@ -54,7 +54,7 @@ namespace Jasper.Testing.ErrorHandling
             theFactory.Discard();
 
             theFactory.Build(theEnvelope, theException)
-                .ShouldBe(DiscardExpiredEnvelope.Instance);
+                .ShouldBe(DiscardEnvelope.Instance);
         }
 
 

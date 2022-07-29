@@ -95,7 +95,7 @@ public class ContinuationFactory : IContinuationFactory
     /// </summary>
     public void Discard()
     {
-        _sources.Add((_, _) => DiscardExpiredEnvelope.Instance);
+        _sources.Add((_, _) => DiscardEnvelope.Instance);
     }
 
     public IContinuation Build(Envelope envelope, Exception ex)
