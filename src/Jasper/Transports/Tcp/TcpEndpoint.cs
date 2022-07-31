@@ -79,12 +79,12 @@ public class TcpEndpoint : Endpoint
         if (hostNameType != UriHostNameType.IPv4 && hostNameType != UriHostNameType.IPv6)
         {
             return HostName == "localhost"
-                ? new SocketListener(receiver, runtime.Logger, IPAddress.Loopback, Port, cancellation)
-                : new SocketListener(receiver, runtime.Logger, IPAddress.Any, Port, cancellation);
+                ? new SocketListener(this, receiver, runtime.Logger, IPAddress.Loopback, Port, cancellation)
+                : new SocketListener(this, receiver, runtime.Logger, IPAddress.Any, Port, cancellation);
         }
 
         var ipaddr = IPAddress.Parse(HostName);
-        return new SocketListener(receiver, runtime.Logger, ipaddr, Port, cancellation);
+        return new SocketListener(this, receiver, runtime.Logger, ipaddr, Port, cancellation);
     }
 
     protected override ISender CreateSender(IJasperRuntime runtime)

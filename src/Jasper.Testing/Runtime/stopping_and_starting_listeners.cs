@@ -36,7 +36,7 @@ namespace Jasper.Testing.Runtime
                 opts.ListenAtPort(_port3).Named("three");
 
                 opts.Handlers.OnException<DivideByZeroException>()
-                    .RequeueAndPauseProcessing(3.Seconds());
+                    .RequeueAndPauseProcessing(5.Seconds());
             });
 
 
@@ -138,8 +138,16 @@ namespace Jasper.Testing.Runtime
         [Fact]
         public async Task pause_listener_on_matching_error_condition()
         {
-            var publisher = theListener.Services.GetRequiredService<IMessagePublisher>();
-            await publisher.SendToEndpointAsync("one", new PausingMessage());
+            using var sender = JasperHost.For(opts =>
+            {
+                opts.PublishAllMessages().ToPort(_port1);
+            });
+
+            await sender
+                .TrackActivity()
+                .AlsoTrack(theListener)
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWaitAsync(new PausingMessage());
 
             var runtime = theListener.GetRuntime();
             var agent = runtime.FindListeningAgent("one");

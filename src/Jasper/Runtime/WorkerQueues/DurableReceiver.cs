@@ -122,7 +122,7 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
 
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
             ActivityKind.Consumer);
-        var now = DateTimeOffset.Now;
+        var now = DateTimeOffset.UtcNow;
         envelope.MarkReceived(listener, now, _settings);
 
         await _persistence.StoreIncomingAsync(envelope);

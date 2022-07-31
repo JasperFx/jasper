@@ -18,6 +18,6 @@ public class PauseListenerContinuation : IContinuation
         var agent = runtime.FindListeningAgent(execution.Envelope!.Listener!.Address);
         if (agent != null) return agent.PauseAsync(_pauseTime);
 
-        return agent?.PauseAsync(_pauseTime) ?? ValueTask.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

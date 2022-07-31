@@ -24,7 +24,7 @@ public class SocketListener : IListener, IDisposable
     private readonly CancellationToken _parentToken;
     private CancellationTokenSource _listenerCancellation;
 
-    public SocketListener(IReceiver receiver, ILogger logger, IPAddress ipaddr, int port,
+    public SocketListener(TcpEndpoint endpoint, IReceiver receiver, ILogger logger, IPAddress ipaddr, int port,
         CancellationToken cancellationToken)
     {
         _logger = logger;
@@ -32,7 +32,7 @@ public class SocketListener : IListener, IDisposable
         _ipaddr = ipaddr;
         _parentToken = cancellationToken;
 
-        Address = $"tcp://{ipaddr}:{port}/".ToUri();
+        Address = endpoint.Uri;
 
         _receiver = receiver;
 

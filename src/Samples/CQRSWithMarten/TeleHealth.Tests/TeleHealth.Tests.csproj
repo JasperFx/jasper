@@ -10,7 +10,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Marten" Version="5.4.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
         <PackageReference Include="Shouldly" Version="4.0.3" />
         <PackageReference Include="xunit" Version="2.4.1" />
@@ -25,8 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\marten\src\Marten.AspNetCore\Marten.AspNetCore.csproj" />
-      <ProjectReference Include="..\..\..\..\..\marten\src\Marten\Marten.csproj" />
       <ProjectReference Include="..\TeleHealth.Backend\TeleHealth.Backend.csproj" />
       <ProjectReference Include="..\TeleHealth.Common\TeleHealth.Common.csproj" />
       <ProjectReference Include="..\TeleHealth.WebApi\TeleHealth.WebApi.csproj" />

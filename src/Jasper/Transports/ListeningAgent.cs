@@ -5,6 +5,7 @@ using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports;
 
@@ -24,12 +25,14 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     private IListener? _listener;
     private IReceiver? _receiver;
     private Restarter? _restarter;
+    private readonly ILogger _logger;
 
     public ListeningAgent(Endpoint endpoint, IJasperRuntime runtime)
     {
         Endpoint = endpoint;
         _runtime = runtime;
         Uri = endpoint.Uri;
+        _logger = runtime.Logger;
     }
 
     public Endpoint Endpoint { get; }
@@ -45,6 +48,8 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         // TODO -- needs to drain outstanding messages in the listener
         await DisposeAsync();
         Status = ListeningStatus.Stopped;
+
+        _logger.LogInformation("Stopped message listener at {Uri}", Uri);
     }
 
     public ValueTask StartAsync()
@@ -57,12 +62,16 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 
         Status = ListeningStatus.Accepting;
 
+        _logger.LogInformation("Started message listening at {Uri}", Uri);
+
         return ValueTask.CompletedTask;
     }
 
     public async ValueTask PauseAsync(TimeSpan pauseTime)
     {
         await StopAsync();
+
+        _logger.LogInformation("Pausing message listening at {Uri}", Uri);
 
         _restarter = new Restarter(this, pauseTime);
 
