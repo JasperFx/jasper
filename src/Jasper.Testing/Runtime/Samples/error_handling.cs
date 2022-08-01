@@ -110,15 +110,16 @@ namespace Jasper.Testing.Runtime.Samples
         {
             #region sample_AppWithCustomContinuation
 
-            using var host = Host.CreateDefaultBuilder()
-                .UseJasper(opts =>
-                {
-                    opts.Handlers.OnException<UnauthorizedAccessException>()
-
-                        // The With() function takes a lambda factory for
-                        // custom IContinuation objects
-                        .With((envelope, exception) => new RaiseAlert(exception));
-                }).StartAsync();
+            throw new NotImplementedException();
+            // using var host = Host.CreateDefaultBuilder()
+            //     .UseJasper(opts =>
+            //     {
+            //         opts.Handlers.OnException<UnauthorizedAccessException>()
+            //
+            //             // The With() function takes a lambda factory for
+            //             // custom IContinuation objects
+            //             .With((envelope, exception) => new RaiseAlert(exception));
+            //     }).StartAsync();
 
             #endregion
         }
@@ -227,14 +228,16 @@ namespace Jasper.Testing.Runtime.Samples
             IJasperRuntime runtime,
             DateTimeOffset now)
         {
+            throw new NotImplementedException();
+
             // Raise a separate "alert" event message
-            var session = new ExecutionContext(execution.As<ExecutionContext>().Runtime);
-            await session.ScheduleAsync(execution.Envelope.Message, now.AddHours(1));
-            await session.SendAsync(new RescheduledAlert
-            {
-                Id = execution.Envelope.Id,
-                ExceptionText = _ex.ToString()
-            });
+            // using var session = runtime.;
+            // await session.ScheduleAsync(execution.Envelope.Message, now.AddHours(1));
+            // await session.SendAsync(new RescheduledAlert
+            // {
+            //     Id = execution.Envelope.Id,
+            //     ExceptionText = _ex.ToString()
+            // });
         }
     }
 

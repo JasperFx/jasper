@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling.New;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
-public class ScheduledRetryContinuation : IContinuation
+public class ScheduledRetryContinuation : IContinuation, IContinuationSource
 {
     public ScheduledRetryContinuation(TimeSpan delay)
     {
@@ -53,5 +54,11 @@ public class ScheduledRetryContinuation : IContinuation
     public override int GetHashCode()
     {
         return _delay.GetHashCode();
+    }
+
+    public string Description => ToString();
+    public IContinuation Build(Exception ex, Envelope envelope)
+    {
+        return this;
     }
 }

@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling.New;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
-public class RetryNowContinuation : IContinuation
+public class RetryInlineContinuation : IContinuation, IContinuationSource
 {
-    public static readonly RetryNowContinuation Instance = new();
+    public static readonly RetryInlineContinuation Instance = new();
 
     private readonly TimeSpan? _delay;
 
-    private RetryNowContinuation()
+    private RetryInlineContinuation()
     {
     }
 
-    public RetryNowContinuation(TimeSpan delay)
+    public RetryInlineContinuation(TimeSpan delay)
     {
         _delay = delay;
+    }
+
+    public string Description => _delay == null ? "Retry inline with no delay" : "Retry inline with a delay of " + _delay;
+
+    IContinuation IContinuationSource.Build(Exception ex, Envelope envelope)
+    {
+        return this;
     }
 
     public TimeSpan? Delay => _delay;

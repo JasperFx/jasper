@@ -1,9 +1,11 @@
-﻿namespace Jasper.ErrorHandling;
+﻿using Jasper.ErrorHandling.New;
 
-public interface IHasRetryPolicies
+namespace Jasper.ErrorHandling;
+
+public interface IHasFailurePolicies
 {
     /// <summary>
     ///     Collection of Error handling policies for exception handling during the execution of a message
     /// </summary>
-    RetryPolicyCollection Retries { get; }
+    FailureRuleCollection Failures { get; }
 }

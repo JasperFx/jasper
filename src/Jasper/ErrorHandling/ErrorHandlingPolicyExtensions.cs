@@ -10,9 +10,9 @@ public static class ErrorHandlingPolicyExtensions
     /// </summary>
     /// <typeparam name="TException">The type of the exception to handle.</typeparam>
     /// <returns>The PolicyBuilder instance.</returns>
-    public static PolicyExpression OnException<TException>(this IHasRetryPolicies policies) where TException : Exception
+    public static PolicyExpression OnException<TException>(this IHasFailurePolicies policies) where TException : Exception
     {
-        return new PolicyExpression(policies.Retries, new TypeMatch<TException>());
+        return new PolicyExpression(policies.Failures, new TypeMatch<TException>());
     }
 
     /// <summary>
@@ -23,10 +23,10 @@ public static class ErrorHandlingPolicyExtensions
     /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
     /// <param name="description">Optional description of this exception filter strictly for diagnostics</param>
     /// <returns>The PolicyBuilder instance.</returns>
-    public static PolicyExpression OnException(this IHasRetryPolicies policies,
+    public static PolicyExpression OnException(this IHasFailurePolicies policies,
         Func<Exception, bool> exceptionPredicate, string description = "User supplied")
     {
-        return new PolicyExpression(policies.Retries, new UserSupplied(exceptionPredicate, description));
+        return new PolicyExpression(policies.Failures, new UserSupplied(exceptionPredicate, description));
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public static class ErrorHandlingPolicyExtensions
     /// <param name="policies"></param>
     /// <param name="exceptionType">An exception type to match against</param>
     /// <returns>The PolicyBuilder instance.</returns>
-    public static PolicyExpression OnExceptionOfType(this IHasRetryPolicies policies, Type exceptionType)
+    public static PolicyExpression OnExceptionOfType(this IHasFailurePolicies policies, Type exceptionType)
     {
         // TODO -- switch to returning TypeMatch later
         return policies.OnException(e => e.GetType().CanBeCastTo(exceptionType));
@@ -50,11 +50,11 @@ public static class ErrorHandlingPolicyExtensions
     /// <param name="exceptionPredicate">The exception predicate to filter the type of exception this policy can handle.</param>
     /// <param name="description">Optional description of this exception filter strictly for diagnostics</param>
     /// <returns>The PolicyBuilder instance.</returns>
-    public static PolicyExpression OnException<TException>(this IHasRetryPolicies policies,
+    public static PolicyExpression OnException<TException>(this IHasFailurePolicies policies,
         Func<TException, bool> exceptionPredicate, string description = "User supplied")
         where TException : Exception
     {
-        return new PolicyExpression(policies.Retries, new UserSupplied<TException>(exceptionPredicate, description));
+        return new PolicyExpression(policies.Failures, new UserSupplied<TException>(exceptionPredicate, description));
     }
 
     /// <summary>
@@ -63,9 +63,9 @@ public static class ErrorHandlingPolicyExtensions
     /// </summary>
     /// <typeparam name="TException">The type of the exception to handle.</typeparam>
     /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
-    public static PolicyExpression HandleInner<TException>(this IHasRetryPolicies policies) where TException : Exception
+    public static PolicyExpression HandleInner<TException>(this IHasFailurePolicies policies) where TException : Exception
     {
-        return new PolicyExpression(policies.Retries, new InnerMatch(new TypeMatch<TException>()));
+        return new PolicyExpression(policies.Failures, new InnerMatch(new TypeMatch<TException>()));
     }
 
     /// <summary>
@@ -76,10 +76,10 @@ public static class ErrorHandlingPolicyExtensions
     /// <param name="description">Optional description of this exception filter strictly for diagnostics</param>
     /// <typeparam name="TException">The type of the exception to handle.</typeparam>
     /// <returns>The PolicyBuilder instance, for fluent chaining.</returns>
-    public static PolicyExpression HandleInner<TException>(this IHasRetryPolicies policies,
+    public static PolicyExpression HandleInner<TException>(this IHasFailurePolicies policies,
         Func<TException, bool> exceptionPredicate, string description = "User supplied filter")
         where TException : Exception
     {
-        return new PolicyExpression(policies.Retries, new InnerMatch(new UserSupplied<TException>(exceptionPredicate, description)));
+        return new PolicyExpression(policies.Failures, new InnerMatch(new UserSupplied<TException>(exceptionPredicate, description)));
     }
 }

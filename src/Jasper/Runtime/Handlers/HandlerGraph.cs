@@ -6,6 +6,7 @@ using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
+using Jasper.ErrorHandling.New;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;
@@ -48,7 +49,7 @@ public partial class HandlerGraph : ICodeFileCollection, IHandlerConfiguration
 
     public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
-    public RetryPolicyCollection Retries { get; set; } = new();
+    public FailureRuleCollection Failures { get; set; } = new();
 
 
     public IHandlerConfiguration Discovery(Action<HandlerSource> configure)

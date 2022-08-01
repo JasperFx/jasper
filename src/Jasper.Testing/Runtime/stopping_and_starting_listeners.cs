@@ -36,7 +36,7 @@ namespace Jasper.Testing.Runtime
                 opts.ListenAtPort(_port3).Named("three");
 
                 opts.Handlers.OnException<DivideByZeroException>()
-                    .RequeueAndPauseProcessing(5.Seconds());
+                    .Requeue().AndPauseProcessing(5.Seconds());
             });
 
 

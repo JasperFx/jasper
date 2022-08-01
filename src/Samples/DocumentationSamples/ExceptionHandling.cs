@@ -2,6 +2,7 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
 using Microsoft.Extensions.Hosting;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
 namespace DocumentationSamples
 {
@@ -25,18 +26,6 @@ namespace DocumentationSamples
                     opts.Handlers.OnException<SqlException>()
                         .ScheduleRetry(3.Seconds(), 15.Seconds(), 30.Seconds());
 
-                    // This is another equivalent option
-                    opts.Handlers.OnException<TimeoutException>()
-                        .TakeActions(x =>
-                        {
-                            x.ScheduleRetry(3.Seconds());
-                            x.ScheduleRetry(15.Seconds());
-                            x.ScheduleRetry(30.Seconds());
-
-                            // Jasper will automatically move the
-                            // message to the dead letter queue
-                            // after a 4th failure
-                        });
                 }).StartAsync();
             #endregion
         }
@@ -49,26 +38,24 @@ namespace DocumentationSamples
                 .UseJasper(opts =>
                 {
                     opts.Handlers.OnException<TimeoutException>()
-                        .TakeActions(x =>
-                        {
-                            // Just retry the message again on the
-                            // first failure
-                            x.RetryNow();
+                    // Just retry the message again on the
+                    // first failure
+                    .RetryNow()
 
-                            // On the 2nd failure, put the message back into the
-                            // incoming queue to be retried later
-                            x.Requeue();
+                    // On the 2nd failure, put the message back into the
+                    // incoming queue to be retried later
+                    .Then.Requeue()
 
-                            // On the 3rd failure, retry the message again after a configurable
-                            // cool-off period. This schedules the message
-                            x.ScheduleRetry(15.Seconds());
+                    // On the 3rd failure, retry the message again after a configurable
+                    // cool-off period. This schedules the message
+                    .Then.ScheduleRetry(15.Seconds())
 
-                            // On the 4th failure, move the message to the dead letter queue
-                            x.MoveToErrorQueue();
+                    // On the 4th failure, move the message to the dead letter queue
+                    .Then.MoveToErrorQueue()
 
-                            // Or instead you could just discard the message
-                            // x.Discard();
-                        });
+                    // Or instead you could just discard the message and stop
+                    // all processing too!
+                    .Then.Discard().AndPauseProcessing(5.Minutes());
                 }).StartAsync();
 
             #endregion

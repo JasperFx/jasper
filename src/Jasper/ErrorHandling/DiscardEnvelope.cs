@@ -1,10 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling.New;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
-public class DiscardEnvelope : IContinuation
+public class DiscardEnvelope : IContinuation, IContinuationSource
 {
     public static readonly DiscardEnvelope Instance = new();
 
@@ -25,5 +26,11 @@ public class DiscardEnvelope : IContinuation
         {
             execution.Logger.LogException(e);
         }
+    }
+
+    public string Description => "Discard the message";
+    public IContinuation Build(Exception ex, Envelope envelope)
+    {
+        return this;
     }
 }

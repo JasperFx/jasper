@@ -4,7 +4,7 @@ using Jasper.Runtime.Handlers;
 
 namespace Jasper.Configuration;
 
-public interface IHandlerConfiguration : IHasRetryPolicies
+public interface IHandlerConfiguration : IHasFailurePolicies
 {
     /// <summary>
     ///     Configure how Jasper discovers message handler classes to override

@@ -40,7 +40,7 @@ namespace Jasper.Testing.Acceptance
 
                 opts.Handlers.IncludeType<InvokedMessageHandler>();
 
-                opts.Handlers.Retries.MaximumAttempts = 3;
+                opts.Handlers.Failures.MaximumAttempts = 3;
             });
         }
 

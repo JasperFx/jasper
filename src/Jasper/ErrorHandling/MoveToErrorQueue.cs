@@ -1,8 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling.New;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
+
+internal class MoveToErrorQueueSource : IContinuationSource
+{
+    public string Description => "Move to error queue";
+    public IContinuation Build(Exception ex, Envelope envelope)
+    {
+        return new MoveToErrorQueue(ex);
+    }
+}
 
 public class MoveToErrorQueue : IContinuation
 {

@@ -27,88 +27,80 @@ namespace Jasper.Testing.ErrorHandling
 
         protected async Task<EnvelopeRecord> afterProcessingIsComplete()
         {
-            using (var host = JasperHost.For(theOptions))
-            {
-                _session = await host
-                    .TrackActivity()
-                    .DoNotAssertOnExceptionsDetected()
-                    .SendMessageAndWaitAsync(theMessage);
+            using var host = JasperHost.For(theOptions);
+            _session = await host
+                .TrackActivity()
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWaitAsync(theMessage);
 
-                return _session.AllRecordsInOrder().LastOrDefault(x =>
-                    x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
-
-
-            }
+            return _session.AllRecordsInOrder().LastOrDefault(x =>
+                x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
         }
 
         protected async Task shouldSucceedOnAttempt(int attempt)
         {
-            using (var host = JasperHost.For(theOptions))
+            using var host = JasperHost.For(theOptions);
+            var session = await host
+                .TrackActivity()
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWaitAsync(theMessage);
+
+            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+                x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
+
+            if (record == null) throw new Exception("No ending activity detected");
+
+            if (record.EventType == EventType.MessageSucceeded && record.AttemptNumber == attempt)
             {
-                var session = await host
-                    .TrackActivity()
-                    .DoNotAssertOnExceptionsDetected()
-                    .SendMessageAndWaitAsync(theMessage);
-
-                var record = session.AllRecordsInOrder().LastOrDefault(x =>
-                    x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
-
-                if (record == null) throw new Exception("No ending activity detected");
-
-                if (record.EventType == EventType.MessageSucceeded && record.AttemptNumber == attempt)
-                {
-                    return;
-                }
-
-                var writer = new StringWriter();
-
-                writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
-                foreach (var envelopeRecord in session.AllRecordsInOrder())
-                {
-                    writer.WriteLine(envelopeRecord);
-                    if (envelopeRecord.Exception != null)
-                    {
-                        writer.WriteLine(envelopeRecord.Exception.Message);
-                    }
-                }
-
-                throw new Exception(writer.ToString());
+                return;
             }
+
+            var writer = new StringWriter();
+
+            writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
+            foreach (var envelopeRecord in session.AllRecordsInOrder())
+            {
+                writer.WriteLine(envelopeRecord);
+                if (envelopeRecord.Exception != null)
+                {
+                    writer.WriteLine(envelopeRecord.Exception.Message);
+                }
+            }
+
+            throw new Exception(writer.ToString());
         }
 
         protected async Task shouldMoveToErrorQueueOnAttempt(int attempt)
         {
-            using (var host = JasperHost.For(theOptions))
+            using var host = JasperHost.For(theOptions);
+            var session = await host
+                .TrackActivity()
+                .DoNotAssertOnExceptionsDetected()
+                .SendMessageAndWaitAsync(theMessage);
+
+            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+                x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
+
+            if (record == null) throw new Exception("No ending activity detected");
+
+            if (record.EventType == EventType.MovedToErrorQueue && record.AttemptNumber == attempt)
             {
-                var session = await host
-                    .TrackActivity()
-                    .DoNotAssertOnExceptionsDetected()
-                    .SendMessageAndWaitAsync(theMessage);
-
-                var record = session.AllRecordsInOrder().LastOrDefault(x =>
-                    x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
-
-                if (record == null) throw new Exception("No ending activity detected");
-
-                if (record.EventType == EventType.MovedToErrorQueue && record.AttemptNumber == attempt)
-                {
-                    return;
-                }
-
-                var writer = new StringWriter();
-
-                writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
-                foreach (var envelopeRecord in session.AllRecordsInOrder())
-                {
-                    writer.WriteLine(envelopeRecord);
-                    if (envelopeRecord.Exception != null)
-                    {
-                        writer.WriteLine(envelopeRecord.Exception.Message);
-                    }
-                }
-
-                throw new Exception(writer.ToString());
+                return;
             }
+
+            var writer = new StringWriter();
+
+            writer.WriteLine($"Actual ending was '{record.EventType}' on attempt {record.AttemptNumber}");
+            foreach (var envelopeRecord in session.AllRecordsInOrder())
+            {
+                writer.WriteLine(envelopeRecord);
+                if (envelopeRecord.Exception != null)
+                {
+                    writer.WriteLine(envelopeRecord.Exception.Message);
+                }
+            }
+
+            throw new Exception(writer.ToString());
         }
 
 

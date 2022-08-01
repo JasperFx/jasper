@@ -1,10 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling.New;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
-public class PauseListenerContinuation : IContinuation
+public class PauseListenerContinuation : IContinuation, IContinuationSource
 {
     private readonly TimeSpan _pauseTime;
 
@@ -19,5 +20,11 @@ public class PauseListenerContinuation : IContinuation
         if (agent != null) return agent.PauseAsync(_pauseTime);
 
         return ValueTask.CompletedTask;
+    }
+
+    public string Description => "Pause all message processing on this listener for " + _pauseTime;
+    public IContinuation Build(Exception ex, Envelope envelope)
+    {
+        return this;
     }
 }

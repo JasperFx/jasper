@@ -19,7 +19,7 @@ namespace Jasper.Testing.ErrorHandling
             {
                 chain.OnException<DivideByZeroException>().MoveToErrorQueue();
                 chain.OnException<InvalidOperationException>().RetryNow();
-                chain.Retries.MaximumAttempts = 3;
+                chain.Failures.MaximumAttempts = 3;
             });
 
         }

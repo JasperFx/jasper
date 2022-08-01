@@ -89,7 +89,7 @@ namespace TestingSupport.Compliance
 
         private static void configureReceiver(JasperOptions options)
         {
-            options.Handlers.Retries.MaximumAttempts = 3;
+            options.Handlers.Failures.MaximumAttempts = 3;
             options.Handlers
                 .DisableConventionalDiscovery()
                 .IncludeType<MessageConsumer>()
