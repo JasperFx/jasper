@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Jasper.Runtime;
 using Microsoft.Extensions.Logging;
 
-namespace Jasper.ErrorHandling.New;
+namespace Jasper.ErrorHandling;
 
 internal class CompositeContinuation : IContinuation
 {

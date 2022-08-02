@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Jasper.Runtime;
 
-namespace Jasper.ErrorHandling.New;
+namespace Jasper.ErrorHandling;
 
 public class FailureRuleCollection
 {

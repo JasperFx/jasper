@@ -10,7 +10,6 @@ using Baseline.Reflection;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
-using Jasper.ErrorHandling.New;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;

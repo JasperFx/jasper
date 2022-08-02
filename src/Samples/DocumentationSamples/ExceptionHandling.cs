@@ -40,7 +40,7 @@ namespace DocumentationSamples
                     opts.Handlers.OnException<TimeoutException>()
                     // Just retry the message again on the
                     // first failure
-                    .RetryNow()
+                    .RetryOnce()
 
                     // On the 2nd failure, put the message back into the
                     // incoming queue to be retried later

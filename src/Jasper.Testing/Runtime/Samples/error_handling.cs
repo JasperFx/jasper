@@ -65,7 +65,7 @@ namespace Jasper.Testing.Runtime.Samples
                         .Requeue();
 
                     // Use different actions for different exception types
-                    opts.Handlers.OnException<InvalidOperationException>().RetryNow();
+                    opts.Handlers.OnException<InvalidOperationException>().RetryTimes(3);
                 }).StartAsync();
 
             #endregion
@@ -79,11 +79,8 @@ namespace Jasper.Testing.Runtime.Samples
                 .UseJasper(opts =>
                 {
                     // Try to execute the message again without going
-                    // back through the queue with a maximum number of attempts
-                    // The default is 3
-                    // The message will be dead lettered if it exceeds the maximum
-                    // number of attemts
-                    opts.Handlers.OnException<SqlException>().RetryNow(5);
+                    // back through the queue up to 5 times
+                    opts.Handlers.OnException<SqlException>().RetryTimes(5);
 
 
                     // Retry the message again, but wait for the specified time

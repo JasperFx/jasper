@@ -2,7 +2,6 @@
 using Baseline;
 using Baseline.Dates;
 using Jasper.ErrorHandling;
-using Jasper.ErrorHandling.New;
 using Jasper.Runtime.Handlers;
 using Jasper.Testing.Messaging;
 using Shouldly;
@@ -260,7 +259,7 @@ namespace Jasper.Testing.ErrorHandling
         [Fact]
         public void retry_n_times()
         {
-            theHandlers.OnException<BadImageFormatException>().RetryNow();
+            theHandlers.OnException<BadImageFormatException>().RetryTimes(3);
 
             theEnvelope.Attempts = 0;
             theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
@@ -276,8 +275,11 @@ namespace Jasper.Testing.ErrorHandling
 
             theEnvelope.Attempts = 3;
             theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
-                .ShouldBeOfType<MoveToErrorQueue>();
+                .ShouldBeOfType<RetryInlineContinuation>();
 
+            theEnvelope.Attempts = 4;
+            theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
+                .ShouldBeOfType<MoveToErrorQueue>();
         }
 
         [Fact]
@@ -305,6 +307,36 @@ namespace Jasper.Testing.ErrorHandling
             theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
                 .ShouldBeOfType<MoveToErrorQueue>();
 
+        }
+
+        [Fact]
+        public void scripted_order_of_continuations()
+        {
+            theHandlers.OnException<BadImageFormatException>()
+
+                .RetryOnce()
+                .Then.RetryWithCooldown(1.Seconds())
+                .Then.ScheduleRetry(1.Minutes());
+
+            theEnvelope.Attempts = 0;
+            theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
+                .ShouldBeOfType<RetryInlineContinuation>().Delay.ShouldBeNull();
+
+            theEnvelope.Attempts = 1;
+            theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
+                .ShouldBeOfType<RetryInlineContinuation>().Delay.ShouldBeNull();
+
+            theEnvelope.Attempts = 2;
+            theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
+                .ShouldBeOfType<RetryInlineContinuation>().Delay.ShouldBe(1.Seconds());
+
+            theEnvelope.Attempts = 3;
+            theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
+                .ShouldBeOfType<ScheduledRetryContinuation>().Delay.ShouldBe(1.Minutes());
+
+            theEnvelope.Attempts = 4;
+            theHandlers.Failures.DetermineExecutionContinuation(new BadImageFormatException(), theEnvelope)
+                .ShouldBeOfType<MoveToErrorQueue>();
         }
 
         [Fact]

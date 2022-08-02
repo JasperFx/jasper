@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Jasper.ErrorHandling.New;
+using Jasper.ErrorHandling;
 using Jasper.Runtime;
 using Jasper.Testing.Messaging;
 using Jasper.Testing.Runtime;

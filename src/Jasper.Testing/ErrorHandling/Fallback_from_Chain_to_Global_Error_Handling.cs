@@ -11,14 +11,14 @@ namespace Jasper.Testing.ErrorHandling
     {
         public Fallback_from_Chain_to_Global_Error_Handling()
         {
-            theOptions.Handlers.OnException<DivideByZeroException>().RetryNow();
+            theOptions.Handlers.OnException<DivideByZeroException>().RetryTimes(3);
             theOptions.Handlers.OnException<DataMisalignedException>().Requeue();
             theOptions.Handlers.OnException<DataMisalignedException>().MoveToErrorQueue();
 
             theOptions.Handlers.ConfigureHandlerForMessage<ErrorCausingMessage>(chain =>
             {
                 chain.OnException<DivideByZeroException>().MoveToErrorQueue();
-                chain.OnException<InvalidOperationException>().RetryNow();
+                chain.OnException<InvalidOperationException>().RetryTimes(3);
                 chain.Failures.MaximumAttempts = 3;
             });
 

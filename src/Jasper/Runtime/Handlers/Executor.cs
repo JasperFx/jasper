@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.ErrorHandling.New;
+using Jasper.ErrorHandling;
 using Jasper.Logging;
 
 namespace Jasper.Runtime.Handlers;

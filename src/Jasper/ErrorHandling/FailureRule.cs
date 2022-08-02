@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Jasper.Runtime;
 
-namespace Jasper.ErrorHandling.New;
+namespace Jasper.ErrorHandling;
 
 internal class FailureRule
 {

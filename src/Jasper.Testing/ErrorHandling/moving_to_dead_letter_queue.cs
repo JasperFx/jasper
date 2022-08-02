@@ -13,7 +13,7 @@ namespace Jasper.Testing.ErrorHandling
             theOptions.Handlers.ConfigureHandlerForMessage<ErrorCausingMessage>(chain =>
             {
                 chain.OnException<DivideByZeroException>().MoveToErrorQueue();
-                chain.OnException<InvalidOperationException>().RetryNow();
+                chain.OnException<InvalidOperationException>().RetryTimes(3);
 
                 chain.Failures.MaximumAttempts = 3;
             });

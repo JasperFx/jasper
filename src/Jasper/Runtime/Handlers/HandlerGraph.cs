@@ -6,7 +6,6 @@ using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
-using Jasper.ErrorHandling.New;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Scheduled;
 using Jasper.Serialization;

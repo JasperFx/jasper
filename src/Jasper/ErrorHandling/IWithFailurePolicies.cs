@@ -1,6 +1,4 @@
-﻿using Jasper.ErrorHandling.New;
-
-namespace Jasper.ErrorHandling;
+﻿namespace Jasper.ErrorHandling;
 
 public interface IWithFailurePolicies
 {

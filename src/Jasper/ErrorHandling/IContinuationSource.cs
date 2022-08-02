@@ -1,7 +1,7 @@
 using System;
 using Jasper.Runtime;
 
-namespace Jasper.ErrorHandling.New;
+namespace Jasper.ErrorHandling;
 
 /// <summary>
 /// Plugin point for creating continuations based on failures

@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jasper.ErrorHandling.New;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
 
-public interface IAdditionalActions : IFailureActions
+public interface IAdditionalActions
 {
     /// <summary>
     /// Define actions to take upon subsequent failures
@@ -33,7 +32,7 @@ public interface IAdditionalActions : IFailureActions
         string description = "User supplied");
 }
 
-internal class FailureActions : IAdditionalActions
+internal class FailureActions : IAdditionalActions, IFailureActions
 {
     private readonly FailureRule _rule;
     private readonly List<FailureSlot> _slots = new List<FailureSlot>();
@@ -42,8 +41,6 @@ internal class FailureActions : IAdditionalActions
     {
         _rule = new FailureRule(match);
         parent.Add(_rule);
-
-
     }
 
     public IAdditionalActions MoveToErrorQueue()
@@ -87,11 +84,19 @@ internal class FailureActions : IAdditionalActions
         return this;
     }
 
-    public IAdditionalActions RetryNow(int maxAttempts = 3)
+    public IAdditionalActions RetryOnce()
     {
-        if (maxAttempts <= 0) throw new ArgumentOutOfRangeException(nameof(maxAttempts));
+        var slot = _rule.AddSlot(RetryInlineContinuation.Instance);
+        _slots.Add(slot);
 
-        for (int i = 0; i < maxAttempts - 1; i++)
+        return this;
+    }
+
+    public IAdditionalActions RetryTimes(int attempts)
+    {
+        if (attempts <= 0) throw new ArgumentOutOfRangeException(nameof(attempts));
+
+        for (int i = 0; i < attempts; i++)
         {
             var slot = _rule.AddSlot(RetryInlineContinuation.Instance);
             _slots.Add(slot);
@@ -172,11 +177,17 @@ public interface IFailureActions
     IAdditionalActions ScheduleRetry(params TimeSpan[] delays);
 
     /// <summary>
-    ///     Retry the message a maximum number of attempts without any delay
-    ///     or moving the message back to the original queue
+    /// Retry the message processing inline one time
     /// </summary>
     /// <param name="maxAttempts"></param>
-    IAdditionalActions RetryNow(int maxAttempts = 3);
+    IAdditionalActions RetryOnce();
+
+    /// <summary>
+    ///     Retry the message the given number attempts without any delay
+    ///     or moving the message back to the original queue
+    /// </summary>
+    /// <param name="attempts">The number of immediate retries allowed</param>
+    IAdditionalActions RetryTimes(int attempts);
 
     /// <summary>
     /// Retry message failures a define number of times with user-specified cooldown times
@@ -318,14 +329,14 @@ public class PolicyExpression : IFailureActions
         return new FailureActions(_match, _parent).ScheduleRetry(delays);
     }
 
-    /// <summary>
-    ///     Retry the message a maximum number of attempts without any delay
-    ///     or moving the message back to the original queue
-    /// </summary>
-    /// <param name="maxAttempts"></param>
-    public IAdditionalActions RetryNow(int maxAttempts = 3)
+    public IAdditionalActions RetryOnce()
     {
-        return new FailureActions(_match, _parent).RetryNow(3);
+        return new FailureActions(_match, _parent).RetryOnce();
+    }
+
+    public IAdditionalActions RetryTimes(int attempts)
+    {
+        return new FailureActions(_match, _parent).RetryTimes(attempts);
     }
 
     /// <summary>
