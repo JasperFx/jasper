@@ -199,6 +199,17 @@ public class PolicyExpression : IFailureActions
         _match = match;
     }
 
+    /// <summary>
+    /// Specifies that the exception message must contain this fragment. The check is case insensitive.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public PolicyExpression AndMessageContains(string text)
+    {
+        _match.And(new MessageContains(text));
+        return this;
+    }
+
 
     /// <summary>
     ///     Specifies an additional type of exception that this policy can handle.

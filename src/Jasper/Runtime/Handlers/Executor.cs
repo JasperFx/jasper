@@ -25,7 +25,7 @@ internal class Executor : IExecutor
 {
     private readonly IMessageHandler _handler;
     private readonly TimeSpan _timeout;
-    private readonly FailureRule[] _rules;
+    private readonly FailureRuleCollection _rules;
     private readonly IMessageLogger _logger;
 
     public static Executor Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
@@ -38,11 +38,11 @@ internal class Executor : IExecutor
         return new Executor(runtime, handler, rules, timeoutSpan);
     }
 
-    public Executor(IJasperRuntime runtime, IMessageHandler handler, IEnumerable<FailureRule> rules, TimeSpan timeout)
+    public Executor(IJasperRuntime runtime, IMessageHandler handler, FailureRuleCollection rules, TimeSpan timeout)
     {
         _handler = handler;
         _timeout = timeout;
-        _rules = rules.ToArray();
+        _rules = rules;
         _logger = runtime.MessageLogger;
     }
 
@@ -64,15 +64,7 @@ internal class Executor : IExecutor
             _logger
                 .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
 
-            foreach (var rule in _rules)
-            {
-                if (rule.TryCreateContinuation(e, context.Envelope, out var continuation))
-                {
-                    return continuation;
-                }
-            }
-
-            return new MoveToErrorQueue(e);
+            return _rules.DetermineExecutionContinuation(e, context.Envelope);
         }
     }
 
@@ -91,23 +83,19 @@ internal class Executor : IExecutor
         {
             _logger.LogException(e, message: $"Invocation of {context.Envelope} failed!");
 
-            foreach (var rule in _rules)
+            var retry = _rules.TryFindInlineContinuation(e, context.Envelope);
+            if (retry == null)
             {
-                if (rule.TryCreateContinuation(e, context.Envelope, out var continuation))
-                {
-                    if (continuation is RetryInlineContinuation retry)
-                    {
-                        if (retry.Delay.HasValue)
-                        {
-                            await Task.Delay(retry.Delay.Value, cancellation).ConfigureAwait(false);
-                        }
-
-                        return InvokeResult.TryAgain;
-                    }
-                }
+                throw;
             }
 
-            throw;
+            if (retry.Delay.HasValue)
+            {
+                await Task.Delay(retry.Delay.Value, cancellation).ConfigureAwait(false);
+            }
+
+            return InvokeResult.TryAgain;
+
         }
     }
 }

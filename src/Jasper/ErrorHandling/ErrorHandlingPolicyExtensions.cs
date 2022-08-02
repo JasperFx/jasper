@@ -37,8 +37,8 @@ public static class ErrorHandlingPolicyExtensions
     /// <returns>The PolicyBuilder instance.</returns>
     public static PolicyExpression OnExceptionOfType(this IHasFailurePolicies policies, Type exceptionType)
     {
-        // TODO -- switch to returning TypeMatch later
-        return policies.OnException(e => e.GetType().CanBeCastTo(exceptionType));
+        var match = typeof(TypeMatch<>).CloseAndBuildAs<IExceptionMatch>(exceptionType);
+        return new PolicyExpression(policies.Failures, match);
     }
 
 

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling.New;
 
@@ -11,7 +13,16 @@ public class FailureRuleCollection
     /// </summary>
     public int? MaximumAttempts { get; set; }
 
-    internal IEnumerable<FailureRule> CombineRules(FailureRuleCollection parent)
+    internal FailureRuleCollection CombineRules(FailureRuleCollection parent)
+    {
+        var combined = new FailureRuleCollection();
+        combined._rules.AddRange(combine(parent));
+        combined.MaximumAttempts = MaximumAttempts ?? parent.MaximumAttempts ?? 3;
+
+        return combined;
+    }
+
+    private IEnumerable<FailureRule> combine(FailureRuleCollection parent)
     {
         foreach (var rule in _rules) yield return rule;
 
@@ -26,6 +37,37 @@ public class FailureRuleCollection
         {
             yield return BuildRequeueRuleForMaximumAttempts(parent.MaximumAttempts.Value);
         }
+    }
+
+    internal IContinuation DetermineExecutionContinuation(Exception e, Envelope envelope)
+    {
+        foreach (var rule in _rules)
+        {
+            if (rule.TryCreateContinuation(e, envelope, out var continuation))
+            {
+                return continuation;
+            }
+        }
+
+        return new MoveToErrorQueue(e);
+    }
+
+    internal RetryInlineContinuation? TryFindInlineContinuation(Exception e, Envelope envelope)
+    {
+        foreach (var rule in _rules)
+        {
+            if (!rule.TryCreateContinuation(e, envelope, out var continuation))
+            {
+                continue;
+            }
+
+            if (continuation is RetryInlineContinuation retry)
+            {
+                return retry;
+            }
+        }
+
+        return null;
     }
 
     internal static FailureRule BuildRequeueRuleForMaximumAttempts(int maximumAttempts)
