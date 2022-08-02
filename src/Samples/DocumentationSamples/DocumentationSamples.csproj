@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <LangVersion>latestmajor</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latestmajor</LangVersion>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
-      <ProjectReference Include="..\..\Jasper\Jasper.csproj" />
-      <ProjectReference Include="..\..\TestingSupport\TestingSupport.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj"/>
+    <ProjectReference Include="..\..\Jasper\Jasper.csproj"/>
+    <ProjectReference Include="..\..\TestingSupport\TestingSupport.csproj"/>
+  </ItemGroup>
 
 </Project>

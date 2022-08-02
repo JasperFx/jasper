@@ -12,6 +12,6 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\..\Jasper\Jasper.csproj"/>
   </ItemGroup>
 </Project>

@@ -1,15 +1,10 @@
-using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
-using Jasper;
-using Microsoft.Extensions.Hosting;
-using Oakton;
-using TestMessages;
 
 namespace Benchmarks
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // using var driver = new Driver();
             // driver.Start(o => { }).GetAwaiter().GetResult();
@@ -21,9 +16,6 @@ namespace Benchmarks
             //var
             summary = BenchmarkRunner.Run<LocalRunner>();
             //var summary = BenchmarkRunner.Run<RabbitMqRunner>();
-
-
-
         }
     }
 }

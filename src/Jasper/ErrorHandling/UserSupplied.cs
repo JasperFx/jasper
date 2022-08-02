@@ -20,7 +20,11 @@ public class UserSupplied : IExceptionMatch
     }
 
     public string Description { get; }
-    public Func<Exception, bool> ToFilter() => _filter;
+
+    public bool Matches(Exception ex)
+    {
+        return _filter(ex);
+    }
 }
 
 public class UserSupplied<T> : IExceptionMatch where T : Exception
@@ -40,5 +44,9 @@ public class UserSupplied<T> : IExceptionMatch where T : Exception
     }
 
     public string Description { get; }
-    public Func<Exception, bool> ToFilter() => ex => ex is T matched && _filter(matched);
+
+    public bool Matches(Exception ex)
+    {
+        return ex is T matched && _filter(matched);
+    }
 }

@@ -12,9 +12,9 @@ public class InnerMatch : IExceptionMatch
     }
 
     public string Description => $"Inner: " + _inner.Description;
-    public Func<Exception, bool> ToFilter()
+
+    public bool Matches(Exception ex)
     {
-        var inner = _inner.ToFilter();
-        return e => e.InnerException != null && inner(e.InnerException);
+        return ex.InnerException != null && _inner.Matches(ex.InnerException);
     }
 }

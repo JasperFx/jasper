@@ -206,7 +206,7 @@ public class PolicyExpression : IFailureActions
     /// <returns></returns>
     public PolicyExpression AndMessageContains(string text)
     {
-        _match.And(new MessageContains(text));
+        _match = _match.And(new MessageContains(text));
         return this;
     }
 

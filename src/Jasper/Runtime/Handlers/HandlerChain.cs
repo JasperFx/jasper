@@ -18,7 +18,7 @@ using LamarCodeGeneration.Model;
 
 namespace Jasper.Runtime.Handlers;
 
-public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasFailurePolicies, ICodeFile
+public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IWithFailurePolicies, ICodeFile
 {
     public const string HandlerSuffix = "Handler";
     public const string ConsumerSuffix = "Consumer";

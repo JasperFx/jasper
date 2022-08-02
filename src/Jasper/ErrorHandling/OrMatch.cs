@@ -15,9 +15,9 @@ public class OrMatch : IExceptionMatch
     }
 
     public string Description => Inners.Select(x => ExceptionMatchExtensions.Formatted(x)).Join(" or ");
-    public Func<Exception, bool> ToFilter()
+
+    public bool Matches(Exception ex)
     {
-        var filters = Inners.Select(x => x.ToFilter()).ToArray();
-        return e => filters.Any(x => x(e));
+        return Inners.Any(x => x.Matches(ex));
     }
 }

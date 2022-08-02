@@ -14,6 +14,8 @@ public class ScheduledRetryContinuation : IContinuation, IContinuationSource
 
     private readonly TimeSpan _delay;
 
+    public TimeSpan Delay => _delay;
+
     public async ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
     {
         var scheduledTime = now.Add(_delay);

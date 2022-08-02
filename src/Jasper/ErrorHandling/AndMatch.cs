@@ -14,10 +14,11 @@ public class AndMatch : IExceptionMatch
         Inners.AddRange(matches);
     }
 
-    public string Description => Inners.Select(x => ExceptionMatchExtensions.Formatted(x)).Join(" and ");
-    public Func<Exception, bool> ToFilter()
+    public bool Matches(Exception ex)
     {
-        var filters = Inners.Select(x => x.ToFilter()).ToArray();
-        return e => filters.All(x => x(e));
+        return Inners.All(x => x.Matches(ex));
     }
+
+    public string Description => Inners.Select(x => ExceptionMatchExtensions.Formatted(x)).Join(" and ");
+
 }

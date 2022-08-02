@@ -8,18 +8,16 @@ namespace Jasper.ErrorHandling.New;
 internal class FailureRule
 {
     private readonly IExceptionMatch _match;
-    private readonly Func<Exception,bool> _filter;
     private readonly List<FailureSlot> _slots = new();
 
     public FailureRule(IExceptionMatch match)
     {
         _match = match;
-        _filter = match.ToFilter();
     }
 
     public bool TryCreateContinuation(Exception ex, Envelope env, out IContinuation continuation)
     {
-        if (_filter(ex))
+        if (_match.Matches(ex))
         {
             if (env.Attempts == 0)
             {

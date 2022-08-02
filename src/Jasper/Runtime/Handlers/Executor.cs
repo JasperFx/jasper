@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Jasper.ErrorHandling;
 using Jasper.ErrorHandling.New;
 using Jasper.Logging;
 
@@ -24,19 +21,9 @@ internal interface IExecutor
 internal class Executor : IExecutor
 {
     private readonly IMessageHandler _handler;
-    private readonly TimeSpan _timeout;
-    private readonly FailureRuleCollection _rules;
     private readonly IMessageLogger _logger;
-
-    public static Executor Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
-    {
-        var handler = handlerGraph.HandlerFor(messageType);
-        if (handler == null) return null; // TODO: later let's have it return an executor that calls missing handlers
-
-        var timeoutSpan = handler.Chain!.DetermineMessageTimeout(runtime.Options);
-        var rules = handler.Chain.Failures.CombineRules(handlerGraph.Failures);
-        return new Executor(runtime, handler, rules, timeoutSpan);
-    }
+    private readonly FailureRuleCollection _rules;
+    private readonly TimeSpan _timeout;
 
     public Executor(IJasperRuntime runtime, IMessageHandler handler, FailureRuleCollection rules, TimeSpan timeout)
     {
@@ -69,10 +56,12 @@ internal class Executor : IExecutor
     }
 
 
-
     public async Task<InvokeResult> InvokeAsync(IExecutionContext context, CancellationToken cancellation)
     {
-        if (context.Envelope == null) throw new ArgumentOutOfRangeException(nameof(context.Envelope));
+        if (context.Envelope == null)
+        {
+            throw new ArgumentOutOfRangeException(nameof(context.Envelope));
+        }
 
         try
         {
@@ -95,7 +84,19 @@ internal class Executor : IExecutor
             }
 
             return InvokeResult.TryAgain;
-
         }
+    }
+
+    public static Executor Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
+    {
+        var handler = handlerGraph.HandlerFor(messageType);
+        if (handler == null)
+        {
+            return null; // TODO: later let's have it return an executor that calls missing handlers
+        }
+
+        var timeoutSpan = handler.Chain!.DetermineMessageTimeout(runtime.Options);
+        var rules = handler.Chain.Failures.CombineRules(handlerGraph.Failures);
+        return new Executor(runtime, handler, rules, timeoutSpan);
     }
 }

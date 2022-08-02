@@ -5,11 +5,16 @@ namespace Jasper.ErrorHandling;
 public interface IExceptionMatch
 {
     string Description { get; }
-    Func<Exception, bool> ToFilter();
+
+    bool Matches(Exception ex);
 }
 
 internal class AlwaysMatches : IExceptionMatch
 {
     public string Description => "All exceptions";
-    public Func<Exception, bool> ToFilter() => _ => true;
+
+    public bool Matches(Exception ex)
+    {
+        return true;
+    }
 }

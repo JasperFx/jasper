@@ -12,5 +12,9 @@ public class MessageContains : IExceptionMatch
     }
 
     public string Description => $"Exception message contains \"{_text}\"";
-    public Func<Exception, bool> ToFilter() => ex => ex.Message.Contains(_text, StringComparison.OrdinalIgnoreCase);
+
+    public bool Matches(Exception ex)
+    {
+        return ex.Message.Contains(_text, StringComparison.OrdinalIgnoreCase);
+    }
 }

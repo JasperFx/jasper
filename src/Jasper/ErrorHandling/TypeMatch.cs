@@ -6,8 +6,9 @@ namespace Jasper.ErrorHandling;
 public class TypeMatch<T> : IExceptionMatch where T : Exception
 {
     public string Description => "Exception is " + typeof(T).FullNameInCode();
-    public Func<Exception, bool> ToFilter()
+
+    public bool Matches(Exception ex)
     {
-        return ex => ex is T;
+        return ex is T;
     }
 }
