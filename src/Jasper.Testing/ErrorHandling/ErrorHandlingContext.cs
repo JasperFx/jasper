@@ -33,7 +33,7 @@ namespace Jasper.Testing.ErrorHandling
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWaitAsync(theMessage);
 
-            return _session.AllRecordsInOrder().LastOrDefault(x =>
+            return _session.AllRecordsInOrder().Where(x => !(x.Envelope.Message is FailureAcknowledgement)).LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
         }
 
@@ -45,7 +45,7 @@ namespace Jasper.Testing.ErrorHandling
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWaitAsync(theMessage);
 
-            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+            var record = session.AllRecordsInOrder().Where(x => !(x.Envelope.Message is FailureAcknowledgement)).LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
 
             if (record == null) throw new Exception("No ending activity detected");
@@ -78,7 +78,7 @@ namespace Jasper.Testing.ErrorHandling
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWaitAsync(theMessage);
 
-            var record = session.AllRecordsInOrder().LastOrDefault(x =>
+            var record = session.AllRecordsInOrder().Where(x => !(x.Envelope.Message is FailureAcknowledgement)).LastOrDefault(x =>
                 x.EventType == EventType.MessageSucceeded || x.EventType == EventType.MovedToErrorQueue);
 
             if (record == null) throw new Exception("No ending activity detected");
