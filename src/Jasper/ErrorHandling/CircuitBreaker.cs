@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
+using Jasper.ErrorHandling.Matches;
 using Jasper.Transports;
 using Jasper.Transports.Util;
 

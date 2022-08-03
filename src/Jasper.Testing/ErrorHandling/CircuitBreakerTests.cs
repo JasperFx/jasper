@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.ErrorHandling;
+using Jasper.ErrorHandling.Matches;
 using Jasper.Transports;
 using NSubstitute;
 using Shouldly;
@@ -23,7 +24,7 @@ namespace Jasper.Testing.ErrorHandling
             PauseTime = 5.Minutes()
         };
 
-        protected IExceptionMatch theExceptionMatch = new AlwaysMatches();
+        internal IExceptionMatch theExceptionMatch = new AlwaysMatches();
 
         protected readonly IListeningAgent theAgent = Substitute.For<IListeningAgent>();
 

@@ -72,6 +72,8 @@ namespace Jasper.Testing.Acceptance
             var exceptions = session.AllExceptions();
             exceptions.Single().ShouldBeOfType<TaskCanceledException>();
         }
+
+
     }
 
     public class PotentiallySlowMessage

@@ -1,9 +1,9 @@
 using System;
 using LamarCodeGeneration;
 
-namespace Jasper.ErrorHandling;
+namespace Jasper.ErrorHandling.Matches;
 
-public class UserSupplied : IExceptionMatch
+internal class UserSupplied : IExceptionMatch
 {
     private readonly Func<Exception, bool> _filter;
 
@@ -27,7 +27,7 @@ public class UserSupplied : IExceptionMatch
     }
 }
 
-public class UserSupplied<T> : IExceptionMatch where T : Exception
+internal class UserSupplied<T> : IExceptionMatch where T : Exception
 {
     private readonly Func<T, bool> _filter;
 

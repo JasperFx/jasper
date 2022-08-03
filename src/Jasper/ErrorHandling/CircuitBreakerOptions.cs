@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Baseline.Dates;
+using Jasper.ErrorHandling.Matches;
 
 namespace Jasper.ErrorHandling;
 
@@ -13,6 +14,21 @@ public class CircuitBreakerOptions
     public TimeSpan TrackingPeriod { get; set; } = 10.Minutes();
 
     public TimeSpan SamplingPeriod { get; set; } = 250.Milliseconds();
+
+    public CircuitBreakerOptions Exclude<T>(Func<T, bool>? filter = null) where T : Exception
+    {
+        return this;
+    }
+
+    public CircuitBreakerOptions Include<T>(Func<T, bool>? filter = null) where T : Exception
+    {
+        return this;
+    }
+
+    internal IExceptionMatch ToExceptionMatch()
+    {
+        throw new NotImplementedException();
+    }
 
     internal void AssertValid()
     {

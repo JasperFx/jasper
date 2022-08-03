@@ -1,8 +1,9 @@
 using System;
 
-namespace Jasper.ErrorHandling;
+namespace Jasper.ErrorHandling.Matches;
 
-public class MessageContains : IExceptionMatch
+internal
+    class MessageContains : IExceptionMatch
 {
     private readonly string _text;
 

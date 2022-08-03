@@ -1,13 +1,6 @@
 using System;
 
-namespace Jasper.ErrorHandling;
-
-public interface IExceptionMatch
-{
-    string Description { get; }
-
-    bool Matches(Exception ex);
-}
+namespace Jasper.ErrorHandling.Matches;
 
 internal class AlwaysMatches : IExceptionMatch
 {

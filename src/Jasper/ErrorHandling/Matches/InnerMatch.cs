@@ -1,8 +1,8 @@
 using System;
 
-namespace Jasper.ErrorHandling;
+namespace Jasper.ErrorHandling.Matches;
 
-public class InnerMatch : IExceptionMatch
+internal class InnerMatch : IExceptionMatch
 {
     private readonly IExceptionMatch _inner;
 

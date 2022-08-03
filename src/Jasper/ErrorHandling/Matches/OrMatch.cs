@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 
-namespace Jasper.ErrorHandling;
+namespace Jasper.ErrorHandling.Matches;
 
-public class OrMatch : IExceptionMatch
+internal class OrMatch : IExceptionMatch
 {
     public readonly List<IExceptionMatch> Inners = new();
 

@@ -1,9 +1,9 @@
 using System;
 using LamarCodeGeneration;
 
-namespace Jasper.ErrorHandling;
+namespace Jasper.ErrorHandling.Matches;
 
-public class TypeMatch<T> : IExceptionMatch where T : Exception
+internal class TypeMatch<T> : IExceptionMatch where T : Exception
 {
     public string Description => "Exception is " + typeof(T).FullNameInCode();
 

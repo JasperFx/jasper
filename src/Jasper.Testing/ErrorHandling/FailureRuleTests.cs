@@ -1,5 +1,6 @@
 using System;
 using Jasper.ErrorHandling;
+using Jasper.ErrorHandling.Matches;
 using Jasper.Testing.Messaging;
 using Shouldly;
 using Xunit;
