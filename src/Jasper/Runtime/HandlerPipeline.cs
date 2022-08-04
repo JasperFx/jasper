@@ -18,6 +18,7 @@ public class HandlerPipeline : IHandlerPipeline
     private readonly HandlerGraph _graph;
 
     private readonly JasperRuntime _runtime;
+    private readonly IExecutorFactory _executorFactory;
 
 
     private readonly AdvancedSettings _settings;
@@ -26,10 +27,11 @@ public class HandlerPipeline : IHandlerPipeline
         ImHashMap<Type,IExecutor>.Empty;
 
 
-    public HandlerPipeline(JasperRuntime runtime)
+    internal HandlerPipeline(JasperRuntime runtime, IExecutorFactory executorFactory)
     {
         _graph = runtime.Handlers;
         _runtime = runtime;
+        _executorFactory = executorFactory;
         _contextPool = runtime.ExecutionPool;
         _cancellation = runtime.Cancellation;
 
@@ -189,11 +191,7 @@ public class HandlerPipeline : IHandlerPipeline
             return executor;
         }
 
-        var handler = _graph.HandlerFor(messageType);
-
-        executor = handler == null
-            ? new NoHandlerExecutor(messageType, _runtime)
-            : Executor.Build(_runtime, _graph, messageType);
+        executor = _executorFactory.BuildFor(messageType);
 
         _executors = _executors.AddOrUpdate(messageType, executor);
 

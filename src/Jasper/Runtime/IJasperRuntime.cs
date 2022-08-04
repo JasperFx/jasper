@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
+using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
@@ -65,6 +66,11 @@ public interface IJasperRuntime
     IListeningAgent? FindListeningAgent(string endpointName);
 
 
+}
+
+internal interface IExecutorFactory
+{
+    IExecutor BuildFor(Type messageType);
 }
 
 // This was for testing

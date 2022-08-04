@@ -42,8 +42,7 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
         var provider = container.GetInstance<ObjectPoolProvider>();
         ExecutionPool = provider.Create(this);
 
-        // TODO -- might make NoHandlerContinuation lazy!
-        Pipeline = new HandlerPipeline(this);
+        Pipeline = new HandlerPipeline(this, this);
 
         _persistence = new Lazy<IEnvelopePersistence>(container.GetInstance<IEnvelopePersistence>);
 
