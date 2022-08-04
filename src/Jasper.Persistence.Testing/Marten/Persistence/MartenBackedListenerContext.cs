@@ -88,7 +88,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             runtime.Advanced.Returns(theSettings);
 
 
-            theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime);
+            theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime, runtime.Pipeline);
         }
 
         public Task DisposeAsync()

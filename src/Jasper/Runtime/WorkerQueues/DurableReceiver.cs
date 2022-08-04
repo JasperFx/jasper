@@ -17,12 +17,11 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
     private readonly ActionBlock<Envelope> _receiver;
     private readonly AdvancedSettings _settings;
 
-    public DurableReceiver(Endpoint endpoint, IJasperRuntime runtime)
+    public DurableReceiver(Endpoint endpoint, IJasperRuntime runtime, IHandlerPipeline pipeline)
     {
         _settings = runtime.Advanced;
         _persistence = runtime.Persistence;
         _logger = runtime.Logger;
-        var pipeline = runtime.Pipeline;
 
         endpoint.ExecutionOptions.CancellationToken = _settings.Cancellation;
 

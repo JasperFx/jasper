@@ -18,7 +18,7 @@ internal class DurableLocalQueue : DurableReceiver, ISendingAgent
     private readonly IMessageSerializer _serializer;
     private readonly AdvancedSettings _settings;
 
-    public DurableLocalQueue(Endpoint endpoint, IJasperRuntime runtime) : base(endpoint, runtime)
+    public DurableLocalQueue(Endpoint endpoint, IJasperRuntime runtime) : base(endpoint, runtime, runtime.Pipeline)
     {
         _settings = runtime.Advanced;
         _persistence = runtime.Persistence;

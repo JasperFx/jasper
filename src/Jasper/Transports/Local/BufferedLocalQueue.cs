@@ -14,7 +14,7 @@ internal class BufferedLocalQueue : BufferedReceiver, ISendingAgent
 {
     private readonly IMessageLogger _messageLogger;
 
-    public BufferedLocalQueue(Endpoint endpoint, IJasperRuntime runtime) : base(endpoint, runtime)
+    public BufferedLocalQueue(Endpoint endpoint, IJasperRuntime runtime) : base(endpoint, runtime, runtime.Pipeline)
     {
         _messageLogger = runtime.MessageLogger;
         Destination = Address = endpoint.Uri;

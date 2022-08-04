@@ -21,13 +21,13 @@ public interface IListeningAgent
 
 internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 {
-    private readonly IJasperRuntime _runtime;
+    private readonly JasperRuntime _runtime;
     private IListener? _listener;
     private IReceiver? _receiver;
     private Restarter? _restarter;
     private readonly ILogger _logger;
 
-    public ListeningAgent(Endpoint endpoint, IJasperRuntime runtime)
+    public ListeningAgent(Endpoint endpoint, JasperRuntime runtime)
     {
         Endpoint = endpoint;
         _runtime = runtime;
@@ -82,13 +82,13 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         switch (Endpoint.Mode)
         {
             case EndpointMode.Durable:
-                return new DurableReceiver(Endpoint, _runtime);
+                return new DurableReceiver(Endpoint, _runtime, _runtime.Pipeline);
 
             case EndpointMode.Inline:
-                return new InlineReceiver(_runtime);
+                return new InlineReceiver(_runtime, _runtime.Pipeline);
 
             case EndpointMode.BufferedInMemory:
-                return new BufferedReceiver(Endpoint, _runtime);
+                return new BufferedReceiver(Endpoint, _runtime, _runtime.Pipeline);
 
             default:
                 throw new ArgumentOutOfRangeException();

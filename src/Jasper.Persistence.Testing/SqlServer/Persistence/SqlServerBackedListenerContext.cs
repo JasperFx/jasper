@@ -48,7 +48,7 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             runtime.Advanced.Returns(theSettings);
 
 
-            theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime);
+            theReceiver = new DurableReceiver(new LocalQueueSettings("temp"), runtime, thePipeline);
         }
 
         protected Envelope notScheduledEnvelope()

@@ -13,9 +13,9 @@ public class InlineReceiver : IReceiver
     private readonly IHandlerPipeline _pipeline;
     private readonly AdvancedSettings _settings;
 
-    public InlineReceiver(IJasperRuntime runtime)
+    public InlineReceiver(IJasperRuntime runtime, IHandlerPipeline pipeline)
     {
-        _pipeline = runtime.Pipeline;
+        _pipeline = pipeline;
         _logger = runtime.Logger;
         _settings = runtime.Advanced;
     }

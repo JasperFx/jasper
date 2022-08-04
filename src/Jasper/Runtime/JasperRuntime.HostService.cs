@@ -107,7 +107,7 @@ public partial class JasperRuntime
             var durabilityLogger = _container.GetInstance<ILogger<DurabilityAgent>>();
 
             // TODO -- use the worker queue for Retries?
-            var worker = new DurableReceiver(new LocalQueueSettings("scheduled"), this);
+            var worker = new DurableReceiver(new LocalQueueSettings("scheduled"), this, Pipeline);
 
             Durability = new DurabilityAgent(this, Logger, durabilityLogger, worker, Persistence,
                 Options.Advanced);

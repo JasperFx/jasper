@@ -17,11 +17,11 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
     private readonly InMemoryScheduledJobProcessor _scheduler;
     private readonly AdvancedSettings _settings;
 
-    public BufferedReceiver(Endpoint endpoint, IJasperRuntime runtime)
+    public BufferedReceiver(Endpoint endpoint, IJasperRuntime runtime, IHandlerPipeline pipeline)
     {
         _logger = runtime.Logger;
         _settings = runtime.Advanced;
-        Pipeline = runtime.Pipeline;
+        Pipeline = pipeline;
 
         _scheduler = new InMemoryScheduledJobProcessor(this);
 
