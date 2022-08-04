@@ -49,7 +49,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
     /// If present, adds a circuit breaker to the active listening agent
     /// for this endpoint at runtime
     /// </summary>
-    public CircuitBreakerOptions CircuitBreakerOptions { get; set; }
+    public CircuitBreakerOptions? CircuitBreakerOptions { get; set; }
 
     public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
 

@@ -33,6 +33,19 @@ internal class Executor : IExecutor
         _logger = runtime.MessageLogger;
     }
 
+    public Executor(IMessageHandler handler, IMessageLogger logger, FailureRuleCollection rules, TimeSpan timeout)
+    {
+        _handler = handler;
+        _logger = logger;
+        _rules = rules;
+        _timeout = timeout;
+    }
+
+    internal Executor WrapWithMessageTracking(IMessageSuccessTracker tracker)
+    {
+        return new Executor(new CircuitBreakerWrappedMessageHandler(_handler, tracker), _logger, _rules, _timeout);
+    }
+
     public async Task<IContinuation> ExecuteAsync(IExecutionContext context, CancellationToken cancellation)
     {
         context.Envelope!.Attempts++;
@@ -87,7 +100,7 @@ internal class Executor : IExecutor
         }
     }
 
-    public static Executor Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
+    public static Executor? Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
     {
         var handler = handlerGraph.HandlerFor(messageType);
         if (handler == null)

@@ -6,11 +6,32 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 using Jasper.ErrorHandling.Matches;
+using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
 using Jasper.Transports;
 using Jasper.Transports.Util;
 
 namespace Jasper.ErrorHandling;
+
+internal class CircuitBreakerTrackedExecutorFactory : IExecutorFactory
+{
+    private readonly CircuitBreaker _breaker;
+    private readonly IExecutorFactory _innerFactory;
+
+    public CircuitBreakerTrackedExecutorFactory(CircuitBreaker breaker, IExecutorFactory innerFactory)
+    {
+        _breaker = breaker;
+        _innerFactory = innerFactory;
+    }
+
+    public IExecutor BuildFor(Type messageType)
+    {
+        var executor = _innerFactory.BuildFor(messageType);
+        if (executor is Executor e) return e.WrapWithMessageTracking(_breaker);
+
+        return executor;
+    }
+}
 
 internal class CircuitBreakerWrappedMessageHandler : IMessageHandler
 {

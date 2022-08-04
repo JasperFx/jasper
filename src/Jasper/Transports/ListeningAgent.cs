@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Jasper.Configuration;
+using Jasper.ErrorHandling;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,7 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     private Restarter? _restarter;
     private readonly ILogger _logger;
     private readonly HandlerPipeline _pipeline;
+    private readonly CircuitBreaker _circuitBreaker;
 
     public ListeningAgent(Endpoint endpoint, JasperRuntime runtime)
     {
@@ -35,8 +37,17 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         Uri = endpoint.Uri;
         _logger = runtime.Logger;
 
-
-        _pipeline = new HandlerPipeline(runtime, runtime);
+        if (endpoint.CircuitBreakerOptions != null)
+        {
+            _circuitBreaker = new CircuitBreaker(endpoint.CircuitBreakerOptions, this);
+            _pipeline = new HandlerPipeline(runtime,
+                new CircuitBreakerTrackedExecutorFactory(_circuitBreaker,
+                    new CircuitBreakerTrackedExecutorFactory(_circuitBreaker, runtime)));
+        }
+        else
+        {
+            _pipeline = new HandlerPipeline(runtime, runtime);
+        }
     }
 
     public Endpoint Endpoint { get; }
