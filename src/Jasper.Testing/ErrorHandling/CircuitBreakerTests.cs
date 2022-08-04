@@ -42,7 +42,7 @@ namespace Jasper.Testing.ErrorHandling
         {
             get
             {
-                _breaker ??= new CircuitBreaker(theOptions, theExceptionMatch, theAgent);
+                _breaker ??= new CircuitBreaker(theOptions, theAgent);
 
                 return _breaker;
             }
@@ -68,7 +68,6 @@ namespace Jasper.Testing.ErrorHandling
 
             var breaker = new CircuitBreaker(
                 options,
-                new AlwaysMatches(),
                 Substitute.For<IListeningAgent>());
 
             breaker.GenerationPeriod.ShouldBe(1.Minutes());

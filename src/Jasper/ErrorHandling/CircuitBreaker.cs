@@ -22,10 +22,10 @@ internal class CircuitBreaker : IDisposable
     private readonly List<Generation> _generations = new();
     private readonly double _ratio;
 
-    public CircuitBreaker(CircuitBreakerOptions options, IExceptionMatch match, IListeningAgent listeningAgent)
+    public CircuitBreaker(CircuitBreakerOptions options, IListeningAgent listeningAgent)
     {
         _options = options;
-        _match = match;
+        _match = options.ToExceptionMatch();
         _listeningAgent = listeningAgent;
 
         _processingBlock = new ActionBlock<object[]>(processExceptionsAsync);

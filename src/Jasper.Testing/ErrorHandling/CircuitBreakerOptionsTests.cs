@@ -22,11 +22,11 @@ namespace Jasper.Testing.ErrorHandling
         }
 
         [Fact]
-        public void failure_threshold_should_be_higher_than_5()
+        public void failure_threshold_should_be_higher_than_0()
         {
             Should.Throw<InvalidCircuitBreakerException>(() =>
             {
-                new CircuitBreakerOptions { FailurePercentageThreshold = 3}.AssertValid();
+                new CircuitBreakerOptions { FailurePercentageThreshold = 0}.AssertValid();
             });
         }
 

@@ -15,19 +15,23 @@ public class CircuitBreakerOptions
 
     public TimeSpan SamplingPeriod { get; set; } = 250.Milliseconds();
 
+    private readonly ComplexMatch _match = new();
+
     public CircuitBreakerOptions Exclude<T>(Func<T, bool>? filter = null) where T : Exception
     {
+        _match.Exclude<T>(filter);
         return this;
     }
 
     public CircuitBreakerOptions Include<T>(Func<T, bool>? filter = null) where T : Exception
     {
+        _match.Include<T>(filter);
         return this;
     }
 
     internal IExceptionMatch ToExceptionMatch()
     {
-        throw new NotImplementedException();
+        return _match.Reduce();
     }
 
     internal void AssertValid()
@@ -43,7 +47,8 @@ public class CircuitBreakerOptions
     {
         if (MinimumThreshold < 0) yield return $"{nameof(MinimumThreshold)} must be greater than 0";
 
-        if (FailurePercentageThreshold <= 5) yield return $"{nameof(FailurePercentageThreshold)} must be at least 5";
+        if (FailurePercentageThreshold <= 1) yield return $"{nameof(FailurePercentageThreshold)} must be at least 1";
+        if (FailurePercentageThreshold >= 100) yield return $"{nameof(FailurePercentageThreshold)} must be less than 100";
 
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         if (PauseTime == null) yield return $"{nameof(PauseTime)} cannot be null";
