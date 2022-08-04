@@ -14,7 +14,6 @@ public abstract class MessageHandler : IMessageHandler
 {
     public HandlerChain? Chain { get; set; }
 
-    // This method actually processes the incoming Envelope
     public abstract Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
 }
 

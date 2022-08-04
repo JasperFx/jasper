@@ -6,12 +6,45 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline.Dates;
 using Jasper.ErrorHandling.Matches;
+using Jasper.Runtime.Handlers;
 using Jasper.Transports;
 using Jasper.Transports.Util;
 
 namespace Jasper.ErrorHandling;
 
-internal class CircuitBreaker : IDisposable
+internal class CircuitBreakerWrappedMessageHandler : IMessageHandler
+{
+    private readonly IMessageHandler _inner;
+    private readonly IMessageSuccessTracker _tracker;
+
+    public CircuitBreakerWrappedMessageHandler(IMessageHandler inner, IMessageSuccessTracker tracker)
+    {
+        _inner = inner;
+        _tracker = tracker;
+    }
+
+    public async Task HandleAsync(IExecutionContext context, CancellationToken cancellation)
+    {
+        try
+        {
+            await _inner.HandleAsync(context, cancellation);
+            await _tracker.TagSuccessAsync();
+        }
+        catch (Exception e)
+        {
+            await _tracker.TagFailureAsync(e);
+            throw;
+        }
+    }
+}
+
+internal interface IMessageSuccessTracker
+{
+    Task TagSuccessAsync();
+    Task TagFailureAsync(Exception ex);
+}
+
+internal class CircuitBreaker : IDisposable, IMessageSuccessTracker
 {
     private readonly CircuitBreakerOptions _options;
     private readonly IExceptionMatch _match;
@@ -37,6 +70,16 @@ internal class CircuitBreaker : IDisposable
     }
 
     public TimeSpan GenerationPeriod { get; set; }
+
+    public Task TagSuccessAsync()
+    {
+        return _batching.SendAsync(this);
+    }
+
+    public Task TagFailureAsync(Exception ex)
+    {
+        return _batching.SendAsync(ex);
+    }
 
 
     public bool ShouldStopProcessing()

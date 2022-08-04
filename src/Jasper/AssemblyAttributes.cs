@@ -23,3 +23,4 @@ using Oakton;
 [assembly: InternalsVisibleTo("Jasper.Pulsar")]
 [assembly: InternalsVisibleTo("Jasper.Pulsar.Tests")]
 [assembly: InternalsVisibleTo("StorytellerSpecs")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
