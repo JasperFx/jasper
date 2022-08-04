@@ -49,7 +49,11 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
         _container = container;
 
         Cancellation = Advanced.Cancellation;
+
+        ListenerObserver = new ListenerObserver(logger);
     }
+
+    public ListenerObserver ListenerObserver { get; }
 
     internal IReadOnlyList<IMissingHandler> MissingHandlers()
     {
