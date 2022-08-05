@@ -16,6 +16,7 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
     private readonly ActionBlock<Envelope> _receivingBlock;
     private readonly InMemoryScheduledJobProcessor _scheduler;
     private readonly AdvancedSettings _settings;
+    private bool _latched = false;
 
     public BufferedReceiver(Endpoint endpoint, IJasperRuntime runtime, IHandlerPipeline pipeline)
     {
@@ -29,14 +30,18 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
 
         _receivingBlock = new ActionBlock<Envelope>(async envelope =>
         {
+            if (_latched && envelope.Listener != null)
+            {
+                await envelope.Listener.DeferAsync(envelope);
+                return;
+            }
+
             try
             {
                 if (envelope.ContentType.IsEmpty())
                 {
                     envelope.ContentType = EnvelopeConstants.JsonContentType;
                 }
-
-                // TODO -- see if it's latched here
 
                 await Pipeline.InvokeAsync(envelope, this);
             }
@@ -46,6 +51,13 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
                 _logger.LogError(e, "Unexpected error in Pipeline invocation");
             }
         }, endpoint.ExecutionOptions);
+    }
+
+    public async ValueTask DrainAsync()
+    {
+        _latched = true;
+        _receivingBlock.Complete();
+        await _receivingBlock.Completion;
     }
 
     public IHandlerPipeline Pipeline { get; }

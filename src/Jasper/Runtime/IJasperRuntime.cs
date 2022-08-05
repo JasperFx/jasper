@@ -32,7 +32,7 @@ public interface IJasperRuntime
     ILogger Logger { get; }
     AdvancedSettings Advanced { get; }
     CancellationToken Cancellation { get; }
-    ListenerObserver ListenerObserver { get; }
+    ListenerTracker ListenerTracker { get; }
 
     ISendingAgent CreateSendingAgent(Uri? replyUri, ISender sender, Endpoint endpoint);
 

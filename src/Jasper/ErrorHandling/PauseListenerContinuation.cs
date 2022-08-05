@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Runtime;
 
@@ -16,7 +17,17 @@ public class PauseListenerContinuation : IContinuation, IContinuationSource
     public ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
     {
         var agent = runtime.FindListeningAgent(execution.Envelope!.Listener!.Address);
-        if (agent != null) return agent.PauseAsync(PauseTime);
+
+
+        if (agent != null)
+        {
+#pragma warning disable VSTHRD110
+            Task.Factory.StartNew(async () =>
+#pragma warning restore VSTHRD110
+            {
+                await agent.PauseAsync(PauseTime);
+            },CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+        }
 
         return ValueTask.CompletedTask;
     }

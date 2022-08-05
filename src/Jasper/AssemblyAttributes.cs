@@ -9,6 +9,7 @@ using Oakton;
 [assembly: JasperFeature]
 
 [assembly: InternalsVisibleTo("Jasper.Testing")]
+[assembly: InternalsVisibleTo("CircuitBreakingTests")]
 [assembly: InternalsVisibleTo("TestingSupport")]
 [assembly: InternalsVisibleTo("Jasper.RabbitMq")]
 [assembly: InternalsVisibleTo("Jasper.Http")]

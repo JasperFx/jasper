@@ -111,6 +111,11 @@ namespace Jasper.Testing.Transports.Tcp.Protocol
             throw new NotImplementedException();
         }
 
+        public ValueTask DrainAsync()
+        {
+            return ValueTask.CompletedTask;
+        }
+
 
         public void Dispose()
         {

@@ -1,20 +1,16 @@
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Baseline.Dates;
+using Jasper;
 using Jasper.ErrorHandling;
-using Jasper.Testing.Transports.Tcp;
 using Jasper.Tracking;
 using Jasper.Transports;
 using Jasper.Transports.Tcp;
 using Jasper.Util;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
-using Xunit;
 
-namespace Jasper.Testing.Runtime
+namespace CircuitBreakingTests
 {
     public class stopping_and_starting_listeners : IDisposable
     {
@@ -140,8 +136,12 @@ namespace Jasper.Testing.Runtime
         {
             using var sender = JasperHost.For(opts =>
             {
-                opts.PublishAllMessages().ToPort(_port1);
+                opts.PublishAllMessages().ToPort(_port1).Named("one");
             });
+
+            var runtime = theListener.GetRuntime();
+
+            var stopWaiter = runtime.ListenerTracker.WaitForListenerStatus("one", ListeningStatus.Stopped, 1.Minutes());
 
             await sender
                 .TrackActivity()
@@ -149,7 +149,8 @@ namespace Jasper.Testing.Runtime
                 .DoNotAssertOnExceptionsDetected()
                 .SendMessageAndWaitAsync(new PausingMessage());
 
-            var runtime = theListener.GetRuntime();
+            await stopWaiter;
+
             var agent = runtime.FindListeningAgent("one");
             agent.Status.ShouldBe(ListeningStatus.Stopped);
 

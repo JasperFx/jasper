@@ -31,6 +31,11 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender, IListener
 
     public override Uri Uri => $"stub://{Name}".ToUri();
 
+    public ValueTask StopAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
     public async ValueTask SendAsync(Envelope envelope)
     {
         Sent.Add(envelope);

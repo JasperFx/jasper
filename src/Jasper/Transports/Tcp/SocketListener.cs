@@ -121,4 +121,9 @@ public class SocketListener : IListener, IDisposable
     {
         return WireProtocol.ReceiveAsync(this, _logger, stream, receiver);
     }
+
+    public ValueTask StopAsync()
+    {
+        return DisposeAsync();
+    }
 }

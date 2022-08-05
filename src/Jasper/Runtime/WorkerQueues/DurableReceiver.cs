@@ -16,6 +16,7 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
     private readonly IEnvelopePersistence _persistence;
     private readonly ActionBlock<Envelope> _receiver;
     private readonly AdvancedSettings _settings;
+    private bool _latched;
 
     public DurableReceiver(Endpoint endpoint, IJasperRuntime runtime, IHandlerPipeline pipeline)
     {
@@ -27,6 +28,11 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
 
         _receiver = new ActionBlock<Envelope>(async envelope =>
         {
+            if (_latched)
+            {
+                return;
+            }
+
             try
             {
                 envelope.ContentType ??= EnvelopeConstants.JsonContentType;
@@ -134,6 +140,13 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         await listener.CompleteAsync(envelope);
 
         _logger.IncomingReceived(envelope, Address);
+    }
+
+    public async ValueTask DrainAsync()
+    {
+        _latched = true;
+        _receiver.Complete();
+        await _receiver.Completion;
     }
 
 

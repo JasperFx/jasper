@@ -36,7 +36,7 @@ namespace Jasper.Testing.Runtime
         public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();
         public JasperOptions Options { get; } = new JasperOptions();
 
-        public ListenerObserver ListenerObserver { get; } = new ListenerObserver(NullLogger.Instance);
+        public ListenerTracker ListenerTracker { get; } = new ListenerTracker(NullLogger.Instance);
 
         public ISendingAgent CreateSendingAgent(Uri replyUri, ISender sender, Endpoint endpoint)
         {

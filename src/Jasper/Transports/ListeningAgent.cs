@@ -29,7 +29,7 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     private Restarter? _restarter;
     private readonly ILogger _logger;
     private readonly HandlerPipeline _pipeline;
-    private readonly CircuitBreaker _circuitBreaker;
+    private readonly CircuitBreaker? _circuitBreaker;
 
     public ListeningAgent(Endpoint endpoint, JasperRuntime runtime)
     {
@@ -60,11 +60,19 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     public async ValueTask StopAsync()
     {
         if (Status == ListeningStatus.Stopped) return;
+        if (_listener == null) return;
 
-        // TODO -- needs to drain outstanding messages in the listener
-        await DisposeAsync();
+        await _listener.StopAsync();
+        await _receiver.DrainAsync();
+
+        await _listener.DisposeAsync();
+        _receiver?.Dispose();
+
+        _listener = null;
+        _receiver = null;
+
         Status = ListeningStatus.Stopped;
-        _runtime.ListenerObserver.Publish(new ListenerState(Uri, Endpoint.Name, Status));
+        _runtime.ListenerTracker.Publish(new ListenerState(Uri, Endpoint.Name, Status));
 
         _logger.LogInformation("Stopped message listener at {Uri}", Uri);
     }
@@ -78,7 +86,7 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         _listener = Endpoint.BuildListener(_runtime, _receiver);
 
         Status = ListeningStatus.Accepting;
-        _runtime.ListenerObserver.Publish(new ListenerState(Uri, Endpoint.Name, Status));
+        _runtime.ListenerTracker.Publish(new ListenerState(Uri, Endpoint.Name, Status));
 
         _logger.LogInformation("Started message listening at {Uri}", Uri);
 
@@ -88,6 +96,8 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     public async ValueTask PauseAsync(TimeSpan pauseTime)
     {
         await StopAsync();
+
+        _circuitBreaker?.Reset();
 
         _logger.LogInformation("Pausing message listening at {Uri}", Uri);
 
@@ -116,6 +126,7 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
     public void Dispose()
     {
         _receiver?.Dispose();
+        _circuitBreaker?.SafeDispose();
     }
 
     public async ValueTask DisposeAsync()
@@ -124,6 +135,8 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 
         if (_listener != null) await _listener.DisposeAsync();
         _receiver?.Dispose();
+
+        _circuitBreaker?.SafeDispose();
 
         _listener = null;
         _receiver = null;

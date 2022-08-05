@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Logging;
 
-public class ListenerObserver : IObservable<ListenerState>, IObserver<ListenerState>, IDisposable
+public class ListenerTracker : IObservable<ListenerState>, IObserver<ListenerState>, IDisposable
 {
     private readonly ILogger _logger;
 
@@ -24,7 +24,7 @@ public class ListenerObserver : IObservable<ListenerState>, IObserver<ListenerSt
     private readonly IDisposable _subscription;
     private readonly ActionBlock<ListenerState> _block;
 
-    public ListenerObserver(ILogger logger)
+    public ListenerTracker(ILogger logger)
     {
         _logger = logger;
         _block = new ActionBlock<ListenerState>(publish, new ExecutionDataflowBlockOptions
@@ -80,9 +80,9 @@ public class ListenerObserver : IObservable<ListenerState>, IObserver<ListenerSt
     private class Unsubscriber: IDisposable
     {
         private readonly IObserver<ListenerState> _observer;
-        private readonly ListenerObserver _tracker;
+        private readonly ListenerTracker _tracker;
 
-        public Unsubscriber(ListenerObserver tracker, IObserver<ListenerState> observer)
+        public Unsubscriber(ListenerTracker tracker, IObserver<ListenerState> observer)
         {
             _tracker = tracker;
             _observer = observer;
@@ -146,7 +146,7 @@ internal class StatusWaiter : IObserver<ListenerState>
     private readonly Func<ListenerState, bool> _condition;
     private readonly TaskCompletionSource<ListenerState> _completion;
 
-    public StatusWaiter(ListenerState expected, ListenerObserver parent, TimeSpan timeout)
+    public StatusWaiter(ListenerState expected, ListenerTracker parent, TimeSpan timeout)
     {
         _condition = x => (x.EndpointName == expected.EndpointName || x.Uri == expected.Uri) && x.Status == expected.Status;
         _completion = new TaskCompletionSource<ListenerState>();

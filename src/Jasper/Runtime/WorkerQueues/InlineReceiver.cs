@@ -25,6 +25,11 @@ public class InlineReceiver : IReceiver
         // Nothing
     }
 
+    public ValueTask DrainAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
     public async ValueTask ReceivedAsync(IListener listener, Envelope[] messages)
     {
         foreach (var envelope in messages) await ReceivedAsync(listener, envelope);

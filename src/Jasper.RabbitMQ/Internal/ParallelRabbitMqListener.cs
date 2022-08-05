@@ -36,6 +36,15 @@ namespace Jasper.RabbitMQ.Internal
         }
 
         public Uri Address { get; }
+        public ValueTask StopAsync()
+        {
+            foreach (var listener in _listeners)
+            {
+                listener.Stop();
+            }
+
+            return ValueTask.CompletedTask;
+        }
 
         public Task<bool> TryRequeueAsync(Envelope envelope)
         {

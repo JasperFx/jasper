@@ -10,47 +10,47 @@ namespace Jasper.Testing.Logging
 {
     public class ListenerObserverTests
     {
-        private ListenerObserver theObserver = new ListenerObserver(NullLogger.Instance);
+        private ListenerTracker theTracker = new ListenerTracker(NullLogger.Instance);
 
         [Fact]
         public void initial_state_by_endpoint_name_is_unknown()
         {
-            theObserver.StatusFor("foo")
+            theTracker.StatusFor("foo")
                 .ShouldBe(ListeningStatus.Unknown);
         }
 
         [Fact]
         public void initial_state_by_uri_is_unknown()
         {
-            theObserver.StatusFor(TransportConstants.LocalUri)
+            theTracker.StatusFor(TransportConstants.LocalUri)
                 .ShouldBe(ListeningStatus.Unknown);
         }
 
         [Fact]
         public async Task record_status()
         {
-            var waiter = theObserver.WaitForListenerStatus(TransportConstants.LocalUri, ListeningStatus.Accepting,
+            var waiter = theTracker.WaitForListenerStatus(TransportConstants.LocalUri, ListeningStatus.Accepting,
                 10.Seconds());
 
-            theObserver.Publish(new ListenerState(TransportConstants.LocalUri,"DefaultLocal", ListeningStatus.Accepting) );
+            theTracker.Publish(new ListenerState(TransportConstants.LocalUri,"DefaultLocal", ListeningStatus.Accepting) );
 
             await waiter;
 
-            theObserver.StatusFor(TransportConstants.LocalUri)
+            theTracker.StatusFor(TransportConstants.LocalUri)
                 .ShouldBe(ListeningStatus.Accepting);
         }
 
         [Fact]
         public async Task record_status_and_wait_by_endpoint_name()
         {
-            var waiter = theObserver.WaitForListenerStatus("local", ListeningStatus.Accepting,
+            var waiter = theTracker.WaitForListenerStatus("local", ListeningStatus.Accepting,
                 10.Seconds());
 
-            theObserver.Publish(new ListenerState(TransportConstants.LocalUri,"local", ListeningStatus.Accepting) );
+            theTracker.Publish(new ListenerState(TransportConstants.LocalUri,"local", ListeningStatus.Accepting) );
 
             await waiter;
 
-            theObserver.StatusFor("local")
+            theTracker.StatusFor("local")
                 .ShouldBe(ListeningStatus.Accepting);
         }
     }

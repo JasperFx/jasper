@@ -81,6 +81,9 @@ namespace Jasper.Testing.Transports.Tcp
         }
 
         Uri IListener.Address => _uri;
-
+        public ValueTask StopAsync()
+        {
+            return ValueTask.CompletedTask;
+        }
     }
 }

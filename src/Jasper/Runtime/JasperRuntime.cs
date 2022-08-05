@@ -50,10 +50,10 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
 
         Cancellation = Advanced.Cancellation;
 
-        ListenerObserver = new ListenerObserver(logger);
+        ListenerTracker = new ListenerTracker(logger);
     }
 
-    public ListenerObserver ListenerObserver { get; }
+    public ListenerTracker ListenerTracker { get; }
 
     internal IReadOnlyList<IMissingHandler> MissingHandlers()
     {

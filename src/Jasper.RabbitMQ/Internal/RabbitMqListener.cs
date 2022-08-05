@@ -42,6 +42,20 @@ namespace Jasper.RabbitMQ.Internal
             Channel.BasicConsume(_consumer, _routingKey);
         }
 
+        public void Stop()
+        {
+            foreach (var consumerTag in _consumer.ConsumerTags)
+            {
+                Channel.BasicCancelNoWait(consumerTag);
+            }
+        }
+
+        public ValueTask StopAsync()
+        {
+            Stop();
+            return ValueTask.CompletedTask;
+        }
+
         public RabbitMqEndpoint Endpoint { get; }
 
         public override void Dispose()

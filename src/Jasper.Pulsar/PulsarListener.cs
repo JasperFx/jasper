@@ -10,11 +10,9 @@ namespace Jasper.Pulsar
 {
     internal class PulsarListener : IListener, IAsyncDisposable
     {
-        private readonly PulsarEndpoint _endpoint;
-        private readonly PulsarTransport _transport;
         private IConsumer<ReadOnlySequence<byte>>? _consumer;
-        private Task? _receivingLoop;
-        private CancellationToken _cancellation;
+        private readonly Task? _receivingLoop;
+        private readonly CancellationToken _cancellation;
         private readonly PulsarSender _sender;
         private IReceiver _receiver;
         private readonly CancellationTokenSource _localCancellation;
@@ -22,8 +20,7 @@ namespace Jasper.Pulsar
         public PulsarListener(PulsarEndpoint endpoint, IReceiver receiver, PulsarTransport transport,
             CancellationToken cancellation)
         {
-            _endpoint = endpoint;
-            _transport = transport;
+            var endpoint1 = endpoint;
             _cancellation = cancellation;
 
             Address = endpoint.Uri;
@@ -38,11 +35,11 @@ namespace Jasper.Pulsar
 
             _receiver = receiver;
 
-            _consumer = _transport.Client!.NewConsumer()
+            _consumer = transport.Client!.NewConsumer()
                 .SubscriptionName("Jasper")
                 // TODO -- more options here. Give the user complete
                 // control over the Pulsar usage. Maybe expose ConsumerOptions on endpoint
-                .Topic(_endpoint.PulsarTopic())
+                .Topic(endpoint1.PulsarTopic())
                 .Create();
 
             _receivingLoop = Task.Run(async () =>
@@ -53,7 +50,7 @@ namespace Jasper.Pulsar
 
                     // TODO -- invoke the deserialization here. A
                     envelope.Data = message.Data.ToArray();
-                    _endpoint.MapIncomingToEnvelope(envelope, message);
+                    endpoint1.MapIncomingToEnvelope(envelope, message);
 
                     // TODO -- the worker queue should already have the Uri,
                     // so just take in envelope
@@ -99,6 +96,12 @@ namespace Jasper.Pulsar
         }
 
         public Uri Address { get; }
+        public async ValueTask StopAsync()
+        {
+            if (_consumer == null) return;
+            await _consumer.Unsubscribe(_cancellation);
+            await _consumer.RedeliverUnacknowledgedMessages(_cancellation);
+        }
 
         public async Task<bool> TryRequeueAsync(Envelope envelope)
         {

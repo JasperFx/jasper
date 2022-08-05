@@ -192,4 +192,9 @@ internal class CircuitBreaker : IDisposable, IMessageSuccessTracker
         _processingBlock.Complete();
         _batching.Dispose();
     }
+
+    public void Reset()
+    {
+        _generations.Clear();
+    }
 }
