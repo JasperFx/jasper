@@ -89,7 +89,8 @@ public static class DatabasePersistence
             builder.AddParameter(envelope.ContentType),
             builder.AddParameter(envelope.ReplyRequested),
             builder.AddParameter(envelope.AckRequested),
-            builder.AddParameter(envelope.ReplyUri?.ToString())
+            builder.AddParameter(envelope.ReplyUri?.ToString()),
+            builder.AddParameter(envelope.Destination?.ToString())
         };
 
         // TODO -- this seems like a good thing to generalize and move to Weasel
@@ -127,6 +128,7 @@ public static class DatabasePersistence
         envelope.ReplyRequested = await reader.MaybeReadAsync<string>(11, cancellation);
         envelope.AckRequested = await reader.GetFieldValueAsync<bool>(12, cancellation);
         envelope.ReplyUri = await reader.ReadUriAsync(13, cancellation);
+        envelope.Destination = await reader.ReadUriAsync(14, cancellation);
 
         return envelope;
     }

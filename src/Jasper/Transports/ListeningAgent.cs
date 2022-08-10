@@ -77,11 +77,11 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
         _logger.LogInformation("Stopped message listener at {Uri}", Uri);
     }
 
-    public ValueTask StartAsync()
+    public async ValueTask StartAsync()
     {
-        if (Status == ListeningStatus.Accepting) return ValueTask.CompletedTask;
+        if (Status == ListeningStatus.Accepting) return;
 
-        _receiver = buildReceiver();
+        _receiver = await buildReceiver();
 
         _listener = Endpoint.BuildListener(_runtime, _receiver);
 
@@ -90,7 +90,6 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 
         _logger.LogInformation("Started message listening at {Uri}", Uri);
 
-        return ValueTask.CompletedTask;
     }
 
     public async ValueTask PauseAsync(TimeSpan pauseTime)
@@ -105,12 +104,14 @@ internal class ListeningAgent : IAsyncDisposable, IDisposable, IListeningAgent
 
     }
 
-    private IReceiver buildReceiver()
+    private async ValueTask<IReceiver> buildReceiver()
     {
         switch (Endpoint.Mode)
         {
             case EndpointMode.Durable:
-                return new DurableReceiver(Endpoint, _runtime, _pipeline);
+                var receiver = new DurableReceiver(Endpoint, _runtime, _pipeline);
+                await receiver.ClearInFlightIncomingAsync();
+                return receiver;
 
             case EndpointMode.Inline:
                 return new InlineReceiver(_runtime, _pipeline);

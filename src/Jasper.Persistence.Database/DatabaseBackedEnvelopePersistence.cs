@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -86,6 +87,34 @@ select distinct owner_id from {DatabaseSettings.SchemaName}.{DatabaseConstants.O
             .FetchList<int>(_cancellation);
 
         return list.ToArray();
+    }
+
+    public async Task ReleaseIncomingAsync(int ownerId)
+    {
+        using var conn = CreateConnection();
+        await conn.OpenAsync(_cancellation);
+
+        await conn
+            .CreateCommand(
+                $"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0 where owner_id = :owner")
+            .With("owner", ownerId)
+            .ExecuteNonQueryAsync(_cancellation);
+
+    }
+
+    public async Task ReleaseIncomingAsync(int ownerId, Uri receivedAt)
+    {
+        using var conn = CreateConnection();
+        await conn.OpenAsync(_cancellation);
+
+        var impacted = await conn
+            .CreateCommand(
+                $"update {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} set owner_id = 0 where owner_id = :owner and {DatabaseConstants.ReceivedAt} = :uri")
+            .With("owner", ownerId)
+            .With("uri", receivedAt.ToString())
+            .ExecuteNonQueryAsync(_cancellation);
+
+        Debug.WriteLine($"Released {impacted} incoming envelopes in storage from owner {ownerId} and Uri {receivedAt}");
     }
 
     public void Dispose()

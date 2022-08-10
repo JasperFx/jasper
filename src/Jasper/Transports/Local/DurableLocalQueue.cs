@@ -30,8 +30,6 @@ internal class DurableLocalQueue : DurableReceiver, ISendingAgent
 
         Endpoint = endpoint;
         ReplyUri = TransportConstants.RepliesUri;
-
-        Address = Destination;
     }
 
     public Uri Destination { get; }

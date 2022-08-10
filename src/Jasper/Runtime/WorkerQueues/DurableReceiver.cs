@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -16,6 +17,8 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
     private readonly IEnvelopePersistence _persistence;
     private readonly ActionBlock<Envelope> _receiver;
     private readonly AdvancedSettings _settings;
+
+    // These members are for draining
     private bool _latched;
 
     public DurableReceiver(Endpoint endpoint, IJasperRuntime runtime, IHandlerPipeline pipeline)
@@ -23,6 +26,8 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         _settings = runtime.Advanced;
         _persistence = runtime.Persistence;
         _logger = runtime.Logger;
+
+        Address = endpoint.Uri;
 
         endpoint.ExecutionOptions.CancellationToken = _settings.Cancellation;
 
@@ -68,7 +73,7 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         }
     }
 
-    public Uri? Address { get; set; }
+    public Uri Address { get;  }
 
     public async ValueTask CompleteAsync(Envelope envelope)
     {
@@ -147,6 +152,11 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         _latched = true;
         _receiver.Complete();
         await _receiver.Completion;
+
+        await executeWithRetriesAsync(async () =>
+        {
+            await _persistence.ReleaseIncomingAsync(_settings.UniqueNodeId, Address);
+        });
     }
 
 
@@ -184,5 +194,10 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         }
 
         _logger.IncomingBatchReceived(envelopes);
+    }
+
+    public Task ClearInFlightIncomingAsync()
+    {
+        return executeWithRetriesAsync(() => _persistence.ReleaseIncomingAsync(_settings.UniqueNodeId, Address));
     }
 }
