@@ -2,10 +2,12 @@ using Baseline;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Logging;
+using Jasper.Persistence.Durability;
 using Jasper.Runtime;
 using Jasper.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Oakton.Resources;
 using Shouldly;
 using Xunit.Abstractions;
@@ -29,6 +31,11 @@ public abstract class CircuitBreakerIntegrationContext : IDisposable, IObserver<
         _output = output;
         _host = Host.CreateDefaultBuilder()
             .UseJasper(configureListener).UseResourceSetupOnStartup(StartupAction.ResetState)
+            .ConfigureServices(services =>
+            {
+                services.AddSingleton<ITestOutputHelper>(output);
+                //services.AddSingleton(typeof(ILogger<>), typeof(OutputLogger<>));
+            })
             .Start();
 
         _runtime = _host.Services.GetRequiredService<IJasperRuntime>().As<JasperRuntime>();
@@ -162,7 +169,7 @@ public abstract class CircuitBreakerIntegrationContext : IDisposable, IObserver<
     [Fact]
     public async Task the_circuit_breaker_should_trip_and_restart()
     {
-        var messageWaiter = Recorder.WaitForMessagesToBeProcessed(_output, 1200, 1.Minutes());
+        var messageWaiter = Recorder.WaitForMessagesToBeProcessed(_output, 1200, 2.Minutes());
 
         publishNow(10);
         publishNow(80);
@@ -203,3 +210,32 @@ public enum MessageResult
 }
 
 public record SometimesFails(int Number, MessageResult First, MessageResult Second, MessageResult Third);
+
+public class OutputLogger<T> : ILogger<T>, IDisposable
+{
+    private readonly ITestOutputHelper _output;
+
+    public OutputLogger(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        _output.WriteLine(formatter(state, exception));
+    }
+
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        return typeof(T) == typeof(DurabilityAgent);
+    }
+
+    public IDisposable BeginScope<TState>(TState state)
+    {
+        return this;
+    }
+
+    public void Dispose()
+    {
+    }
+}

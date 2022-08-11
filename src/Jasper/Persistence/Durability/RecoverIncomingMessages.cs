@@ -74,6 +74,8 @@ public class RecoverIncomingMessages : IMessagingAction
             await storage.ReassignIncomingAsync(_settings.UniqueNodeId, incoming);
 
             await storage.Session.CommitAsync();
+
+            return incoming;
         }
         catch (Exception)
         {
