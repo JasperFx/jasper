@@ -1,12 +1,12 @@
 # Order Saga Sample
 
-This sample shows a very simplistic usage of Jasper sagas using [Marten](https://martendb.io) as the
-backing persistence. This web api service has functionality to:
+This sample shows a very simplistic usage of Jasper sagas using [Marten](https://martendb.io) as the backing
+persistence. This web api service has functionality to:
 
 1. Capture and persist a new order by user-supplied id
 2. Complete an order through its id
-3. Apply a timeout of 1 minute on any created order so that it's automatically deleted if there's no
-   activity for over 1 minute
+3. Apply a timeout of 1 minute on any created order so that it's automatically deleted if there's no activity for over 1
+   minute
 
 To run the sample, first start the Postgresql database by running:
 
@@ -14,8 +14,7 @@ To run the sample, first start the Postgresql database by running:
 docker compose up -d
 ```
 
-from the root of the Jasper code repository. Next, just run the single
-application as:
+from the root of the Jasper code repository. Next, just run the single application as:
 
 ```
 dotnet run

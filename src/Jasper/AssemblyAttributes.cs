@@ -9,6 +9,7 @@ using Oakton;
 [assembly: JasperFeature]
 
 [assembly: InternalsVisibleTo("Jasper.Testing")]
+[assembly: InternalsVisibleTo("CircuitBreakingTests")]
 [assembly: InternalsVisibleTo("TestingSupport")]
 [assembly: InternalsVisibleTo("Jasper.RabbitMq")]
 [assembly: InternalsVisibleTo("Jasper.Http")]
@@ -23,3 +24,4 @@ using Oakton;
 [assembly: InternalsVisibleTo("Jasper.Pulsar")]
 [assembly: InternalsVisibleTo("Jasper.Pulsar.Tests")]
 [assembly: InternalsVisibleTo("StorytellerSpecs")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

@@ -5,9 +5,11 @@ using System.Threading.Tasks.Dataflow;
 using Baseline;
 using Baseline.Dates;
 using Baseline.ImTools;
+using Jasper.ErrorHandling;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
 using Jasper.Serialization;
+using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Oakton.Descriptions;
 
@@ -42,6 +44,12 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
     }
 
     private EndpointMode _mode = EndpointMode.BufferedInMemory;
+
+    /// <summary>
+    /// If present, adds a circuit breaker to the active listening agent
+    /// for this endpoint at runtime
+    /// </summary>
+    public CircuitBreakerOptions? CircuitBreakerOptions { get; set; }
 
     public IList<Subscription> Subscriptions { get; } = new List<Subscription>();
 
@@ -201,7 +209,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
 
     public abstract void Parse(Uri uri);
 
-    public abstract void StartListening(IJasperRuntime runtime);
+    public abstract IListener BuildListener(IJasperRuntime runtime, IReceiver receiver);
 
     protected internal ISendingAgent StartSending(IJasperRuntime runtime,
         Uri? replyUri)

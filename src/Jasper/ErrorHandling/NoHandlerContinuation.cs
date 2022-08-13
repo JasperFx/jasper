@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Runtime;
 
@@ -6,10 +7,10 @@ namespace Jasper.ErrorHandling;
 
 public class NoHandlerContinuation : IContinuation
 {
-    private readonly IMissingHandler[] _handlers;
+    private readonly IReadOnlyList<IMissingHandler> _handlers;
     private readonly IJasperRuntime _root;
 
-    public NoHandlerContinuation(IMissingHandler[] handlers, IJasperRuntime root)
+    public NoHandlerContinuation(IReadOnlyList<IMissingHandler> handlers, IJasperRuntime root)
     {
         _handlers = handlers;
         _root = root;

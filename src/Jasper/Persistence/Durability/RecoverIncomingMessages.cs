@@ -13,12 +13,12 @@ public class RecoverIncomingMessages : IMessagingAction
 {
     private readonly ILogger _logger;
     private readonly AdvancedSettings _settings;
-    private readonly IWorkerQueue _workers;
+    private readonly ILocalQueue _locals;
 
-    public RecoverIncomingMessages(IWorkerQueue workers, AdvancedSettings settings,
+    public RecoverIncomingMessages(ILocalQueue locals, AdvancedSettings settings,
         ILogger logger)
     {
-        _workers = workers;
+        _locals = locals;
         _settings = settings;
         _logger = logger;
     }
@@ -38,7 +38,7 @@ public class RecoverIncomingMessages : IMessagingAction
             foreach (var envelope in incoming)
             {
                 envelope.OwnerId = _settings.UniqueNodeId;
-                _workers.Enqueue(envelope);
+                _locals.Enqueue(envelope);
             }
 
             // TODO -- this should be smart enough later to check for back pressure before rescheduling
@@ -74,6 +74,8 @@ public class RecoverIncomingMessages : IMessagingAction
             await storage.ReassignIncomingAsync(_settings.UniqueNodeId, incoming);
 
             await storage.Session.CommitAsync();
+
+            return incoming;
         }
         catch (Exception)
         {

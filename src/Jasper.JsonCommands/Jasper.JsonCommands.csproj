@@ -16,10 +16,10 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NJsonSchema" Version="10.0.27" />
-    <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="10.0.27" />
+    <PackageReference Include="NJsonSchema" Version="10.0.27"/>
+    <PackageReference Include="NJsonSchema.CodeGeneration.CSharp" Version="10.0.27"/>
   </ItemGroup>
 </Project>

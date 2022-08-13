@@ -1,20 +1,225 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Jasper.ErrorHandling.Matches;
 using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
-public class PolicyExpression
+
+public interface IAdditionalActions
 {
-    private readonly RetryPolicyCollection _parent;
+    /// <summary>
+    /// Define actions to take upon subsequent failures
+    /// </summary>
+    IFailureActions Then { get; }
+
+    /// <summary>
+    /// Pause all processing for the specified time. Will also requeue the
+    /// failed message that caused this to trip off
+    /// </summary>
+    /// <param name="pauseTime"></param>
+    IAdditionalActions AndPauseProcessing(TimeSpan pauseTime);
+
+
+    /// <summary>
+    /// Perform a user defined action as well as the initial action
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    IAdditionalActions AlsoDo(Func<IJasperRuntime, IExecutionContext, Exception, ValueTask> action,
+        string description = "User supplied");
+}
+
+internal class FailureActions : IAdditionalActions, IFailureActions
+{
+    private readonly FailureRule _rule;
+    private readonly List<FailureSlot> _slots = new List<FailureSlot>();
+
+    public FailureActions(IExceptionMatch match, FailureRuleCollection parent)
+    {
+        _rule = new FailureRule(match);
+        parent.Add(_rule);
+    }
+
+    public IAdditionalActions MoveToErrorQueue()
+    {
+        var slot = _rule.AddSlot(new MoveToErrorQueueSource());
+        _slots.Add(slot);
+        return this;
+    }
+
+    public IAdditionalActions Requeue(int maxAttempts = 3)
+    {
+        for (int i = 0; i < maxAttempts - 1; i++)
+        {
+            var slot = _rule.AddSlot(RequeueContinuation.Instance);
+            _slots.Add(slot);
+        }
+
+        return this;
+    }
+
+    public IAdditionalActions Discard()
+    {
+        var slot = _rule.AddSlot(DiscardEnvelope.Instance);
+        _slots.Add(slot);
+        return this;
+    }
+
+    public IAdditionalActions ScheduleRetry(params TimeSpan[] delays)
+    {
+        if (!delays.Any())
+        {
+            throw new InvalidOperationException("You must specify at least one delay time");
+        }
+
+        for (int i = 0; i < delays.Length; i++)
+        {
+            var slot = _rule.AddSlot(new ScheduledRetryContinuation(delays[i]));
+            _slots.Add(slot);
+        }
+
+        return this;
+    }
+
+    public IAdditionalActions RetryOnce()
+    {
+        var slot = _rule.AddSlot(RetryInlineContinuation.Instance);
+        _slots.Add(slot);
+
+        return this;
+    }
+
+    public IAdditionalActions RetryTimes(int attempts)
+    {
+        if (attempts <= 0) throw new ArgumentOutOfRangeException(nameof(attempts));
+
+        for (int i = 0; i < attempts; i++)
+        {
+            var slot = _rule.AddSlot(RetryInlineContinuation.Instance);
+            _slots.Add(slot);
+        }
+
+        return this;
+    }
+
+    public IAdditionalActions RetryWithCooldown(params TimeSpan[] delays)
+    {
+        if (!delays.Any())
+        {
+            throw new InvalidOperationException("You must specify at least one delay time");
+        }
+
+        for (int i = 0; i < delays.Length; i++)
+        {
+            var slot = _rule.AddSlot(new RetryInlineContinuation(delays[i]));
+            _slots.Add(slot);
+        }
+
+        return this;
+    }
+
+    public IFailureActions Then
+    {
+        get
+        {
+            _slots.Clear();
+            return this;
+        }
+    }
+
+    public IAdditionalActions AndPauseProcessing(TimeSpan pauseTime)
+    {
+        foreach (var slot in _slots)
+        {
+            slot.AddAdditionalSource(new PauseListenerContinuation(pauseTime));
+        }
+        return this;
+    }
+
+    public IAdditionalActions AlsoDo(Func<IJasperRuntime, IExecutionContext, Exception, ValueTask> action, string description = "User supplied")
+    {
+        throw new NotImplementedException();
+    }
+}
+
+
+
+public interface IFailureActions
+{
+    /// <summary>
+    ///     Immediately move the message to the error queue when the exception
+    ///     caught matches this criteria
+    /// </summary>
+    IAdditionalActions MoveToErrorQueue();
+
+    /// <summary>
+    ///     Requeue the message back to the incoming transport, with the message being
+    ///     dead lettered when the maximum number of attempts is reached
+    /// </summary>
+    /// <param name="maxAttempts">The maximum number of attempts to process the message. The default is 3</param>
+    IAdditionalActions Requeue(int maxAttempts = 3);
+
+    /// <summary>
+    ///     Discard the message without any further attempt to process the message
+    /// </summary>
+    IAdditionalActions Discard();
+
+
+    /// <summary>
+    ///     Schedule the message for additional attempts with a delay. Use this
+    ///     method to effect an "exponential backoff" policy
+    /// </summary>
+    /// <param name="delays"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    IAdditionalActions ScheduleRetry(params TimeSpan[] delays);
+
+    /// <summary>
+    /// Retry the message processing inline one time
+    /// </summary>
+    /// <param name="maxAttempts"></param>
+    IAdditionalActions RetryOnce();
+
+    /// <summary>
+    ///     Retry the message the given number attempts without any delay
+    ///     or moving the message back to the original queue
+    /// </summary>
+    /// <param name="attempts">The number of immediate retries allowed</param>
+    IAdditionalActions RetryTimes(int attempts);
+
+    /// <summary>
+    /// Retry message failures a define number of times with user-specified cooldown times
+    /// between events. This allows for "exponential backoff" strategies
+    /// </summary>
+    /// <param name="delays"></param>
+    /// <param name="maxAttempts"></param>
+    IAdditionalActions RetryWithCooldown(params TimeSpan[] delays);
+}
+
+public class PolicyExpression : IFailureActions
+{
+    private readonly FailureRuleCollection _parent;
 
     private IExceptionMatch _match;
 
-    internal PolicyExpression(RetryPolicyCollection parent, IExceptionMatch match)
+    internal PolicyExpression(FailureRuleCollection parent, IExceptionMatch match)
     {
         _parent = parent;
         _match = match;
+    }
+
+    /// <summary>
+    /// Specifies that the exception message must contain this fragment. The check is case insensitive.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public PolicyExpression AndMessageContains(string text)
+    {
+        _match = _match.And(new MessageContains(text));
+        return this;
     }
 
 
@@ -88,35 +293,12 @@ public class PolicyExpression
     }
 
     /// <summary>
-    ///     Use to script out particular actions to take on failures in sequential
-    ///     order. Use this for fine-grained control over subsequent failures.
-    /// </summary>
-    /// <param name="configure"></param>
-    public void TakeActions(Action<IContinuationFactory> configure)
-    {
-        var factory = new ContinuationFactory();
-        configure(factory);
-
-        With(factory.Build);
-    }
-
-    /// <summary>
-    ///     Use a custom IContinuation factory for matching exceptions
-    /// </summary>
-    /// <param name="continuationSource"></param>
-    public void With(Func<Envelope, Exception, IContinuation> continuationSource)
-    {
-        var rule = new ExceptionRule(_match.ToFilter(), continuationSource);
-        _parent.Add(rule);
-    }
-
-    /// <summary>
     ///     Immediately move the message to the error queue when the exception
     ///     caught matches this criteria
     /// </summary>
-    public void MoveToErrorQueue()
+    public IAdditionalActions MoveToErrorQueue()
     {
-        With((_, ex) => new MoveToErrorQueue(ex));
+        return new FailureActions(_match, _parent).MoveToErrorQueue();
     }
 
     /// <summary>
@@ -124,19 +306,17 @@ public class PolicyExpression
     ///     dead lettered when the maximum number of attempts is reached
     /// </summary>
     /// <param name="maxAttempts">The maximum number of attempts to process the message. The default is 3</param>
-    public void Requeue(int maxAttempts = 3)
+    public IAdditionalActions Requeue(int maxAttempts = 3)
     {
-        With((e, ex) => e.Attempts < maxAttempts
-            ? RequeueContinuation.Instance
-            : new MoveToErrorQueue(ex));
+        return new FailureActions(_match, _parent).Requeue(maxAttempts);
     }
 
     /// <summary>
     ///     Discard the message without any further attempt to process the message
     /// </summary>
-    public void Discard()
+    public IAdditionalActions Discard()
     {
-        With((_, _) => DiscardExpiredEnvelope.Instance);
+        return new FailureActions(_match, _parent).Discard();
     }
 
     /// <summary>
@@ -145,39 +325,29 @@ public class PolicyExpression
     /// </summary>
     /// <param name="delays"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public void ScheduleRetry(params TimeSpan[] delays)
+    public IAdditionalActions ScheduleRetry(params TimeSpan[] delays)
     {
-        if (!delays.Any())
-        {
-            throw new InvalidOperationException("You must specify at least one delay time");
-        }
-
-        With((e, ex) => e.Attempts <= delays.Length
-            ? new ScheduledRetryContinuation(delays[e.Attempts - 1])
-            : new MoveToErrorQueue(ex));
+        return new FailureActions(_match, _parent).ScheduleRetry(delays);
     }
 
-    /// <summary>
-    ///     Retry the message a maximum number of attempts without any delay
-    ///     or moving the message back to the original queue
-    /// </summary>
-    /// <param name="maxAttempts"></param>
-    public void RetryNow(int maxAttempts = 3)
+    public IAdditionalActions RetryOnce()
     {
-        With((e, ex) => e.Attempts < maxAttempts
-            ? RetryNowContinuation.Instance
-            : new MoveToErrorQueue(ex));
+        return new FailureActions(_match, _parent).RetryOnce();
+    }
+
+    public IAdditionalActions RetryTimes(int attempts)
+    {
+        return new FailureActions(_match, _parent).RetryTimes(attempts);
     }
 
     /// <summary>
     /// Retry message failures a define number of times with user-specified cooldown times
     /// between events. This allows for "exponential backoff" strategies
     /// </summary>
+    /// <param name="delays"></param>
     /// <param name="maxAttempts"></param>
-    public void RetryWithCooldown(params TimeSpan[] delays)
+    public IAdditionalActions RetryWithCooldown(params TimeSpan[] delays)
     {
-        With((e, ex) => e.Attempts <= delays.Length
-            ? new RetryNowContinuation(delays[e.Attempts - 1])
-            : new MoveToErrorQueue(ex));
+        return new FailureActions(_match, _parent).RetryWithCooldown(delays);
     }
 }

@@ -19,6 +19,6 @@ public class MaximumAttemptsAttribute : ModifyHandlerChainAttribute
 
     public override void Modify(HandlerChain chain, GenerationRules rules)
     {
-        chain.Retries.MaximumAttempts = _attempts;
+        chain.Failures.MaximumAttempts = _attempts;
     }
 }

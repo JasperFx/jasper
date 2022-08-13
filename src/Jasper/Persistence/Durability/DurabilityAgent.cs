@@ -24,7 +24,7 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
     private readonly ILogger<DurabilityAgent> _trace;
 
     private readonly ActionBlock<IMessagingAction> _worker;
-    private readonly IWorkerQueue _workers;
+    private readonly ILocalQueue _locals;
 
     private Timer? _nodeReassignmentTimer;
     private Timer? _scheduledJobTimer;
@@ -33,7 +33,7 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
     public DurabilityAgent(IJasperRuntime runtime, ILogger logger,
 #pragma warning restore CS8618
         ILogger<DurabilityAgent> trace,
-        IWorkerQueue workers,
+        ILocalQueue locals,
         IEnvelopePersistence storage,
         AdvancedSettings settings)
     {
@@ -45,7 +45,7 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
 
         _logger = logger;
         _trace = trace;
-        _workers = workers;
+        _locals = locals;
         _storage = storage;
         _settings = settings;
 
@@ -56,7 +56,7 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
             CancellationToken = _settings.Cancellation
         });
 
-        _incomingMessages = new RecoverIncomingMessages(workers, settings, logger);
+        _incomingMessages = new RecoverIncomingMessages(locals, settings, logger);
         _outgoingMessages = new RecoverOutgoingMessages(runtime, settings, logger);
         _nodeReassignment = new NodeReassignment(settings);
         _scheduledJobs = new RunScheduledJobs(settings, logger);
@@ -88,7 +88,7 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
 
     public void EnqueueLocally(Envelope envelope)
     {
-        _workers.Enqueue(envelope);
+        _locals.Enqueue(envelope);
     }
 
     public void RescheduleIncomingRecovery()

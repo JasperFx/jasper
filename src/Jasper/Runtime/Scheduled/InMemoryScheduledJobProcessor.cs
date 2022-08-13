@@ -11,9 +11,9 @@ public class InMemoryScheduledJobProcessor : IScheduledJobProcessor
 {
     private readonly Cache<Guid, InMemoryScheduledJob> _outstandingJobs = new();
 
-    private readonly IWorkerQueue _queue;
+    private readonly ILocalQueue _queue;
 
-    public InMemoryScheduledJobProcessor(IWorkerQueue queue)
+    public InMemoryScheduledJobProcessor(ILocalQueue queue)
     {
         _queue = queue;
     }

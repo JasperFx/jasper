@@ -6,20 +6,18 @@ using Baseline;
 using BenchmarkDotNet.Attributes;
 using IntegrationTests;
 using Jasper;
-using Jasper.Persistence;
-using Jasper.Persistence.Durability;
 using Jasper.Persistence.Postgresql;
 using Jasper.Persistence.SqlServer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using TestMessages;
 
 namespace Benchmarks
 {
-    [MemoryDiagnoser()]
+    [MemoryDiagnoser]
     public class PersistenceRunner : IDisposable
     {
+        private readonly Driver theDriver;
+
+        [Params("SqlServer", "Postgresql")] public string DatabaseEngine;
         private Envelope[] theEnvelopes;
 
         public PersistenceRunner()
@@ -27,14 +25,10 @@ namespace Benchmarks
             theDriver = new Driver();
         }
 
-        [Params("SqlServer", "Postgresql")] public string DatabaseEngine;
-
         public void Dispose()
         {
             theDriver.SafeDispose();
         }
-
-        private readonly Driver theDriver;
 
         [IterationSetup]
         public void BuildDatabase()
@@ -68,7 +62,6 @@ namespace Benchmarks
 
                 return env;
             }).ToArray();
-
         }
 
         [IterationCleanup]
@@ -121,5 +114,4 @@ namespace Benchmarks
             return theDriver.Persistence.Admin.AllOutgoingAsync();
         }
     }
-
 }

@@ -25,11 +25,11 @@ namespace Internal.Generated.JasperHandlers
             // Loading Marten aggregate
             var eventStream = await eventStore.FetchForWriting<Jasper.Persistence.Testing.Marten.LetterAggregate>(incrementMany.LetterAggregateId, cancellation).ConfigureAwait(false);
 
-            var objectIEnumerable = letterHandler.Handle(incrementMany, eventStream.Aggregate, documentSession);
-            if (objectIEnumerable != null)
+            var outgoing1 = letterHandler.Handle(incrementMany, eventStream.Aggregate, documentSession);
+            if (outgoing1 != null)
             {
                 // Capturing any possible events returned from the command handlers
-                eventStream.AppendMany(objectIEnumerable);
+                eventStream.AppendMany(outgoing1);
 
             }
 

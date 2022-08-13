@@ -1,27 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
 
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+    <IsPackable>false</IsPackable>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-        <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    </ItemGroup>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
-      <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
-      <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Compile Include="..\IntegrationTests\Servers.cs">
-        <Link>Servers.cs</Link>
-      </Compile>
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
+    <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\IntegrationTests\Servers.cs">
+      <Link>Servers.cs</Link>
+    </Compile>
+  </ItemGroup>
 
 </Project>

@@ -57,7 +57,7 @@ namespace Jasper.Testing.Acceptance
 
         }
 
-        [Fact]
+        [Fact] // This test blinks sometimes when running with other tests
         public async Task timeout_using_message_specific_timeout()
         {
             PotentiallySlowMessageHandler.DidTimeout = false; // start clean
@@ -72,6 +72,8 @@ namespace Jasper.Testing.Acceptance
             var exceptions = session.AllExceptions();
             exceptions.Single().ShouldBeOfType<TaskCanceledException>();
         }
+
+
     }
 
     public class PotentiallySlowMessage

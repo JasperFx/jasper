@@ -11,7 +11,7 @@ namespace Jasper.Testing.Acceptance
         [Fact]
         public void use_maximum_attempts()
         {
-            chainFor<Message1>().Retries.MaximumAttempts.ShouldBe(3);
+            chainFor<Message1>().Failures.MaximumAttempts.ShouldBe(3);
         }
 
 

@@ -16,6 +16,8 @@ using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using NSubstitute;
 using ExecutionContext = Jasper.Runtime.ExecutionContext;
@@ -34,6 +36,8 @@ namespace Jasper.Testing.Runtime
         public IMessageLogger MessageLogger { get; } = Substitute.For<IMessageLogger>();
         public JasperOptions Options { get; } = new JasperOptions();
 
+        public ListenerTracker ListenerTracker { get; } = new ListenerTracker(NullLogger.Instance);
+
         public ISendingAgent CreateSendingAgent(Uri replyUri, ISender sender, Endpoint endpoint)
         {
             throw new NotImplementedException();
@@ -44,7 +48,7 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IListener> ActiveListeners()
+        public IEnumerable<IListeningAgent> ActiveListeners()
         {
             throw new NotImplementedException();
         }
@@ -65,6 +69,26 @@ namespace Jasper.Testing.Runtime
         }
 
         public T TryFindExtension<T>() where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public IListeningAgent? FindListeningAgent(Uri uri)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IListeningAgent? FindListeningAgent(string endpointName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask StopListenerAsync(Uri uri, TimeSpan? restart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ListeningStatus ListeningStatusFor(Uri uri)
         {
             throw new NotImplementedException();
         }
@@ -129,7 +153,7 @@ namespace Jasper.Testing.Runtime
             return Task.CompletedTask;
         }
 
-        public IListeningWorkerQueue BuildDurableListener(IListener agent)
+        public IReceiver BuildDurableListener(IListener agent)
         {
             throw new NotImplementedException();
         }

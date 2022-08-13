@@ -60,7 +60,7 @@ public sealed partial class JasperRuntime : IMessageLogger
             "Envelope {envelope} was moved to the error queue");
 
         _undeliverable = LoggerMessage.Define<Envelope>(LogLevel.Information, UndeliverableEventId,
-            "Could not deliver {envelope}");
+            "Discarding {envelope}");
     }
 
     public TrackedSession? ActiveSession { get; internal set; }

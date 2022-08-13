@@ -4,17 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Baseline.Dates;
-
 using IntegrationTests;
 using Jasper;
-using Jasper.Configuration;
-using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using Jasper.Persistence.SqlServer;
 using Jasper.Persistence.SqlServer.Persistence;
 using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
-using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Stub;
 using Microsoft.Data.SqlClient;
@@ -25,313 +21,316 @@ using Microsoft.Extensions.Logging.Abstractions;
 using StoryTeller;
 using StoryTeller.Grammars.Tables;
 
-namespace StorytellerSpecs.Fixtures.SqlServer
+namespace StorytellerSpecs.Fixtures.SqlServer;
+
+public class SqlServerMessageRecoveryFixture : Fixture, IDurabilityAgent
 {
-    public class SqlServerMessageRecoveryFixture : Fixture, IDurabilityAgent
+    private readonly IList<Envelope> _envelopes = new List<Envelope>();
+
+    private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
+
+    private readonly LightweightCache<string, int> _owners = new();
+    private int _currentNodeId;
+
+    private IHost _host;
+    private RecordingSchedulingAgent _schedulerAgent;
+    private RecordingWorkerQueue _workers;
+
+    public SqlServerMessageRecoveryFixture()
     {
-        private readonly IList<Envelope> _envelopes = new List<Envelope>();
+        Title = "SqlServer-backed Message Recovery";
 
-        private readonly IList<NodeLocker> _nodeLockers = new List<NodeLocker>();
+        _owners["Any Node"] = TransportConstants.AnyNode;
+        _owners["Other Node"] = -13234;
+        _owners["Third Node"] = -13334;
+        _owners["Fourth Node"] = -13335;
 
-        private readonly LightweightCache<string, int> _owners = new LightweightCache<string, int>();
-        private int _currentNodeId;
+        Lists["channels"].AddValues("stub://one", "stub://two", "stub://three");
+        Lists["status"].AddValues(EnvelopeStatus.Incoming.ToString(), EnvelopeStatus.Outgoing.ToString(),
+            EnvelopeStatus.Scheduled.ToString());
 
-        private IHost _host;
-        private RecordingSchedulingAgent _schedulerAgent;
-        private RecordingWorkerQueue _workers;
+        Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
+    }
 
-        public SqlServerMessageRecoveryFixture()
-        {
-            Title = "SqlServer-backed Message Recovery";
+    void IDurabilityAgent.RescheduleOutgoingRecovery()
+    {
+    }
 
-            _owners["Any Node"] = TransportConstants.AnyNode;
-            _owners["Other Node"] = -13234;
-            _owners["Third Node"] = -13334;
-            _owners["Fourth Node"] = -13335;
+    void IDurabilityAgent.EnqueueLocally(Envelope envelope)
+    {
+    }
 
-            Lists["channels"].AddValues("stub://one", "stub://two", "stub://three");
-            Lists["status"].AddValues(EnvelopeStatus.Incoming.ToString(), EnvelopeStatus.Outgoing.ToString(),
-                EnvelopeStatus.Scheduled.ToString());
+    void IDurabilityAgent.RescheduleIncomingRecovery()
+    {
+    }
 
-            Lists["owners"].AddValues("This Node", "Other Node", "Any Node", "Third Node");
-        }
+    public override void SetUp()
+    {
+        _envelopes.Clear();
+        _nodeLockers.Clear();
 
-        void IDurabilityAgent.RescheduleOutgoingRecovery()
-        {
-        }
-
-        Task IDurabilityAgent.EnqueueLocally(Envelope envelope)
-        {
-            return Task.CompletedTask;
-        }
-
-        void IDurabilityAgent.RescheduleIncomingRecovery()
-        {
-        }
-
-        public override void SetUp()
-        {
-            _envelopes.Clear();
-            _nodeLockers.Clear();
-
-            _workers = new RecordingWorkerQueue();
-            _schedulerAgent = new RecordingSchedulingAgent();
+        _workers = new RecordingWorkerQueue();
+        _schedulerAgent = new RecordingSchedulingAgent();
 
 
-            _host = Host.CreateDefaultBuilder()
-                .UseJasper(opts =>
-                {
-                    opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
-                    opts.Services.AddSingleton<ILogger>(NullLogger.Instance);
-                    opts.Services.AddSingleton<IWorkerQueue>(_workers);
-                    opts.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
-                    opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
-                    opts.Advanced.ScheduledJobFirstExecution = 30.Minutes();
-                    opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
-                    opts.Advanced.NodeReassignmentPollingTime = 30.Minutes();
-                })
-                .Start();
-
-            _host.RebuildMessageStorage().GetAwaiter().GetResult();
-
-            _currentNodeId = _host.Services.GetService<AdvancedSettings>().UniqueNodeId;
-
-            _owners["This Node"] = _currentNodeId;
-        }
-
-        public override void TearDown()
-        {
-            _host.Dispose();
-
-            foreach (var locker in _nodeLockers) locker.SafeDispose();
-
-            _nodeLockers.Clear();
-        }
-
-        [ExposeAsTable("The persisted envelopes are")]
-        public void EnvelopesAre(
-            [Default("NULL")] string Note,
-            Guid Id,
-            [SelectionList("channels")] [Default("stub://one")]
-            Uri Destination,
-            [Default("NULL")] DateTime? ExecutionTime,
-            [Default("TODAY+1")] DateTime DeliverBy,
-            [SelectionList("status")] EnvelopeStatus Status,
-            [SelectionList("owners")] string Owner)
-        {
-            var ownerId = _owners[Owner];
-
-            var envelope = new Envelope
+        _host = Host.CreateDefaultBuilder()
+            .UseJasper(opts =>
             {
-                Id = Id,
-                ExecutionTime = ExecutionTime,
-                Status = Status,
-                OwnerId = ownerId,
-                DeliverBy = DeliverBy,
-                Destination = Destination,
-                Message = new Message1()
-            };
+                opts.Extensions.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString);
+                opts.Services.AddSingleton<ILogger>(NullLogger.Instance);
+                opts.Services.AddSingleton<IWorkerQueue>(_workers);
+                opts.Services.AddSingleton<IDurabilityAgent>(_schedulerAgent);
+                opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                opts.Advanced.ScheduledJobFirstExecution = 30.Minutes();
+                opts.Advanced.FirstNodeReassignmentExecution = 30.Minutes();
+                opts.Advanced.NodeReassignmentPollingTime = 30.Minutes();
+            })
+            .Start();
 
-            var writer = _host.Services.GetRequiredService<IJasperRuntime>().Options.Serializers
-                .FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType);
-            envelope.Data = writer.Write(envelope.Message);
-            envelope.ContentType = writer.ContentType;
+        _host.RebuildMessageStorage().GetAwaiter().GetResult();
 
-            _envelopes.Add(envelope);
-        }
+        _currentNodeId = _host.Services.GetService<AdvancedSettings>().UniqueNodeId;
 
-        [FormatAs("Channel {channel} is unavailable and latched for sending")]
-        public void ChannelIsLatched(Uri channel)
+        _owners["This Node"] = _currentNodeId;
+    }
+
+    public override void TearDown()
+    {
+        _host.Dispose();
+
+        foreach (var locker in _nodeLockers) locker.SafeDispose();
+
+        _nodeLockers.Clear();
+    }
+
+    [ExposeAsTable("The persisted envelopes are")]
+    public void EnvelopesAre(
+        [Default("NULL")] string Note,
+        Guid Id,
+        [SelectionList("channels")] [Default("stub://one")]
+        Uri Destination,
+        [Default("NULL")] DateTime? ExecutionTime,
+        [Default("TODAY+1")] DateTime DeliverBy,
+        [SelectionList("status")] EnvelopeStatus Status,
+        [SelectionList("owners")] string Owner)
+    {
+        var ownerId = _owners[Owner];
+
+        var envelope = new Envelope
         {
-            getStubTransport().Endpoints[channel].Latched = true;
+            Id = Id,
+            ExecutionTime = ExecutionTime,
+            Status = Status,
+            OwnerId = ownerId,
+            DeliverBy = DeliverBy,
+            Destination = Destination,
+            Message = new Message1()
+        };
 
-            // Gotta do this so that the query on latched channels works correctly
-            _host.Services.GetService<IJasperRuntime>().Runtime.GetOrBuildSendingAgent(channel);
-        }
+        var writer = _host.Services.GetRequiredService<IJasperRuntime>().Options.Serializers
+            .FirstOrDefault(x => x.ContentType == EnvelopeConstants.JsonContentType);
+        envelope.Data = writer.Write(envelope.Message);
+        envelope.ContentType = writer.ContentType;
+
+        _envelopes.Add(envelope);
+    }
+
+    [FormatAs("Channel {channel} is unavailable and latched for sending")]
+    public void ChannelIsLatched(Uri channel)
+    {
+        getStubTransport().Endpoints[channel].Latched = true;
+
+        // Gotta do this so that the query on latched channels works correctly
+        _host.Services.GetService<IJasperRuntime>().Runtime.GetOrBuildSendingAgent(channel);
+    }
 
 
-        private IList<OutgoingMessageAction> outgoingMessages()
+    private IList<OutgoingMessageAction> outgoingMessages()
+    {
+        var stub = getStubTransport();
+
+        return stub.Endpoints.GetAll().SelectMany(x =>
         {
-            var stub = getStubTransport();
-
-            return stub.Endpoints.GetAll().SelectMany(x =>
+            return x.Sent.Select(c => new OutgoingMessageAction
             {
-                return x.Sent.Select(c => new OutgoingMessageAction
-                {
-                    Id = c.Id,
-                    Destination = x.Destination
-                });
-            }).ToList();
-        }
+                Id = c.Id,
+                Destination = x.Destination
+            });
+        }).ToList();
+    }
 
-        private StubTransport getStubTransport()
+    private StubTransport getStubTransport()
+    {
+        return _host.GetStubTransport();
+    }
+
+    public IGrammar TheEnvelopesSentShouldBe()
+    {
+        return VerifySetOf(outgoingMessages).Titled("The envelopes sent should be")
+            .MatchOn(x => x.Id, x => x.Destination);
+    }
+
+    private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
+    {
+        var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
+
+        return persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
+            .Concat(persistor.Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
+            .Where(x => x.OwnerId == ownerId)
+            .ToList();
+    }
+
+    public IGrammar ThePersistedEnvelopesOwnedByTheCurrentNodeAre()
+    {
+        return VerifySetOf(() => persistedEnvelopes(_currentNodeId))
+            .Titled("The persisted envelopes owned by the current node should be")
+            .MatchOn(x => x.Id);
+    }
+
+    public IGrammar ThePersistedEnvelopesOwnedByAnyNodeAre()
+    {
+        return VerifySetOf(() => persistedEnvelopes(TransportConstants.AnyNode))
+            .Titled("The persisted envelopes owned by 'any' node should be")
+            .MatchOn(x => x.Id);
+    }
+
+    public IGrammar TheProcessedEnvelopesShouldBe()
+    {
+        return VerifySetOf(() => _workers.Enqueued)
+            .Titled("The envelopes enqueued to the worker queues should be")
+            .MatchOn(x => x.Id);
+    }
+
+    [FormatAs("Node {node} is active")]
+    public void NodeIsActive([SelectionList("owners")] string node)
+    {
+        var ownerId = _owners[node];
+        _nodeLockers.Add(new NodeLocker(ownerId));
+    }
+
+    private async Task runAction<T>() where T : IMessagingAction
+    {
+        var persistor = _host.Get<SqlServerEnvelopePersistence>();
+
+        foreach (var envelope in _envelopes)
         {
-            return _host.GetStubTransport();
-        }
-
-        public IGrammar TheEnvelopesSentShouldBe()
-        {
-            return VerifySetOf(outgoingMessages).Titled("The envelopes sent should be")
-                .MatchOn(x => x.Id, x => x.Destination);
-        }
-
-        private IReadOnlyList<Envelope> persistedEnvelopes(int ownerId)
-        {
-            var persistor = _host.Services.GetService<SqlServerEnvelopePersistence>();
-
-            return persistor.Admin.AllIncomingEnvelopes().GetAwaiter().GetResult()
-                .Concat(persistor.Admin.AllOutgoingEnvelopes().GetAwaiter().GetResult())
-                .Where(x => x.OwnerId == ownerId)
-                .ToList();
-        }
-
-        public IGrammar ThePersistedEnvelopesOwnedByTheCurrentNodeAre()
-        {
-            return VerifySetOf(() => persistedEnvelopes(_currentNodeId))
-                .Titled("The persisted envelopes owned by the current node should be")
-                .MatchOn(x => x.Id);
-        }
-
-        public IGrammar ThePersistedEnvelopesOwnedByAnyNodeAre()
-        {
-            return VerifySetOf(() => persistedEnvelopes(TransportConstants.AnyNode))
-                .Titled("The persisted envelopes owned by 'any' node should be")
-                .MatchOn(x => x.Id);
-        }
-
-        public IGrammar TheProcessedEnvelopesShouldBe()
-        {
-            return VerifySetOf(() => _workers.Enqueued)
-                .Titled("The envelopes enqueued to the worker queues should be")
-                .MatchOn(x => x.Id);
-        }
-
-        [FormatAs("Node {node} is active")]
-        public void NodeIsActive([SelectionList("owners")] string node)
-        {
-            var ownerId = _owners[node];
-            _nodeLockers.Add(new NodeLocker(ownerId));
-        }
-
-        private async Task runAction<T>() where T : IMessagingAction
-        {
-            var persistor = _host.Get<SqlServerEnvelopePersistence>();
-
-            foreach (var envelope in _envelopes)
+            if (envelope.Status == EnvelopeStatus.Outgoing)
             {
-                if (envelope.Status == EnvelopeStatus.Outgoing)
-                {
-                    await persistor.StoreOutgoingAsync(envelope, envelope.OwnerId);
-                }
-                else
-                {
-                    await persistor.StoreIncomingAsync(envelope);
-                }
+                await persistor.StoreOutgoingAsync(envelope, envelope.OwnerId);
             }
-
-            var agent = DurabilityAgent.ForHost(_host);
-
-            var action = _host.Get<T>();
-            await agent.Execute(action);
+            else
+            {
+                await persistor.StoreIncomingAsync(envelope);
+            }
         }
 
-        [FormatAs("After reassigning envelopes from dormant nodes")]
-        public Task AfterReassigningFromDormantNodes()
-        {
-            return runAction<NodeReassignment>();
-        }
+        throw new NotImplementedException("Redo");
+        //var agent = DurabilityAgent.ForHost(_host);
 
-        [FormatAs("After recovering incoming messages")]
-        public Task AfterRecoveringIncomingMessages()
-        {
-            return runAction<RecoverIncomingMessages>();
-        }
-
-        [FormatAs("After executing the outgoing message recovery")]
-        public Task AfterExecutingTheOutgoingMessageRecovery()
-        {
-            return runAction<RecoverOutgoingMessages>();
-        }
+        //var action = _host.Get<T>();
+        //await agent.Execute(action);
     }
 
-    public class NodeLocker : IDisposable
+    [FormatAs("After reassigning envelopes from dormant nodes")]
+    public Task AfterReassigningFromDormantNodes()
     {
-        private readonly SqlConnection _conn;
-        private readonly SqlTransaction _tx;
-
-        public NodeLocker(int nodeId)
-        {
-            _conn = new SqlConnection(Servers.SqlServerConnectionString);
-            _conn.Open();
-            _tx = _conn.BeginTransaction();
-
-            new SqlServerSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
-        }
-
-        public void Dispose()
-        {
-            _tx.Rollback();
-            _conn?.Dispose();
-        }
+        return runAction<NodeReassignment>();
     }
 
-    public class OutgoingMessageAction
+    [FormatAs("After recovering incoming messages")]
+    public Task AfterRecoveringIncomingMessages()
     {
-        public Guid Id { get; set; }
-        public Uri Destination { get; set; }
+        return runAction<RecoverIncomingMessages>();
     }
 
-    public class RecordingSchedulingAgent : IDurabilityAgent
+    [FormatAs("After executing the outgoing message recovery")]
+    public Task AfterExecutingTheOutgoingMessageRecovery()
     {
-        public void RescheduleOutgoingRecovery()
-        {
-        }
+        return runAction<RecoverOutgoingMessages>();
+    }
+}
 
-        public Task EnqueueLocally(Envelope envelope)
-        {
-            return Task.CompletedTask;
-        }
+public class NodeLocker : IDisposable
+{
+    private readonly SqlConnection _conn;
+    private readonly SqlTransaction _tx;
 
-        public void RescheduleIncomingRecovery()
-        {
-        }
+    public NodeLocker(int nodeId)
+    {
+        _conn = new SqlConnection(Servers.SqlServerConnectionString);
+        _conn.Open();
+        _tx = _conn.BeginTransaction();
+
+        new SqlServerSettings().TryGetGlobalTxLock(_conn, _tx, nodeId).Wait(3.Seconds());
     }
 
-    public class RecordingWorkerQueue : IWorkerQueue
+    public void Dispose()
     {
-        public readonly IList<Envelope> Enqueued = new List<Envelope>();
+        _tx.Rollback();
+        _conn?.Dispose();
+    }
+}
 
-        public Task EnqueueAsync(Envelope envelope)
-        {
-            Enqueued.Add(envelope);
-            return Task.CompletedTask;
-        }
+public class OutgoingMessageAction
+{
+    public Guid Id { get; set; }
+    public Uri Destination { get; set; }
+}
 
-        public int QueuedCount => 5;
+public class RecordingSchedulingAgent : IDurabilityAgent
+{
+    public void RescheduleOutgoingRecovery()
+    {
+    }
 
-        public Task ScheduleExecutionAsync(Envelope envelope)
-        {
-            return Task.CompletedTask;
-        }
+    public void RescheduleIncomingRecovery()
+    {
+    }
 
-        void IWorkerQueue.StartListening(IListener listener)
-        {
-            // Nothing
-        }
+    public void EnqueueLocally(Envelope envelope)
+    {
 
-        Task IListeningWorkerQueue.Received(Uri uri, Envelope[] messages)
-        {
-            return Task.CompletedTask;
-        }
+    }
+}
 
-        public Task Received(Uri uri, Envelope envelope)
-        {
-            throw new NotImplementedException();
-        }
+public class RecordingWorkerQueue : ILocalQueue
+{
+    public readonly IList<Envelope> Enqueued = new List<Envelope>();
 
+    public int QueuedCount => 5;
 
-        void IDisposable.Dispose()
-        {
-        }
+    public Task EnqueueAsync(Envelope envelope)
+    {
+        Enqueued.Add(envelope);
+        return Task.CompletedTask;
+    }
+
+    public Task ScheduleExecutionAsync(Envelope envelope)
+    {
+        return Task.CompletedTask;
+    }
+
+    public ValueTask ReceivedAsync(IListener listener, Envelope[] messages)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask ReceivedAsync(IListener listener, Envelope envelope)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask DrainAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public void Enqueue(Envelope envelope)
+    {
+        Enqueued.Add(envelope);
+    }
+
+    void IDisposable.Dispose()
+    {
     }
 }

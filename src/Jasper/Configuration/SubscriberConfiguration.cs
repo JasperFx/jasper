@@ -19,7 +19,7 @@ public class SubscriberConfiguration<T, TEndpoint> : ISubscriberConfiguration<T>
 
     protected TEndpoint Endpoint => _endpoint;
 
-    public T UseDurableOutbox()
+    public T UsePersistentOutbox()
     {
         _endpoint.Mode = EndpointMode.Durable;
         return TypeExtensions.As<T>(this);

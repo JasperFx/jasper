@@ -66,5 +66,12 @@ public interface IEnvelopePersistence : IDisposable
 
     Task<IReadOnlyList<Envelope>> LoadPageOfGloballyOwnedIncomingAsync();
     Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope> incoming);
+
+    // TODO -- call this in system drain?
+    Task ReleaseIncomingAsync(int ownerId);
+
+    // TODO -- call from DurableReceiver.DrainAsync()
+    Task ReleaseIncomingAsync(int ownerId, Uri receivedAt);
+
     Task<ErrorReport?> LoadDeadLetterEnvelopeAsync(Guid id);
 }

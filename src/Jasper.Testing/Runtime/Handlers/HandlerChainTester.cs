@@ -83,7 +83,7 @@ namespace Jasper.Testing.Runtime.Handlers
         public void default_number_of_max_attempts_is_null()
         {
             var chain = HandlerChain.For<Target>(nameof(Target.GoStatic), null);
-            chain.Retries.MaximumAttempts.HasValue.ShouldBeFalse();
+            chain.Failures.MaximumAttempts.HasValue.ShouldBeFalse();
         }
 
 

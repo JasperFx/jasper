@@ -66,8 +66,7 @@ public static class WireProtocol
     }
 
 
-    public static async Task ReceiveAsync(ILogger logger, Stream stream, IListeningWorkerQueue? callback,
-        Uri uri)
+    public static async Task ReceiveAsync(IListener listener, ILogger logger, Stream stream, IReceiver callback)
     {
         Envelope[]? messages;
 
@@ -92,7 +91,7 @@ public static class WireProtocol
 
         try
         {
-            await receiveAsync(logger, stream, callback, messages, uri);
+            await receiveAsync(listener, logger, stream, callback, messages);
         }
         catch (Exception ex)
         {
@@ -101,8 +100,8 @@ public static class WireProtocol
         }
     }
 
-    private static async Task receiveAsync(ILogger logger, Stream stream, IListeningWorkerQueue? callback,
-        Envelope[] messages, Uri uri)
+    private static async Task receiveAsync(IListener listener, ILogger logger, Stream stream, IReceiver callback,
+        Envelope[] messages)
     {
         // Just a ping
         if (messages.Any() && messages.First().IsPing())
@@ -116,7 +115,7 @@ public static class WireProtocol
 
         try
         {
-            await callback.ReceivedAsync(uri, messages);
+            await callback.ReceivedAsync(listener, messages);
             await stream.SendBufferAsync(ReceivedBuffer);
             await stream.ReadExpectedBufferAsync(AcknowledgedBuffer);
         }
