@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper;
-using Jasper.Persistence;
 using Jasper.Persistence.Durability;
 using LamarCodeGeneration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,14 +22,23 @@ namespace Benchmarks
         {
             var json = File.ReadAllText("targets.json");
             Targets = JsonConvert.DeserializeObject<Target[]>(json);
-
         }
 
         public Target[] Targets { get; }
 
+        public IHost Host { get; private set; }
+
+        public IMessagePublisher Publisher { get; private set; }
+
+        public IEnvelopePersistence Persistence { get; private set; }
+
+        public void Dispose()
+        {
+            Host?.Dispose();
+        }
+
         public async Task Start(Action<JasperOptions> configure)
         {
-
             Host = await Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
                 .UseJasper(opts =>
                 {
@@ -54,10 +62,6 @@ namespace Benchmarks
             _waiter = TargetHandler.WaitForNumber(Targets.Length, 60.Seconds());
         }
 
-        public IHost Host { get; private set; }
-
-        public IMessagePublisher Publisher { get; private set; }
-
         public Task WaitForAllEnvelopesToBeProcessed()
         {
             return _waiter;
@@ -68,8 +72,6 @@ namespace Benchmarks
             return Host.Services.GetRequiredService<T>();
         }
 
-        public IEnvelopePersistence Persistence { get; private set; }
-
         public async Task Teardown()
         {
             if (Host != null)
@@ -77,11 +79,6 @@ namespace Benchmarks
                 await Host.StopAsync();
                 Host = null;
             }
-        }
-
-        public void Dispose()
-        {
-            Host?.Dispose();
         }
     }
 }

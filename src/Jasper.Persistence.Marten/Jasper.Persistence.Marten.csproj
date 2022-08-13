@@ -17,13 +17,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Marten" Version="5.4.0" />
-    <PackageReference Include="Npgsql" Version="6.0.3" />
+
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj" />
-    <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj"/>
+    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
+    <PackageReference Include="Marten.CommandLine" Version="5.8.0"/>
   </ItemGroup>
 
-  <Import Project="../../Analysis.Build.props" />
+  <Import Project="../../Analysis.Build.props"/>
 </Project>

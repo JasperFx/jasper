@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline;
 using Jasper.Persistence.Database;
 using Microsoft.Data.SqlClient;
 using Weasel.Core;
@@ -81,10 +82,10 @@ public class SqlServerSettings : DatabaseSettings
         return getLockAsync(conn, lockId, "Session", transaction, cancellation);
     }
 
-    public override async Task<bool> TryGetGlobalLockAsync(DbConnection conn, int lockId,
+    public override async Task<bool> TryGetGlobalLockAsync(DbConnection conn, DbTransaction? tx, int lockId,
         CancellationToken cancellation = default)
     {
-        return await tryGetLockAsync(conn, lockId, "Session", null, cancellation) >= 0;
+        return await tryGetLockAsync(conn, lockId, "Session", tx, cancellation) >= 0;
     }
 
     public override async Task<bool> TryGetGlobalLockAsync(DbConnection conn, int lockId, DbTransaction tx,

@@ -5,7 +5,7 @@ using Jasper.Logging;
 
 namespace Jasper.Transports.Sending;
 
-public class InlineSendingAgent : ISendingAgent
+internal class InlineSendingAgent : ISendingAgent
 {
     private readonly IMessageLogger _logger;
     private readonly ISender _sender;
@@ -28,6 +28,8 @@ public class InlineSendingAgent : ISendingAgent
     public async ValueTask EnqueueOutgoingAsync(Envelope envelope)
     {
         setDefaults(envelope);
+
+        // TODO -- need to harden this for ephemeral failures
         await _sender.SendAsync(envelope);
         _logger.Sent(envelope);
     }

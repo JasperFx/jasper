@@ -43,7 +43,7 @@ public class PostgresqlSettings : DatabaseSettings
             .ExecuteNonQueryAsync(cancellation);
     }
 
-    public override async Task<bool> TryGetGlobalLockAsync(DbConnection conn, int lockId,
+    public override async Task<bool> TryGetGlobalLockAsync(DbConnection conn, DbTransaction? tx, int lockId,
         CancellationToken cancellation = default)
     {
         var c = await conn.CreateCommand("SELECT pg_try_advisory_lock(:id);")

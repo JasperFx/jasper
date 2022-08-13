@@ -42,11 +42,11 @@ namespace Jasper.Persistence.Testing
                 x.Message<Question>();
                 x.Message<ScheduledMessage>();
 
-                x.ToPort(receiverPort).UseDurableOutbox();
+                x.ToPort(receiverPort).UsePersistentOutbox();
             });
 
 
-            senderRegistry.ListenAtPort(senderPort).UseInbox();
+            senderRegistry.ListenAtPort(senderPort).UsePersistentInbox();
 
             configureSender(senderRegistry);
 
@@ -61,7 +61,7 @@ namespace Jasper.Persistence.Testing
                 .IncludeType<QuestionHandler>()
                 .IncludeType<ScheduledMessageHandler>();
 
-            receiverRegistry.ListenAtPort(receiverPort).UseInbox();
+            receiverRegistry.ListenAtPort(receiverPort).UsePersistentInbox();
 
             configureReceiver(receiverRegistry);
 

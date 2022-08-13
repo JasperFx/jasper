@@ -15,7 +15,7 @@ namespace Jasper.Testing.ErrorHandling
         [Fact]
         public async Task just_calls_through_to_the_context_pipeline_to_do_it_again()
         {
-            var continuation = RetryNowContinuation.Instance;
+            var continuation = RetryInlineContinuation.Instance;
 
             var envelope = ObjectMother.Envelope();
             envelope.Attempts = 1;

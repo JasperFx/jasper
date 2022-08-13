@@ -65,7 +65,7 @@ namespace Jasper.Testing.Runtime.Samples
                         .Requeue();
 
                     // Use different actions for different exception types
-                    opts.Handlers.OnException<InvalidOperationException>().RetryNow();
+                    opts.Handlers.OnException<InvalidOperationException>().RetryTimes(3);
                 }).StartAsync();
 
             #endregion
@@ -79,11 +79,8 @@ namespace Jasper.Testing.Runtime.Samples
                 .UseJasper(opts =>
                 {
                     // Try to execute the message again without going
-                    // back through the queue with a maximum number of attempts
-                    // The default is 3
-                    // The message will be dead lettered if it exceeds the maximum
-                    // number of attemts
-                    opts.Handlers.OnException<SqlException>().RetryNow(5);
+                    // back through the queue up to 5 times
+                    opts.Handlers.OnException<SqlException>().RetryTimes(5);
 
 
                     // Retry the message again, but wait for the specified time
@@ -110,15 +107,16 @@ namespace Jasper.Testing.Runtime.Samples
         {
             #region sample_AppWithCustomContinuation
 
-            using var host = Host.CreateDefaultBuilder()
-                .UseJasper(opts =>
-                {
-                    opts.Handlers.OnException<UnauthorizedAccessException>()
-
-                        // The With() function takes a lambda factory for
-                        // custom IContinuation objects
-                        .With((envelope, exception) => new RaiseAlert(exception));
-                }).StartAsync();
+            throw new NotImplementedException();
+            // using var host = Host.CreateDefaultBuilder()
+            //     .UseJasper(opts =>
+            //     {
+            //         opts.Handlers.OnException<UnauthorizedAccessException>()
+            //
+            //             // The With() function takes a lambda factory for
+            //             // custom IContinuation objects
+            //             .With((envelope, exception) => new RaiseAlert(exception));
+            //     }).StartAsync();
 
             #endregion
         }
@@ -227,14 +225,16 @@ namespace Jasper.Testing.Runtime.Samples
             IJasperRuntime runtime,
             DateTimeOffset now)
         {
+            throw new NotImplementedException();
+
             // Raise a separate "alert" event message
-            var session = new ExecutionContext(execution.As<ExecutionContext>().Runtime);
-            await session.ScheduleAsync(execution.Envelope.Message, now.AddHours(1));
-            await session.SendAsync(new RescheduledAlert
-            {
-                Id = execution.Envelope.Id,
-                ExceptionText = _ex.ToString()
-            });
+            // using var session = runtime.;
+            // await session.ScheduleAsync(execution.Envelope.Message, now.AddHours(1));
+            // await session.SendAsync(new RescheduledAlert
+            // {
+            //     Id = execution.Envelope.Id,
+            //     ExceptionText = _ex.ToString()
+            // });
         }
     }
 

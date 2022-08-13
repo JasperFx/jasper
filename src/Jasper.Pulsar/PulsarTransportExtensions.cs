@@ -2,6 +2,7 @@ using System;
 using Baseline;
 using DotPulsar.Abstractions;
 using Jasper.Configuration;
+using Jasper.ErrorHandling;
 
 namespace Jasper.Pulsar
 {
@@ -82,6 +83,19 @@ namespace Jasper.Pulsar
     {
         public PulsarListenerConfiguration(PulsarEndpoint endpoint) : base(endpoint)
         {
+        }
+
+        /// <summary>
+        /// Add circuit breaker exception handling to this listener
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public PulsarListenerConfiguration CircuitBreaker(Action<CircuitBreakerOptions>? configure)
+        {
+            endpoint.CircuitBreakerOptions = new CircuitBreakerOptions();
+            configure?.Invoke(endpoint.CircuitBreakerOptions);
+
+            return this;
         }
 
         // /// <summary>

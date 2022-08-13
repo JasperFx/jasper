@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
@@ -10,7 +11,7 @@ using Jasper.Util;
 
 namespace Jasper.Transports.Stub;
 
-public class StubEndpoint : Endpoint, ISendingAgent, ISender
+public class StubEndpoint : Endpoint, ISendingAgent, ISender, IListener
 {
     private readonly StubTransport _stubTransport;
     // ReSharper disable once CollectionNeverQueried.Global
@@ -21,7 +22,6 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
     private IMessageLogger? _logger;
     private IHandlerPipeline? _pipeline;
 
-
     public StubEndpoint(Uri destination, StubTransport stubTransport) : base(destination)
     {
         _stubTransport = stubTransport;
@@ -30,6 +30,11 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
     }
 
     public override Uri Uri => $"stub://{Name}".ToUri();
+
+    public ValueTask StopAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
 
     public async ValueTask SendAsync(Envelope envelope)
     {
@@ -52,6 +57,11 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
 
     public void Dispose()
     {
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        return ValueTask.CompletedTask;
     }
 
     public Uri Destination { get; }
@@ -103,13 +113,26 @@ public class StubEndpoint : Endpoint, ISendingAgent, ISender
         Name = uri.Host;
     }
 
-    public override void StartListening(IJasperRuntime runtime)
+    public override IListener BuildListener(IJasperRuntime runtime, IReceiver? receiver)
     {
-        // Nothing
+        return this;
     }
 
     protected override ISender CreateSender(IJasperRuntime runtime)
     {
         return this;
     }
+
+    ValueTask IChannelCallback.CompleteAsync(Envelope envelope)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    ValueTask IChannelCallback.DeferAsync(Envelope envelope)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    Uri IListener.Address => Destination;
+
 }

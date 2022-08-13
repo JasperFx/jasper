@@ -105,15 +105,10 @@ namespace Jasper.Pulsar
             return $"{Persistence}://{Tenant}/{Namespace}/{TopicName}";
         }
 
-        public override void StartListening(IJasperRuntime runtime)
+        public override IListener BuildListener(IJasperRuntime runtime, IReceiver receiver)
         {
-            if (!IsListener) return;
-
             // TODO -- parallel listener option????
-
-            var listener = new PulsarListener(this, _parent, runtime.Cancellation);
-
-            runtime.AddListener(listener, this);
+            return new PulsarListener(this, receiver, _parent, runtime.Cancellation);
         }
 
         protected override ISender CreateSender(IJasperRuntime runtime)

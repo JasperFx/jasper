@@ -69,37 +69,26 @@ public class TcpEndpoint : Endpoint
         }
     }
 
-    public override void StartListening(IJasperRuntime runtime)
-    {
-        if (!IsListener)
-        {
-            return;
-        }
-
-        var listener = createListener(runtime);
-        runtime.AddListener(listener, this);
-    }
-
-    protected override ISender CreateSender(IJasperRuntime runtime)
-    {
-        return new BatchedSender(Uri, new SocketSenderProtocol(), runtime.Advanced.Cancellation, runtime.Logger);
-    }
-
-    private IListener createListener(IJasperRuntime root)
+    public override IListener BuildListener(IJasperRuntime runtime, IReceiver receiver)
     {
         // check the uri for an ip address to bind to
-        var cancellation = root.Advanced.Cancellation;
+        var cancellation = runtime.Advanced.Cancellation;
 
         var hostNameType = Uri.CheckHostName(HostName);
 
         if (hostNameType != UriHostNameType.IPv4 && hostNameType != UriHostNameType.IPv6)
         {
             return HostName == "localhost"
-                ? new SocketListener(root.Logger, IPAddress.Loopback, Port, cancellation)
-                : new SocketListener(root.Logger, IPAddress.Any, Port, cancellation);
+                ? new SocketListener(this, receiver, runtime.Logger, IPAddress.Loopback, Port, cancellation)
+                : new SocketListener(this, receiver, runtime.Logger, IPAddress.Any, Port, cancellation);
         }
 
         var ipaddr = IPAddress.Parse(HostName);
-        return new SocketListener(root.Logger, ipaddr, Port, cancellation);
+        return new SocketListener(this, receiver, runtime.Logger, ipaddr, Port, cancellation);
+    }
+
+    protected override ISender CreateSender(IJasperRuntime runtime)
+    {
+        return new BatchedSender(Uri, new SocketSenderProtocol(), runtime.Advanced.Cancellation, runtime.Logger);
     }
 }

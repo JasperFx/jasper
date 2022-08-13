@@ -29,7 +29,7 @@ namespace Jasper.Persistence.Testing.SqlServer
 
 
                 // Cannot get the lock here
-                (await settings.TryGetGlobalLockAsync(conn2, 1)).ShouldBeFalse();
+                (await settings.TryGetGlobalLockAsync(conn2, null, 1)).ShouldBeFalse();
 
 
                 await settings.ReleaseGlobalLockAsync(conn1, 1);
@@ -37,7 +37,7 @@ namespace Jasper.Persistence.Testing.SqlServer
 
                 for (var j = 0; j < 5; j++)
                 {
-                    if (await settings.TryGetGlobalLockAsync(conn2, 1)) return;
+                    if (await settings.TryGetGlobalLockAsync(conn2, null, 1)) return;
 
                     await Task.Delay(250);
                 }
@@ -105,13 +105,13 @@ namespace Jasper.Persistence.Testing.SqlServer
                 try
                 {
                     // Cannot get the lock here
-                    (await settings.TryGetGlobalLockAsync(conn2, 24)).ShouldBeFalse();
+                    (await settings.TryGetGlobalLockAsync(conn2, null, 24)).ShouldBeFalse();
 
                     // Can get the new lock
-                    (await settings.TryGetGlobalLockAsync(conn3, 25)).ShouldBeTrue();
+                    (await settings.TryGetGlobalLockAsync(conn3, null, 25)).ShouldBeTrue();
 
                     // Cannot get the lock here
-                    (await settings.TryGetGlobalLockAsync(conn2, 25)).ShouldBeFalse();
+                    (await settings.TryGetGlobalLockAsync(conn2, null, 25)).ShouldBeFalse();
                 }
                 finally
                 {

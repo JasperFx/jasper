@@ -49,6 +49,11 @@ public class NullEnvelopePersistence : IEnvelopePersistence, IEnvelopeStorageAdm
         return Task.CompletedTask;
     }
 
+    public Task ReleaseIncomingAsync(int ownerId, Uri receivedAt)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<ErrorReport?> LoadDeadLetterEnvelopeAsync(Guid id)
     {
         throw new NotSupportedException();
@@ -167,6 +172,11 @@ public class NullEnvelopePersistence : IEnvelopePersistence, IEnvelopeStorageAdm
     public Task ReassignIncomingAsync(int ownerId, IReadOnlyList<Envelope> incoming)
     {
         throw new NotSupportedException();
+    }
+
+    public Task ReleaseIncomingAsync(int ownerId)
+    {
+        return Task.CompletedTask;
     }
 
     public Task<IReadOnlyList<Envelope>> AllIncomingAsync()

@@ -13,27 +13,37 @@ namespace Jasper.Transports.Tcp;
 
 public class SocketListener : IListener, IDisposable
 {
-    private readonly CancellationToken _cancellationToken;
+    private CancellationToken _cancellationToken;
     private readonly IPAddress _ipaddr;
     private readonly ILogger _logger;
     private readonly int _port;
     private TcpListener? _listener;
     private Task? _receivingLoop;
     private ActionBlock<Socket>? _socketHandling;
+    private IReceiver _receiver;
+    private readonly CancellationToken _parentToken;
+    private CancellationTokenSource _listenerCancellation;
 
-    public SocketListener(ILogger logger, IPAddress ipaddr, int port,
+    public SocketListener(TcpEndpoint endpoint, IReceiver receiver, ILogger logger, IPAddress ipaddr, int port,
         CancellationToken cancellationToken)
     {
         _logger = logger;
         _port = port;
         _ipaddr = ipaddr;
-        _cancellationToken = cancellationToken;
+        _parentToken = cancellationToken;
 
-        Address = $"tcp://{ipaddr}:{port}/".ToUri();
+        Address = endpoint.Uri;
+
+        _receiver = receiver;
+
+        startListening(receiver);
     }
 
-    public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+    private void startListening(IReceiver callback)
     {
+        _listenerCancellation = new CancellationTokenSource();
+        _cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(_parentToken, _listenerCancellation.Token).Token;
+
         _listener = new TcpListener(new IPEndPoint(_ipaddr, _port));
         _listener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
@@ -49,8 +59,15 @@ public class SocketListener : IListener, IDisposable
 
             while (!_cancellationToken.IsCancellationRequested)
             {
-                var socket = await _listener.AcceptSocketAsync(_cancellationToken);
-                await _socketHandling.SendAsync(socket, _cancellationToken);
+                try
+                {
+                    var socket = await _listener.AcceptSocketAsync(_cancellationToken);
+                    await _socketHandling.SendAsync(socket, _cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
             }
         }, _cancellationToken);
     }
@@ -70,7 +87,25 @@ public class SocketListener : IListener, IDisposable
         _receivingLoop?.Dispose();
     }
 
-    public ListeningStatus Status { get; set; } = ListeningStatus.Accepting;
+    public async ValueTask DisposeAsync()
+    {
+        _listenerCancellation.Cancel();
+        _listener?.Stop();
+        _listener = null;
+
+        if (_receivingLoop != null)
+        {
+            await _receivingLoop;
+            _receivingLoop.Dispose();
+            _receivingLoop = null;
+        }
+
+        if (_socketHandling != null)
+        {
+            _socketHandling.Complete();
+            _socketHandling = null;
+        }
+    }
 
     public ValueTask CompleteAsync(Envelope envelope)
     {
@@ -82,10 +117,13 @@ public class SocketListener : IListener, IDisposable
         return ValueTask.CompletedTask;
     }
 
-    public Task HandleStreamAsync(IListeningWorkerQueue? callback, Stream stream)
+    public Task HandleStreamAsync(IReceiver receiver, Stream stream)
     {
-        return Status == ListeningStatus.TooBusy
-            ? stream.SendBufferAsync(WireProtocol.ProcessingFailureBuffer)
-            : WireProtocol.ReceiveAsync(_logger, stream, callback, Address);
+        return WireProtocol.ReceiveAsync(this, _logger, stream, receiver);
+    }
+
+    public ValueTask StopAsync()
+    {
+        return DisposeAsync();
     }
 }

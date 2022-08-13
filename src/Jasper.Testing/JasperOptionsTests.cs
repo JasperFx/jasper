@@ -224,12 +224,6 @@ namespace Jasper.Testing
                 throw new NotImplementedException();
             }
 
-            public void StartListeners(IJasperRuntime root)
-            {
-                throw new NotImplementedException();
-            }
-
-
             public ISender CreateSender(Uri uri, CancellationToken cancellation, IJasperRuntime root)
             {
                 throw new NotImplementedException();

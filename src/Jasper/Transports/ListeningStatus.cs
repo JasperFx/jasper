@@ -3,5 +3,7 @@
 public enum ListeningStatus
 {
     Accepting,
-    TooBusy
+    TooBusy,
+    Stopped,
+    Unknown
 }

@@ -25,9 +25,14 @@ namespace Jasper;
 /// <summary>
 ///     Completely defines and configures a Jasper application
 /// </summary>
-public sealed partial class JasperOptions
+public partial class JasperOptions
 {
-    private static Assembly? _rememberedCallingAssembly;
+    /// <summary>
+    /// You may use this to "help" Jasper in testing scenarios to force
+    /// it to consider this assembly as the main application assembly rather
+    /// that assuming that the IDE or test runner assembly is the application assembly
+    /// </summary>
+    public static Assembly? RememberedApplicationAssembly;
     private readonly IList<Type> _extensionTypes = new List<Type>();
 
     private readonly IDictionary<string, IMessageSerializer>
@@ -184,12 +189,12 @@ public sealed partial class JasperOptions
         }
         else if (GetType() == typeof(JasperOptions) || GetType() == typeof(JasperOptions))
         {
-            if (_rememberedCallingAssembly == null)
+            if (RememberedApplicationAssembly == null)
             {
-                _rememberedCallingAssembly = CallingAssembly.DetermineApplicationAssembly(this);
+                RememberedApplicationAssembly = CallingAssembly.DetermineApplicationAssembly(this);
             }
 
-            ApplicationAssembly ??= _rememberedCallingAssembly;
+            ApplicationAssembly ??= RememberedApplicationAssembly;
         }
         else
         {

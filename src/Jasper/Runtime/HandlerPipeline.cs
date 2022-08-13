@@ -16,27 +16,26 @@ public class HandlerPipeline : IHandlerPipeline
     private readonly CancellationToken _cancellation;
     private readonly ObjectPool<ExecutionContext> _contextPool;
     private readonly HandlerGraph _graph;
-    private readonly NoHandlerContinuation _noHandlers;
 
-    private readonly IJasperRuntime _runtime;
+    private readonly JasperRuntime _runtime;
+    private readonly IExecutorFactory _executorFactory;
 
 
     private readonly AdvancedSettings _settings;
 
-    private ImHashMap<Type, Executor?> _executors =
-        ImHashMap<Type,Executor?>.Empty;
+    private ImHashMap<Type, IExecutor> _executors =
+        ImHashMap<Type,IExecutor>.Empty;
 
 
-    public HandlerPipeline(HandlerGraph graph, IMessageLogger logger,
-        NoHandlerContinuation noHandlers, IJasperRuntime runtime, ObjectPool<ExecutionContext> contextPool)
+    internal HandlerPipeline(JasperRuntime runtime, IExecutorFactory executorFactory)
     {
-        _graph = graph;
-        _noHandlers = noHandlers;
+        _graph = runtime.Handlers;
         _runtime = runtime;
-        _contextPool = contextPool;
+        _executorFactory = executorFactory;
+        _contextPool = runtime.ExecutionPool;
         _cancellation = runtime.Cancellation;
 
-        Logger = logger;
+        Logger = runtime.MessageLogger;
 
         _settings = runtime.Advanced;
     }
@@ -65,7 +64,7 @@ public class HandlerPipeline : IHandlerPipeline
             }
             catch (Exception e)
             {
-                // TODO -- gotta do something on the envelope to get it out of the transport
+                await channel.CompleteAsync(envelope);
 
                 // Gotta get the message out of here because it's something that
                 // could never be handled
@@ -90,15 +89,11 @@ public class HandlerPipeline : IHandlerPipeline
             throw new ArgumentNullException(nameof(envelope.Message));
         }
 
+        var executor = ExecutorFor(envelope.Message.GetType());
+
         using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryProcessSpanName!, envelope);
 
-        var executor = ExecutorFor(envelope.Message.GetType());
-        if (executor == null)
-        {
-            // TODO -- mark it as unhandled on the activity
-            throw new ArgumentOutOfRangeException(nameof(envelope),
-                $"No known handler for message type {envelope.Message.GetType().FullName}");
-        }
+        Logger.ExecutionStarted(envelope);
 
         var context = _contextPool.Get();
         context.ReadEnvelope(envelope, InvocationCallback.Instance);
@@ -112,11 +107,55 @@ public class HandlerPipeline : IHandlerPipeline
                 envelope.Attempts++;
             }
 
-            await MessageSucceededContinuation.Instance.ExecuteAsync(context, _runtime, DateTimeOffset.Now);
+            // TODO -- Harden the inline sender. Feel good about buffered
+            await context.FlushOutgoingMessagesAsync();
         }
         finally
         {
+            Logger.ExecutionFinished(envelope);
             _contextPool.Return(context);
+            activity.Stop();
+        }
+    }
+
+    private bool tryDeserializeEnvelope(Envelope envelope, out IContinuation continuation)
+    {
+        // Try to deserialize
+        try
+        {
+            var serializer = envelope.Serializer ?? _runtime.Options.DetermineSerializer(envelope);
+
+            if (envelope.Data == null)
+                throw new ArgumentOutOfRangeException(nameof(envelope),
+                    "Envelope does not have a message or deserialized message data");
+
+            if (envelope.MessageType == null)
+                throw new ArgumentOutOfRangeException(nameof(envelope),
+                    "The envelope has no Message or MessageType name");
+
+            envelope.Message = _graph.TryFindMessageType(envelope.MessageType, out var messageType)
+                ? serializer.ReadFromData(messageType, envelope.Data)
+                : serializer.ReadFromData(envelope.Data);
+
+            if (envelope.Message == null)
+            {
+                continuation = new MoveToErrorQueue(new InvalidOperationException(
+                    "No message body could be de-serialized from the raw data in this envelope"));
+
+                return false;
+            }
+
+            continuation = NullContinuation.Instance;
+            return true;
+        }
+        catch (Exception? e)
+        {
+            continuation = new MoveToErrorQueue(e);
+            return false;
+        }
+        finally
+        {
+            Logger.Received(envelope);
         }
     }
 
@@ -124,56 +163,20 @@ public class HandlerPipeline : IHandlerPipeline
     {
         if (envelope.IsExpired())
         {
-            return DiscardExpiredEnvelope.Instance;
+            return DiscardEnvelope.Instance;
         }
 
         if (envelope.Message == null)
         {
-            // Try to deserialize
-            try
+            if (!tryDeserializeEnvelope(envelope, out var serializationError))
             {
-                var serializer = envelope.Serializer ?? _runtime.Options.DetermineSerializer(envelope);
-
-                if (envelope.Data == null)
-                    throw new ArgumentOutOfRangeException(nameof(envelope),
-                        "Envelope does not have a message or deserialized message data");
-
-                if (envelope.MessageType == null)
-                    throw new ArgumentOutOfRangeException(nameof(envelope),
-                        "The envelope has no Message or MessageType name");
-
-                envelope.Message = _graph.TryFindMessageType(envelope.MessageType, out var messageType)
-                    ? serializer.ReadFromData(messageType, envelope.Data)
-                    : serializer.ReadFromData(envelope.Data);
-
-                if (envelope.Message == null)
-                {
-                    return new MoveToErrorQueue(new InvalidOperationException(
-                        "No message body could be de-serialized from the raw data in this envelope"));
-                }
+                return serializationError;
             }
-            catch (Exception? e)
-            {
-                return new MoveToErrorQueue(e);
-            }
-            finally
-            {
-                Logger.Received(envelope);
-            }
-        }
-
-        if (envelope.Message == null)
-        {
-            throw new ArgumentNullException(nameof(envelope), $"{nameof(envelope.Message)} is missing");
         }
 
         Logger.ExecutionStarted(envelope);
 
-        var executor = ExecutorFor(envelope.Message.GetType());
-        if (executor == null)
-        {
-            return _noHandlers;
-        }
+        var executor = ExecutorFor(envelope.Message!.GetType());
 
         var continuation = await executor.ExecuteAsync(context, _cancellation).ConfigureAwait(false);
         Logger.ExecutionFinished(envelope);
@@ -181,23 +184,14 @@ public class HandlerPipeline : IHandlerPipeline
         return continuation;
     }
 
-    internal Executor? ExecutorFor(Type messageType)
+    internal IExecutor ExecutorFor(Type messageType)
     {
         if (_executors.TryFind(messageType, out var executor))
         {
             return executor;
         }
 
-        var handler = _graph.HandlerFor(messageType);
-
-        // Memoize the null
-        if (handler == null)
-        {
-            _executors = _executors.AddOrUpdate(messageType, null)!;
-            return null;
-        }
-
-        executor = Executor.Build(_runtime, _graph, messageType);
+        executor = _executorFactory.BuildFor(messageType);
 
         _executors = _executors.AddOrUpdate(messageType, executor);
 

@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
+using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime;
 
@@ -29,13 +32,13 @@ public interface IJasperRuntime
     ILogger Logger { get; }
     AdvancedSettings Advanced { get; }
     CancellationToken Cancellation { get; }
+    ListenerTracker ListenerTracker { get; }
 
     ISendingAgent CreateSendingAgent(Uri? replyUri, ISender sender, Endpoint endpoint);
 
     ISendingAgent GetOrBuildSendingAgent(Uri address, Action<Endpoint>? configureNewEndpoint = null);
-    void AddListener(IListener listener, Endpoint endpoint);
 
-    IEnumerable<IListener> ActiveListeners();
+    IEnumerable<IListeningAgent> ActiveListeners();
 
     void AddSendingAgent(ISendingAgent sendingAgent);
 
@@ -48,6 +51,27 @@ public interface IJasperRuntime
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     T? TryFindExtension<T>() where T : class;
+
+    /// <summary>
+    /// Try to find a listening agent by Uri
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <returns></returns>
+    IListeningAgent? FindListeningAgent(Uri uri);
+
+    /// <summary>
+    /// Try to find a listening agent by endpoint name
+    /// </summary>
+    /// <param name="endpointName"></param>
+    /// <returns></returns>
+    IListeningAgent? FindListeningAgent(string endpointName);
+
+
+}
+
+internal interface IExecutorFactory
+{
+    IExecutor BuildFor(Type messageType);
 }
 
 // This was for testing

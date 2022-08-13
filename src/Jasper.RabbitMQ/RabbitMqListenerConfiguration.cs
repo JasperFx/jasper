@@ -1,5 +1,6 @@
 using System;
 using Jasper.Configuration;
+using Jasper.ErrorHandling;
 using Jasper.RabbitMQ.Internal;
 
 namespace Jasper.RabbitMQ
@@ -25,6 +26,19 @@ namespace Jasper.RabbitMQ
             }
 
             endpoint.ListenerCount = count;
+            return this;
+        }
+
+        /// <summary>
+        /// Add circuit breaker exception handling to this listener
+        /// </summary>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public RabbitMqListenerConfiguration CircuitBreaker(Action<CircuitBreakerOptions>? configure)
+        {
+            endpoint.CircuitBreakerOptions = new CircuitBreakerOptions();
+            configure?.Invoke(endpoint.CircuitBreakerOptions);
+
             return this;
         }
 

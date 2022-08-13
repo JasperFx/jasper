@@ -61,12 +61,6 @@ public class LocalTransport : ITransport
         foreach (var queue in _queues) addQueue(root, queue);
     }
 
-    void ITransport.StartListeners(IJasperRuntime root)
-    {
-        // Nothing
-    }
-
-
     public Endpoint GetOrCreateEndpoint(Uri uri)
     {
         return findByUri(uri);
@@ -99,15 +93,13 @@ public class LocalTransport : ITransport
         return queue.Agent;
     }
 
-    private ISendingAgent buildAgent(LocalQueueSettings queue, IJasperRuntime root)
+    private ISendingAgent buildAgent(LocalQueueSettings queue, IJasperRuntime runtime)
     {
         return queue.Mode switch
         {
-            EndpointMode.BufferedInMemory => new LightweightLocalSendingAgent(queue, root.Logger, root.Pipeline,
-                root.Advanced, root.MessageLogger),
+            EndpointMode.BufferedInMemory => new BufferedLocalQueue(queue, runtime),
 
-            EndpointMode.Durable => new DurableLocalSendingAgent(queue, root.Pipeline, root.Advanced,
-                root.Persistence, root.Logger, root.MessageLogger),
+            EndpointMode.Durable => new DurableLocalQueue(queue, runtime),
 
             EndpointMode.Inline => throw new NotSupportedException(),
             _ => throw new InvalidOperationException()

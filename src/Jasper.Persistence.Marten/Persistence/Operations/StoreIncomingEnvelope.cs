@@ -41,7 +41,8 @@ public class StoreIncomingEnvelope : IStorageOperation
             builder.AddParameter(Envelope.ContentType),
             builder.AddParameter(Envelope.ReplyRequested),
             builder.AddParameter(Envelope.AckRequested),
-            builder.AddParameter(Envelope.ReplyUri?.ToString())
+            builder.AddParameter(Envelope.ReplyUri?.ToString()),
+            builder.AddParameter(Envelope.Destination?.ToString())
         };
 
         // TODO -- this seems like a good thing to generalize and move to Weasel

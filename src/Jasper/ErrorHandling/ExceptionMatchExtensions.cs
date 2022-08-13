@@ -1,6 +1,8 @@
+using Jasper.ErrorHandling.Matches;
+
 namespace Jasper.ErrorHandling;
 
-public static class ExceptionMatchExtensions
+internal static class ExceptionMatchExtensions
 {
     public static string Formatted(this IExceptionMatch match)
     {

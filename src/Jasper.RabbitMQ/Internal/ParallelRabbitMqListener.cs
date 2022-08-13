@@ -14,12 +14,12 @@ namespace Jasper.RabbitMQ.Internal
         private readonly IList<RabbitMqListener> _listeners = new List<RabbitMqListener>();
 
         public ParallelRabbitMqListener(ILogger logger,
-            RabbitMqEndpoint endpoint, RabbitMqTransport transport)
+            RabbitMqEndpoint endpoint, RabbitMqTransport transport, IReceiver receiver)
         {
             Address = endpoint.Uri;
             for (var i = 0; i < endpoint.ListenerCount; i++)
             {
-                var listener = new RabbitMqListener(logger, endpoint, transport);
+                var listener = new RabbitMqListener(logger, endpoint, transport, receiver);
                 _listeners.Add(listener);
             }
         }
@@ -29,21 +29,21 @@ namespace Jasper.RabbitMQ.Internal
             foreach (var listener in _listeners) listener.SafeDispose();
         }
 
-        public Uri Address { get; }
-
-
-        public ListeningStatus Status
+        public ValueTask DisposeAsync()
         {
-            get => _listeners[0].Status;
-            set
-            {
-                foreach (var listener in _listeners) listener.Status = value;
-            }
+            Dispose();
+            return ValueTask.CompletedTask;
         }
 
-        public void Start(IListeningWorkerQueue callback, CancellationToken cancellation)
+        public Uri Address { get; }
+        public ValueTask StopAsync()
         {
-            foreach (var listener in _listeners) listener.Start(callback, cancellation);
+            foreach (var listener in _listeners)
+            {
+                listener.Stop();
+            }
+
+            return ValueTask.CompletedTask;
         }
 
         public Task<bool> TryRequeueAsync(Envelope envelope)

@@ -17,7 +17,7 @@ using LamarCodeGeneration.Model;
 
 namespace Jasper.Runtime.Handlers;
 
-public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IHasRetryPolicies, ICodeFile
+public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IWithFailurePolicies, ICodeFile
 {
     public const string HandlerSuffix = "Handler";
     public const string ConsumerSuffix = "Consumer";
@@ -132,7 +132,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IH
     /// <summary>
     ///     Configure the retry policies and error handling for this chain
     /// </summary>
-    public RetryPolicyCollection Retries { get; } = new();
+    public FailureRuleCollection Failures { get; } = new();
 
     public static HandlerChain For<T>(Expression<Action<T>> expression, HandlerGraph parent)
     {

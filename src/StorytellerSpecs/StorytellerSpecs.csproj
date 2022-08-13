@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
     <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
-    <ProjectReference Include="..\Jasper.Tcp\Jasper.Tcp.csproj" />
     <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
     <PackageReference Include="StoryTeller" Version="5.2.0" />
   </ItemGroup>
@@ -28,5 +27,8 @@
     <Compile Include="..\IntegrationTests\Servers.cs">
       <Link>Servers.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Fixtures\Durability" />
   </ItemGroup>
 </Project>

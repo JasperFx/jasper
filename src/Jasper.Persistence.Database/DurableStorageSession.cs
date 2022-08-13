@@ -122,12 +122,7 @@ public class DurableStorageSession : IDurableStorageSession
             throw new InvalidOperationException("Session has not been started yet");
         }
 
-        if (Transaction == null)
-        {
-            throw new InvalidOperationException("Transaction has not been started yet");
-        }
-
-        return _settings.TryGetGlobalLockAsync(Connection, lockId, Transaction, _cancellation);
+        return _settings.TryGetGlobalLockAsync(Connection, Transaction, lockId, _cancellation);
     }
 
     public Task ReleaseGlobalLockAsync(int lockId)

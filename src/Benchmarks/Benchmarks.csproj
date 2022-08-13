@@ -1,33 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
-        <Optimize>true</Optimize>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Optimize>true</Optimize>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
-      <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
-      <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
-      <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
+    <ProjectReference Include="..\Jasper.Persistence.SqlServer\Jasper.Persistence.SqlServer.csproj" />
+    <ProjectReference Include="..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
+    <ProjectReference Include="..\TestingSupport\TestingSupport.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-      <PackageReference Include="LamarCodeGeneration.Commands" Version="6.1.2" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Compile Include="..\IntegrationTests\Servers.cs">
-        <Link>Servers.cs</Link>
-      </Compile>
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\IntegrationTests\Servers.cs">
+      <Link>Servers.cs</Link>
+    </Compile>
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Update="targets.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="targets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

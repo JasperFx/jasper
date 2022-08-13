@@ -4,7 +4,7 @@ using Jasper.Transports;
 
 namespace Jasper.Runtime;
 
-internal class InvocationCallback : IChannelCallback, IHasNativeScheduling, IHasDeadLetterQueue
+internal class InvocationCallback : IChannelCallback, ISupportNativeScheduling, ISupportDeadLetterQueue
 {
     public static readonly InvocationCallback Instance = new();
 

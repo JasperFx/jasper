@@ -76,8 +76,8 @@ public abstract class DatabaseSettings
     public abstract Task GetGlobalLockAsync(DbConnection conn, int lockId, CancellationToken cancellation = default,
         DbTransaction? transaction = null);
 
-    public abstract Task<bool>
-        TryGetGlobalLockAsync(DbConnection conn, int lockId, CancellationToken cancellation = default);
+    public abstract Task<bool> TryGetGlobalLockAsync(DbConnection conn, DbTransaction? tx, int lockId,
+        CancellationToken cancellation = default);
 
     public abstract Task<bool> TryGetGlobalLockAsync(DbConnection conn, int lockId, DbTransaction tx,
         CancellationToken cancellation = default);

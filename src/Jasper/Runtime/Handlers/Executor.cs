@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
@@ -14,29 +12,38 @@ internal enum InvokeResult
     TryAgain
 }
 
-internal class Executor
+internal interface IExecutor
 {
-    private readonly MessageHandler _handler;
-    private readonly TimeSpan _timeout;
-    private readonly IReadOnlyList<ExceptionRule> _rules;
+    Task<IContinuation> ExecuteAsync(IExecutionContext context, CancellationToken cancellation);
+    Task<InvokeResult> InvokeAsync(IExecutionContext context, CancellationToken cancellation);
+}
+
+internal class Executor : IExecutor
+{
+    private readonly IMessageHandler _handler;
     private readonly IMessageLogger _logger;
+    private readonly FailureRuleCollection _rules;
+    private readonly TimeSpan _timeout;
 
-    public static Executor? Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
-    {
-        var handler = handlerGraph.HandlerFor(messageType);
-        if (handler == null) return null; // TODO: later let's have it return an executor that calls missing handlers
-
-        var timeoutSpan = handler.Chain!.DetermineMessageTimeout(runtime.Options);
-        var rules = handler.Chain.Retries.CombineRules(handlerGraph.Retries);
-        return new Executor(runtime, handler, rules, timeoutSpan);
-    }
-
-    public Executor(IJasperRuntime runtime, MessageHandler handler, IEnumerable<ExceptionRule> rules, TimeSpan timeout)
+    public Executor(IJasperRuntime runtime, IMessageHandler handler, FailureRuleCollection rules, TimeSpan timeout)
     {
         _handler = handler;
         _timeout = timeout;
-        _rules = rules.ToArray();
+        _rules = rules;
         _logger = runtime.MessageLogger;
+    }
+
+    public Executor(IMessageHandler handler, IMessageLogger logger, FailureRuleCollection rules, TimeSpan timeout)
+    {
+        _handler = handler;
+        _logger = logger;
+        _rules = rules;
+        _timeout = timeout;
+    }
+
+    internal Executor WrapWithMessageTracking(IMessageSuccessTracker tracker)
+    {
+        return new Executor(new CircuitBreakerWrappedMessageHandler(_handler, tracker), _logger, _rules, _timeout);
     }
 
     public async Task<IContinuation> ExecuteAsync(IExecutionContext context, CancellationToken cancellation)
@@ -57,14 +64,18 @@ internal class Executor
             _logger
                 .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
 
-            var match = _rules.FirstOrDefault(x => x.Filter(e));
-
-            return match?.Action(context.Envelope, e) ?? new MoveToErrorQueue(e);
+            return _rules.DetermineExecutionContinuation(e, context.Envelope);
         }
     }
 
+
     public async Task<InvokeResult> InvokeAsync(IExecutionContext context, CancellationToken cancellation)
     {
+        if (context.Envelope == null)
+        {
+            throw new ArgumentOutOfRangeException(nameof(context.Envelope));
+        }
+
         try
         {
             await _handler.HandleAsync(context, cancellation);
@@ -73,23 +84,32 @@ internal class Executor
         catch (Exception e)
         {
             _logger.LogException(e, message: $"Invocation of {context.Envelope} failed!");
-            _logger
-                .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
 
-            var match = _rules.FirstOrDefault(x => x.Filter(e));
-            if (match == null) throw;
-
-            if (match.Action(context.Envelope, e) is RetryNowContinuation retry)
+            var retry = _rules.TryFindInlineContinuation(e, context.Envelope);
+            if (retry == null)
             {
-                if (retry.Delay.HasValue)
-                {
-                    await Task.Delay(retry.Delay.Value, cancellation).ConfigureAwait(false);
-                }
-
-                return InvokeResult.TryAgain;
+                throw;
             }
 
-            throw;
+            if (retry.Delay.HasValue)
+            {
+                await Task.Delay(retry.Delay.Value, cancellation).ConfigureAwait(false);
+            }
+
+            return InvokeResult.TryAgain;
         }
+    }
+
+    public static Executor? Build(IJasperRuntime runtime, HandlerGraph handlerGraph, Type messageType)
+    {
+        var handler = handlerGraph.HandlerFor(messageType);
+        if (handler == null)
+        {
+            return null; // TODO: later let's have it return an executor that calls missing handlers
+        }
+
+        var timeoutSpan = handler.Chain!.DetermineMessageTimeout(runtime.Options);
+        var rules = handler.Chain.Failures.CombineRules(handlerGraph.Failures);
+        return new Executor(runtime, handler, rules, timeoutSpan);
     }
 }

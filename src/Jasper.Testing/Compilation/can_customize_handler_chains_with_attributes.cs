@@ -39,7 +39,7 @@ namespace Jasper.Testing.Compilation
             forMessage<ErrorHandledMessage>(chain =>
             {
                 chain.SourceCode.ShouldContain("// fake frame here");
-                chain.Retries.MaximumAttempts.ShouldBe(5);
+                chain.Failures.MaximumAttempts.ShouldBe(5);
             });
         }
 

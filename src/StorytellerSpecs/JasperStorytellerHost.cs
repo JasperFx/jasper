@@ -1,54 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Baseline;
-using Jasper.Logging;
-using Jasper.Tracking;
+﻿using Jasper.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StoryTeller;
-using StoryTeller.Engine;
-using StorytellerSpecs.Logging;
 
-namespace Jasper.TestSupport.Storyteller
+namespace Jasper.TestSupport.Storyteller;
+
+public static class JasperStorytellerHost
 {
-    public static class JasperStorytellerHost
-    {
+}
 
+public interface INodes
+{
+    ExternalNode NodeFor(string serviceName);
+}
+
+public interface IJasperContext
+{
+    ExternalNode NodeFor(string nodeName);
+}
+
+public class ExternalNode
+{
+    private readonly JasperOptions _options;
+
+    public ExternalNode(JasperOptions options)
+    {
+        _options = options;
     }
 
-    public interface INodes
+    public IHost Host { get; private set; }
+
+    internal void Bootstrap(IMessageLogger logger)
     {
-        ExternalNode NodeFor(string serviceName);
+        _options.Services.AddSingleton(logger);
+        Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_options).Start();
     }
 
-
-    public interface IJasperContext
+    internal void Teardown()
     {
-        ExternalNode NodeFor(string nodeName);
-    }
-
-    public class ExternalNode
-    {
-        private readonly JasperOptions _options;
-
-        public ExternalNode(JasperOptions options)
-        {
-            _options = options;
-        }
-
-        public IHost Host { get; private set; }
-
-        internal void Bootstrap(IMessageLogger logger)
-        {
-            _options.Services.AddSingleton(logger);
-            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().UseJasper(_options).Start();
-        }
-
-        internal void Teardown()
-        {
-            Host?.Dispose();
-        }
+        Host?.Dispose();
     }
 }

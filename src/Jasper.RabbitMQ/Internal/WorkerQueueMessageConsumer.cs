@@ -13,11 +13,11 @@ namespace Jasper.RabbitMQ.Internal
         private readonly CancellationToken _cancellation;
         private readonly RabbitMqEndpoint _endpoint;
         private readonly ILogger _logger;
-        private readonly IListeningWorkerQueue _workerQueue;
+        private readonly IReceiver _workerQueue;
         private readonly RabbitMqListener _listener;
         private bool _latched;
 
-        public WorkerQueueMessageConsumer(IListeningWorkerQueue workerQueue, ILogger logger,
+        public WorkerQueueMessageConsumer(IReceiver workerQueue, ILogger logger,
             RabbitMqListener listener,
             RabbitMqEndpoint endpoint, Uri address, CancellationToken cancellation)
         {
@@ -65,7 +65,7 @@ namespace Jasper.RabbitMQ.Internal
             }
 
 #pragma warning disable VSTHRD110
-            _workerQueue.ReceivedAsync(_address, envelope).AsTask().ContinueWith(t =>
+            _workerQueue.ReceivedAsync(_listener, envelope).AsTask().ContinueWith(t =>
 #pragma warning restore VSTHRD110
             {
                 if (t.IsFaulted)

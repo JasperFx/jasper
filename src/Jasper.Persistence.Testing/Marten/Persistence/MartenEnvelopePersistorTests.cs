@@ -47,7 +47,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 x.DatabaseSchemaName = "receiver";
             }).IntegrateWithJasper();
 
-            opts.ListenAtPort(2345).UseInbox();
+            opts.ListenAtPort(2345).UsePersistentInbox();
         });
 
         [Fact]

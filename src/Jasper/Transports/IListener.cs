@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jasper.Transports;
 
-public interface IListener : IChannelCallback
+public interface IListener : IChannelCallback, IAsyncDisposable
 {
     Uri Address { get; }
-    ListeningStatus Status { get; set; }
-    void Start(IListeningWorkerQueue callback, CancellationToken cancellation);
 
-    Task<bool> TryRequeueAsync(Envelope envelope);
+    /// <summary>
+    /// Stop the receiving of any new messages, but leave any connection
+    /// open for possible calls to Defer/Complete
+    /// </summary>
+    /// <returns></returns>
+    ValueTask StopAsync();
 }

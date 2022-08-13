@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Baseline;
 using Baseline.ImTools;
 using Jasper.Configuration;
 using Jasper.Persistence.Durability;
-using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Jasper.Transports.Local;
 using Jasper.Transports.Sending;
@@ -16,7 +16,6 @@ namespace Jasper.Runtime;
 public partial class JasperRuntime
 {
     private readonly object _channelLock = new();
-    private readonly IList<object> _disposables = new List<object>();
 
     private ImHashMap<string, ISendingAgent> _localSenders = ImHashMap<string, ISendingAgent>.Empty;
 
@@ -48,9 +47,9 @@ public partial class JasperRuntime
         }
     }
 
-    public IEnumerable<IListener> ActiveListeners()
+    public IEnumerable<IListeningAgent> ActiveListeners()
     {
-        return _listeners;
+        return _listeners.Values;
     }
 
     public void AddSendingAgent(ISendingAgent sendingAgent)
@@ -78,32 +77,7 @@ public partial class JasperRuntime
         }
     }
 
-    private readonly List<IListener> _listeners = new List<IListener>();
-
-    public void AddListener(IListener listener, Endpoint endpoint)
-    {
-        object? worker = endpoint.Mode switch
-        {
-            EndpointMode.Durable => new DurableWorkerQueue(endpoint, Pipeline, Advanced,
-                Persistence, Logger),
-
-            EndpointMode.BufferedInMemory => new LightweightWorkerQueue(endpoint, Logger, Pipeline,
-                Advanced),
-
-            EndpointMode.Inline => new InlineWorkerQueue(Pipeline, Logger, listener, Advanced),
-
-            _ => null
-        };
-
-        if (worker is IWorkerQueue q)
-        {
-            q.StartListening(listener);
-        }
-
-        _listeners.Add(listener);
-
-        _disposables.Add(worker!);
-    }
+    private readonly Dictionary<Uri, ListeningAgent> _listeners = new();
 
     public Endpoint? EndpointFor(Uri uri)
     {
@@ -125,7 +99,7 @@ public partial class JasperRuntime
                     Persistence, endpoint);
 
             case EndpointMode.BufferedInMemory:
-                return new LightweightSendingAgent(Logger, MessageLogger, sender, Advanced, endpoint);
+                return new BufferedSendingAgent(Logger, MessageLogger, sender, Advanced, endpoint);
 
             case EndpointMode.Inline:
                 return new InlineSendingAgent(sender, endpoint, MessageLogger, Advanced);
@@ -177,5 +151,20 @@ public partial class JasperRuntime
     public Endpoint? EndpointByName(string endpointName)
     {
         return Options.AllEndpoints().FirstOrDefault(x => x.Name == endpointName);
+    }
+
+    public IListeningAgent? FindListeningAgent(Uri uri)
+    {
+        if (_listeners.TryGetValue(uri, out var agent))
+        {
+            return agent;
+        }
+
+        return null;
+    }
+
+    public IListeningAgent? FindListeningAgent(string endpointName)
+    {
+        return _listeners.Values.FirstOrDefault(x => x.Endpoint.Name.EqualsIgnoreCase(endpointName));
     }
 }

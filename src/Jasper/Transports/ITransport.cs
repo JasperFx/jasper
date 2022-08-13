@@ -22,7 +22,6 @@ public interface ITransport
     Endpoint ListenTo(Uri uri);
 
     void StartSenders(IJasperRuntime root);
-    void StartListeners(IJasperRuntime root);
 
     Endpoint GetOrCreateEndpoint(Uri uri);
     Endpoint? TryGetEndpoint(Uri uri);

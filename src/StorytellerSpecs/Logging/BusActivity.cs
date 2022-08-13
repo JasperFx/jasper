@@ -2,24 +2,23 @@
 using StoryTeller.Results;
 using StoryTeller.Util;
 
-namespace StorytellerSpecs.Logging
+namespace StorytellerSpecs.Logging;
+
+public class BusActivity : Report
 {
-    public class BusActivity : Report
+    public readonly IList<string> Messages = new List<string>();
+
+    public string ToHtml()
     {
-        public readonly IList<string> Messages = new List<string>();
+        var ul = new HtmlTag("ul");
 
-        public string ToHtml()
-        {
-            var ul = new HtmlTag("ul");
-
-            foreach (var message in Messages) ul.Add("li").Text(message);
+        foreach (var message in Messages) ul.Add("li").Text(message);
 
 
-            return ul.ToString();
-        }
-
-        public string Title { get; } = "Bus Activity";
-        public string ShortTitle { get; } = "Bus Activity";
-        public int Count => Messages.Count;
+        return ul.ToString();
     }
+
+    public string Title { get; } = "Bus Activity";
+    public string ShortTitle { get; } = "Bus Activity";
+    public int Count => Messages.Count;
 }

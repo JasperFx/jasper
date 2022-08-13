@@ -64,9 +64,10 @@ public partial class Envelope
 
     internal ISendingAgent? Sender { get; set; }
 
-    internal void MarkReceived(Uri uri, DateTimeOffset now, int currentNodeId)
+    internal void MarkReceived(IListener listener, DateTimeOffset now, AdvancedSettings settings)
     {
-        Destination = uri;
+        Listener = listener;
+        Destination = listener.Address;
         if (IsScheduledForLater(now))
         {
             Status = EnvelopeStatus.Scheduled;
@@ -75,9 +76,11 @@ public partial class Envelope
         else
         {
             Status = EnvelopeStatus.Incoming;
-            OwnerId = currentNodeId;
+            OwnerId = settings.UniqueNodeId;
         }
     }
+
+    public IListener? Listener { get; private set; }
 
     /// <summary>
     ///     Create a new Envelope that is a response to the current

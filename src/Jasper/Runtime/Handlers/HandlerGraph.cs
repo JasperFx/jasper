@@ -48,7 +48,7 @@ public partial class HandlerGraph : ICodeFileCollection, IHandlerConfiguration
 
     public HandlerChain[] Chains => _chains.Enumerate().Select(x => x.Value).ToArray();
 
-    public RetryPolicyCollection Retries { get; set; } = new();
+    public FailureRuleCollection Failures { get; set; } = new();
 
 
     public IHandlerConfiguration Discovery(Action<HandlerSource> configure)
