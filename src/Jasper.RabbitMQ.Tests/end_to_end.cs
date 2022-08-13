@@ -47,7 +47,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.PublishAllMessages()
                     .ToRabbitQueue(queueName)
-                    .UseDurableOutbox();
+                    .UsePersistentOutbox();
 
                 opts.Services.AddMarten(x =>
                 {
@@ -74,7 +74,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.PublishAllMessages()
                     .ToRabbitQueue(queueName)
-                    .UseDurableOutbox();
+                    .UsePersistentOutbox();
 
                 opts.Services.AddMarten(x =>
                 {
@@ -135,7 +135,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.PublishAllMessages()
                     .ToRabbitQueue(queueName1)
-                    .UseDurableOutbox();
+                    .UsePersistentOutbox();
 
                 opts.ListenToRabbitQueue(queueName2).UseForReplies();
 
@@ -239,7 +239,7 @@ namespace Jasper.RabbitMQ.Tests
 
                 opts.UseRabbitMq().AutoProvision().AutoPurgeOnStartup();
 
-                opts.PublishAllMessages().ToRabbitQueue(queueName).UseDurableOutbox();
+                opts.PublishAllMessages().ToRabbitQueue(queueName).UsePersistentOutbox();
 
                 opts.Services.AddMarten(x =>
                 {

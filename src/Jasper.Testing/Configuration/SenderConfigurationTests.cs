@@ -18,7 +18,7 @@ namespace Jasper.Testing.Configuration
             endpoint.Mode.ShouldBe(EndpointMode.BufferedInMemory);
 
             var expression = new SubscriberConfiguration(endpoint);
-            expression.UseDurableOutbox();
+            expression.UsePersistentOutbox();
 
             endpoint.Mode.ShouldBe(EndpointMode.Durable);
         }

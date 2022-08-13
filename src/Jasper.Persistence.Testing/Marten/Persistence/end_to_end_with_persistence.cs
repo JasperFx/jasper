@@ -33,7 +33,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
                 {
                     x.Message<ItemCreated>();
                     x.Message<Question>();
-                    x.ToPort(2345).UseDurableOutbox();
+                    x.ToPort(2345).UsePersistentOutbox();
                 });
 
                 opts.Services.AddMarten(x =>
@@ -49,7 +49,7 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             {
                 opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, "receiver");
 
-                opts.ListenAtPort(2345).UseInbox();
+                opts.ListenAtPort(2345).UsePersistentInbox();
 
                 opts.Services.AddMarten(x =>
                 {

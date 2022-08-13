@@ -83,7 +83,7 @@ namespace DocumentationSamples
 
                         // This applies the store and forward persistence
                         // to the outgoing message
-                        .UseDurableOutbox();
+                        .UsePersistentOutbox();
 
                     // Set up a listener (this is optional)
                     opts.ListenAtPort(2200)
@@ -93,7 +93,7 @@ namespace DocumentationSamples
                         // messages are first saved to the application
                         // database before attempting to handle the
                         // incoming message
-                        .UseInbox();
+                        .UsePersistentInbox();
                 }).StartAsync();
 
             #endregion
@@ -127,11 +127,11 @@ namespace DocumentationSamples
                 .UseJasper(opts =>
                 {
                     // Make the default local queue durable
-                    opts.DefaultLocalQueue.UseInbox();
+                    opts.DefaultLocalQueue.UsePersistentInbox();
 
                     // Or do just this by name
                     opts.LocalQueue("important")
-                        .UseInbox();
+                        .UsePersistentInbox();
                 }).StartAsync();
 
             #endregion
