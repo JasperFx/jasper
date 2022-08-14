@@ -25,7 +25,7 @@ namespace Jasper;
 /// <summary>
 ///     Completely defines and configures a Jasper application
 /// </summary>
-public partial class JasperOptions
+public sealed partial class JasperOptions
 {
     /// <summary>
     /// You may use this to "help" Jasper in testing scenarios to force
