@@ -188,7 +188,7 @@ public static class PingHandler
         // The first argument is assumed to be the message type
         PingMessage message,
 
-        // Jasper supports method injection similar to ASP.NET Core MVC
+        // Jasper supports method injection similar to ASP.Net Core MVC
         // In this case though, IMessageContext is scoped to the message
         // being handled
         IExecutionContext context)

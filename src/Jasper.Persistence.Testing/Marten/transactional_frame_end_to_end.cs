@@ -62,7 +62,6 @@ namespace Jasper.Persistence.Testing.Marten
     }
 
 
-    #region sample_CreateDocCommandHandler
     public class CreateDocCommandHandler
     {
         [Transactional]
@@ -71,9 +70,7 @@ namespace Jasper.Persistence.Testing.Marten
             session.Store(new FakeDoc {Id = message.Id});
         }
     }
-    #endregion
 
-    #region sample_UsingDocumentSessionHandler
     public class UsingDocumentSessionHandler
     {
         // Take in IDocumentStore as a constructor argument
@@ -86,7 +83,6 @@ namespace Jasper.Persistence.Testing.Marten
         {
         }
     }
-    #endregion
 
     #region sample_CommandsAreTransactional
     public class CommandsAreTransactional : IHandlerPolicy

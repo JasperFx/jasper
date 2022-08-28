@@ -31,15 +31,19 @@ code generation with Roslyn](https://jeremydmiller.com/2015/11/11/using-roslyn-f
 <!-- snippet: sample_MessageHandler -->
 <a id='snippet-sample_messagehandler'></a>
 ```cs
-public abstract class MessageHandler
+public interface IMessageHandler
+{
+    Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
+}
+
+public abstract class MessageHandler : IMessageHandler
 {
     public HandlerChain? Chain { get; set; }
 
-    // This method actually processes the incoming Envelope
     public abstract Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper/Runtime/Handlers/MessageHandler.cs#L6-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_messagehandler' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper/Runtime/Handlers/MessageHandler.cs#L6-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_messagehandler' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 See <[linkto:documentation/execution/handlers]> for information on how Jasper generates the `MessageHandler` code
@@ -242,7 +246,7 @@ public static class PingHandler
         // The first argument is assumed to be the message type
         PingMessage message,
 
-        // Jasper supports method injection similar to ASP.NET Core MVC
+        // Jasper supports method injection similar to ASP.Net Core MVC
         // In this case though, IMessageContext is scoped to the message
         // being handled
         IExecutionContext context)
