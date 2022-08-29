@@ -67,8 +67,6 @@ public class MartenCommandWorkflowAttribute : ModifyChainAttribute
             chain.Middleware.Add(new MissingAggregateCheckFrame(AggregateType, CommandType, AggregateIdMember, loader.ReturnVariable));
         }
 
-
-
         // Use the active document session as an IQuerySession instead of creating a new one
         firstCall.TrySetArgument(new Variable(typeof(IQuerySession), sessionCreator.ReturnVariable.Usage));
 

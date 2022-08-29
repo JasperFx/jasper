@@ -10,4 +10,8 @@
       <ProjectReference Include="..\..\Jasper.Persistence.Marten\Jasper.Persistence.Marten.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="LamarCodeGeneration.Commands" Version="6.1.6" />
+    </ItemGroup>
+
 </Project>

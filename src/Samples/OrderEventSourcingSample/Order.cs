@@ -67,6 +67,7 @@ public class Order
 
 #region sample_MarkItemReady
 
+// OrderId refers to the identity of the Order aggregate
 public record MarkItemReady(Guid OrderId, string ItemName, int Version);
 
 #endregion
@@ -252,6 +253,8 @@ public class ShipOrderHandler
 
 public static class MarkItemReadyHandler
 {
+    #region sample_MarkItemReadyHandler
+
     [MartenCommandWorkflow]
     public static IEnumerable<object> Handle(MarkItemReady command, Order order)
     {
@@ -276,5 +279,7 @@ public static class MarkItemReadyHandler
             yield return new OrderReady();
         }
     }
+
+    #endregion
 }
 

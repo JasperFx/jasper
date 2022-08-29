@@ -14,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ApplyOaktonExtensions();
 
-// Add services to the container.
+#region sample_configuring_jasper_event_subscriptions
+
 builder.Host.UseJasper(opts =>
 {
     // I'm choosing to process any ChartingFinished event messages
@@ -33,34 +34,38 @@ builder.Host.UseJasper(opts =>
         .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
 });
 
+#endregion
+
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+#region sample_opting_into_jasper_event_publishing
+
 builder.Services.AddMarten(opts =>
-{
-    var connString = builder
-        .Configuration
-        .GetConnectionString("marten");
+    {
+        var connString = builder
+            .Configuration
+            .GetConnectionString("marten");
 
-    opts.Connection(connString);
+        opts.Connection(connString);
 
-    // There will be more here later...
+        // There will be more here later...
 
-    opts.Projections
-        .Add<AppointmentDurationProjection>(ProjectionLifecycle.Async);
+        opts.Projections
+            .Add<AppointmentDurationProjection>(ProjectionLifecycle.Async);
 
-    // OR ???
+        // OR ???
 
-    opts.Projections
-        .Add<AppointmentDurationProjection>(ProjectionLifecycle.Inline);
+        opts.Projections
+            .Add<AppointmentDurationProjection>(ProjectionLifecycle.Inline);
 
-    opts.Projections.Add<AppointmentProjection>(ProjectionLifecycle.Inline);
-    opts.Projections
-        .SelfAggregate<ProviderShift>(ProjectionLifecycle.Async);
-})
+        opts.Projections.Add<AppointmentProjection>(ProjectionLifecycle.Inline);
+        opts.Projections
+            .SelfAggregate<ProviderShift>(ProjectionLifecycle.Async);
+    })
 
     // This adds a hosted service to run
     // asynchronous projections in a background process
@@ -72,6 +77,8 @@ builder.Services.AddMarten(opts =>
     // I also added this to opt into events being forward to
     // the Jasper outbox during SaveChangesAsync()
     .EventForwardingToJasper();
+
+#endregion
 
 var app = builder.Build();
 
