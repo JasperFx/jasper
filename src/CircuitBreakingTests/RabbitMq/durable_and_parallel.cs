@@ -34,6 +34,6 @@ public class durable_and_parallel : CircuitBreakerIntegrationContext
             cb.PauseTime = 10.Seconds();
             cb.TrackingPeriod = 1.Minutes();
             cb.FailurePercentageThreshold = 20;
-        }).UsePersistentInbox().MaximumParallelMessages(5);
+        }).UseDurableInbox().MaximumParallelMessages(5);
     }
 }

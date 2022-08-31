@@ -68,7 +68,7 @@ public class sqlserver_durability_end_to_end : IAsyncLifetime
 
                     opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, ReceiverSchemaName);
 
-                    opts.ListenForMessagesFrom(_listener).UsePersistentInbox();
+                    opts.ListenForMessagesFrom(_listener).UseDurableInbox();
                 })
                 .Start();
         });
@@ -81,7 +81,7 @@ public class sqlserver_durability_end_to_end : IAsyncLifetime
                     opts.Handlers.DisableConventionalDiscovery();
 
                     opts.Publish(x => x.Message<TraceMessage>().To(_listener)
-                        .UsePersistentOutbox());
+                        .UseDurableOutbox());
 
                     opts.PersistMessagesWithSqlServer(Servers.SqlServerConnectionString, SenderSchemaName);
 

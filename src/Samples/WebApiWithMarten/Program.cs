@@ -35,7 +35,7 @@ builder.Host.UseJasper(opts =>
     // behavior to the "important"
     // local queue
     opts.LocalQueue("important")
-        .UsePersistentInbox();
+        .UseDurableInbox();
 });
 
 #endregion

@@ -44,14 +44,14 @@ builder.Host.UseJasper(opts =>
     // behavior to the "important"
     // local queue
     opts.LocalQueue("important")
-        .UsePersistentInbox();
+        .UseDurableInbox();
 });
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/WebApiWithMarten/Program.cs#L9-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_integrating_jasper_with_marten' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 TODO -- link to the outbox page
-TODO -- link to the sample code project
+TODO -- link to the sample code project~~~~
 
 Using the `IntegrateWithJasper()` extension method behind your call to `AddMarten()` will:
 
@@ -356,7 +356,7 @@ builder.Host.UseJasper(opts =>
     // behavior to the "important"
     // local queue
     opts.LocalQueue("important")
-        .UsePersistentInbox();
+        .UseDurableInbox();
 });
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/WebApiWithMarten/Program.cs#L9-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_integrating_jasper_with_marten' title='Start of snippet'>anchor</a></sup>

@@ -25,6 +25,13 @@ public interface IListenerConfiguration<T>
     ///     Force any messages enqueued to this worker queue to be durable
     /// </summary>
     /// <returns></returns>
+    T UseDurableInbox();
+
+    /// <summary>
+    ///     Force any messages enqueued to this worker queue to be durable
+    /// </summary>
+    /// <returns></returns>
+    [Obsolete("Switch to UseDurableInbox()")]
     T UsePersistentInbox();
 
     /// <summary>

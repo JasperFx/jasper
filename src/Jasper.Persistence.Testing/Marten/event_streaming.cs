@@ -36,7 +36,7 @@ public class event_streaming : PostgresqlContext, IAsyncLifetime
         theSender = await Host.CreateDefaultBuilder()
             .UseJasper(opts =>
             {
-                opts.PublishAllMessages().ToPort(receiverPort).UsePersistentOutbox();
+                opts.PublishAllMessages().ToPort(receiverPort).UseDurableOutbox();
                 opts.Handlers.DisableConventionalDiscovery().IncludeType<TriggerHandler>();
             })
             .ConfigureServices(services =>

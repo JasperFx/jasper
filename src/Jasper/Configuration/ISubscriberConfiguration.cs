@@ -8,9 +8,17 @@ public interface ISubscriberConfiguration<T> where T : ISubscriberConfiguration<
 {
     /// <summary>
     /// Force any messages enqueued to this worker queue to be durable by enrolling
-    /// outgoing messages in the active, persistent envelope outbox
+    /// outgoing messages in the active, durable envelope outbox
     /// </summary>
     /// <returns></returns>
+    T UseDurableOutbox();
+
+    /// <summary>
+    /// Force any messages enqueued to this worker queue to be durable by enrolling
+    /// outgoing messages in the active, durable envelope outbox
+    /// </summary>
+    /// <returns></returns>
+    [Obsolete("Switch to UseDurableOutbox(). Will be removed in Jasper 2.0")]
     T UsePersistentOutbox();
 
     /// <summary>

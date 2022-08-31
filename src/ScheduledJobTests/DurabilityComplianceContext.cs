@@ -52,11 +52,11 @@ public abstract class DurabilityComplianceContext<TTriggerHandler, TItemCreatedH
             x.Message<Question>();
             x.Message<ScheduledMessage>();
 
-            x.ToPort(receiverPort).UsePersistentOutbox();
+            x.ToPort(receiverPort).UseDurableOutbox();
         });
 
 
-        senderRegistry.ListenAtPort(senderPort).UsePersistentInbox();
+        senderRegistry.ListenAtPort(senderPort).UseDurableInbox();
 
         configureSender(senderRegistry);
 
@@ -71,7 +71,7 @@ public abstract class DurabilityComplianceContext<TTriggerHandler, TItemCreatedH
             .IncludeType<QuestionHandler>()
             .IncludeType<ScheduledMessageHandler>();
 
-        receiverRegistry.ListenAtPort(receiverPort).UsePersistentInbox();
+        receiverRegistry.ListenAtPort(receiverPort).UseDurableInbox();
 
         configureReceiver(receiverRegistry);
 

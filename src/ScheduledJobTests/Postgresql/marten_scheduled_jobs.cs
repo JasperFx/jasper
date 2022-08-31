@@ -27,7 +27,7 @@ public class marten_scheduled_jobs : IAsyncLifetime
                 opts.Services.AddSingleton(theReceiver);
 
                 opts.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageReceiver>()
-                    .ToLocalQueue("incoming").UsePersistentInbox());
+                    .ToLocalQueue("incoming").UseDurableInbox());
 
                 opts.Handlers.Discovery(x =>
                 {

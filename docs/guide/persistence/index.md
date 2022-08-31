@@ -1,1 +1,1 @@
-# Persistent Inbox and Outbox Messaging
+# Durable Inbox and Outbox Messaging

@@ -38,10 +38,15 @@ public class ListenerConfiguration<TSelf, TEndpoint> : IListenerConfiguration<TS
         return this.As<TSelf>();
     }
 
-    public TSelf UsePersistentInbox()
+    public TSelf UseDurableInbox()
     {
         endpoint.Mode = EndpointMode.Durable;
         return this.As<TSelf>();
+    }
+
+    public TSelf UsePersistentInbox()
+    {
+        return UseDurableInbox();
     }
 
     public TSelf BufferedInMemory()

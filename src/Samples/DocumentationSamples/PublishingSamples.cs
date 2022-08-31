@@ -41,7 +41,7 @@ namespace DocumentationSamples
                             // And finally, this enrolls a queue into the persistent inbox
                             // so that messages can happily be retained and processed
                             // after the service is restarted
-                            opts.LocalQueue("four").UsePersistentInbox();
+                            opts.LocalQueue("four").UseDurableInbox();
                         }).StartAsync();
 
                     #endregion

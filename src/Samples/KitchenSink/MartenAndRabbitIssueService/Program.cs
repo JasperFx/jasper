@@ -18,9 +18,9 @@ builder.Host.UseJasper(opts =>
     // just to see things work
     opts.PublishAllMessages()
         .ToRabbitExchange("issue_events", exchange => exchange.BindQueue("issue_events"))
-        .UsePersistentOutbox();
+        .UseDurableOutbox();
 
-    opts.ListenToRabbitQueue("issue_events").UsePersistentInbox();
+    opts.ListenToRabbitQueue("issue_events").UseDurableInbox();
 
     opts.UseRabbitMq(factory =>
     {

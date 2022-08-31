@@ -86,7 +86,7 @@ public class marten_durability_end_to_end : IAsyncLifetime
                         m.DatabaseSchemaName = ReceiverSchemaName;
                     }).IntegrateWithJasper();
 
-                    opts.ListenForMessagesFrom(_listener).UsePersistentInbox();
+                    opts.ListenForMessagesFrom(_listener).UseDurableInbox();
                 })
                 .Start();
         });
@@ -99,7 +99,7 @@ public class marten_durability_end_to_end : IAsyncLifetime
                     opts.Handlers.DisableConventionalDiscovery();
 
                     opts.Publish(x => x.Message<TraceMessage>().To(_listener)
-                        .UsePersistentOutbox());
+                        .UseDurableOutbox());
 
                     opts.Services.AddMarten(m =>
                     {
