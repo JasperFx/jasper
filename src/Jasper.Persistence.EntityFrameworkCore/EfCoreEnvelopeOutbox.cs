@@ -84,4 +84,12 @@ public class EfCoreEnvelopeOutbox : IEnvelopeOutbox
     {
         throw new NotSupportedException();
     }
+
+    public async ValueTask RollbackAsync()
+    {
+        if (_db.Database.CurrentTransaction != null)
+        {
+            await _db.Database.CurrentTransaction.RollbackAsync();
+        }
+    }
 }

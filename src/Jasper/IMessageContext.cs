@@ -31,9 +31,9 @@ public interface IMessageContext : IMessagePublisher
     IMessageLogger Logger { get; }
 
     /// <summary>
-    ///     Current outbox transaction
+    /// Current envelope outbox
     /// </summary>
-    IEnvelopeOutbox? Transaction { get; }
+    IEnvelopeOutbox? Outbox { get; }
 
     /// <summary>
     ///     If a messaging context is enlisted in a transaction, calling this

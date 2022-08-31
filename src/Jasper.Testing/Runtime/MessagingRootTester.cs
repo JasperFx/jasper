@@ -20,9 +20,9 @@ namespace Jasper.Testing.Runtime
             var context = (IMessageContext)context1;
 
             context.Envelope.ShouldBe(original);
-            context.Transaction.ShouldNotBeNull();
+            context.Outbox.ShouldNotBeNull();
 
-            context.As<MessageContext>().Transaction.ShouldBeSameAs(context);
+            context.As<MessageContext>().Outbox.ShouldBeSameAs(context);
         }
     }
 }

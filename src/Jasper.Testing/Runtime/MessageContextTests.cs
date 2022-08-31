@@ -2,13 +2,18 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
+using Baseline.Dates;
+using Jasper.Persistence.Durability;
 using Jasper.Runtime;
 using Jasper.Testing.Messaging;
+using Jasper.Tracking;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
+using Jasper.Transports.Tcp;
 using Jasper.Util;
 using NSubstitute;
 using Shouldly;
+using TestingSupport;
 using TestMessages;
 using Xunit;
 
@@ -34,6 +39,33 @@ namespace Jasper.Testing.Runtime
 
             theEnvelope = ObjectMother.Envelope();
 
+        }
+
+        [Fact]
+        public async Task clear_all_cleans_out_outstanding_messages()
+        {
+            using var host = JasperHost.For(opts =>
+            {
+                opts.PublishAllMessages().ToPort(PortFinder.GetAvailablePort());
+            });
+
+            var context = new MessageContext(host.GetRuntime());
+
+            context.ReadEnvelope(theEnvelope, Substitute.For<IChannelCallback>());
+
+            var outbox = Substitute.For<IEnvelopeOutbox>();
+            await context.EnlistInOutboxAsync(outbox);
+
+            await context.PublishAsync(new Message1());
+            await context.ScheduleAsync(new Message2(), 1.Hours());
+
+            context.Outstanding.Any().ShouldBeTrue();
+
+            await context.ClearAllAsync();
+
+            context.Outstanding.Any().ShouldBeFalse();
+
+            await outbox.Received().RollbackAsync();
         }
 
         [Fact]

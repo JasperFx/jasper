@@ -52,4 +52,9 @@ public class MartenEnvelopeOutbox : IEnvelopeOutbox
     {
         throw new NotSupportedException();
     }
+
+    public ValueTask RollbackAsync()
+    {
+        return ValueTask.CompletedTask;
+    }
 }

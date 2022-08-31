@@ -15,7 +15,7 @@ public static class MessageContextExtensions
     /// <returns></returns>
     public static Task EnlistInOutboxAsync(this IMessageContext context, IDocumentSession session)
     {
-        if (context.Transaction is MartenEnvelopeOutbox)
+        if (context.Outbox is MartenEnvelopeOutbox)
         {
             throw new InvalidOperationException(
                 "This execution context is already enrolled in a Marten Envelope Outbox");

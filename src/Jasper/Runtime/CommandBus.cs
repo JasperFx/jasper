@@ -39,7 +39,7 @@ public class CommandBus : ICommandBus
 
     public IEnumerable<Envelope> Outstanding => _outstanding;
 
-    public IEnvelopeOutbox? Transaction { get; protected set; }
+    public IEnvelopeOutbox? Outbox { get; protected set; }
 
 
     public Task InvokeAsync(object message, CancellationToken cancellation = default)
@@ -148,9 +148,9 @@ public class CommandBus : ICommandBus
         envelope.OwnerId = TransportConstants.AnyNode;
         envelope.Status = EnvelopeStatus.Scheduled;
 
-        if (Transaction != null)
+        if (Outbox != null)
         {
-            return Transaction.ScheduleJobAsync(envelope);
+            return Outbox.ScheduleJobAsync(envelope);
         }
 
         if (Persistence is NullEnvelopePersistence)
@@ -169,13 +169,13 @@ public class CommandBus : ICommandBus
             throw new InvalidOperationException("Envelope has not been routed");
         }
 
-        if (Transaction is not null)
+        if (Outbox is not null)
         {
             _outstanding.Fill(envelope);
 
             if (envelope.Sender.IsDurable)
             {
-                await Transaction.PersistAsync(envelope);
+                await Outbox.PersistAsync(envelope);
             }
 
             return;
@@ -186,13 +186,13 @@ public class CommandBus : ICommandBus
 
     public void StartTransaction(IEnvelopeOutbox outbox)
     {
-        Transaction = outbox;
+        Outbox = outbox;
     }
 
     public Task EnlistInOutboxAsync(IEnvelopeOutbox outbox)
     {
-        var original = Transaction;
-        Transaction = outbox;
+        var original = Outbox;
+        Outbox = outbox;
 
         return original == null
             ? Task.CompletedTask

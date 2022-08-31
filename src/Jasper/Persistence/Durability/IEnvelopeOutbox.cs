@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 
 namespace Jasper.Persistence.Durability;
 
+
+// TODO -- should these all be ValueTask?
 public interface IEnvelopeOutbox
 {
     Task PersistAsync(Envelope envelope);
@@ -9,4 +11,6 @@ public interface IEnvelopeOutbox
     Task ScheduleJobAsync(Envelope envelope);
 
     Task CopyToAsync(IEnvelopeOutbox other);
+
+    ValueTask RollbackAsync();
 }

@@ -53,4 +53,9 @@ public class DatabaseEnvelopeOutbox : IEnvelopeOutbox, IDisposable
         throw new NotSupportedException(
             $"Cannot copy data from an existing Sql Server envelope transaction to {other}. You may have erroneously enlisted an IMessageContext in a transaction twice.");
     }
+
+    public async ValueTask RollbackAsync()
+    {
+        await _tx.RollbackAsync().ConfigureAwait(false);
+    }
 }

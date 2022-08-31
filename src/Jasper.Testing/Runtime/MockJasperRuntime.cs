@@ -59,12 +59,12 @@ namespace Jasper.Testing.Runtime
 
         public Endpoint EndpointFor(Uri uri)
         {
-            throw new NotImplementedException();
+            return Substitute.For<Endpoint>(uri);
         }
 
         public IMessageRouter RoutingFor(Type messageType)
         {
-            throw new NotImplementedException();
+            return Substitute.For<IMessageRouter>();
         }
 
         public T TryFindExtension<T>() where T : class

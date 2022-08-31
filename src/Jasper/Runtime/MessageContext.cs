@@ -13,12 +13,29 @@ namespace Jasper.Runtime;
 
 public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 {
-    private readonly IList<Envelope> _scheduled = new List<Envelope>();
     private IChannelCallback? _channel;
     private object? _sagaId;
 
     public MessageContext(IJasperRuntime runtime) : base(runtime, Guid.NewGuid().ToString())
     {
+    }
+
+    internal IList<Envelope> Scheduled { get; } = new List<Envelope>();
+
+    /// <summary>
+    /// Discard all outstanding, cascaded messages and clear the transaction
+    /// </summary>
+    public async ValueTask ClearAllAsync()
+    {
+        Scheduled.Clear();
+        _outstanding.Clear();
+
+        if (Outbox != null)
+        {
+            await Outbox.RollbackAsync();
+        }
+
+        Outbox = this;
     }
 
     Task IEnvelopeOutbox.PersistAsync(Envelope envelope)
@@ -35,7 +52,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 
     Task IEnvelopeOutbox.ScheduleJobAsync(Envelope envelope)
     {
-        _scheduled.Fill(envelope);
+        Scheduled.Fill(envelope);
         return Task.CompletedTask;
     }
 
@@ -43,7 +60,12 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
     {
         await other.PersistAsync(_outstanding.ToArray());
 
-        foreach (var envelope in _scheduled) await other.ScheduleJobAsync(envelope);
+        foreach (var envelope in Scheduled) await other.ScheduleJobAsync(envelope);
+    }
+
+    public ValueTask RollbackAsync()
+    {
+        return ValueTask.CompletedTask;
     }
 
     internal ValueTask ForwardScheduledEnvelopeAsync(Envelope envelope)
@@ -142,7 +164,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
             }
         }
 
-        if (ReferenceEquals(Transaction, this))
+        if (ReferenceEquals(Outbox, this))
         {
             await flushScheduledMessagesAsync();
         }
@@ -152,7 +174,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 
     public async ValueTask UseInMemoryTransactionAsync()
     {
-        if (!ReferenceEquals(this, Transaction))
+        if (!ReferenceEquals(this, Outbox))
         {
             await EnlistInOutboxAsync(this);
         }
@@ -233,9 +255,9 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
     internal void ClearState()
     {
         _outstanding.Clear();
-        _scheduled.Clear();
+        Scheduled.Clear();
         Envelope = null;
-        Transaction = null;
+        Outbox = null;
         _sagaId = null;
     }
 
@@ -246,7 +268,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
         _channel = channel;
         _sagaId = originalEnvelope.SagaId;
 
-        Transaction = this;
+        Outbox = this;
 
         if (Envelope.AckRequested && Envelope.ReplyUri != null)
         {
@@ -260,14 +282,14 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
     {
         if (Persistence is NullEnvelopePersistence)
         {
-            foreach (var envelope in _scheduled) Runtime.ScheduleLocalExecutionInMemory(envelope.ScheduledTime!.Value, envelope);
+            foreach (var envelope in Scheduled) Runtime.ScheduleLocalExecutionInMemory(envelope.ScheduledTime!.Value, envelope);
         }
         else
         {
-            foreach (var envelope in _scheduled) await Persistence.ScheduleJobAsync(envelope);
+            foreach (var envelope in Scheduled) await Persistence.ScheduleJobAsync(envelope);
         }
 
-        _scheduled.Clear();
+        Scheduled.Clear();
     }
 
     protected override void trackEnvelopeCorrelation(Envelope outbound)
