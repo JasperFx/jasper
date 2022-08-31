@@ -297,16 +297,71 @@ sending service a corresponding `ShippingFailed` message when that `ShipOrder` m
 
 The following code shows how to do this with an inline function:
 
-snippet: sample_inline_exception_handling_action
+<!-- snippet: sample_inline_exception_handling_action -->
+<a id='snippet-sample_inline_exception_handling_action'></a>
+```cs
+theReceiver = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        opts.ListenAtPort(receiverPort);
+        opts.ServiceName = "Receiver";
+
+        opts.Handlers.OnException<ShippingFailedException>()
+            .Discard().And(async (_, context, _) =>
+            {
+                if (context.Envelope?.Message is ShipOrder cmd)
+                {
+                    await context.RespondToSenderAsync(new ShippingFailed(cmd.OrderId));
+                }
+
+            });
+    }).StartAsync();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L32-L51' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_inline_exception_handling_action' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Optionally, you can implement a new type to handle this same custom logic by
 subclassing the `Jasper.ErrorHandling.UserDefinedContinuation` type like so:
 
-snippet: sample_ShippingOrderFailurePolicy
+<!-- snippet: sample_ShippingOrderFailurePolicy -->
+<a id='snippet-sample_shippingorderfailurepolicy'></a>
+```cs
+public class ShippingOrderFailurePolicy : UserDefinedContinuation
+{
+    public ShippingOrderFailurePolicy() : base($"Send a {nameof(ShippingFailed)} back to the sender on shipping order failures")
+    {
+    }
+
+    public override async ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
+    {
+        if (context.Envelope?.Message is ShipOrder cmd)
+        {
+            await context
+                .RespondToSenderAsync(new ShippingFailed(cmd.OrderId));
+        }
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L79-L97' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_shippingorderfailurepolicy' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 and register that secondary action like this:
 
-snippet: sample_registering_custom_user_continuation_policy
+<!-- snippet: sample_registering_custom_user_continuation_policy -->
+<a id='snippet-sample_registering_custom_user_continuation_policy'></a>
+```cs
+theReceiver = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        opts.ListenAtPort(receiverPort);
+        opts.ServiceName = "Receiver";
+
+        opts.Handlers.OnException<ShippingFailedException>()
+            .Discard().And<ShippingOrderFailurePolicy>();
+    }).StartAsync();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L117-L129' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_registering_custom_user_continuation_policy' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## Circuit Breaker
