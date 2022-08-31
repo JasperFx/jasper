@@ -35,8 +35,6 @@ public class CommandBus : ICommandBus
     public IEnvelopePersistence Persistence { get; }
 
 
-    public IMessageLogger Logger => Runtime.MessageLogger;
-
     public IEnumerable<Envelope> Outstanding => _outstanding;
 
     public IEnvelopeOutbox? Outbox { get; protected set; }

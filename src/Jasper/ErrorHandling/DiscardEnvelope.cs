@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Jasper.Runtime;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.ErrorHandling;
 
@@ -18,12 +19,12 @@ public class DiscardEnvelope : IContinuation, IContinuationSource
     {
         try
         {
-            context.Logger.DiscardedEnvelope(context.Envelope!);
+            runtime.MessageLogger.DiscardedEnvelope(context.Envelope!);
             await context.CompleteAsync();
         }
-        catch (Exception? e)
+        catch (Exception e)
         {
-            context.Logger.LogException(e);
+            runtime.Logger.LogError(e, "Failure while attempting to discard an envelope");
         }
     }
 

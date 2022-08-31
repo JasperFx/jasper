@@ -159,7 +159,7 @@ public class HandlerPipeline : IHandlerPipeline
         }
     }
 
-    private async Task<IContinuation> executeAsync(IMessageContext context, Envelope envelope)
+    private async Task<IContinuation> executeAsync(MessageContext context, Envelope envelope)
     {
         if (envelope.IsExpired())
         {

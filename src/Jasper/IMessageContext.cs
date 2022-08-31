@@ -27,9 +27,6 @@ public interface IMessageContext : IMessagePublisher
     /// </summary>
     IEnvelopePersistence? Persistence { get; }
 
-
-    IMessageLogger Logger { get; }
-
     /// <summary>
     /// Current envelope outbox
     /// </summary>

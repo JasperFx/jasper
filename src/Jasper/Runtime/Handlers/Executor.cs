@@ -14,8 +14,8 @@ internal enum InvokeResult
 
 internal interface IExecutor
 {
-    Task<IContinuation> ExecuteAsync(IMessageContext context, CancellationToken cancellation);
-    Task<InvokeResult> InvokeAsync(IMessageContext context, CancellationToken cancellation);
+    Task<IContinuation> ExecuteAsync(MessageContext context, CancellationToken cancellation);
+    Task<InvokeResult> InvokeAsync(MessageContext context, CancellationToken cancellation);
 }
 
 internal class Executor : IExecutor
@@ -46,7 +46,7 @@ internal class Executor : IExecutor
         return new Executor(new CircuitBreakerWrappedMessageHandler(_handler, tracker), _logger, _rules, _timeout);
     }
 
-    public async Task<IContinuation> ExecuteAsync(IMessageContext context, CancellationToken cancellation)
+    public async Task<IContinuation> ExecuteAsync(MessageContext context, CancellationToken cancellation)
     {
         context.Envelope!.Attempts++;
 
@@ -64,12 +64,14 @@ internal class Executor : IExecutor
             _logger
                 .ExecutionFinished(context.Envelope); // Need to do this to make the MessageHistory complete
 
+            await context.ClearAllAsync();
+
             return _rules.DetermineExecutionContinuation(e, context.Envelope);
         }
     }
 
 
-    public async Task<InvokeResult> InvokeAsync(IMessageContext context, CancellationToken cancellation)
+    public async Task<InvokeResult> InvokeAsync(MessageContext context, CancellationToken cancellation)
     {
         if (context.Envelope == null)
         {

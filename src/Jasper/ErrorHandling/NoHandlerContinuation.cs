@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jasper.Runtime;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.ErrorHandling;
 
@@ -22,7 +23,7 @@ public class NoHandlerContinuation : IContinuation
     {
         if (context.Envelope == null) throw new InvalidOperationException("Context does not have an Envelope");
 
-        context.Logger.NoHandlerFor(context.Envelope!);
+        runtime.MessageLogger.NoHandlerFor(context.Envelope!);
 
         foreach (var handler in _handlers)
         {
@@ -32,7 +33,7 @@ public class NoHandlerContinuation : IContinuation
             }
             catch (Exception? e)
             {
-                context.Logger.LogException(e);
+                runtime.Logger.LogError(e, "Failure in 'missing handler' execution");
             }
         }
 
@@ -45,7 +46,7 @@ public class NoHandlerContinuation : IContinuation
 
         // These two lines are important to make the message tracking work
         // if there is no handler
-        context.Logger.ExecutionFinished(context.Envelope);
-        context.Logger.MessageSucceeded(context.Envelope);
+        runtime.MessageLogger.ExecutionFinished(context.Envelope);
+        runtime.MessageLogger.MessageSucceeded(context.Envelope);
     }
 }

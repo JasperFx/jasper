@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Jasper.ErrorHandling;
+using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
 
@@ -22,14 +23,14 @@ public class MessageSucceededContinuation : IContinuation
 
             await context.CompleteAsync();
 
-            context.Logger.MessageSucceeded(context.Envelope!);
+            runtime.MessageLogger.MessageSucceeded(context.Envelope!);
         }
         catch (Exception ex)
         {
             await context.SendFailureAcknowledgementAsync("Sending cascading message failed: " + ex.Message);
 
-            context.Logger.LogException(ex, context.Envelope!.Id, ex.Message);
-            context.Logger.MessageFailed(context.Envelope, ex);
+            runtime.Logger.LogError(ex, "Failure while post-processing a successful envelope");
+            runtime.MessageLogger.MessageFailed(context.Envelope!, ex);
 
             await new MoveToErrorQueue(ex).ExecuteAsync(context, runtime, now);
         }

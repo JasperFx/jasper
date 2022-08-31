@@ -30,8 +30,8 @@ public class MoveToErrorQueue : IContinuation
 
         await context.MoveToDeadLetterQueueAsync(_exception);
 
-        context.Logger.MessageFailed(context.Envelope, _exception);
-        context.Logger.MovedToErrorQueue(context.Envelope, _exception);
+        runtime.MessageLogger.MessageFailed(context.Envelope, _exception);
+        runtime.MessageLogger.MovedToErrorQueue(context.Envelope, _exception);
     }
 
     public override string ToString()

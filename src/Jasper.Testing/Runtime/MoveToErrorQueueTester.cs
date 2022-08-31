@@ -44,8 +44,8 @@ namespace Jasper.Testing.Runtime
         {
             await theContinuation.ExecuteAsync(theContext, theRuntime, DateTimeOffset.Now);
 
-            theContext.Logger.Received().MessageFailed(theEnvelope, theException);
-            theContext.Logger.Received().MovedToErrorQueue(theEnvelope, theException);
+            theRuntime.MessageLogger.Received().MessageFailed(theEnvelope, theException);
+            theRuntime.MessageLogger.Received().MovedToErrorQueue(theEnvelope, theException);
         }
 
     }

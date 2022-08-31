@@ -158,9 +158,9 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
             }
             catch (Exception e)
             {
-                Logger.LogException(e, envelope.CorrelationId,
+                Runtime.Logger.LogError(e,
                     "Unable to send an outgoing message, most likely due to serialization issues");
-                Logger.DiscardedEnvelope(envelope);
+                Runtime.MessageLogger.DiscardedEnvelope(envelope);
             }
         }
 
