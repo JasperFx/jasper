@@ -285,7 +285,28 @@ sample_filtering_by_exception_type
 
 ### Custom Actions
 
-TODO -- actually write something here, but add a sample of sending an isolated message as a response
+::: tip
+For the sake of granular error handling, it's recommended that your
+custom error handler code limit itself to publishing additional messages
+rather than trying to do work inline
+:::
+
+Jasper will enable you to create custom exception handling actions as additional steps to take during message failures.
+As an example, let's say that when your system is sent a `ShipOrder` message you'd like to send the original
+sending service a corresponding `ShippingFailed` message when that `ShipOrder` message fails during processing.
+
+The following code shows how to do this with an inline function:
+
+snippet: sample_inline_exception_handling_action
+
+Optionally, you can implement a new type to handle this same custom logic by
+subclassing the `Jasper.ErrorHandling.UserDefinedContinuation` type like so:
+
+snippet: sample_ShippingOrderFailurePolicy
+
+and register that secondary action like this:
+
+snippet: sample_registering_custom_user_continuation_policy
 
 
 ## Circuit Breaker

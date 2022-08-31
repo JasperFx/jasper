@@ -29,6 +29,8 @@ public class custom_error_action_raises_new_message_1 : IAsyncLifetime
                 opts.ServiceName = "Sender";
             }).StartAsync();
 
+        #region sample_inline_exception_handling_action
+
         theReceiver = await Host.CreateDefaultBuilder()
             .UseJasper(opts =>
             {
@@ -45,6 +47,8 @@ public class custom_error_action_raises_new_message_1 : IAsyncLifetime
 
                     });
             }).StartAsync();
+
+        #endregion
     }
 
     public async Task DisposeAsync()
@@ -72,6 +76,8 @@ public class custom_error_action_raises_new_message_1 : IAsyncLifetime
 
 
 
+#region sample_ShippingOrderFailurePolicy
+
 public class ShippingOrderFailurePolicy : UserDefinedContinuation
 {
     public ShippingOrderFailurePolicy() : base($"Send a {nameof(ShippingFailed)} back to the sender on shipping order failures")
@@ -87,6 +93,8 @@ public class ShippingOrderFailurePolicy : UserDefinedContinuation
         }
     }
 }
+
+#endregion
 
 public class custom_error_action_raises_new_message_2 : IAsyncLifetime
 {
@@ -106,6 +114,8 @@ public class custom_error_action_raises_new_message_2 : IAsyncLifetime
                 opts.ServiceName = "Sender";
             }).StartAsync();
 
+        #region sample_registering_custom_user_continuation_policy
+
         theReceiver = await Host.CreateDefaultBuilder()
             .UseJasper(opts =>
             {
@@ -115,6 +125,8 @@ public class custom_error_action_raises_new_message_2 : IAsyncLifetime
                 opts.Handlers.OnException<ShippingFailedException>()
                     .Discard().And<ShippingOrderFailurePolicy>();
             }).StartAsync();
+
+        #endregion
     }
 
     public async Task DisposeAsync()
