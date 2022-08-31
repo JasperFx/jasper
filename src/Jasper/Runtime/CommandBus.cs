@@ -182,7 +182,7 @@ public class CommandBus : ICommandBus
         await envelope.StoreAndForwardAsync();
     }
 
-    public void StartTransaction(IEnvelopeOutbox outbox)
+    public void EnlistInOutbox(IEnvelopeOutbox outbox)
     {
         Outbox = outbox;
     }

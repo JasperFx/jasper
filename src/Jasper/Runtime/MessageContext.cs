@@ -6,7 +6,6 @@ using Baseline;
 using Jasper.Persistence.Durability;
 using Jasper.Transports;
 using Jasper.Util;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
@@ -178,12 +177,6 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
         {
             await EnlistInOutboxAsync(this);
         }
-    }
-
-    public void EnlistInSaga(object? sagaId)
-    {
-        _sagaId = sagaId ?? throw new ArgumentNullException(nameof(sagaId));
-        foreach (var envelope in _outstanding) envelope.SagaId = sagaId.ToString();
     }
 
     public ValueTask CompleteAsync()

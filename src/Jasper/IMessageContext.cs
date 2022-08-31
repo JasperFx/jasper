@@ -33,17 +33,17 @@ public interface IMessageContext : IMessagePublisher
     IEnvelopeOutbox? Outbox { get; }
 
     /// <summary>
-    ///     If a messaging context is enlisted in a transaction, calling this
-    ///     method will force the context to send out any outstanding messages
-    ///     that were captured as part of processing the transaction
+    /// If a messaging context is enlisted in a transaction, calling this
+    /// method will force the context to send out any outstanding messages
+    /// that were captured as part of processing the transaction
     /// </summary>
     /// <returns></returns>
     Task FlushOutgoingMessagesAsync();
 
     /// <summary>
-    ///     Enlist this context within some kind of existing business
-    ///     transaction so that messages are only sent if the transaction succeeds.
-    ///     Jasper's "Outbox" support
+    /// Enlist this context within some kind of existing business
+    /// transaction so that messages are only sent if the transaction succeeds.
+    /// Jasper's "Outbox" support
     /// </summary>
     /// <param name="outbox"></param>
     /// <returns></returns>
@@ -53,20 +53,12 @@ public interface IMessageContext : IMessagePublisher
     /// Start a new transaction. This is not valid if already enlisted in an envelope transaction
     /// </summary>
     /// <param name="outbox"></param>
-    void StartTransaction(IEnvelopeOutbox outbox);
+    void EnlistInOutbox(IEnvelopeOutbox outbox);
 
     /// <summary>
     ///     Opt into using an in memory transaction for the execution context.
-    ///     Honestly, this is mostly for testing usage
     /// </summary>
     ValueTask UseInMemoryTransactionAsync();
-
-    /// <summary>
-    ///     Called by Jasper itself to mark this context as being part
-    ///     of a stateful saga
-    /// </summary>
-    /// <param name="sagaId"></param>
-    void EnlistInSaga(object? sagaId);
 
     /// <summary>
     ///     Send a response message back to the original sender of the message being handled.

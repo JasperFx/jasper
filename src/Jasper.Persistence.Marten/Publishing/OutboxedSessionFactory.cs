@@ -26,7 +26,7 @@ public class OutboxedSessionFactory
     public IDocumentSession OpenSession(IMessageContext context)
     {
         var session = _factory.OpenSession();
-        context.StartTransaction(new MartenEnvelopeOutbox(session, context));
+        context.EnlistInOutbox(new MartenEnvelopeOutbox(session, context));
 
         if (_shouldPublishEvents)
         {
