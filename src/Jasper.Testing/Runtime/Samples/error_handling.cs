@@ -24,7 +24,10 @@ namespace Jasper.Testing.Runtime.Samples
             #region sample_MyApp_with_error_handling
 
             using var host = await Host.CreateDefaultBuilder()
-                .UseJasper(opts => { opts.Handlers.GlobalPolicy<ErrorHandlingPolicy>(); }).StartAsync();
+                .UseJasper(opts =>
+                {
+                    opts.Handlers.GlobalPolicy<ErrorHandlingPolicy>();
+                }).StartAsync();
 
             #endregion
         }
@@ -82,6 +85,11 @@ namespace Jasper.Testing.Runtime.Samples
                     // back through the queue up to 5 times
                     opts.Handlers.OnException<SqlException>().RetryTimes(5);
 
+                    // Retry with a cooldown up to 3 times, then discard the message
+                    opts.Handlers.OnException<TimeoutException>()
+                        .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds())
+                        .Then.Discard();
+
 
                     // Retry the message again, but wait for the specified time
                     // The message will be dead lettered if it exhausts the delay
@@ -96,12 +104,95 @@ namespace Jasper.Testing.Runtime.Samples
                     // of attempts
                     opts.Handlers.OnException<SqlException>().Requeue(5);
 
-                    // Immediately move the message into the error queue for this transport
-                    opts.Handlers.OnException<SqlException>().MoveToErrorQueue();
                 }).StartAsync();
 
             #endregion
         }
+
+        public static async Task send_to_error_queue()
+        {
+            #region sample_send_to_error_queue
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // Don't retry, immediately send to the error queue
+                    opts.Handlers.OnException<TimeoutException>().MoveToErrorQueue();
+                }).StartAsync();
+
+            #endregion
+        }
+
+        public class SystemIsCompletelyUnusableException : Exception
+        {
+            public SystemIsCompletelyUnusableException()
+            {
+            }
+        }
+
+        public static async Task pause_when_unusable()
+        {
+            #region sample_pause_when_system_is_unusable
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // The failing message is requeued for later processing, then
+                    // the specific listener is paused for 10 minutes
+                    opts.Handlers.OnException<SystemIsCompletelyUnusableException>()
+                        .Requeue().AndPauseProcessing(10.Minutes());
+
+                }).StartAsync();
+
+            #endregion
+        }
+
+        public class InvalidMessageYouWillNeverBeAbleToProcessException : Exception{}
+
+        public static async Task discard_when_unusable()
+        {
+            #region sample_discard_when_message_is_invalid
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // Bad message, get this thing out of here!
+                    opts.Handlers.OnException<InvalidMessageYouWillNeverBeAbleToProcessException>()
+                        .Discard();
+
+                }).StartAsync();
+
+            #endregion
+        }
+
+        public static async Task with_exponential_backoff()
+        {
+            #region sample_exponential_backoff
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    // Retry the message again, but wait for the specified time
+                    // The message will be dead lettered if it exhausts the delay
+                    // attempts
+                    opts.Handlers
+                        .OnException<SqlException>()
+                        .RetryWithCooldown(50.Milliseconds(), 100.Milliseconds(), 250.Milliseconds());
+
+                }).StartAsync();
+
+            #endregion
+        }
+
+        #region sample_exponential_backoff_with_attributes
+
+        [RetryNow(typeof(SqlException), 50, 100, 250)]
+        public class MessageWithBackoff
+        {
+            // whatever members
+        }
+
+        #endregion
 
         public static async Task AppWithCustomContinuation()
         {

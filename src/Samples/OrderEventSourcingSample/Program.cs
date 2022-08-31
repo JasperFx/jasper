@@ -1,6 +1,9 @@
+using Baseline.Dates;
 using Jasper;
+using Jasper.ErrorHandling;
 using Jasper.Persistence.Marten;
 using Marten;
+using Marten.Exceptions;
 using Oakton;
 using OrderEventSourcingSample;
 
@@ -20,7 +23,18 @@ builder.Services.AddMarten(opts =>
     // Adding the Jasper integration for Marten.
     .IntegrateWithJasper();
 
-builder.Host.UseJasper();
+#region sample_configure_global_exception_rules
+
+builder.Host.UseJasper(opts =>
+{
+    // Retry policies if a Marten concurrency exception is encountered
+    opts.Handlers.OnException<ConcurrencyException>()
+        .RetryOnce()
+        .Then.RetryWithCooldown(100.Milliseconds(), 250.Milliseconds())
+        .Then.Discard();
+});
+
+#endregion
 
 var app = builder.Build();
 
