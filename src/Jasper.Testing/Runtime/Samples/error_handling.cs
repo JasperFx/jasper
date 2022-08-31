@@ -316,16 +316,11 @@ namespace Jasper.Testing.Runtime.Samples
             IJasperRuntime runtime,
             DateTimeOffset now)
         {
-            throw new NotImplementedException();
-
-            // Raise a separate "alert" event message
-            // using var session = runtime.;
-            // await session.ScheduleAsync(execution.Envelope.Message, now.AddHours(1));
-            // await session.SendAsync(new RescheduledAlert
-            // {
-            //     Id = execution.Envelope.Id,
-            //     ExceptionText = _ex.ToString()
-            // });
+            await context.SendAsync(new RescheduledAlert
+            {
+                Id = context.Envelope.Id,
+                ExceptionText = _ex.ToString()
+            });
         }
     }
 

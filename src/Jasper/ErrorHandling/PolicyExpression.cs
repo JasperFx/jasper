@@ -7,6 +7,21 @@ using Jasper.Runtime;
 
 namespace Jasper.ErrorHandling;
 
+public abstract class UserDefinedContinuation : IContinuationSource, IContinuation
+{
+    protected UserDefinedContinuation(string description)
+    {
+        Description = description;
+    }
+
+    public string Description { get; }
+    public abstract ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now);
+
+    public IContinuation Build(Exception ex, Envelope envelope)
+    {
+        return this;
+    }
+}
 
 public interface IAdditionalActions
 {
@@ -29,8 +44,27 @@ public interface IAdditionalActions
     /// <param name="action"></param>
     /// <param name="description"></param>
     /// <returns></returns>
-    IAdditionalActions AlsoDo(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action,
+    IAdditionalActions And(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action,
         string description = "User supplied");
+
+    /// <summary>
+    /// Perform a user defined action using the IContinuationSource approach
+    /// to determine the next action
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    IAdditionalActions And<T>() where T : IContinuationSource, new();
+
+    /// <summary>
+    /// Perform a user defined action using the IContinuationSource approach
+    /// to determine the next action
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    IAdditionalActions And(IContinuationSource source);
+
+
+
 }
 
 internal class FailureActions : IAdditionalActions, IFailureActions
@@ -137,12 +171,70 @@ internal class FailureActions : IAdditionalActions, IFailureActions
         {
             slot.AddAdditionalSource(new PauseListenerContinuation(pauseTime));
         }
+
         return this;
     }
 
-    public IAdditionalActions AlsoDo(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action, string description = "User supplied")
+    /// <summary>
+    /// Take out an additional, user-defined action upon message failures
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    public IAdditionalActions And(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action, string description = "User supplied")
     {
-        throw new NotImplementedException();
+        var source = new UserDefinedContinuationSource(action, description);
+        return And(source);
+    }
+
+    public IAdditionalActions And<T>() where T : IContinuationSource, new()
+    {
+        return And(new T());
+    }
+
+    public IAdditionalActions And(IContinuationSource source)
+    {
+        foreach (var slot in _slots)
+        {
+            slot.AddAdditionalSource(source);
+        }
+
+        return this;
+    }
+}
+
+internal class UserDefinedContinuationSource : IContinuationSource
+{
+    private readonly Func<IJasperRuntime, IMessageContext, Exception, ValueTask> _source;
+
+    public UserDefinedContinuationSource(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> source, string description = "User supplied")
+    {
+        Description = description;
+        _source = source;
+    }
+
+    public string Description { get; }
+    public IContinuation Build(Exception ex, Envelope envelope)
+    {
+        return new LambdaContinuation(_source, ex);
+    }
+}
+
+internal class LambdaContinuation : IContinuation
+{
+    private readonly Func<IJasperRuntime, IMessageContext, Exception, ValueTask> _action;
+    private readonly Exception _exception;
+
+    public LambdaContinuation(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action,
+        Exception exception)
+    {
+        _action = action;
+        _exception = exception;
+    }
+
+    public ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
+    {
+        return _action(runtime, context, _exception);
     }
 }
 

@@ -66,6 +66,8 @@ namespace Jasper.Testing.Runtime
             context.Outstanding.Any().ShouldBeFalse();
 
             await outbox.Received().RollbackAsync();
+
+            context.Outbox.ShouldBeNull();
         }
 
         [Fact]

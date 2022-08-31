@@ -34,7 +34,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
             await Outbox.RollbackAsync();
         }
 
-        Outbox = this;
+        Outbox = null;
     }
 
     Task IEnvelopeOutbox.PersistAsync(Envelope envelope)
