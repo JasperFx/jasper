@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Jasper.Runtime.WorkerQueues;
 using Jasper.Transports;
 using Microsoft.Extensions.Logging;
@@ -12,15 +13,17 @@ namespace Jasper.Persistence.Durability;
 public class RecoverIncomingMessages : IMessagingAction
 {
     private readonly ILogger _logger;
+    private readonly IJasperRuntime _runtime;
     private readonly AdvancedSettings _settings;
     private readonly ILocalQueue _locals;
 
     public RecoverIncomingMessages(ILocalQueue locals, AdvancedSettings settings,
-        ILogger logger)
+        ILogger logger, IJasperRuntime runtime)
     {
         _locals = locals;
         _settings = settings;
         _logger = logger;
+        _runtime = runtime;
     }
 
     public async Task ExecuteAsync(IEnvelopePersistence storage, IDurabilityAgent agent)
@@ -69,6 +72,18 @@ public class RecoverIncomingMessages : IMessagingAction
             {
                 await storage.Session.RollbackAsync();
                 return incoming; // Okay to return the empty list here any way
+            }
+
+            // Got to filter out paused listeners here
+            var latched = _runtime
+                .ActiveListeners()
+                .Where(x => x.Status == ListeningStatus.Stopped)
+                .Select(x => x.Uri)
+                .ToArray();
+
+            if (latched.Any())
+            {
+                incoming = incoming.Where(e => !latched.Contains(e.Destination)).ToList();
             }
 
             await storage.ReassignIncomingAsync(_settings.UniqueNodeId, incoming);

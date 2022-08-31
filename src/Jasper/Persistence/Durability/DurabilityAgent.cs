@@ -49,14 +49,13 @@ public class DurabilityAgent : IHostedService, IDurabilityAgent, IAsyncDisposabl
         _storage = storage;
         _settings = settings;
 
-
         _worker = new ActionBlock<IMessagingAction>(processActionAsync, new ExecutionDataflowBlockOptions
         {
             MaxDegreeOfParallelism = 1,
             CancellationToken = _settings.Cancellation
         });
 
-        _incomingMessages = new RecoverIncomingMessages(locals, settings, logger);
+        _incomingMessages = new RecoverIncomingMessages(locals, settings, logger, runtime);
         _outgoingMessages = new RecoverOutgoingMessages(runtime, settings, logger);
         _nodeReassignment = new NodeReassignment(settings);
         _scheduledJobs = new RunScheduledJobs(settings, logger);
