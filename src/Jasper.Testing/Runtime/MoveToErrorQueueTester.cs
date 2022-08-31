@@ -24,7 +24,7 @@ namespace Jasper.Testing.Runtime
         private readonly Exception theException = new DivideByZeroException();
         private readonly MoveToErrorQueue theContinuation;
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
-        private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
+        private readonly IMessageContext theContext = Substitute.For<IMessageContext>();
         private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
 
         [Fact]

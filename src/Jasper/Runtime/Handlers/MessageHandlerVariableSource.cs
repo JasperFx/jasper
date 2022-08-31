@@ -9,7 +9,7 @@ public class MessageHandlerVariableSource : IVariableSource
     {
         MessageType = messageType;
 
-        Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IExecutionContext.Envelope)}");
+        Envelope = new Variable(typeof(Envelope), $"{HandlerGraph.Context}.{nameof(IMessageContext.Envelope)}");
         Message = new MessageVariable(Envelope, messageType);
     }
 

@@ -51,7 +51,7 @@ public class TransactionalFrame : Frame
         }
 
         // Inside of messaging. Not sure how this is gonna work for HTTP yet
-        _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
+        _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
 
         if (_context != null)
         {

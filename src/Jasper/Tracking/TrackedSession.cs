@@ -46,7 +46,7 @@ public class TrackedSession : ITrackedSession
     // TODO -- do something with this?
     public bool AssertNoTimeout { get; set; } = true;
 
-    public Func<IExecutionContext, Task> Execution { get; set; } = _ => Task.CompletedTask;
+    public Func<IMessageContext, Task> Execution { get; set; } = _ => Task.CompletedTask;
 
     public bool AlwaysTrackExternalTransports { get; set; }
 
@@ -234,7 +234,7 @@ public class TrackedSession : ITrackedSession
         try
         {
             await using var scope = _primaryHost.Services.As<IContainer>().GetNestedContainer();
-            var context = scope.GetInstance<IExecutionContext>();
+            var context = scope.GetInstance<IMessageContext>();
             await Execution(context);
         }
         catch (Exception)

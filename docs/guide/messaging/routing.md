@@ -7,7 +7,7 @@ Some of the transports have conventional routing approaches as well as the expli
 shown in this page.
 :::
 
-When you publish a message using `IMessagePublisher` or `IExecutionContext` without explicitly setting the Uri of the desired
+When you publish a message using `IMessagePublisher` or `IMessageContext` without explicitly setting the Uri of the desired
 destination, Jasper has to invoke the known message routing rules and dynamic subscriptions to
 figure out which locations should receive the message. Consider this code that publishes a
 `PingMessage`:
@@ -17,7 +17,7 @@ figure out which locations should receive the message. Consider this code that p
 ```cs
 public class SendingExample
 {
-    public async Task SendPingsAndPongs(IExecutionContext bus)
+    public async Task SendPingsAndPongs(IMessageContext bus)
     {
         // Publish a message
         await bus.SendAsync(new PingMessage());

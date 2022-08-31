@@ -93,7 +93,7 @@ an `OrderCreated` event through Jasper messaging. Using the outbox, that handler
 public static async Task Handle(
     CreateOrder command,
     IDocumentSession session,
-    IExecutionContext context,
+    IMessageContext context,
     CancellationToken cancellation)
 {
     // Connect the Marten session to the outbox
@@ -121,7 +121,7 @@ public static async Task Handle(
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/WebApiWithMarten/Order.cs#L111-L141' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_longhand_order_handler' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-In the code above, the `OrderCreated` message is registered with the Jasper `IExecutionContext` for the current message, but nothing more than that is actually happening at that point.
+In the code above, the `OrderCreated` message is registered with the Jasper `IMessageContext` for the current message, but nothing more than that is actually happening at that point.
 When `IDocumentSession.SaveChangesAsync()` is called, Marten is persisting the new `Order` document **and** creating database records for the outgoing `OrderCreated` message
 in the same transaction (and even in the same batched database command for maximum efficiency). After the database transaction succeeds, the pending messages are automatically sent to Jasper's
 sending agents.
@@ -150,7 +150,7 @@ public class CreateOrderController : ControllerBase
     public async Task Create(
         [FromBody] CreateOrder command,
         [FromServices] IDocumentSession session,
-        [FromServices] IExecutionContext context)
+        [FromServices] IMessageContext context)
     {
         // Gotta connection the Marten session into
         // the Jasper outbox
@@ -181,7 +181,7 @@ From a Minimal API, that could be this:
 <!-- snippet: sample_create_order_through_minimal_api -->
 <a id='snippet-sample_create_order_through_minimal_api'></a>
 ```cs
-app.MapPost("/orders/create3", async (CreateOrder command, IDocumentSession session, IExecutionContext context) =>
+app.MapPost("/orders/create3", async (CreateOrder command, IDocumentSession session, IMessageContext context) =>
 {
     // Gotta connection the Marten session into
     // the Jasper outbox
@@ -483,7 +483,7 @@ Before getting into Jasper middleware strategies, let's first build out an MVC c
 public async Task Post(
     [FromBody] MarkItemReady command,
     [FromServices] IDocumentSession session,
-    [FromServices] IExecutionContext context
+    [FromServices] IMessageContext context
 )
 {
     // Enroll in the Jasper outbox
@@ -593,7 +593,7 @@ public class MarkItemReadyHandler1442193977 : MessageHandler
         _outboxedSessionFactory = outboxedSessionFactory;
     }
 
-    public override async Task HandleAsync(IExecutionContext context, CancellationToken cancellation)
+    public override async Task HandleAsync(IMessageContext context, CancellationToken cancellation)
     {
         var markItemReady = (MarkItemReady)context.Envelope.Message;
         await using var documentSession = _outboxedSessionFactory.OpenSession(context);

@@ -40,7 +40,7 @@ public class DbTransactionFrame<TTransaction, TConnection> : AsyncFrame
 
         if (ShouldFlushOutgoingMessages)
         {
-            writer.Write($"await {_context!.Usage}.{nameof(IExecutionContext.FlushOutgoingMessagesAsync)}();");
+            writer.Write($"await {_context!.Usage}.{nameof(IMessageContext.FlushOutgoingMessagesAsync)}();");
         }
 
         writer.Write($"{_connection.Usage}.{nameof(DbConnection.Close)}();");
@@ -56,11 +56,11 @@ public class DbTransactionFrame<TTransaction, TConnection> : AsyncFrame
 
         if (ShouldFlushOutgoingMessages)
         {
-            _context = chain.FindVariable(typeof(IExecutionContext));
+            _context = chain.FindVariable(typeof(IMessageContext));
         }
         else
         {
-            _context = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices);
+            _context = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices);
         }
 
         if (_context != null)

@@ -9,11 +9,11 @@ public class CaptureCascadingMessages : MethodCall
 {
     private static readonly MethodInfo _method =
 #pragma warning disable CS8625
-        ReflectionHelper.GetMethod<IExecutionContext>(x => x.EnqueueCascadingAsync(null));
+        ReflectionHelper.GetMethod<IMessageContext>(x => x.EnqueueCascadingAsync(null));
 #pragma warning restore CS8625
 
 
-    public CaptureCascadingMessages(Variable messages) : base(typeof(IExecutionContext),
+    public CaptureCascadingMessages(Variable messages) : base(typeof(IMessageContext),
         _method)
     {
         Arguments[0] = messages;

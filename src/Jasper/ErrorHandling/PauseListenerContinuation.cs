@@ -14,9 +14,9 @@ public class PauseListenerContinuation : IContinuation, IContinuationSource
 
     public TimeSpan PauseTime { get; }
 
-    public ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
+    public ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
     {
-        var agent = runtime.FindListeningAgent(execution.Envelope!.Listener!.Address);
+        var agent = runtime.FindListeningAgent(context.Envelope!.Listener!.Address);
 
 
         if (agent != null)

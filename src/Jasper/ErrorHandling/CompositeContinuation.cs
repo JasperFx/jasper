@@ -17,17 +17,17 @@ internal class CompositeContinuation : IContinuation
 
     public IReadOnlyList<IContinuation> Inner => _continuations;
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
+    public async ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
     {
         foreach (var continuation in _continuations)
         {
             try
             {
-                await continuation.ExecuteAsync(execution, runtime, now);
+                await continuation.ExecuteAsync(context, runtime, now);
             }
             catch (Exception e)
             {
-                runtime.Logger.LogError(e, "Failed while attempting to apply continuation {Continuation} on Envelope {Envelope}", continuation, execution.Envelope);
+                runtime.Logger.LogError(e, "Failed while attempting to apply continuation {Continuation} on Envelope {Envelope}", continuation, context.Envelope);
             }
         }
     }

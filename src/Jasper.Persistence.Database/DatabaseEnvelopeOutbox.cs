@@ -12,7 +12,7 @@ public class DatabaseEnvelopeOutbox : IEnvelopeOutbox, IDisposable
     private readonly IDatabaseBackedEnvelopePersistence _persistence;
     private readonly DbTransaction _tx;
 
-    public DatabaseEnvelopeOutbox(IExecutionContext context, DbTransaction tx)
+    public DatabaseEnvelopeOutbox(IMessageContext context, DbTransaction tx)
     {
         _persistence = context.Persistence as IDatabaseBackedEnvelopePersistence ??
                        throw new InvalidOperationException(

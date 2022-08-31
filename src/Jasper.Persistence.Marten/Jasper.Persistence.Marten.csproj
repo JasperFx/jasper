@@ -20,10 +20,10 @@
 
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj"/>
-    <ProjectReference Include="..\Jasper\Jasper.csproj"/>
-    <PackageReference Include="Marten.CommandLine" Version="5.8.0"/>
+    <ProjectReference Include="..\Jasper.Persistence.Postgresql\Jasper.Persistence.Postgresql.csproj" />
+    <ProjectReference Include="..\Jasper\Jasper.csproj" />
+    <PackageReference Include="Marten.CommandLine" Version="5.8.0" />
   </ItemGroup>
 
-  <Import Project="../../Analysis.Build.props"/>
+  <Import Project="../../Analysis.Build.props" />
 </Project>

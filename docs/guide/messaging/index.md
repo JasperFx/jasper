@@ -171,7 +171,7 @@ namespace Ponger;
 
 public class PingHandler
 {
-    public ValueTask Handle(Ping ping, ILogger<PingHandler> logger, IExecutionContext context)
+    public ValueTask Handle(Ping ping, ILogger<PingHandler> logger, IMessageContext context)
     {
         logger.LogInformation("Got Ping #{Number}", ping.Number);
         return context.RespondToSenderAsync(new Pong { Number = ping.Number });
@@ -191,7 +191,7 @@ public static class PingHandler
         // Jasper supports method injection similar to ASP.Net Core MVC
         // In this case though, IMessageContext is scoped to the message
         // being handled
-        IExecutionContext context)
+        IMessageContext context)
     {
         ConsoleWriter.Write(ConsoleColor.Blue, $"Got ping #{message.Number}");
 

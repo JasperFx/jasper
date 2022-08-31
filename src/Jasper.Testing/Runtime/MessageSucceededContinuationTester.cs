@@ -25,7 +25,7 @@ namespace Jasper.Testing.Runtime
         private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
 
-        private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
+        private readonly IMessageContext theContext = Substitute.For<IMessageContext>();
 
         [Fact]
         public void should_mark_the_message_as_successful()
@@ -55,7 +55,7 @@ namespace Jasper.Testing.Runtime
 
         private readonly Envelope theEnvelope = ObjectMother.Envelope();
         private readonly Exception theException = new DivideByZeroException();
-        private readonly IExecutionContext theContext = Substitute.For<IExecutionContext>();
+        private readonly IMessageContext theContext = Substitute.For<IMessageContext>();
         private readonly MockJasperRuntime theRuntime = new MockJasperRuntime();
 
         [Fact]

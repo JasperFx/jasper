@@ -6,7 +6,7 @@ namespace DocumentationSamples
     public class ScheduledExecutionSamples
     {
         #region sample_ScheduleSend_In_3_Days
-        public async Task schedule_send(IExecutionContext context, Guid issueId)
+        public async Task schedule_send(IMessageContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -19,7 +19,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_ScheduleSend_At_5_PM_Tomorrow
-        public async Task schedule_send_at_5_tomorrow_afternoon(IExecutionContext context, Guid issueId)
+        public async Task schedule_send_at_5_tomorrow_afternoon(IMessageContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -38,7 +38,7 @@ namespace DocumentationSamples
 
 
         #region sample_ScheduleLocally_In_3_Days
-        public async Task schedule_locally(IExecutionContext context, Guid issueId)
+        public async Task schedule_locally(IMessageContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {
@@ -53,7 +53,7 @@ namespace DocumentationSamples
 
 
         #region sample_ScheduleLocally_At_5_PM_Tomorrow
-        public async Task schedule_locally_at_5_tomorrow_afternoon(IExecutionContext context, Guid issueId)
+        public async Task schedule_locally_at_5_tomorrow_afternoon(IMessageContext context, Guid issueId)
         {
             var timeout = new WarnIfIssueIsStale
             {

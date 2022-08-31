@@ -12,7 +12,7 @@ public class ScheduledSendEnvelopeHandler : MessageHandler
         Chain = new HandlerChain(typeof(Envelope), parent);
     }
 
-    public override Task HandleAsync(IExecutionContext context, CancellationToken cancellation)
+    public override Task HandleAsync(IMessageContext context, CancellationToken cancellation)
     {
         if (cancellation.IsCancellationRequested)
         {
@@ -21,6 +21,6 @@ public class ScheduledSendEnvelopeHandler : MessageHandler
 
         var scheduled = (Envelope)context.Envelope!.Message!;
 
-        return context.As<ExecutionContext>().ForwardScheduledEnvelopeAsync(scheduled).AsTask();
+        return context.As<MessageContext>().ForwardScheduledEnvelopeAsync(scheduled).AsTask();
     }
 }

@@ -15,9 +15,9 @@ namespace DocumentationSamples
     #region sample_NoCascadingHandler
     public class NoCascadingHandler
     {
-        private readonly IExecutionContext _bus;
+        private readonly IMessageContext _bus;
 
-        public NoCascadingHandler(IExecutionContext bus)
+        public NoCascadingHandler(IMessageContext bus)
         {
             _bus = bus;
         }
@@ -46,9 +46,9 @@ namespace DocumentationSamples
     #region sample_Request/Replay_with_cascading
     public class Requester
     {
-        private readonly IExecutionContext _bus;
+        private readonly IMessageContext _bus;
 
-        public Requester(IExecutionContext bus)
+        public Requester(IMessageContext bus)
         {
             _bus = bus;
         }

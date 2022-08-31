@@ -2,16 +2,16 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Jasper.Runtime;
 
-public partial class JasperRuntime : PooledObjectPolicy<ExecutionContext>
+public partial class JasperRuntime : PooledObjectPolicy<MessageContext>
 {
-    public override bool Return(ExecutionContext context)
+    public override bool Return(MessageContext context)
     {
         context.ClearState();
         return true;
     }
 
-    public override ExecutionContext Create()
+    public override MessageContext Create()
     {
-        return new ExecutionContext(this);
+        return new MessageContext(this);
     }
 }

@@ -20,7 +20,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using NSubstitute;
-using ExecutionContext = Jasper.Runtime.ExecutionContext;
 
 namespace Jasper.Testing.Runtime
 {
@@ -134,9 +133,9 @@ namespace Jasper.Testing.Runtime
             throw new NotImplementedException();
         }
 
-        public IExecutionContext NewContext()
+        public IMessageContext NewContext()
         {
-            return new ExecutionContext(this);
+            return new MessageContext(this);
         }
 
         public AdvancedSettings? Advanced { get; } = new AdvancedSettings(null);

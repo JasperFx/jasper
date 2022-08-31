@@ -38,7 +38,7 @@ public class EFCorePersistenceFrameProvider : ISagaPersistenceFrameProvider, ITr
 
         if (chain.ShouldFlushOutgoingMessages())
         {
-            chain.Postprocessors.Add(MethodCall.For<IExecutionContext>(x => x.FlushOutgoingMessagesAsync()));
+            chain.Postprocessors.Add(MethodCall.For<IMessageContext>(x => x.FlushOutgoingMessagesAsync()));
         }
     }
 
@@ -157,7 +157,7 @@ public class EFCorePersistenceFrameProvider : ISagaPersistenceFrameProvider, ITr
 
         public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
         {
-            _context = chain.FindVariable(typeof(IExecutionContext));
+            _context = chain.FindVariable(typeof(IMessageContext));
             yield return _context;
 
             _dbContext = chain.FindVariable(_dbContextType);

@@ -77,7 +77,7 @@ namespace Jasper.Testing.Acceptance
 
     public record SelfSender(Guid Id) : ISendMyself
     {
-        public ValueTask ApplyAsync(IExecutionContext context)
+        public ValueTask ApplyAsync(IMessageContext context)
         {
             return context.SendAsync(new Cascaded(Id));
         }

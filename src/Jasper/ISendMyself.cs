@@ -9,7 +9,7 @@ namespace Jasper;
 /// </summary>
 public interface ISendMyself
 {
-    ValueTask ApplyAsync(IExecutionContext context);
+    ValueTask ApplyAsync(IMessageContext context);
 }
 
 /// <summary>
@@ -19,7 +19,7 @@ public interface ISendMyself
 /// </summary>
 public abstract record DelayedMessage(TimeSpan DelayTime) : ISendMyself
 {
-    public virtual ValueTask ApplyAsync(IExecutionContext context)
+    public virtual ValueTask ApplyAsync(IMessageContext context)
     {
         return context.SchedulePublishAsync(this, DelayTime);
     }

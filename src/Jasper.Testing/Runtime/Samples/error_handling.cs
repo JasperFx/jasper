@@ -312,7 +312,7 @@ namespace Jasper.Testing.Runtime.Samples
             _ex = ex;
         }
 
-        public async ValueTask ExecuteAsync(IExecutionContext execution,
+        public async ValueTask ExecuteAsync(IMessageContext context,
             IJasperRuntime runtime,
             DateTimeOffset now)
         {

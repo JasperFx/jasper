@@ -143,10 +143,10 @@ explicitly in a controller action:
 // logic all by itself
 public class DoItAllMyselfItemController : ControllerBase
 {
-    private readonly IExecutionContext _messaging;
+    private readonly IMessageContext _messaging;
     private readonly ItemsDbContext _db;
 
-    public DoItAllMyselfItemController(IExecutionContext messaging, ItemsDbContext db)
+    public DoItAllMyselfItemController(IMessageContext messaging, ItemsDbContext db)
     {
         _messaging = messaging;
         _db = db;

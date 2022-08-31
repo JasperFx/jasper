@@ -80,7 +80,7 @@ public class MarkItemController : ControllerBase
     public async Task Post(
         [FromBody] MarkItemReady command,
         [FromServices] IDocumentSession session,
-        [FromServices] IExecutionContext context
+        [FromServices] IMessageContext context
     )
     {
         // Enroll in the Jasper outbox

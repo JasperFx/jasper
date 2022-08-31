@@ -101,7 +101,7 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IW
         handleMethod.AsyncMode = AsyncMode.AsyncTask;
 
         handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
-            $"context.{nameof(IExecutionContext.Envelope)}"));
+            $"context.{nameof(IMessageContext.Envelope)}"));
     }
 
     Task<bool> ICodeFile.AttachTypes(GenerationRules rules, Assembly assembly, IServiceProvider services,

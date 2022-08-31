@@ -64,8 +64,8 @@ public class SqlServerDurabilityCompliance : DurabilityComplianceContext<Trigger
         };
     }
 
-    protected override async Task withContext(IHost sender, IExecutionContext context,
-        Func<IExecutionContext, ValueTask> action)
+    protected override async Task withContext(IHost sender, IMessageContext context,
+        Func<IMessageContext, ValueTask> action)
     {
         #region sample_basic_sql_server_outbox_sample
 
@@ -75,7 +75,7 @@ public class SqlServerDurabilityCompliance : DurabilityComplianceContext<Trigger
 
             var tx = conn.BeginTransaction();
 
-            // "context" is an IExecutionContext object
+            // "context" is an IMessageContext object
             await context.EnlistInOutboxAsync(tx);
 
             await action(context);
@@ -98,7 +98,7 @@ public class SqlServerDurabilityCompliance : DurabilityComplianceContext<Trigger
 public class TriggerMessageReceiver
 {
     [Transactional]
-    public ValueTask Handle(TriggerMessage message, IExecutionContext context)
+    public ValueTask Handle(TriggerMessage message, IMessageContext context)
     {
         var response = new CascadedMessage
         {

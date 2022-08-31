@@ -29,7 +29,7 @@ public static class JasperEnvelopeEntityFrameworkCoreExtensions
     /// <param name="context"></param>
     /// <param name="messages"></param>
     /// <param name="cancellation"></param>
-    public static async Task SaveChangesAndFlushMessagesAsync(this DbContext context, IExecutionContext messages,
+    public static async Task SaveChangesAndFlushMessagesAsync(this DbContext context, IMessageContext messages,
         CancellationToken cancellation = default)
     {
         await context.SaveChangesAsync(cancellation);
@@ -62,7 +62,7 @@ public static class JasperEnvelopeEntityFrameworkCoreExtensions
     /// <returns></returns>
     public static Task EnlistInOutboxAsync(this IMessagePublisher messaging, DbContext dbContext)
     {
-        var executionContext = messaging.As<IExecutionContext>();
+        var executionContext = messaging.As<IMessageContext>();
         var transaction = new EfCoreEnvelopeOutbox(dbContext, executionContext);
 
         return executionContext.EnlistInOutboxAsync(transaction);

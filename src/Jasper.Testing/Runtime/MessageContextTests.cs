@@ -14,13 +14,13 @@ using Xunit;
 
 namespace Jasper.Testing.Runtime
 {
-    public class ExecutionContextTests
+    public class MessageContextTests
     {
         private readonly MockJasperRuntime theRuntime;
-        private readonly ExecutionContext theContext;
+        private readonly MessageContext theContext;
         private readonly Envelope theEnvelope;
 
-        public ExecutionContextTests()
+        public MessageContextTests()
         {
             theRuntime = new MockJasperRuntime();
 
@@ -28,9 +28,9 @@ namespace Jasper.Testing.Runtime
             original.Id = Guid.NewGuid();
             original.CorrelationId = Guid.NewGuid().ToString();
 
-            var context = new ExecutionContext(theRuntime);
+            var context = new MessageContext(theRuntime);
             context.ReadEnvelope(original, InvocationCallback.Instance);
-            theContext = context.As<ExecutionContext>();
+            theContext = context.As<MessageContext>();
 
             theEnvelope = ObjectMother.Envelope();
 

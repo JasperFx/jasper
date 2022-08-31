@@ -12,9 +12,9 @@ public class RequeueContinuation : IContinuation, IContinuationSource
     {
     }
 
-    public ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
+    public ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
     {
-        return execution.DeferAsync();
+        return context.DeferAsync();
     }
 
     public override string ToString()

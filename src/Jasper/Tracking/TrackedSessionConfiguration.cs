@@ -94,7 +94,7 @@ public class TrackedSessionConfiguration
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    public async Task<ITrackedSession> ExecuteAndWaitAsync(Func<IExecutionContext, Task> action)
+    public async Task<ITrackedSession> ExecuteAndWaitAsync(Func<IMessageContext, Task> action)
     {
         _session.Execution = action;
         await _session.ExecuteAndTrackAsync();
@@ -107,14 +107,14 @@ public class TrackedSessionConfiguration
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    public async Task<ITrackedSession> ExecuteAndWaitAsync(Func<IExecutionContext, ValueTask> action)
+    public async Task<ITrackedSession> ExecuteAndWaitAsync(Func<IMessageContext, ValueTask> action)
     {
         _session.Execution = c => action(c).AsTask();
         await _session.ExecuteAndTrackAsync();
         return _session;
     }
 
-    public async Task<ITrackedSession> ExecuteWithoutWaitingAsync(Func<IExecutionContext, Task> action)
+    public async Task<ITrackedSession> ExecuteWithoutWaitingAsync(Func<IMessageContext, Task> action)
     {
         _session.Execution = action;
         await _session.ExecuteAndTrackAsync();

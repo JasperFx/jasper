@@ -33,14 +33,14 @@ code generation with Roslyn](https://jeremydmiller.com/2015/11/11/using-roslyn-f
 ```cs
 public interface IMessageHandler
 {
-    Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
+    Task HandleAsync(IMessageContext context, CancellationToken cancellation);
 }
 
 public abstract class MessageHandler : IMessageHandler
 {
     public HandlerChain? Chain { get; set; }
 
-    public abstract Task HandleAsync(IExecutionContext context, CancellationToken cancellation);
+    public abstract Task HandleAsync(IMessageContext context, CancellationToken cancellation);
 }
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper/Runtime/Handlers/MessageHandler.cs#L6-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_messagehandler' title='Start of snippet'>anchor</a></sup>
@@ -212,10 +212,10 @@ public class EnvelopeUsingHandler
 
 See <[linkto:documentation/integration/customizing_envelopes]> for more information on interacting with `Envelope` objects.
 
-## Using the Current IExecutionContext
+## Using the Current IMessageContext
 
-If you want to access or use the current `IExecutionContext` for the message being handled to send response messages
-or maybe to enqueue local commands within the current outbox scope, just take in `IExecutionContext` as a method argument
+If you want to access or use the current `IMessageContext` for the message being handled to send response messages
+or maybe to enqueue local commands within the current outbox scope, just take in `IMessageContext` as a method argument
 like in this example:
 
 <!-- snippet: sample_PingHandler -->
@@ -229,7 +229,7 @@ namespace Ponger;
 
 public class PingHandler
 {
-    public ValueTask Handle(Ping ping, ILogger<PingHandler> logger, IExecutionContext context)
+    public ValueTask Handle(Ping ping, ILogger<PingHandler> logger, IMessageContext context)
     {
         logger.LogInformation("Got Ping #{Number}", ping.Number);
         return context.RespondToSenderAsync(new Pong { Number = ping.Number });
@@ -249,7 +249,7 @@ public static class PingHandler
         // Jasper supports method injection similar to ASP.Net Core MVC
         // In this case though, IMessageContext is scoped to the message
         // being handled
-        IExecutionContext context)
+        IMessageContext context)
     {
         ConsoleWriter.Write(ConsoleColor.Blue, $"Got ping #{message.Number}");
 

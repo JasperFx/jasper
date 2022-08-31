@@ -60,7 +60,7 @@ public sealed partial class JasperRuntime : IJasperRuntime, IHostedService
         return _container.GetAllInstances<IMissingHandler>();
     }
 
-    public ObjectPool<ExecutionContext> ExecutionPool { get; }
+    public ObjectPool<MessageContext> ExecutionPool { get; }
 
     public DurabilityAgent? Durability { get; private set; }
 

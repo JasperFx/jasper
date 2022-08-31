@@ -51,7 +51,7 @@ namespace DocumentationSamples
 
 
         #region sample_IServiceBus.Invoke
-        public Task Invoke(IExecutionContext bus)
+        public Task Invoke(IMessageContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -66,7 +66,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_IServiceBus.Enqueue
-        public ValueTask Enqueue(IExecutionContext bus)
+        public ValueTask Enqueue(IMessageContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -81,7 +81,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_IServiceBus.Enqueue_to_specific_worker_queue
-        public ValueTask EnqueueToQueue(IExecutionContext bus)
+        public ValueTask EnqueueToQueue(IMessageContext bus)
         {
             var @event = new InvoiceCreated
             {
@@ -98,7 +98,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_send_delayed_message
-        public async Task SendScheduledMessage(IExecutionContext bus, Guid invoiceId)
+        public async Task SendScheduledMessage(IMessageContext bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
             {
@@ -115,7 +115,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_schedule_job_locally
-        public async Task ScheduleLocally(IExecutionContext bus, Guid invoiceId)
+        public async Task ScheduleLocally(IMessageContext bus, Guid invoiceId)
         {
             var message = new ValidateInvoiceIsNotLate
             {
@@ -132,7 +132,7 @@ namespace DocumentationSamples
         #endregion
 
         #region sample_sending_message_with_servicebus
-        public ValueTask SendMessage(IExecutionContext bus)
+        public ValueTask SendMessage(IMessageContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
             // message
@@ -150,7 +150,7 @@ namespace DocumentationSamples
 
 
         #region sample_publishing_message_with_servicebus
-        public ValueTask PublishMessage(IExecutionContext bus)
+        public ValueTask PublishMessage(IMessageContext bus)
         {
             // In this case, we're sending an "InvoiceCreated"
             // message
@@ -168,7 +168,7 @@ namespace DocumentationSamples
 
 
         #region sample_send_message_to_specific_destination
-        public async Task SendMessageToSpecificDestination(IExecutionContext bus)
+        public async Task SendMessageToSpecificDestination(IMessageContext bus)
         {
             var @event = new InvoiceCreated
             {

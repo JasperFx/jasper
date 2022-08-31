@@ -13,7 +13,7 @@ public class MartenEnvelopeOutbox : IEnvelopeOutbox
     private readonly IDocumentSession _session;
     private readonly PostgresqlSettings _settings;
 
-    public MartenEnvelopeOutbox(IDocumentSession session, IExecutionContext bus)
+    public MartenEnvelopeOutbox(IDocumentSession session, IMessageContext bus)
     {
         if (bus.Persistence is PostgresqlEnvelopePersistence persistence)
         {

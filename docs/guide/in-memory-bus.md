@@ -12,7 +12,7 @@ As such, you have a fair amount of control over parallelization and even some ba
 ## Enqueueing Messages Locally
 
 ::: tip warning
-The `IMessagePublisher` and `IExecutionContext` interfaces both implement the `ICommandBus` interface as well.
+The `IMessagePublisher` and `IMessageContext` interfaces both implement the `ICommandBus` interface as well.
 :::
 
 You can queue up messages to be executed locally and asynchronously in a background thread:
@@ -140,7 +140,7 @@ The "scheduled execution" feature can be used with local execution within the sa
 <!-- snippet: sample_schedule_job_locally -->
 <a id='snippet-sample_schedule_job_locally'></a>
 ```cs
-public async Task ScheduleLocally(IExecutionContext bus, Guid invoiceId)
+public async Task ScheduleLocally(IMessageContext bus, Guid invoiceId)
 {
     var message = new ValidateInvoiceIsNotLate
     {
@@ -209,7 +209,7 @@ If you want to enqueue a message locally to a specific worker queue, you can use
 <!-- snippet: sample_IServiceBus.Enqueue_to_specific_worker_queue -->
 <a id='snippet-sample_iservicebus.enqueue_to_specific_worker_queue'></a>
 ```cs
-public ValueTask EnqueueToQueue(IExecutionContext bus)
+public ValueTask EnqueueToQueue(IMessageContext bus)
 {
     var @event = new InvoiceCreated
     {

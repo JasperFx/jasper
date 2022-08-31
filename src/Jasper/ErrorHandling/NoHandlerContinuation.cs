@@ -16,36 +16,36 @@ public class NoHandlerContinuation : IContinuation
         _root = root;
     }
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution,
+    public async ValueTask ExecuteAsync(IMessageContext context,
         IJasperRuntime runtime,
         DateTimeOffset now)
     {
-        if (execution.Envelope == null) throw new InvalidOperationException("Context does not have an Envelope");
+        if (context.Envelope == null) throw new InvalidOperationException("Context does not have an Envelope");
 
-        execution.Logger.NoHandlerFor(execution.Envelope!);
+        context.Logger.NoHandlerFor(context.Envelope!);
 
         foreach (var handler in _handlers)
         {
             try
             {
-                await handler.HandleAsync(execution, _root);
+                await handler.HandleAsync(context, _root);
             }
             catch (Exception? e)
             {
-                execution.Logger.LogException(e);
+                context.Logger.LogException(e);
             }
         }
 
-        if (execution.Envelope.AckRequested)
+        if (context.Envelope.AckRequested)
         {
-            await execution.SendAcknowledgementAsync();
+            await context.SendAcknowledgementAsync();
         }
 
-        await execution.CompleteAsync();
+        await context.CompleteAsync();
 
         // These two lines are important to make the message tracking work
         // if there is no handler
-        execution.Logger.ExecutionFinished(execution.Envelope);
-        execution.Logger.MessageSucceeded(execution.Envelope);
+        context.Logger.ExecutionFinished(context.Envelope);
+        context.Logger.MessageSucceeded(context.Envelope);
     }
 }

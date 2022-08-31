@@ -26,7 +26,7 @@ public class CreateOrderController : ControllerBase
     public async Task Create(
         [FromBody] CreateOrder command,
         [FromServices] IDocumentSession session,
-        [FromServices] IExecutionContext context)
+        [FromServices] IMessageContext context)
     {
         // Gotta connection the Marten session into
         // the Jasper outbox
@@ -113,7 +113,7 @@ public class LonghandOrderHandler
     public static async Task Handle(
         CreateOrder command,
         IDocumentSession session,
-        IExecutionContext context,
+        IMessageContext context,
         CancellationToken cancellation)
     {
         // Connect the Marten session to the outbox

@@ -48,13 +48,13 @@ public class sql_server_scheduled_jobs : IAsyncLifetime
 
     protected Task ScheduleMessage(int id, int seconds)
     {
-        return theHost.Services.GetRequiredService<IExecutionContext>()
+        return theHost.Services.GetRequiredService<IMessageContext>()
             .ScheduleAsync(new ScheduledMessage { Id = id }, seconds.Seconds());
     }
 
     protected Task ScheduleSendMessage(int id, int seconds)
     {
-        return theHost.Services.GetRequiredService<IExecutionContext>()
+        return theHost.Services.GetRequiredService<IMessageContext>()
             .ScheduleAsync(new ScheduledMessage { Id = id }, seconds.Seconds());
     }
 

@@ -13,7 +13,7 @@ public class TransactionalFrame : AsyncFrame
     private readonly IList<Loaded> _loadedDocs = new List<Loaded>();
 
     private readonly IList<Variable> _saved = new List<Variable>();
-    private Variable? _executionContext;
+    private Variable? _messageContext;
 
     public TransactionalFrame(Type dbContextType)
     {
@@ -42,12 +42,12 @@ public class TransactionalFrame : AsyncFrame
         _dbContext = chain.FindVariable(_dbContextType);
 
         // Inside of messaging. Not sure how this is gonna work for HTTP yet
-        _executionContext = chain.TryFindVariable(typeof(IExecutionContext), VariableSource.NotServices) ??
-                   chain.FindVariable(typeof(IExecutionContext));
+        _messageContext = chain.TryFindVariable(typeof(IMessageContext), VariableSource.NotServices) ??
+                   chain.FindVariable(typeof(IMessageContext));
 
-        if (_executionContext != null)
+        if (_messageContext != null)
         {
-            yield return _executionContext;
+            yield return _messageContext;
         }
 
         if (_dbContext != null)
@@ -59,7 +59,7 @@ public class TransactionalFrame : AsyncFrame
     public override void GenerateCode(GeneratedMethod method, ISourceWriter writer)
     {
         writer.Write(
-            $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInOutboxAsync)}({_executionContext!.Usage}, {_dbContext!.Usage});");
+            $"await {typeof(JasperEnvelopeEntityFrameworkCoreExtensions).FullName}.{nameof(JasperEnvelopeEntityFrameworkCoreExtensions.EnlistInOutboxAsync)}({_messageContext!.Usage}, {_dbContext!.Usage});");
 
         foreach (var loaded in _loadedDocs) loaded.Write(writer, _dbContext);
 

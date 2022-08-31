@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
 using Xunit;
-using ExecutionContext = Jasper.Runtime.ExecutionContext;
 
 namespace Jasper.Testing.Compilation
 {
@@ -49,11 +48,11 @@ namespace Jasper.Testing.Compilation
             return _host.Get<HandlerGraph>().HandlerFor(typeof(TMessage));
         }
 
-        public async Task<IExecutionContext> Execute<TMessage>(TMessage message)
+        public async Task<IMessageContext> Execute<TMessage>(TMessage message)
         {
             var handler = HandlerFor<TMessage>();
             theEnvelope = new Envelope(message);
-            var context = new ExecutionContext(_host.Get<IJasperRuntime>());
+            var context = new MessageContext(_host.Get<IJasperRuntime>());
             context.ReadEnvelope(theEnvelope, InvocationCallback.Instance);
 
             await handler.HandleAsync(context, default(CancellationToken));

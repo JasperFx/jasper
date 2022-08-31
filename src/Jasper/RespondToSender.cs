@@ -15,7 +15,7 @@ public class RespondToSender : ISendMyself
         _message = message;
     }
 
-    public ValueTask ApplyAsync(IExecutionContext context)
+    public ValueTask ApplyAsync(IMessageContext context)
     {
         return context.RespondToSenderAsync(_message);
     }

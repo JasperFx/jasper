@@ -131,14 +131,14 @@ public abstract class DurabilityComplianceContext<TTriggerHandler, TItemCreatedH
     protected abstract ItemCreated loadItem(IHost receiver, Guid id);
 
 
-    protected abstract Task withContext(IHost sender, IExecutionContext context,
-        Func<IExecutionContext, ValueTask> action);
+    protected abstract Task withContext(IHost sender, IMessageContext context,
+        Func<IMessageContext, ValueTask> action);
 
-    private async Task send(Func<IExecutionContext, ValueTask> action)
+    private async Task send(Func<IMessageContext, ValueTask> action)
     {
         var container = theSender.Services.As<IContainer>();
         await using var nested = container.GetNestedContainer();
-        await withContext(theSender, nested.GetInstance<IExecutionContext>(), action);
+        await withContext(theSender, nested.GetInstance<IMessageContext>(), action);
     }
 
     [Fact]

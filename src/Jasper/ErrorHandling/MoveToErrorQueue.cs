@@ -22,16 +22,16 @@ public class MoveToErrorQueue : IContinuation
         _exception = exception ?? throw new ArgumentNullException(nameof(exception));
     }
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution,
+    public async ValueTask ExecuteAsync(IMessageContext context,
         IJasperRuntime runtime,
         DateTimeOffset now)
     {
-        await execution.SendFailureAcknowledgementAsync($"Moved message {execution.Envelope!.Id} to the Error Queue.\n{_exception}");
+        await context.SendFailureAcknowledgementAsync($"Moved message {context.Envelope!.Id} to the Error Queue.\n{_exception}");
 
-        await execution.MoveToDeadLetterQueueAsync(_exception);
+        await context.MoveToDeadLetterQueueAsync(_exception);
 
-        execution.Logger.MessageFailed(execution.Envelope, _exception);
-        execution.Logger.MovedToErrorQueue(execution.Envelope, _exception);
+        context.Logger.MessageFailed(context.Envelope, _exception);
+        context.Logger.MovedToErrorQueue(context.Envelope, _exception);
     }
 
     public override string ToString()

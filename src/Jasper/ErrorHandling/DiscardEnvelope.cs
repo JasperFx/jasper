@@ -12,18 +12,18 @@ public class DiscardEnvelope : IContinuation, IContinuationSource
     {
     }
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution,
+    public async ValueTask ExecuteAsync(IMessageContext context,
         IJasperRuntime runtime,
         DateTimeOffset now)
     {
         try
         {
-            execution.Logger.DiscardedEnvelope(execution.Envelope!);
-            await execution.CompleteAsync();
+            context.Logger.DiscardedEnvelope(context.Envelope!);
+            await context.CompleteAsync();
         }
         catch (Exception? e)
         {
-            execution.Logger.LogException(e);
+            context.Logger.LogException(e);
         }
     }
 

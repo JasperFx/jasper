@@ -11,13 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Jasper.Runtime;
 
-public class ExecutionContext : MessagePublisher, IExecutionContext, IEnvelopeOutbox
+public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 {
     private readonly IList<Envelope> _scheduled = new List<Envelope>();
     private IChannelCallback? _channel;
     private object? _sagaId;
 
-    public ExecutionContext(IJasperRuntime runtime) : base(runtime, Guid.NewGuid().ToString())
+    public MessageContext(IJasperRuntime runtime) : base(runtime, Guid.NewGuid().ToString())
     {
     }
 

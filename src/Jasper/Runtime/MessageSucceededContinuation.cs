@@ -12,26 +12,26 @@ public class MessageSucceededContinuation : IContinuation
     {
     }
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution,
+    public async ValueTask ExecuteAsync(IMessageContext context,
         IJasperRuntime runtime,
         DateTimeOffset now)
     {
         try
         {
-            await execution.FlushOutgoingMessagesAsync();
+            await context.FlushOutgoingMessagesAsync();
 
-            await execution.CompleteAsync();
+            await context.CompleteAsync();
 
-            execution.Logger.MessageSucceeded(execution.Envelope!);
+            context.Logger.MessageSucceeded(context.Envelope!);
         }
         catch (Exception ex)
         {
-            await execution.SendFailureAcknowledgementAsync("Sending cascading message failed: " + ex.Message);
+            await context.SendFailureAcknowledgementAsync("Sending cascading message failed: " + ex.Message);
 
-            execution.Logger.LogException(ex, execution.Envelope!.Id, ex.Message);
-            execution.Logger.MessageFailed(execution.Envelope, ex);
+            context.Logger.LogException(ex, context.Envelope!.Id, ex.Message);
+            context.Logger.MessageFailed(context.Envelope, ex);
 
-            await new MoveToErrorQueue(ex).ExecuteAsync(execution, runtime, now);
+            await new MoveToErrorQueue(ex).ExecuteAsync(context, runtime, now);
         }
     }
 }

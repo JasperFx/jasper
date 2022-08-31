@@ -10,9 +10,9 @@ namespace Jasper.Persistence.Marten;
 
 internal class PublishIncomingEventsBeforeCommit : DocumentSessionListenerBase
 {
-    private readonly IExecutionContext _bus;
+    private readonly IMessageContext _bus;
 
-    public PublishIncomingEventsBeforeCommit(IExecutionContext bus)
+    public PublishIncomingEventsBeforeCommit(IMessageContext bus)
     {
         _bus = bus;
     }
@@ -34,9 +34,9 @@ internal class PublishIncomingEventsBeforeCommit : DocumentSessionListenerBase
 
 internal class FlushOutgoingMessagesOnCommit : DocumentSessionListenerBase
 {
-    private readonly IExecutionContext _bus;
+    private readonly IMessageContext _bus;
 
-    public FlushOutgoingMessagesOnCommit(IExecutionContext bus)
+    public FlushOutgoingMessagesOnCommit(IMessageContext bus)
     {
         _bus = bus;
     }

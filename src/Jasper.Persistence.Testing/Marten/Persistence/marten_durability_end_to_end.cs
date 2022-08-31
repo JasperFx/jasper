@@ -148,7 +148,7 @@ public class marten_durability_end_to_end : IAsyncLifetime
 
     protected ValueTask SendFrom(string sender, string name)
     {
-        return _senders[sender].Services.GetRequiredService<IExecutionContext>().SendAsync(new TraceMessage { Name = name });
+        return _senders[sender].Services.GetRequiredService<IMessageContext>().SendAsync(new TraceMessage { Name = name });
     }
 
     protected async Task SendMessages(string sender, int count)
@@ -158,7 +158,7 @@ public class marten_durability_end_to_end : IAsyncLifetime
         for (var i = 0; i < count; i++)
         {
             var msg = new TraceMessage { Name = Guid.NewGuid().ToString() };
-            await runtime.Services.GetRequiredService<IExecutionContext>().SendAsync(msg);
+            await runtime.Services.GetRequiredService<IMessageContext>().SendAsync(msg);
         }
     }
 

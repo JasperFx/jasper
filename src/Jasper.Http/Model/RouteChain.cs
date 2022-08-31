@@ -188,7 +188,7 @@ namespace Jasper.Http.Model
         public override bool ShouldFlushOutgoingMessages()
         {
             return Action.Method.GetParameters()
-                .Any(x => x.ParameterType == typeof(IExecutionContext));
+                .Any(x => x.ParameterType == typeof(IMessageContext));
         }
 
         public void AttachPreBuiltHandler(GenerationRules rules, IContainer container, Type[] handlerTypes)

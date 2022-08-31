@@ -41,8 +41,8 @@ public class MartenDurabilityCompliance : DurabilityComplianceContext<TriggerMes
     }
 
 
-    protected override async Task withContext(IHost sender, IExecutionContext context,
-        Func<IExecutionContext, ValueTask> action)
+    protected override async Task withContext(IHost sender, IMessageContext context,
+        Func<IMessageContext, ValueTask> action)
     {
         var senderStore = sender.Get<IDocumentStore>();
 
@@ -65,7 +65,7 @@ public class MartenDurabilityCompliance : DurabilityComplianceContext<TriggerMes
 public class TriggerMessageReceiver
 {
     [Transactional]
-    public ValueTask Handle(TriggerMessage message, IDocumentSession session, IExecutionContext context)
+    public ValueTask Handle(TriggerMessage message, IDocumentSession session, IMessageContext context)
     {
         var response = new CascadedMessage
         {

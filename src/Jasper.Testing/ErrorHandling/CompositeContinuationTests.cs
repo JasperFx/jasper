@@ -20,7 +20,7 @@ namespace Jasper.Testing.ErrorHandling
 
             var continuation = new CompositeContinuation(inner1, inner2);
 
-            var context = Substitute.For<IExecutionContext>();
+            var context = Substitute.For<IMessageContext>();
             var runtime = new MockJasperRuntime();
             var now = DateTimeOffset.UtcNow;
 
@@ -39,7 +39,7 @@ namespace Jasper.Testing.ErrorHandling
 
             var continuation = new CompositeContinuation(inner1, inner2);
 
-            var context = Substitute.For<IExecutionContext>();
+            var context = Substitute.For<IMessageContext>();
             var runtime = new MockJasperRuntime();
             var now = DateTimeOffset.UtcNow;
 

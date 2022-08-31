@@ -20,7 +20,7 @@ namespace Jasper.Testing.ErrorHandling
             var envelope = ObjectMother.Envelope();
             envelope.Attempts = 1;
 
-            var context = Substitute.For<IExecutionContext>();
+            var context = Substitute.For<IMessageContext>();
             context.Envelope.Returns(envelope);
 
             await continuation.ExecuteAsync(context, new MockJasperRuntime(), DateTimeOffset.Now);

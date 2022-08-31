@@ -82,7 +82,7 @@ public static class JasperHostMessageTrackingExtensions
     /// <param name="action"></param>
     /// <returns></returns>
     public static async Task<ITrackedSession> ExecuteAndWaitAsync(this IHost host,
-        Func<IExecutionContext, Task> action,
+        Func<IMessageContext, Task> action,
         int timeoutInMilliseconds = 5000)
     {
         var session = new TrackedSession(host)
@@ -104,7 +104,7 @@ public static class JasperHostMessageTrackingExtensions
     /// <param name="action"></param>
     /// <returns></returns>
     internal static async Task<ITrackedSession> ExecuteAndWaitValueTaskAsync(this IHost host,
-        Func<IExecutionContext, ValueTask> action,
+        Func<IMessageContext, ValueTask> action,
         int timeoutInMilliseconds = 5000)
     {
         var session = new TrackedSession(host)

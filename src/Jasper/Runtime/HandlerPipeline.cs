@@ -14,7 +14,7 @@ namespace Jasper.Runtime;
 public class HandlerPipeline : IHandlerPipeline
 {
     private readonly CancellationToken _cancellation;
-    private readonly ObjectPool<ExecutionContext> _contextPool;
+    private readonly ObjectPool<MessageContext> _contextPool;
     private readonly HandlerGraph _graph;
 
     private readonly JasperRuntime _runtime;
@@ -159,7 +159,7 @@ public class HandlerPipeline : IHandlerPipeline
         }
     }
 
-    private async Task<IContinuation> executeAsync(IExecutionContext context, Envelope envelope)
+    private async Task<IContinuation> executeAsync(IMessageContext context, Envelope envelope)
     {
         if (envelope.IsExpired())
         {

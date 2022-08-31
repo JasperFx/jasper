@@ -57,7 +57,7 @@ app.MapPost("/orders/create2", (CreateOrder command, ICommandBus bus)
 
 #region sample_create_order_through_minimal_api
 
-app.MapPost("/orders/create3", async (CreateOrder command, IDocumentSession session, IExecutionContext context) =>
+app.MapPost("/orders/create3", async (CreateOrder command, IDocumentSession session, IMessageContext context) =>
 {
     // Gotta connection the Marten session into
     // the Jasper outbox

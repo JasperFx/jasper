@@ -28,14 +28,14 @@ public class RetryInlineContinuation : IContinuation, IContinuationSource
 
     public TimeSpan? Delay => _delay;
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
+    public async ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
     {
         if (_delay != null)
         {
             await Task.Delay(_delay.Value).ConfigureAwait(false);
         }
 
-        await execution.RetryExecutionNowAsync().ConfigureAwait(false);
+        await context.RetryExecutionNowAsync().ConfigureAwait(false);
     }
 
     public override string ToString()

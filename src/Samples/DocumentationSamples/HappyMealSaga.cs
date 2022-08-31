@@ -221,7 +221,7 @@ namespace DocumentationSamples
             Order = order;
             Id = ++_orderIdSequence;
 
-            // You can explicitly call the IMessagePublisher or IExecutionContext if you prefer
+            // You can explicitly call the IMessagePublisher or IMessageContext if you prefer
             if (order.Drink == "Soda") await publisher.SendAsync(new SodaRequested {OrderId = Id});
         }
     }

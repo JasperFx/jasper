@@ -14,7 +14,7 @@ public class EfCoreEnvelopeOutbox : IEnvelopeOutbox
     private readonly DbContext _db;
     private readonly DatabaseSettings _settings;
 
-    public EfCoreEnvelopeOutbox(DbContext db, IExecutionContext messaging)
+    public EfCoreEnvelopeOutbox(DbContext db, IMessageContext messaging)
     {
         if (messaging.Persistence is IDatabaseBackedEnvelopePersistence persistence)
         {

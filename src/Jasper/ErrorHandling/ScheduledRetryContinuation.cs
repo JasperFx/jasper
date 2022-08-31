@@ -15,11 +15,11 @@ public class ScheduledRetryContinuation : IContinuation, IContinuationSource
 
     public TimeSpan Delay => _delay;
 
-    public async ValueTask ExecuteAsync(IExecutionContext execution, IJasperRuntime runtime, DateTimeOffset now)
+    public async ValueTask ExecuteAsync(IMessageContext context, IJasperRuntime runtime, DateTimeOffset now)
     {
         var scheduledTime = now.Add(_delay);
 
-        await execution.ReScheduleAsync(scheduledTime);
+        await context.ReScheduleAsync(scheduledTime);
     }
 
     public override string ToString()

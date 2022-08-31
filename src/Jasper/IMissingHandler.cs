@@ -17,7 +17,7 @@ public interface IMissingHandler
     /// <param name="context"></param>
     /// <param name="root"></param>
     /// <returns></returns>
-    ValueTask HandleAsync(IExecutionContext context, IJasperRuntime root);
+    ValueTask HandleAsync(IMessageContext context, IJasperRuntime root);
 }
 
 #endregion

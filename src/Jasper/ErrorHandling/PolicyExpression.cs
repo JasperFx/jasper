@@ -29,7 +29,7 @@ public interface IAdditionalActions
     /// <param name="action"></param>
     /// <param name="description"></param>
     /// <returns></returns>
-    IAdditionalActions AlsoDo(Func<IJasperRuntime, IExecutionContext, Exception, ValueTask> action,
+    IAdditionalActions AlsoDo(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action,
         string description = "User supplied");
 }
 
@@ -140,7 +140,7 @@ internal class FailureActions : IAdditionalActions, IFailureActions
         return this;
     }
 
-    public IAdditionalActions AlsoDo(Func<IJasperRuntime, IExecutionContext, Exception, ValueTask> action, string description = "User supplied")
+    public IAdditionalActions AlsoDo(Func<IJasperRuntime, IMessageContext, Exception, ValueTask> action, string description = "User supplied")
     {
         throw new NotImplementedException();
     }

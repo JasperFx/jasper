@@ -2,13 +2,13 @@
 
 [Publish/Subscribe](https://docs.microsoft.com/en-us/azure/architecture/patterns/publisher-subscriber) is a messaging pattern where the senders of messages do not need to specifically know what the specific subscribers are for a given message. In this case, some kind of middleware or infrastructure is responsible for either allowing subscribers to express interest in what messages they need to receive or apply routing rules to send the published messages to the right places. Jasper's messaging support was largely built to support the publish/subscibe messaging patterm.
 
-To send a message with Jasper, use the `IMessagePublisher` interface or the bigger `IExecutionContext` interface that
+To send a message with Jasper, use the `IMessagePublisher` interface or the bigger `IMessageContext` interface that
 are registered in your application's IoC container. The sample below shows the most common usage:
 
 <!-- snippet: sample_sending_message_with_servicebus -->
 <a id='snippet-sample_sending_message_with_servicebus'></a>
 ```cs
-public ValueTask SendMessage(IExecutionContext bus)
+public ValueTask SendMessage(IMessageContext bus)
 {
     // In this case, we're sending an "InvoiceCreated"
     // message
@@ -36,7 +36,7 @@ no subscriber:
 <!-- snippet: sample_publishing_message_with_servicebus -->
 <a id='snippet-sample_publishing_message_with_servicebus'></a>
 ```cs
-public ValueTask PublishMessage(IExecutionContext bus)
+public ValueTask PublishMessage(IMessageContext bus)
 {
     // In this case, we're sending an "InvoiceCreated"
     // message

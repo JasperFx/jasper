@@ -16,7 +16,7 @@ namespace Internal.Generated.JasperHandlers
 
 
 
-        public override async System.Threading.Tasks.Task HandleAsync(Jasper.IExecutionContext context, System.Threading.CancellationToken cancellation)
+        public override async System.Threading.Tasks.Task HandleAsync(Jasper.IMessageContext context, System.Threading.CancellationToken cancellation)
         {
             var incrementB2 = (Jasper.Persistence.Testing.Marten.IncrementB2)context.Envelope.Message;
             await using var documentSession = _outboxedSessionFactory.OpenSession(context);
@@ -39,7 +39,7 @@ namespace Internal.Generated.JasperHandlers
     }
 
     // END: IncrementB2Handler1209368298
-    
-    
+
+
 }
 

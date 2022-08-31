@@ -19,7 +19,7 @@ namespace Jasper.Testing.ErrorHandling
 
             var envelope = ObjectMother.Envelope();
 
-            var context = Substitute.For<IExecutionContext>();
+            var context = Substitute.For<IMessageContext>();
             context.Envelope.Returns(envelope);
 
 

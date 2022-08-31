@@ -278,7 +278,7 @@ namespace TestingSupport.Compliance
         {
 
             var id2 = string.Empty;
-            Func<IExecutionContext,Task> action = async context =>
+            Func<IMessageContext,Task> action = async context =>
             {
                 id2 = context.CorrelationId;
 

@@ -25,7 +25,7 @@ namespace Jasper.Testing.ErrorHandling
         [Fact]
         public async Task successful_execution()
         {
-            var context = Substitute.For<IExecutionContext>();
+            var context = Substitute.For<IMessageContext>();
             var token = CancellationToken.None;
 
             await theHandler.HandleAsync(context, token);
@@ -37,7 +37,7 @@ namespace Jasper.Testing.ErrorHandling
         [Fact]
         public async Task failed_execution()
         {
-            var context = Substitute.For<IExecutionContext>();
+            var context = Substitute.For<IMessageContext>();
             var token = CancellationToken.None;
 
             var ex = new InvalidOperationException();

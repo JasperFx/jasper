@@ -28,7 +28,7 @@ namespace Jasper.Http.Testing
     public class SomeEndpointGuy
     {
         [HttpPost("/dostuff")]
-        public void post_do_stuff_with_messages(IExecutionContext context, HttpContext http)
+        public void post_do_stuff_with_messages(IMessageContext context, HttpContext http)
         {
         }
 

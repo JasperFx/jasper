@@ -45,7 +45,7 @@ internal class OpenMartenSessionFrame : AsyncFrame
 
     public override IEnumerable<Variable> FindVariables(IMethodVariables chain)
     {
-        _context = chain.FindVariable(typeof(IExecutionContext));
+        _context = chain.FindVariable(typeof(IMessageContext));
         yield return _context;
 
         _factory = chain.FindVariable(typeof(OutboxedSessionFactory));

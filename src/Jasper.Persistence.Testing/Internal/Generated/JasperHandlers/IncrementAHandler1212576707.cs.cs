@@ -16,7 +16,7 @@ namespace Internal.Generated.JasperHandlers
 
 
 
-        public override async System.Threading.Tasks.Task HandleAsync(Jasper.IExecutionContext context, System.Threading.CancellationToken cancellation)
+        public override async System.Threading.Tasks.Task HandleAsync(Jasper.IMessageContext context, System.Threading.CancellationToken cancellation)
         {
             var letterHandler = new Jasper.Persistence.Testing.Marten.LetterHandler();
             var incrementA = (Jasper.Persistence.Testing.Marten.IncrementA)context.Envelope.Message;
@@ -39,7 +39,7 @@ namespace Internal.Generated.JasperHandlers
     }
 
     // END: IncrementAHandler1212576707
-    
-    
+
+
 }
 

@@ -64,7 +64,7 @@ namespace Jasper.Persistence.Testing.EFCore
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
-            var messaging = Host.Services.GetRequiredService<IExecutionContext>();
+            var messaging = Host.Services.GetRequiredService<IMessageContext>();
 
             var transaction = new EfCoreEnvelopeOutbox(context, messaging);
 
@@ -105,7 +105,7 @@ namespace Jasper.Persistence.Testing.EFCore
             };
 
             var context = Host.Services.GetRequiredService<SampleDbContext>();
-            var messaging = Host.Services.GetRequiredService<IExecutionContext>();
+            var messaging = Host.Services.GetRequiredService<IMessageContext>();
 
             var transaction = new EfCoreEnvelopeOutbox(context, messaging);
 

@@ -116,12 +116,12 @@ namespace Jasper.Persistence.Testing
         protected abstract ItemCreated loadItem(IHost receiver, Guid id);
 
 
-        protected abstract Task withContext(IHost sender, IExecutionContext context,
-            Func<IExecutionContext, Task> action);
+        protected abstract Task withContext(IHost sender, IMessageContext context,
+            Func<IMessageContext, Task> action);
 
-        private Task send(Func<IExecutionContext, Task> action)
+        private Task send(Func<IMessageContext, Task> action)
         {
-            return withContext(theSender, theSender.Get<IExecutionContext>(), action);
+            return withContext(theSender, theSender.Get<IMessageContext>(), action);
         }
 
         [Fact]

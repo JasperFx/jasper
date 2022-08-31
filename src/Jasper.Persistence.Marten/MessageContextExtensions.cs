@@ -4,16 +4,16 @@ using Marten;
 
 namespace Jasper.Persistence.Marten;
 
-public static class ExecutionContextExtensions
+public static class MessageContextExtensions
 {
     /// <summary>
-    ///     Enlists the current IExecutionContext in the Marten session's transaction
+    ///     Enlists the current IMessageContext in the Marten session's transaction
     ///     lifecycle
     /// </summary>
     /// <param name="context"></param>
     /// <param name="session"></param>
     /// <returns></returns>
-    public static Task EnlistInOutboxAsync(this IExecutionContext context, IDocumentSession session)
+    public static Task EnlistInOutboxAsync(this IMessageContext context, IDocumentSession session)
     {
         if (context.Transaction is MartenEnvelopeOutbox)
         {

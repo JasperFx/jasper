@@ -20,7 +20,7 @@ namespace Internal.Generated.JasperHandlers
             _outboxedSessionFactory = outboxedSessionFactory;
         }
 
-        public override async Task HandleAsync(IExecutionContext context, CancellationToken cancellation)
+        public override async Task HandleAsync(IMessageContext context, CancellationToken cancellation)
         {
             var markItemReady = (MarkItemReady)context.Envelope.Message;
             await using var documentSession = _outboxedSessionFactory.OpenSession(context);
