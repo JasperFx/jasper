@@ -53,6 +53,19 @@ public partial class JasperRuntime
             await Durability.StopAsync(cancellationToken);
         }
 
+        // Drain the listeners
+        foreach (var listener in _listeners.Values)
+        {
+            try
+            {
+                await listener.StopAsync();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Failed to 'drain' outstanding messages in listener {Uri}", listener.Uri);
+            }
+        }
+
         Advanced.Cancel();
     }
 

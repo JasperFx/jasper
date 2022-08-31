@@ -59,14 +59,12 @@ function tableOfContents() {
 
       },
       {
-        text: "Persistent Messaging",
-        link: '/guide/persistence/',
+        text: "Durable Messaging",
+        link: '/guide/durability/',
         children: [
-          {text: "Stateful Sagas", link: '/guide/persistence/sagas'},
-          {text: "With Postgresql", link: '/guide/persistence/postgresql'},
-          {text: "With Sql Server", link: '/guide/persistence/sqlserver'},
-          {text: "With Marten", link: '/guide/persistence/marten'},
-          {text: "With Entity Framework Core", link: '/guide/persistence/efcore'}
+          {text: "Stateful Sagas", link: '/guide/durability/sagas'},
+          {text: "With Marten", link: '/guide/durability/marten'},
+          {text: "With Entity Framework Core", link: '/guide/durability/efcore'}
         ]
       },
       {
