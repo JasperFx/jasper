@@ -23,6 +23,8 @@ public class sql_server_scheduled_jobs : IAsyncLifetime
             .CreateDefaultBuilder()
             .UseJasper(opts =>
             {
+                opts.Advanced.ScheduledJobPollingTime = 50.Milliseconds();
+
                 opts.Services.AddSingleton(theReceiver);
 
                 opts.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageReceiver>()
@@ -106,6 +108,11 @@ public class sql_server_scheduled_jobs : IAsyncLifetime
         await AfterReceivingMessages();
 
         TheIdOfTheOnlyReceivedMessageShouldBe().ShouldBe(2);
+
+        while (await PersistedScheduledCount() != 2)
+        {
+            await Task.Delay(100.Milliseconds());
+        }
 
         (await PersistedScheduledCount()).ShouldBe(2);
     }

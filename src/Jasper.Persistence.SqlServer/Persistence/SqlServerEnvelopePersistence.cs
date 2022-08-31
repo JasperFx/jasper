@@ -164,4 +164,13 @@ public class SqlServerEnvelopePersistence : DatabaseBackedEnvelopePersistence<Sq
             .With("owner", ownerId)
             .ExecuteNonQueryAsync(_cancellation);
     }
+
+    public override Task<IReadOnlyList<Envelope>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow)
+    {
+        return Session.Transaction
+            .CreateCommand(
+                $"select TOP {Settings.RecoveryBatchSize} {DatabaseConstants.IncomingFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")
+            .With("time", utcNow)
+            .FetchList(r => DatabasePersistence.ReadIncoming(r, _cancellation), _cancellation);
+    }
 }

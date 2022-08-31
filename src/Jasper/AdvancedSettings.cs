@@ -44,7 +44,7 @@ public class AdvancedSettings
 
     /// <summary>
     ///     Governs the page size for how many persisted incoming or outgoing messages
-    ///     will be loaded at one time for attempted retries
+    ///     will be loaded at one time for attempted retries or scheduled jobs
     /// </summary>
     public int RecoveryBatchSize { get; set; } = 100;
 

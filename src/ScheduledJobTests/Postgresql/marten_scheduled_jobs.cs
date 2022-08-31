@@ -24,6 +24,8 @@ public class marten_scheduled_jobs : IAsyncLifetime
             .CreateDefaultBuilder()
             .UseJasper(opts =>
             {
+                opts.Advanced.ScheduledJobPollingTime = 50.Milliseconds();
+
                 opts.Services.AddSingleton(theReceiver);
 
                 opts.Publish(x => x.MessagesFromAssemblyContaining<ScheduledMessageReceiver>()
@@ -107,7 +109,14 @@ public class marten_scheduled_jobs : IAsyncLifetime
 
         await AfterReceivingMessages();
 
+
+
         TheIdOfTheOnlyReceivedMessageShouldBe().ShouldBe(2);
+
+        while (await PersistedScheduledCount() != 2)
+        {
+            await Task.Delay(250.Milliseconds());
+        }
 
         (await PersistedScheduledCount()).ShouldBe(2);
     }

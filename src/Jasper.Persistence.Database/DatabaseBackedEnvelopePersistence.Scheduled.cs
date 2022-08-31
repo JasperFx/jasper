@@ -35,12 +35,5 @@ public abstract partial class DatabaseBackedEnvelopePersistence<T>
     }
 
 
-    public Task<IReadOnlyList<Envelope>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow)
-    {
-        return Session.Transaction
-            .CreateCommand(
-                $"select {DatabaseConstants.IncomingFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time")
-            .With("time", utcNow)
-            .FetchList(r => DatabasePersistence.ReadIncoming(r, _cancellation), _cancellation);
-    }
+    public abstract Task<IReadOnlyList<Envelope>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow);
 }

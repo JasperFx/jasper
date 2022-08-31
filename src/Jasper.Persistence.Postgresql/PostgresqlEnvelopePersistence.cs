@@ -172,4 +172,13 @@ public class PostgresqlEnvelopePersistence : DatabaseBackedEnvelopePersistence<N
             .With("ids", incoming.Select(x => x.Id).ToArray())
             .ExecuteNonQueryAsync(_cancellation);
     }
+
+    public override Task<IReadOnlyList<Envelope>> LoadScheduledToExecuteAsync(DateTimeOffset utcNow)
+    {
+        return Session.Transaction
+            .CreateCommand(
+                $"select {DatabaseConstants.IncomingFields} from {DatabaseSettings.SchemaName}.{DatabaseConstants.IncomingTable} where status = '{EnvelopeStatus.Scheduled}' and execution_time <= @time LIMIT {Settings.RecoveryBatchSize}")
+            .With("time", utcNow)
+            .FetchList(r => DatabasePersistence.ReadIncoming(r, _cancellation), _cancellation);
+    }
 }
