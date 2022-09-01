@@ -47,10 +47,10 @@ function tableOfContents() {
           {text: "Publishing and Sending", link: '/guide/messaging/pubsub'},
           {text: "Message Expiration", link: '/guide/messaging/expiration'},
           {text: "Transports", link: '/guide/messaging/transports/', children: [
-              {text: "With Rabbit MQ", link: '/guide/messaging/rabbitmq'},
-              {text: "With Pulsar", link: '/guide/messaging/pulsar'},
-              {text: "With TCP", link: '/guide/messaging/tcp'},
-              {text: "MassTransit Interop", link: '/guide/messaging/masstransit'}
+              {text: "With Rabbit MQ", link: '/guide/messaging/transports/rabbitmq'},
+              {text: "With Pulsar", link: '/guide/messaging/transports/pulsar'},
+              {text: "With TCP", link: '/guide/messaging/transports/tcp'},
+              {text: "MassTransit Interop", link: '/guide/messaging/transports/masstransit'}
             ]},
           {text: "Scheduled Delivery", link: '/guide/messaging/scheduled'},
           {text: "Message Correlation", link: '/guide/messaging/correlation'},

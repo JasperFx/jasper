@@ -58,7 +58,7 @@ using var host = await Host.CreateDefaultBuilder()
         opts.Handlers.OnException<TimeoutException>().MoveToErrorQueue();
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L114-L123' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_send_to_error_queue' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L114-L123' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_send_to_error_queue' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -78,7 +78,7 @@ using var host = await Host.CreateDefaultBuilder()
 
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L154-L165' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_discard_when_message_is_invalid' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L154-L165' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_discard_when_message_is_invalid' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You have to explicitly discard a message or it will eventually be sent to a dead letter queue when the message has exhausted its configured retries or requeues.
@@ -107,7 +107,7 @@ using var host = await Host.CreateDefaultBuilder()
 
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L170-L184' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_exponential_backoff' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L170-L184' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_exponential_backoff' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Or through attributes on a single message:
@@ -121,7 +121,7 @@ public class MessageWithBackoff
     // whatever members
 }
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L187-L195' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_exponential_backoff_with_attributes' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L187-L195' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_exponential_backoff_with_attributes' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -151,7 +151,7 @@ using var host = await Host.CreateDefaultBuilder()
 
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L135-L147' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_pause_when_system_is_unusable' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L135-L147' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_pause_when_system_is_unusable' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -188,7 +188,7 @@ public class AttributeUsingHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L274-L289' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_configuring_error_handling_with_attributes' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L274-L289' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_configuring_error_handling_with_attributes' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You can also use the fluent interface approach on a specific message type if you put a method with the signature `public static void Configure(HandlerChain chain)`
@@ -219,7 +219,7 @@ public class MyErrorCausingHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L236-L261' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_configure_error_handling_per_chain_with_configure' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L236-L261' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_configure_error_handling_per_chain_with_configure' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 To specify global error handling rules, use the fluent interface directly on `JasperOptions.Handlers` as shown below:
@@ -240,7 +240,7 @@ using var host = await Host.CreateDefaultBuilder()
             .ScheduleRetry(5.Seconds());
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L37-L52' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_globalerrorhandlingconfiguration' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L37-L52' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_globalerrorhandlingconfiguration' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 TODO -- link to chain policies, after that exists:)
@@ -266,7 +266,7 @@ public class ErrorHandlingPolicy : IHandlerPolicy
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L216-L233' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_errorhandlingpolicy' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/Runtime/Samples/error_handling.cs#L216-L233' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_errorhandlingpolicy' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Exception Filtering
@@ -317,7 +317,7 @@ theReceiver = await Host.CreateDefaultBuilder()
             });
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L32-L51' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_inline_exception_handling_action' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L32-L51' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_inline_exception_handling_action' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Optionally, you can implement a new type to handle this same custom logic by
@@ -342,7 +342,7 @@ public class ShippingOrderFailurePolicy : UserDefinedContinuation
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L79-L97' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_shippingorderfailurepolicy' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L79-L97' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_shippingorderfailurepolicy' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 and register that secondary action like this:
@@ -360,7 +360,7 @@ theReceiver = await Host.CreateDefaultBuilder()
             .Discard().And<ShippingOrderFailurePolicy>();
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L117-L129' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_registering_custom_user_continuation_policy' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.Testing/ErrorHandling/custom_error_action_raises_new_message.cs#L117-L129' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_registering_custom_user_continuation_policy' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -413,7 +413,7 @@ using var host = await Host.CreateDefaultBuilder()
             });
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/jasper/blob/master/src/CircuitBreakingTests/Samples.cs#L16-L50' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_circuit_breaker_usage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/CircuitBreakingTests/Samples.cs#L16-L50' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_circuit_breaker_usage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Note that the exception includes and excludes are optional. If there are no explicit `Include()`
