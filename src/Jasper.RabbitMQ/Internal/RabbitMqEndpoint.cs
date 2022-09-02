@@ -36,6 +36,8 @@ namespace Jasper.RabbitMQ.Internal
             });
 
             _parent = parent;
+
+            Mode = EndpointMode.Inline;
         }
 
         public string ExchangeName { get; set; } = string.Empty;

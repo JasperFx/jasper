@@ -6,10 +6,12 @@ come in the box with Jasper, but you'll need an add on Nuget to enable any of th
 
 ## Key Abstractions
 
-* `ITransport` -- manages the connection to the messaging infrastructure like a Rabbit MQ broker and creates all the other objects referenced below
-* `Endpoint` -- the configuration for a sending or receiving address to your transport identified by a unique Uri scheme. For example, a Rabbit MQ endpoint may refer to a queue or an exchange and binding key. A TCP endpoint will refer to a server name and port number
-* `IListener` -- a service that helps read messages from the underlying message transport and relays those to Jasper as Jasper's `Envelope` structure
-* `ISender` -- a service that helps put Jasper `Envelope` structures out into the outgoing messaging infrastructure
+| Abstraction  | Description                                                                                                                                                                                                                                                 |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ITransport` | Manages the connection to the messaging infrastructure like a Rabbit MQ broker and creates all the other objects referenced below                                                                                                                           |
+| `Endpoint`   | The configuration for a sending or receiving address to your transport identified by a unique Uri scheme. For example, a Rabbit MQ endpoint may refer to a queue or an exchange and binding key. A TCP endpoint will refer to a server name and port number |
+| `IListener`  | A service that helps read messages from the underlying message transport and relays those to Jasper as Jasper's `Envelope` structure                                                                                                                        |
+| `ISender`    | A service that helps put Jasper `Envelope` structures out into the outgoing messaging infrastructure                                                                                                                                                        |
 
 To build a new transport, we recommend looking first at the [Jasper.Pulsar](https://github.com/JasperFx/jasper/tree/master/src/Jasper.Pulsar) library
 for a sample. At a bare minimum, you'll need to implement the services above, and also add some kind of `JasperOptions.Use[TransportName]()` extension

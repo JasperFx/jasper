@@ -54,7 +54,11 @@ public ValueTask PublishMessage(IMessageContext bus)
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L152-L167' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_publishing_message_with_servicebus' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## Send Messages to a Specific Endpoint or Topic
+## Send Messages to a Specific Endpoint
+
+// TODO
+
+## Send Messages to a Specific Topic
 
 // TODO
 

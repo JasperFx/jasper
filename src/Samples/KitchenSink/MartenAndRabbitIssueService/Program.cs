@@ -8,6 +8,8 @@ using MartenAndRabbitMessages;
 using Oakton;
 using Oakton.Resources;
 
+#region sample_kitchen_sink_bootstrapping
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ApplyOaktonExtensions();
@@ -64,3 +66,6 @@ app.MapGet("/", () => "Hello World!");
 
 // Actually important to return the exit code here!
 return await app.RunOaktonCommands(args);
+
+
+#endregion

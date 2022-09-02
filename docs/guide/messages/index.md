@@ -2,3 +2,8 @@
 
 
 
+
+## Message Type Name or Alias
+
+* `[MessageIdentity]`
+* default rules
