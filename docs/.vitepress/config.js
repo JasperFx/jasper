@@ -67,17 +67,14 @@ function tableOfContents() {
           {text: "With Entity Framework Core", link: '/guide/durability/efcore'}
         ]
       },
+      {text: 'Messages and Serialization', link: '/guide/messages'},
       {
-        text: "Messages and Message Handlers",
-        link: '/guide/messages/',
+        text: "Message Handlers",
+        link: '/guide/handlers/',
         children: [
-          {text: "Handlers", link: '/guide/messages/handlers'},
           {text: "Discovery", link: '/guide/messages/discovery'},
           {text: "Middleware", link: '/guide/messages/middleware'},
-          {text: "Versioning", link: '/guide/messages/versioning'},
-          {text: "Serialization", link: '/guide/messages/serialization'},
           {text: "Error Handling", link: '/guide/messages/error-handling'},
-
         ]
       },
       {text: "Scheduled", link: '/guide/scheduled'},

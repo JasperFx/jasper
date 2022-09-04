@@ -87,7 +87,7 @@ namespace DocumentationSamples
 
         #endregion
 
-        #region sample_IForwardsTo<PersonBornV2>
+        #region sample_IForwardsTo_PersonBornV2
 
         public class PersonBorn : IForwardsTo<PersonBornV2>
         {

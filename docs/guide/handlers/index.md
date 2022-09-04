@@ -1,8 +1,9 @@
 # Message Handlers
 
-Jasper purposely eschews the typical `IHandler<T>` approach that most .NET messaging frameworks take in favor of a more flexible
+Jasper purposely eschews the typical `IHandler<T>` approach that most .NET messaging frameworks take in favor of just letting you write plain
+old .NET code. To enable that, Jasper more flexible
 model that relies on naming conventions. This might throw some users that are used to being guided by implementing an expected interface
-or base class, but it allows Jasper to be much more flexible and reduces code noise.
+or base class, but it allows Jasper to be much more flexible and potentially reduces code noise compared to similar .NET toolsets.
 
 As an example, here's about the simplest possible handler you could create:
 

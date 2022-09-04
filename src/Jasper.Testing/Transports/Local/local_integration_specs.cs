@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Baseline.Dates;
 using Jasper.Tracking;
 using Shouldly;
@@ -21,7 +22,14 @@ namespace Jasper.Testing.Transports.Local
                 opts.Publish(x => x.Message<Message1>()
                     .ToLocalQueue("incoming"));
 
-                opts.UseSystemTextJsonForSerialization();
+                #region sample_opting_into_STJ
+
+                opts.UseSystemTextJsonForSerialization(stj =>
+                {
+                    stj.UnknownTypeHandling = JsonUnknownTypeHandling.JsonNode;
+                });
+
+                #endregion
 
             });
         }

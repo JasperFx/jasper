@@ -60,28 +60,17 @@ The `[Version("V2")]` attribute usage tells Jasper that this class is "V2" for t
 Jasper will now accept or publish this message using the built in Json serialization with the content type of `application/vnd.person-born.v2+json`.
 Any custom serializers should follow some kind of naming convention for content types that identify versioned representations.
 
-## Message Serializers and Deserializers
+## Message Serializers
 
-You can create custom message deserializers for a message by providing your own implementation of the `IMessageDeserializer` interface from Jasper:
+Jasper needs to be able to serialize and deserialize your message objects when sending messages with external transports like Rabbit MQ or when using the inbox/outbox message storage. To that end, the default serialization is performed with Newtonsoft.Json because of its ubiquity and "battle testedness," but you may also opt into using [System.Text.Json](https://docs.microsoft.com/en-us/dotnet/api/system.text.json?view=net-6.0). 
 
-snippet: sample_IMediaReader
+When using Newtonsoft.Json, the default configuration is:
 
-The easiest way to do this is to just subclass the base `MessageDeserializerBase<T>` class as shown below:
 
-snippet: sample_BlueTextReader
 
-Likewise, to provide a custom message serializer for a message type, you need to implement the `IMessageSerializer` interface shown below:
+To customize the Newtonsoft.Json serialization, use this option:
 
-snippet: sample_IMediaWriter
-
-Again, the easiest way to implement this interface is to subclass the `MessageSerializerBase<T>` class as shown below:
-
-snippet: sample_GreenTextWriter
-
-`IMessageDeserializer` and `IMessageSerializer` classes in the main application assembly are automatically discovered and applied by Jasper. If you need to add custom
-reader or writers from another assembly, you just need to add them to the underlying IoC container like so:
-
-snippet: sample_RegisteringCustomReadersAndWriters
+snippet: sample_CustomizingJsonSerialization
 
 
 ## Custom Serializers

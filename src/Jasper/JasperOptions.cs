@@ -250,11 +250,15 @@ public sealed partial class JasperOptions
     /// <param name="configuration"></param>
     public void UseNewtonsoftForSerialization(Action<JsonSerializerSettings>? configuration = null)
     {
+        #region sample_default_newtonsoft_settings
+
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
             PreserveReferencesHandling = PreserveReferencesHandling.Objects
         };
+
+        #endregion
 
         configuration?.Invoke(settings);
 
