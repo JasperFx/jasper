@@ -72,9 +72,12 @@ function tableOfContents() {
         text: "Message Handlers",
         link: '/guide/handlers/',
         children: [
-          {text: "Discovery", link: '/guide/messages/discovery'},
-          {text: "Middleware", link: '/guide/messages/middleware'},
-          {text: "Error Handling", link: '/guide/messages/error-handling'},
+          {text: "Message Handling Runtime", link: '/guide/handlers/runtime'},
+          {text: "Cascading Messages", link: '/guide/handlers/cascading'},
+          {text: "Discovery", link: '/guide/handlers/discovery'},
+          {text: "Error Handling", link: '/guide/handlers/error-handling'},
+          {text: "Middleware", link: '/guide/handlers/middleware'},
+
         ]
       },
       {text: "Scheduled", link: '/guide/scheduled'},

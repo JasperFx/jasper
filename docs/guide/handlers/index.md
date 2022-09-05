@@ -1,11 +1,14 @@
 # Message Handlers
 
-Jasper purposely eschews the typical `IHandler<T>` approach that most .NET messaging frameworks take in favor of just letting you write plain
-old .NET code. To enable that, Jasper more flexible
-model that relies on naming conventions. This might throw some users that are used to being guided by implementing an expected interface
-or base class, but it allows Jasper to be much more flexible and potentially reduces code noise compared to similar .NET toolsets.
+::: tip
+Jasper's guiding philosophy is to remove code ceremony from a developer's day to day coding, but that comes
+at the cost of using conventions that some developers will decry as "too much magic." If you actually prefer having
+explicit interfaces or base classes or required attributes to direct your code, Jasper might not be for you. If you instead
+prefer low code ceremony where the framework stays out of your code, jump on in!
+:::
 
-As an example, here's about the simplest possible handler you could create:
+Since the whole purpose of Jasper is to connect incoming messages to handling code, most of your time as a user of Jasper is going to be spent
+writing and testing Jasper message handlers. Let's just jump right into the simplest possible message handler implementation:
 
 <!-- snippet: sample_simplest_possible_handler -->
 <a id='snippet-sample_simplest_possible_handler'></a>
@@ -14,56 +17,157 @@ public class MyMessageHandler
 {
     public void Handle(MyMessage message)
     {
-        // do stuff with the message
+        Console.WriteLine("I got a message!");
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L57-L65' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_simplest_possible_handler' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L74-L82' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_simplest_possible_handler' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-Like most frameworks, Jasper follows the [Hollywood Principle](http://wiki.c2.com/?HollywoodPrinciple) where the framework acts as an intermediary
-between the rest of the world and your application code. When a Jasper application receives a `MyMessage` message through one of its transports, Jasper will call your method and pass in the message that it received.
+If you've used other messaging, command execution, or so called "mediator" tool in .NET, you'll surely notice the absence of any kind of
+required `IHandler<T>` type interface that frameworks typically require in order to make your custom code executable by the framework. Instead,
+Jasper intelligently wraps dynamic code around *your* code based on naming conventions so as to
+allow *you* to just write plain old .NET code without any framework specific artifacts in your way.
 
-## How Jasper Consumes Your Message Handlers
+Back to the handler code, at the point which you pass a new message into Jasper like so:
 
-If you're worried about the performance implications of Jasper calling into your code without any interfaces or base classes, nothing to worry about because Jasper **does not use Reflection at runtime** to call your actions. Instead, Jasper uses [runtime
-code generation with Roslyn](https://jeremydmiller.com/2015/11/11/using-roslyn-for-runtime-code-generation-in-marten/) to write the "glue" code around your actions. Internally, Jasper is generating a subclass of `MessageHandler` for each known message type:
-
-<!-- snippet: sample_MessageHandler -->
-<a id='snippet-sample_messagehandler'></a>
+<!-- snippet: sample_publish_MyMessage -->
+<a id='snippet-sample_publish_mymessage'></a>
 ```cs
-public interface IMessageHandler
+public static async Task publish_command(ICommandBus bus)
 {
-    Task HandleAsync(IMessageContext context, CancellationToken cancellation);
-}
-
-public abstract class MessageHandler : IMessageHandler
-{
-    public HandlerChain? Chain { get; set; }
-
-    public abstract Task HandleAsync(IMessageContext context, CancellationToken cancellation);
+    await bus.EnqueueAsync(new MyMessage());
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper/Runtime/Handlers/MessageHandler.cs#L6-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_messagehandler' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L86-L93' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_publish_mymessage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-See <[linkto:documentation/execution/handlers]> for information on how Jasper generates the `MessageHandler` code
-and how to customize that code.
+Between the call to `ICommandBus.EnqueueAsync()` and `MyMessageHandler.Handle(MyMessage)` there's a couple things
+going on:
 
-## Naming Conventions
+1. Jasper's built in, [automatic handler discovery](/discovery) has to find the candidate message handler methods
+   and correlate them by message type
+2. Jasper's [runtime message processing](/runtime) builds some connective code at runtime to relay the
+   messages passed into `ICommandBus` or `IMessagePublisher` to the right message handler methods
 
-Out of the box, message handlers need to follow these naming conventions and rules:
+Before diving into the exact rules for message handlers, here are some valid handler methods:
 
-* Classes must be public, concrete classes suffixed with either "Handler" or "Consumer"
-* Message handling methods must have be public and have a deterministic message type
-* The message type has to be a public type
+<!-- snippet: sample_ValidMessageHandlers -->
+<a id='snippet-sample_validmessagehandlers'></a>
+```cs
+public class ValidMessageHandlers
+{
+    // There's only one argument, so we'll assume that
+    // argument is the message
+    public void Handle(Message1 something)
+    {
+    }
 
-If a candidate method has a single argument, that argument type is assumed to be the message type. Otherwise, Jasper
-looks for any argument named either "message", "input", or "@event" to be the message type.
+    // The parameter named "message" is assumed to be the message type
+    public Task Consume(Message1 message, IDocumentSession session)
+    {
+        return session.SaveChangesAsync();
+    }
 
-See <[linkto:documentation/execution/discovery]> for more information.
+    // In this usage, we're "cascading" a new message of type
+    // Message2
+    public Task<Message2> Handle(Message1 message, IDocumentSession session)
+    {
+        return Task.FromResult(new Message2());
+    }
 
-## Instance Handler Methods
+    // In this usage we're "cascading" 0 to many additional
+    // messages from the return value
+    public IEnumerable<object> Handle(Message3 message)
+    {
+        yield return new Message1();
+        yield return new Message2();
+    }
+
+    // It's perfectly valid to have multiple handler methods
+    // for a given message type. Each will be called in sequence
+    // they were discovered
+    public void Consume(Message1 input, IEmailService emails)
+    {
+    }
+
+    // It's also legal to handle a message by an abstract
+    // base class or an implemented interface.
+    public void Consume(IEvent @event)
+    {
+    }
+
+    // You can inject additional services directly into the handler
+    // method
+    public ValueTask Consume(Message3 weirdName, IEmailService service)
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    public interface IEvent
+    {
+        string CustomerId { get; }
+        Guid Id { get; }
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L10-L66' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_validmessagehandlers' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+## Rules for Message Handlers
+
+::: info
+The naming conventions in Jasper are descended from a much earlier tool and the exact origins of
+the particular names are lost in the mist of time
+:::
+
+* Message handlers must be public types with a public constructor. Sorry folks, but the code generation strategy
+  that Jasper uses requires this.
+* Likewise, the handler methods must also be public
+* Yet again, the message type must be public
+* The first argument of the handler method must be the message type
+* It's legal to connect multiple handler methods to a single message type. Whether that's a good idea or not
+  is up to you and your use case
+* Handler methods can be either instance methods or static methods
+* It's legal to accept either an interface or abstract class as a message type, but read the documentation on that below first
+
+For naming conventions:
+
+* Handler type names should be suffixed with either `Handler` or `Consumer`
+* Handler method names should be either `Handle()` or `Consume()`
+
+TODO -- link to sagas
+
+The valid return types are:
+
+| Return Type                      | Description                                                                                                |
+|----------------------------------|------------------------------------------------------------------------------------------------------------|
+| `void`                           | Synchronous methods because hey, who wants to litter their code with `Task.CompletedTask` every which way? |
+| `Task`                           | If you need to do asynchronous work                                                                        |
+| `ValueTask`                      | If you need to *maybe* do asynchronous work with other people's APIs                                       |
+| *Your message type*              | By returning another type, Jasper treats the return value as "cascaded" message to publish                 |
+| `Task<T>`                        | Where `T` is a message type in your system. Again a "cascaded" message                                     |
+| `ValueTask<T>`                   | See the description for `Task<T>`                                                                          |
+| `IEnumerable<object>`            | Published 0 to many cascading messages                                                                     |
+| `Task<IEnumerable<object>>`      | Asynchronous method that will lead to 0 to many cascading messages                                         |
+| `ValueTask<IEnumerable<object>>` | See the description above                                                                                  |
+
+::: info
+If you're thinking to yourself, hmm, the method injection seems a lot like ASP.NET Core Minimal APIs,
+Jasper has been baking an embarrassingly long time and had that implemented years earlier. Just saying.
+:::
+
+The first argument always has to be the message type, but after that, you can accept:
+
+* Additional services from your application's Lamar IoC container
+* `Envelope` from Jasper to interrogate metadata about the current message
+* `IMessageContext`, `IMessagePublisher`, or `ICommandBus` from Jasper scoped to the current message being handled
+* `CancellationToken` for the current message execution to check for timeouts or system shut down
+* `DateTime now` or `DateTimeOffset now` for the current time. Don't laugh, I like doing this for testability's sake.
+
+Some add ons or middleware add other possibilities as well.
+
+## Handler Lifecycle & Service Dependencies
 
 Handler methods can be instance methods on handler classes if it's desirable to scope the handler object to the message:
 
@@ -84,50 +188,12 @@ public class ExampleHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L70-L85' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_examplehandlerbyinstance' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L99-L114' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_examplehandlerbyinstance' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-Note that you can use either synchronous or asynchronous methods depending on your needs, so you're not constantly being
-forced to return `Task.CompletedTask` over and over again for operations that are purely CPU-bound (but Jasper itself might be doing
-that for you in its generated `MessageHandler` code).
-
-
-
-## Static Handler Methods
-
-<div class="alert alert-info"><b>Note!</b> Using a static method as your message handler can be a small performance
-improvement by avoiding the need to create and garbage collect new objects at runtime.</div>
-
-As an alternative, you can also use static methods as message handlers:
-
-<!-- snippet: sample_ExampleHandlerByStaticMethods -->
-<a id='snippet-sample_examplehandlerbystaticmethods'></a>
-```cs
-public static class ExampleHandler
-{
-    public static void Handle(Message1 message)
-    {
-        // Do work synchronously
-    }
-
-    public static Task Handle(Message2 message)
-    {
-        // Do work asynchronously
-        return Task.CompletedTask;
-    }
-}
-```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L90-L105' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_examplehandlerbystaticmethods' title='Start of snippet'>anchor</a></sup>
-<!-- endSnippet -->
-
-The handler classes can be static classes as well. This technique gets much more useful when combined with Jasper's
-support for method injection in a following section.
-
-## Constructor Injection
-
-Jasper can create your message handler objects by using an IoC container (or in the future just use straight up dependency injection
-without any IoC container overhead). In that case, you can happily inject dependencies into your message handler classes through the
-constructor like this example that takes in a dependency on an `IDocumentSession` from [Marten](http://jasperfx.github.io/marten):
+When using instance methods, the containing handler type will be scoped to a single message and be
+disposed afterward. In the case of instance methods, it's perfectly legal to use constructor injection
+to resolve IoC registered dependencies as shown below:
 
 <!-- snippet: sample_HandlerBuiltByConstructorInjection -->
 <a id='snippet-sample_handlerbuiltbyconstructorinjection'></a>
@@ -150,14 +216,43 @@ public class ServiceUsingHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L111-L129' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_handlerbuiltbyconstructorinjection' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L140-L158' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_handlerbuiltbyconstructorinjection' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-See <[linkto:documentation/ioc]> for more information about how Jasper integrates the application's IoC container.
+::: tip
+Using a static method as your message handler can be a small performance
+improvement by avoiding the need to create and garbage collect new objects at runtime.
+:::
+
+As an alternative, you can also use static methods as message handlers:
+
+<!-- snippet: sample_ExampleHandlerByStaticMethods -->
+<a id='snippet-sample_examplehandlerbystaticmethods'></a>
+```cs
+public static class ExampleHandler
+{
+    public static void Handle(Message1 message)
+    {
+        // Do work synchronously
+    }
+
+    public static Task Handle(Message2 message)
+    {
+        // Do work asynchronously
+        return Task.CompletedTask;
+    }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L119-L134' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_examplehandlerbystaticmethods' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+The handler classes can be static classes as well. This technique gets much more useful when combined with Jasper's
+support for method injection in a following section.
+
 
 ## Method Injection
 
-Similar to ASP.NET MVC Core, Jasper supports the concept of [method injection](https://www.martinfowler.com/articles/injection.html) in handler methods where you can just accept additional
+Similar to ASP.NET Core, Jasper supports the concept of [method injection](https://www.martinfowler.com/articles/injection.html) in handler methods where you can just accept additional
 arguments that will be passed into your method by Jasper when a new message is being handled.
 
 Below is an example action method that takes in a dependency on an `IDocumentSession` from [Marten](http://jasperfx.github.io/marten):
@@ -176,7 +271,7 @@ public static class MethodInjectionHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L135-L147' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_handlerusingmethodinjection' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L164-L176' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_handlerusingmethodinjection' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 So, what can be injected as an argument to your message handler?
@@ -184,12 +279,11 @@ So, what can be injected as an argument to your message handler?
 1. Any service that is registered in your application's IoC container
 1. `Envelope`
 1. The current time in UTC if you have a parameter like `DateTime now` or `DateTimeOffset now`
-1. Services or variables that match a registered code generation strategy. See <[linkto:documentation/execution/middleware_and_codegen]> for more information on this mechanism.
+1. Services or variables that match a registered code generation strategy. TODO -- link to code generation here
 
 ## Cascading Messages from Actions
 
-To have additional messages queued up to be sent out when the current message has been successfully completed,
-you can return the outgoing messages from your handler methods with <[linkto:documentation/execution/cascading]>.
+See [Cascading Messages](/cascade) for more details on this feature.
 
 ## Using the Message Envelope
 
@@ -208,10 +302,10 @@ public class EnvelopeUsingHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L150-L159' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_handlerusingenvelope' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HandlerExamples.cs#L179-L188' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_handlerusingenvelope' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-See <[linkto:documentation/integration/customizing_envelopes]> for more information on interacting with `Envelope` objects.
+TODO -- link to documentation on Envelope?
 
 ## Using the Current IMessageContext
 
@@ -269,3 +363,8 @@ public static class PingHandler
 ```
 <sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/PingPongWithRabbitMq/Ponger/PingHandler.cs#L8-L37' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_pinghandler-1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+## Abstract or Interface Types in Handler Methods
+
+TODO -- explain this? Kinda tempted to remove this in favor of easier
+middleware strategies

@@ -17,27 +17,44 @@ namespace DocumentationSamples
         }
 
         // The parameter named "message" is assumed to be the message type
-        public void Consume(Message1 message, IDocumentSession session)
+        public Task Consume(Message1 message, IDocumentSession session)
         {
+            return session.SaveChangesAsync();
+        }
+
+        // In this usage, we're "cascading" a new message of type
+        // Message2
+        public Task<Message2> Handle(Message1 message, IDocumentSession session)
+        {
+            return Task.FromResult(new Message2());
+        }
+
+        // In this usage we're "cascading" 0 to many additional
+        // messages from the return value
+        public IEnumerable<object> Handle(Message3 message)
+        {
+            yield return new Message1();
+            yield return new Message2();
         }
 
         // It's perfectly valid to have multiple handler methods
         // for a given message type. Each will be called in sequence
-        public void SendEmail(Message1 input, IEmailService emails)
+        // they were discovered
+        public void Consume(Message1 input, IEmailService emails)
         {
         }
 
         // It's also legal to handle a message by an abstract
         // base class or an implemented interface.
-        public void PostProcessEvent(IEvent @event)
+        public void Consume(IEvent @event)
         {
         }
 
-        // In this case, we assume that the first type is the message type
-        // because it's concrete, not "simple", and isn't suffixed with
-        // "Settings"
-        public void Consume(Message3 weirdName, IEmailService service)
+        // You can inject additional services directly into the handler
+        // method
+        public ValueTask Consume(Message3 weirdName, IEmailService service)
         {
+            return ValueTask.CompletedTask;
         }
 
         public interface IEvent
@@ -59,10 +76,22 @@ namespace DocumentationSamples
     {
         public void Handle(MyMessage message)
         {
-            // do stuff with the message
+            Console.WriteLine("I got a message!");
         }
     }
     #endregion
+
+    public class CallingMyMessageHandler
+    {
+        #region sample_publish_MyMessage
+
+        public static async Task publish_command(ICommandBus bus)
+        {
+            await bus.EnqueueAsync(new MyMessage());
+        }
+
+        #endregion
+    }
 
 
     namespace One
