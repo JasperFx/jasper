@@ -27,6 +27,8 @@
       <ProjectReference Include="..\..\Jasper.RabbitMQ\Jasper.RabbitMQ.csproj" />
       <ProjectReference Include="..\OtelMessages\OtelMessages.csproj" />
       <ProjectReference Include="..\OtelWebApi\OtelWebApi.csproj" />
+      <ProjectReference Include="..\Subscriber1\Subscriber1.csproj" />
+      <ProjectReference Include="..\Subscriber2\Subscriber2.csproj" />
     </ItemGroup>
 
     <ItemGroup>

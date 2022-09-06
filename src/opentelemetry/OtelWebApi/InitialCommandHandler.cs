@@ -12,13 +12,13 @@ public static class InitialCommandHandler
 
         await publisher.InvokeAsync(new LocalMessage1(cmd.Name));
 
-        await Task.Delay(50.Milliseconds());
-
-        await publisher.EnqueueAsync(new LocalMessage2(cmd.Name));
-
-        await publisher.PublishAsync(new TcpMessage1(cmd.Name));
-
-        await publisher.PublishAsync(new RabbitMessage1{Name = cmd.Name});
+        // await Task.Delay(50.Milliseconds());
+        //
+        // await publisher.EnqueueAsync(new LocalMessage2(cmd.Name));
+        //
+        // await publisher.PublishAsync(new TcpMessage1(cmd.Name));
+        //
+        // await publisher.PublishAsync(new RabbitMessage1{Name = cmd.Name});
 
     }
 

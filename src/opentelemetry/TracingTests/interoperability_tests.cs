@@ -1,5 +1,6 @@
 using Alba;
 using Baseline.Dates;
+using Jasper;
 using Jasper.Tracking;
 using OtelMessages;
 using TracingTests;
@@ -16,6 +17,12 @@ public class interoperability_tests : IClassFixture<HostsFixture>
     {
         _fixture = fixture;
         _output = output;
+    }
+
+    [Fact]
+    public async Task directly_invoke()
+    {
+        await _fixture.SecondSubscriber.InvokeAsync(new LocalMessage4("Earvin Johnson"));
     }
 
     [Fact]

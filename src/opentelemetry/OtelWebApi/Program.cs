@@ -1,6 +1,7 @@
 using Jasper;
 using Jasper.RabbitMQ;
 using Jasper.Transports.Tcp;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OtelMessages;
 using OtelWebApi;
@@ -32,10 +33,18 @@ builder.Host.UseJasper(opts =>
 });
 
 builder.Services.AddControllers();
+var resourceBuilder = ResourceBuilder
+    .CreateDefault()
+    .AddService("OtelWebApi")
+    .AddAttributes(new Dictionary<string, object> {
+        { "environment", "production" }
+    })
+    .AddTelemetrySdk();
 
 builder.Services.AddOpenTelemetryTracing(x =>
 {
     x
+
         .AddJaegerExporter()
         .AddAspNetCoreInstrumentation()
         .AddJasper();
@@ -58,5 +67,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+app.MapGet("/", c => c.Response.WriteAsync("Hello."));
 
 app.Run();
