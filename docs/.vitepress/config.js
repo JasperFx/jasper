@@ -77,7 +77,7 @@ function tableOfContents() {
           {text: "Discovery", link: '/guide/handlers/discovery'},
           {text: "Error Handling", link: '/guide/handlers/error-handling'},
           {text: "Middleware", link: '/guide/handlers/middleware'},
-
+          {text: "Message Timeouts", link: '/guide/handlers/timeout'}
         ]
       },
       {text: "Scheduled", link: '/guide/scheduled'},
