@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
@@ -18,7 +19,7 @@ public class CommandBus : ICommandBus
     protected readonly List<Envelope> _outstanding = new();
 
     [DefaultConstructor]
-    public CommandBus(IJasperRuntime runtime) : this(runtime, Guid.NewGuid().ToString())
+    public CommandBus(IJasperRuntime runtime) : this(runtime, Activity.Current?.RootId ?? Guid.NewGuid().ToString())
     {
     }
 

@@ -44,6 +44,9 @@ public class HostsFixture : IAsyncLifetime
                 opts.Services.AddOpenTelemetryTracing(builder =>
                 {
                     builder
+                        .SetResourceBuilder(ResourceBuilder
+                            .CreateDefault()
+                            .AddService("Subscriber1"))
                         .AddJaegerExporter()
                         .AddJasper();
                 });
@@ -71,9 +74,11 @@ public class HostsFixture : IAsyncLifetime
 
                 opts.Services.AddOpenTelemetryTracing(builder =>
                 {
-                    builder.SetResourceBuilder(ResourceBuilder.CreateDefault()
-                        .AddService("Subscriber2").AddTelemetrySdk())
-                        .AddJaegerExporter();
+                    builder.SetResourceBuilder(ResourceBuilder
+                            .CreateDefault()
+                            .AddService("Subscriber2"))
+                        .AddJaegerExporter()
+                        .AddJasper();
                 });
             }).StartAsync();
     }

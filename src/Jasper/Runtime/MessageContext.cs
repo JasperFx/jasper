@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
@@ -15,8 +16,9 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
     private IChannelCallback? _channel;
     private object? _sagaId;
 
-    public MessageContext(IJasperRuntime runtime) : base(runtime, Guid.NewGuid().ToString())
+    public MessageContext(IJasperRuntime runtime) : base(runtime)
     {
+
     }
 
     internal IList<Envelope> Scheduled { get; } = new List<Envelope>();

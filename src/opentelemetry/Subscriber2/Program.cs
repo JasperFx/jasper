@@ -27,6 +27,9 @@ return await Host.CreateDefaultBuilder(args)
         opts.Services.AddOpenTelemetryTracing(builder =>
         {
             builder
+                .SetResourceBuilder(ResourceBuilder
+                    .CreateDefault()
+                    .AddService("Subscriber2"))
                 .AddJasper()
                 .AddJaegerExporter();
         });

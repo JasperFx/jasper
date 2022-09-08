@@ -1,7 +1,10 @@
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Alba;
 using CommandBusSamples;
 using Jasper;
+using Jasper.Runtime;
 using Marten;
 using Microsoft.Extensions.DependencyInjection;
 using Oakton;
@@ -26,5 +29,6 @@ namespace SampleTests
             await bus.InvokeAsync(new ConfirmReservation(reservation.Id));
 
         }
+
     }
 }

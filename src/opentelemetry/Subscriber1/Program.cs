@@ -2,6 +2,7 @@ using Jasper;
 using Jasper.RabbitMQ;
 using Jasper.Transports.Tcp;
 using Oakton;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OtelMessages;
 using Subscriber1;
@@ -29,6 +30,9 @@ return await Host.CreateDefaultBuilder(args)
         opts.Services.AddOpenTelemetryTracing(builder =>
         {
             builder
+                .SetResourceBuilder(ResourceBuilder
+                    .CreateDefault()
+                    .AddService("Subscriber1"))
                 .AddJaegerExporter()
                 .AddJasper();
         });

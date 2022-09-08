@@ -1,4 +1,3 @@
-using Alba;
 using Baseline.Dates;
 using Jasper;
 using Jasper.Tracking;
@@ -20,12 +19,6 @@ public class interoperability_tests : IClassFixture<HostsFixture>
     }
 
     [Fact]
-    public async Task directly_invoke()
-    {
-        await _fixture.SecondSubscriber.InvokeAsync(new LocalMessage4("Earvin Johnson"));
-    }
-
-    [Fact]
     public async Task invoke_a_message()
     {
         var session = await _fixture.WebApi
@@ -37,7 +30,33 @@ public class interoperability_tests : IClassFixture<HostsFixture>
             {
                 return _fixture.WebApi.Scenario(x =>
                 {
+                    x.WithRequestHeader("X-Correlation-ID", "Lakers");
                     x.Post.Json(new InitialPost("James Worthy")).ToUrl("/invoke");
+                });
+            });
+
+
+        foreach (var @record in session.AllRecordsInOrder().Where(x => x.EventType == EventType.MessageSucceeded))
+        {
+            _output.WriteLine(@record.ToString());
+        }
+
+
+    }
+
+    [Fact]
+    public async Task enqueue_a_message()
+    {
+        var session = await _fixture.WebApi
+            .TrackActivity()
+            .AlsoTrack(_fixture.FirstSubscriber)
+            .AlsoTrack(_fixture.SecondSubscriber)
+            .Timeout(1.Minutes())
+            .ExecuteAndWaitAsync(c =>
+            {
+                return _fixture.WebApi.Scenario(x =>
+                {
+                    x.Post.Json(new InitialPost("James Worthy")).ToUrl("/enqueue");
                 });
             });
 

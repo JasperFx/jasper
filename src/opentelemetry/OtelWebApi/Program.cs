@@ -33,18 +33,13 @@ builder.Host.UseJasper(opts =>
 });
 
 builder.Services.AddControllers();
-var resourceBuilder = ResourceBuilder
-    .CreateDefault()
-    .AddService("OtelWebApi")
-    .AddAttributes(new Dictionary<string, object> {
-        { "environment", "production" }
-    })
-    .AddTelemetrySdk();
 
 builder.Services.AddOpenTelemetryTracing(x =>
 {
     x
-
+        .SetResourceBuilder(ResourceBuilder
+            .CreateDefault()
+            .AddService("OtelWebApi")) // <-- sets service name
         .AddJaegerExporter()
         .AddAspNetCoreInstrumentation()
         .AddJasper();
@@ -68,6 +63,10 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
-app.MapGet("/", c => c.Response.WriteAsync("Hello."));
+app.MapGet("/", c =>
+{
+    c.Response.Redirect("/swagger");
+    return Task.CompletedTask;
+});
 
 app.Run();
