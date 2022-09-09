@@ -37,7 +37,7 @@ public class InlineReceiver : IReceiver
 
     public async ValueTask ReceivedAsync(IListener listener, Envelope envelope)
     {
-        using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
+        using var activity = JasperTracing.StartExecution("receive", envelope,
             ActivityKind.Consumer);
 
         try
@@ -63,6 +63,10 @@ public class InlineReceiver : IReceiver
                     "Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline ({CausationId})",
                     envelope.CorrelationId);
             }
+        }
+        finally
+        {
+            activity.Stop();
         }
     }
 }

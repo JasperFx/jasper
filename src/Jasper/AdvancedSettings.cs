@@ -91,15 +91,9 @@ public class AdvancedSettings
         set
         {
             _serviceName = value ?? throw new InvalidOperationException("A non-null value is required");
-            OpenTelemetryProcessSpanName = $"{_serviceName} process";
-            OpenTelemetrySendSpanName = $"{_serviceName} send";
-            OpenTelemetryReceiveSpanName = $"{_serviceName} receive";
         }
     }
 
-    public string? OpenTelemetryProcessSpanName { get; private set; }
-    public string? OpenTelemetrySendSpanName { get; private set; }
-    public string? OpenTelemetryReceiveSpanName { get; private set; }
 
     /// <summary>
     ///     This should probably *only* be used in development or testing

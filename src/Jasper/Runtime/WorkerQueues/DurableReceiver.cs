@@ -130,21 +130,28 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
             throw new ArgumentNullException(nameof(envelope));
         }
 
-        using var activity = JasperTracing.StartExecution(_settings.OpenTelemetryReceiveSpanName!, envelope,
+        using var activity = JasperTracing.StartExecution("receive", envelope,
             ActivityKind.Consumer);
-        var now = DateTimeOffset.UtcNow;
-        envelope.MarkReceived(listener, now, _settings);
-
-        await _persistence.StoreIncomingAsync(envelope);
-
-        if (envelope.Status == EnvelopeStatus.Incoming)
+        try
         {
-            Enqueue(envelope);
+            var now = DateTimeOffset.UtcNow;
+            envelope.MarkReceived(listener, now, _settings);
+
+            await _persistence.StoreIncomingAsync(envelope);
+
+            if (envelope.Status == EnvelopeStatus.Incoming)
+            {
+                Enqueue(envelope);
+            }
+
+            await listener.CompleteAsync(envelope);
+
+            _logger.IncomingReceived(envelope, Address);
         }
-
-        await listener.CompleteAsync(envelope);
-
-        _logger.IncomingReceived(envelope, Address);
+        finally
+        {
+            activity.Stop();
+        }
     }
 
     public async ValueTask DrainAsync()
