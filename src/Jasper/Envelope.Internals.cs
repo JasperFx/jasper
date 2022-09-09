@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Jasper.Runtime;
 using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
@@ -167,5 +169,17 @@ public partial class Envelope
             ContentType = "jasper/ping",
             Destination = destination
         };
+    }
+
+    internal void WriteTags(Activity activity)
+    {
+        activity.MaybeSetTag(JasperTracing.MessagingSystem, Destination?.Scheme); // This needs to vary
+        activity.MaybeSetTag(JasperTracing.MessagingDestination, Destination);
+        activity.SetTag(JasperTracing.MessagingMessageId, Id);
+        activity.SetTag(JasperTracing.MessagingConversationId, CorrelationId);
+        activity.SetTag(JasperTracing.MessageType, MessageType); // Jasper specific
+        activity.MaybeSetTag(JasperTracing.PayloadSizeBytes, MessagePayloadSize);
+
+        activity.MaybeSetTag(JasperTracing.MessagingCausationId, CausationId);
     }
 }

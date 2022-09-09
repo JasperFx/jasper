@@ -12,8 +12,8 @@ public class CommandBusTests
     [Fact]
     public void use_current_activity_root_id_as_correlation_id_if_exists()
     {
-        var activity = JasperTracing.StartExecution("foo", ObjectMother.Envelope());
-        activity.Start();
+        var activity = new Activity("process");
+        activity?.Start();
 
         try
         {
@@ -22,7 +22,7 @@ public class CommandBusTests
         }
         finally
         {
-            activity.Stop();
+            activity?.Stop();
         }
     }
 }

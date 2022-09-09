@@ -32,18 +32,13 @@ internal static class JasperTracing
 
 
 
-    public static Activity StartExecution(string spanName, Envelope envelope,
+    public static Activity? StartExecution(string spanName, Envelope envelope,
         ActivityKind kind = ActivityKind.Internal)
     {
-        var activity = ActivitySource.StartActivity(spanName, kind) ?? new Activity(spanName);
-        activity.MaybeSetTag(MessagingSystem, envelope.Destination?.Scheme); // This needs to vary
-        activity.MaybeSetTag(MessagingDestination, envelope.Destination);
-        activity.SetTag(MessagingMessageId, envelope.Id);
-        activity.SetTag(MessagingConversationId, envelope.CorrelationId);
-        activity.SetTag(MessageType, envelope.MessageType); // Jasper specific
-        activity.MaybeSetTag(PayloadSizeBytes, envelope.MessagePayloadSize);
+        var activity = ActivitySource.StartActivity(spanName, kind);
+        if (activity == null) return null;
 
-        activity.MaybeSetTag(MessagingCausationId, envelope.CausationId);
+        envelope.WriteTags(activity);
 
         return activity;
     }

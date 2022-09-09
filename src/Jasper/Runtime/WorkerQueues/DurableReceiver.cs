@@ -150,7 +150,7 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
         }
         finally
         {
-            activity.Stop();
+            activity?.Stop();
         }
     }
 

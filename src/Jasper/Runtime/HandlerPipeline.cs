@@ -49,7 +49,7 @@ public class HandlerPipeline : IHandlerPipeline
         return InvokeAsync(envelope, channel, activity);
     }
 
-    public async Task InvokeAsync(Envelope envelope, IChannelCallback channel, Activity activity)
+    public async Task InvokeAsync(Envelope envelope, IChannelCallback channel, Activity? activity)
     {
         try
         {
@@ -77,7 +77,7 @@ public class HandlerPipeline : IHandlerPipeline
         }
         finally
         {
-            activity.Stop();
+            activity?.Stop();
         }
     }
 
@@ -114,7 +114,7 @@ public class HandlerPipeline : IHandlerPipeline
         {
             Logger.ExecutionFinished(envelope);
             _contextPool.Return(context);
-            activity.Stop();
+            activity?.Stop();
         }
     }
 

@@ -66,7 +66,7 @@ public class InlineReceiver : IReceiver
         }
         finally
         {
-            activity.Stop();
+            activity?.Stop();
         }
     }
 }

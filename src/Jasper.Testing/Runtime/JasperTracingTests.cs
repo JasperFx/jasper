@@ -21,7 +21,8 @@ public class when_creating_an_execution_activity
         theEnvelope.CorrelationId = Guid.NewGuid().ToString();
         theEnvelope.Destination = new Uri("tcp://localhost:6666");
 
-        theActivity = JasperTracing.StartExecution("process", theEnvelope);
+        theActivity = new Activity("process");
+        theEnvelope.WriteTags(theActivity);
     }
 
     [Fact]
