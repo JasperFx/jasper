@@ -93,6 +93,17 @@ public interface ITrackedSession
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     Envelope FindSingleReceivedEnvelopeForMessageType<T>();
+
+    /// <summary>
+    /// Find the single, expected envelope that was *executed*
+    /// for the message type "T"
+    ///
+    /// Use this for messages that were processed through
+    /// ICommandBus.InvokeAsync()
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Envelope FindSingleExecutedEnvelopeForMessageType<T>();
 }
 
 #endregion

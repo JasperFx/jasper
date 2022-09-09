@@ -100,6 +100,9 @@ public class HandlerChain : Chain<HandlerChain, ModifyHandlerChainAttribute>, IW
         // when the method returns IAsyncDisposable
         handleMethod.AsyncMode = AsyncMode.AsyncTask;
 
+        handleMethod.DerivedVariables.Add(new Variable(typeof(IMessagePublisher), "context"));
+        handleMethod.DerivedVariables.Add(new Variable(typeof(ICommandBus), "context"));
+
         handleMethod.DerivedVariables.Add(new Variable(typeof(Envelope),
             $"context.{nameof(IMessageContext.Envelope)}"));
     }

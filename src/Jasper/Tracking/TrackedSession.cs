@@ -168,6 +168,12 @@ public class TrackedSession : ITrackedSession
             .Envelope;
     }
 
+    public Envelope FindSingleExecutedEnvelopeForMessageType<T>()
+    {
+        return FindEnvelopesWithMessageType<T>().Single(x => x.EventType == EventType.ExecutionFinished)
+            .Envelope;
+    }
+
     public void WatchOther(IHost host)
     {
         if (ReferenceEquals(host, _primaryHost))

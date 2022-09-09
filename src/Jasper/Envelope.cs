@@ -118,12 +118,15 @@ public partial class Envelope
                 throw new InvalidOperationException("No data or writer is known for this envelope");
             }
 
+            // TODO -- this is messy!
             _data = Serializer.Write(_message);
 
             return _data;
         }
         set => _data = value;
     }
+
+    internal int? MessagePayloadSize => _data?.Length;
 
     /// <summary>
     ///     The actual message to be sent or being received

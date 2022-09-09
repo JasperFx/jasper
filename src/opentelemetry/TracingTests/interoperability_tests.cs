@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 
 namespace IntegrationTests;
 
+[Collection("otel")]
 public class interoperability_tests : IClassFixture<HostsFixture>
 {
     private readonly HostsFixture _fixture;

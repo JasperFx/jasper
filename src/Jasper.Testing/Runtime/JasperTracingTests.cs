@@ -15,6 +15,7 @@ public class when_creating_an_execution_activity
     public when_creating_an_execution_activity()
     {
         theEnvelope = ObjectMother.Envelope();
+        theEnvelope.CausationId = Guid.NewGuid().ToString();
 
         theEnvelope.MessageType = "FooMessage";
         theEnvelope.CorrelationId = Guid.NewGuid().ToString();
@@ -63,5 +64,12 @@ public class when_creating_an_execution_activity
     {
         theActivity.GetTagItem(JasperTracing.PayloadSizeBytes)
             .ShouldBe(theEnvelope.Data!.Length);
+    }
+
+    [Fact]
+    public void trace_the_causation_id()
+    {
+        theActivity.GetTagItem(JasperTracing.MessagingCausationId)
+            .ShouldBe(theEnvelope.CausationId);
     }
 }

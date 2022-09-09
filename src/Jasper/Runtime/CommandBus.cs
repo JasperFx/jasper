@@ -39,6 +39,7 @@ public class CommandBus : ICommandBus
     public IEnumerable<Envelope> Outstanding => _outstanding;
 
     public IEnvelopeOutbox? Outbox { get; protected set; }
+    public Guid? CausationId { get; protected set; }
 
 
     public Task InvokeAsync(object message, CancellationToken cancellation = default)
@@ -46,7 +47,9 @@ public class CommandBus : ICommandBus
         return Runtime.Pipeline.InvokeNowAsync(new Envelope(message)
         {
             ReplyUri = TransportConstants.RepliesUri,
-            CorrelationId = CorrelationId
+            CorrelationId = CorrelationId,
+            CausationId = CausationId?.ToString(),
+            Source = Runtime.Advanced.ServiceName
         }, cancellation);
     }
 
@@ -62,7 +65,9 @@ public class CommandBus : ICommandBus
             ReplyUri = TransportConstants.RepliesUri,
             ReplyRequested = typeof(T).ToMessageTypeName(),
             ResponseType = typeof(T),
-            CorrelationId = CorrelationId
+            CorrelationId = CorrelationId,
+            CausationId = CausationId?.ToString(),
+            Source = Runtime.Advanced.ServiceName
         };
 
         await Runtime.Pipeline.InvokeNowAsync(envelope, cancellation);
@@ -83,6 +88,10 @@ public class CommandBus : ICommandBus
         }
 
         var envelope = Runtime.RoutingFor(message.GetType()).RouteLocal(message, null); // TODO -- propagate DeliveryOptions
+        envelope.CorrelationId = CorrelationId;
+        envelope.CausationId = CausationId?.ToString();
+        envelope.Source = Runtime.Advanced.ServiceName;
+
         return persistOrSendAsync(envelope);
     }
 
@@ -94,6 +103,9 @@ public class CommandBus : ICommandBus
         }
 
         var envelope = Runtime.RoutingFor(message.GetType()).RouteLocal(message, workerQueueName, null); // TODO -- propagate DeliveryOptions
+        envelope.CorrelationId = CorrelationId;
+        envelope.CausationId = CausationId?.ToString();
+        envelope.Source = Runtime.Advanced.ServiceName;
 
         return persistOrSendAsync(envelope);
     }
@@ -105,10 +117,14 @@ public class CommandBus : ICommandBus
             throw new ArgumentNullException(nameof(message));
         }
 
+        // TODO -- there's quite a bit of duplication here. Change that!
         var envelope = new Envelope(message)
         {
             ScheduledTime = executionTime,
-            Destination = TransportConstants.DurableLocalUri
+            Destination = TransportConstants.DurableLocalUri,
+            CorrelationId = CorrelationId,
+            CausationId = CausationId?.ToString(),
+            Source = Runtime.Advanced.ServiceName
         };
 
         // TODO -- memoize this.
