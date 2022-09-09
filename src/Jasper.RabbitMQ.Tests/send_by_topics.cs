@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Attributes;
 using Jasper.Tracking;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using TestingSupport;
+using TestMessages;
 using Xunit;
 
 namespace Jasper.RabbitMQ.Tests
@@ -63,6 +65,18 @@ namespace Jasper.RabbitMQ.Tests
             theFirstReceiver?.Dispose();
             theSecondReceiver?.Dispose();
             theThirdReceiver?.Dispose();
+        }
+
+        internal async Task send_by_topic_sample()
+        {
+            #region sample_send_to_topic
+
+            var publisher = theSender.Services
+                .GetRequiredService<IMessagePublisher>();
+
+            await publisher.SendToTopicAsync("color.purple", new Message1());
+
+            #endregion
         }
 
         [Fact]

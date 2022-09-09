@@ -1,5 +1,7 @@
 using Baseline.Dates;
 using Jasper;
+using Jasper.Transports.Tcp;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DocumentationSamples
@@ -8,46 +10,67 @@ namespace DocumentationSamples
     public class PublishingSamples
     {
         public static async Task LocalQueuesApp()
+        {
+            #region sample_LocalQueuesApp
+
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
                 {
-                    #region sample_LocalQueuesApp
+                    // Force a local queue to be
+                    // strictly first in, first out
+                    // with no more than a single
+                    // thread handling messages enqueued
+                    // here
 
-                    using var host = await Host.CreateDefaultBuilder()
-                        .UseJasper(opts =>
+                    // Use this option if message ordering is
+                    // important
+                    opts.LocalQueue("one")
+                        .Sequential();
+
+                    // Specify the maximum number of parallel threads
+                    opts.LocalQueue("two")
+                        .MaximumParallelMessages(5);
+
+
+                    // Or just edit the ActionBlock options directly
+                    opts.LocalQueue("three")
+                        .ConfigureExecution(options =>
                         {
-                            // Force a local queue to be
-                            // strictly first in, first out
-                            // with no more than a single
-                            // thread handling messages enqueued
-                            // here
+                            options.MaxDegreeOfParallelism = 5;
+                            options.BoundedCapacity = 1000;
+                        });
 
-                            // Use this option if message ordering is
-                            // important
-                            opts.LocalQueue("one")
-                                .Sequential();
+                    // And finally, this enrolls a queue into the persistent inbox
+                    // so that messages can happily be retained and processed
+                    // after the service is restarted
+                    opts.LocalQueue("four").UseDurableInbox();
+                }).StartAsync();
 
-                            // Specify the maximum number of parallel threads
-                            opts.LocalQueue("two")
-                                .MaximumParallelMessages(5);
+            #endregion
+        }
 
+        public static async Task sending_to_endpoint_by_name()
+        {
+            #region sample_sending_to_endpoint_by_name
 
-                            // Or just edit the ActionBlock options directly
-                            opts.LocalQueue("three")
-                                .ConfigureExecution(options =>
-                                {
-                                    options.MaxDegreeOfParallelism = 5;
-                                    options.BoundedCapacity = 1000;
-                                });
+            using var host = await Host.CreateDefaultBuilder()
+                .UseJasper(opts =>
+                {
+                    opts.PublishAllMessages().ToPort(5555)
+                        .Named("One");
 
-                            // And finally, this enrolls a queue into the persistent inbox
-                            // so that messages can happily be retained and processed
-                            // after the service is restarted
-                            opts.LocalQueue("four").UseDurableInbox();
-                        }).StartAsync();
+                    opts.PublishAllMessages().ToPort(5555)
+                        .Named("Two");
+                }).StartAsync();
 
-                    #endregion
-                }
+            var publisher = host.Services
+                .GetRequiredService<IMessagePublisher>();
 
+            // Explicitly send a message to a named endpoint
+            await publisher.SendToEndpointAsync("One", new SomeMessage());
 
+            #endregion
+        }
 
 
         #region sample_IServiceBus.Invoke

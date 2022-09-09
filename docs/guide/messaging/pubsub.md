@@ -56,11 +56,27 @@ public ValueTask PublishMessage(IMessageContext bus)
 
 ## Send Messages to a Specific Endpoint
 
-// TODO
+You can also explicitly send any message to a named endpoint in the system. You might
+do this to programmatically distribute work in your system, or when you need to do more
+programmatic routing as to what downstream system should handle the outgoing message.
+
+Regardless, that usage is shown below. Just note that you can give a name to any type
+of Jasper endpoint:
+
+snippet: sample_sending_to_endpoint_by_name
+
+TODO -- link to endpoint configuration. Make sure it explains how to
 
 ## Send Messages to a Specific Topic
 
-// TODO
+If you're using a transport endpoint that supports publishing messages by topic
+such as this example using Rabbit MQ from the Jasper tests:
+
+snippet: sample_binding_topics_and_topic_patterns_to_queues
+
+You can explicitly publish a message to a topic through this syntax:
+
+snippet: sample_send_to_topic
 
 ## Customizing Message Delivery
 
