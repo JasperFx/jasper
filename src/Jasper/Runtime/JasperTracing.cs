@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Jasper;
+namespace Jasper.Runtime;
 
 internal static class JasperTracing
 {
@@ -13,16 +13,17 @@ internal static class JasperTracing
     public const string MessagingMessageId = "messaging.message_id";
     public const string MessagingSystem = "messaging.system"; // Use the destination Uri scheme
     public const string MessagingDestination = "messaging.destination"; // Use the destination Uri
+
+    // TODO -- transport specific tracing
     public const string MessagingDestinationKind = "messaging.destination_kind"; // Not sure this is going to be helpful. queue or topic. Maybe port if TCP basically.
     public const string MessagingTempDestination = "messaging.temp_destination"; // boolean if this is temporary
+    public const string PayloadSizeBytes = "messaging.message_payload_size_bytes";
 
-    // messaging.message_payload_size_bytes -- content_length
+    // Transport specific things
     // messaging.consumer_id
     // messaging.rabbitmq.routing_key
 
 
-
-    public const string Local = "local";
 
     internal static ActivitySource ActivitySource { get; } = new(
         "Jasper",
@@ -32,16 +33,21 @@ internal static class JasperTracing
         ActivityKind kind = ActivityKind.Internal)
     {
         var activity = ActivitySource.StartActivity(spanName, kind) ?? new Activity(spanName);
-        activity.SetTag(MessagingSystem, Local);
+        activity.MaybeSetTag(MessagingSystem, envelope.Destination?.Scheme); // This needs to vary
+        activity.MaybeSetTag(MessagingDestination, envelope.Destination);
         activity.SetTag(MessagingMessageId, envelope.Id);
         activity.SetTag(MessagingConversationId, envelope.CorrelationId);
         activity.SetTag(MessageType, envelope.MessageType); // Jasper specific
-        if (envelope.CausationId != null)
-        {
-            activity.SetParentId(envelope.CausationId);
-        }
-
+        activity.MaybeSetTag(PayloadSizeBytes, envelope.Data?.Length);
 
         return activity;
+    }
+
+    internal static void MaybeSetTag<T>(this Activity activity, string tagName, T? value)
+    {
+        if (value != null)
+        {
+            activity.SetTag(tagName, value);
+        }
     }
 }
