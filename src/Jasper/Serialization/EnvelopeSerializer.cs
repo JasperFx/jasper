@@ -62,6 +62,10 @@ public static class EnvelopeSerializer
 
                     break;
 
+                case EnvelopeConstants.ParentIdKey:
+                    env.ParentId = value;
+                    break;
+
                 case EnvelopeConstants.ReplyRequestedKey:
                     env.ReplyRequested = value;
                     break;
@@ -188,6 +192,7 @@ public static class EnvelopeSerializer
         writer.WriteProp(ref count, EnvelopeConstants.ConversationIdKey, env.ConversationId);
         writer.WriteProp(ref count, EnvelopeConstants.DestinationKey, env.Destination);
         writer.WriteProp(ref count, EnvelopeConstants.SagaIdKey, env.SagaId);
+        writer.WriteProp(ref count, EnvelopeConstants.ParentIdKey, env.ParentId);
 
         if (env.AcceptedContentTypes.Any())
         {

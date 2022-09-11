@@ -21,7 +21,8 @@ namespace Jasper.Testing.Serialization
                 Destination = "durable://localhost:2222/incoming".ToUri(),
                 DeliverBy = DateTime.Today.ToUniversalTime(),
                 ReplyUri = "durable://localhost:2221/replies".ToUri(),
-                SagaId = Guid.NewGuid().ToString()
+                SagaId = Guid.NewGuid().ToString(),
+                ParentId = Guid.NewGuid().ToString()
             };
 
             outgoing.Headers.Add("name", "Jeremy");
@@ -77,6 +78,12 @@ namespace Jasper.Testing.Serialization
         public void brings_over_the_correlation_id()
         {
             incoming.Id.ShouldBe(outgoing.Id);
+        }
+
+        [Fact]
+        public void brings_over_the_parent_id()
+        {
+            incoming.ParentId.ShouldBe(outgoing.ParentId);
         }
 
         [Fact]
