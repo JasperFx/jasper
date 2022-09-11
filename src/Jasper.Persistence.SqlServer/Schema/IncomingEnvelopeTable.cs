@@ -19,8 +19,8 @@ internal class IncomingEnvelopeTable : Table
 
         AddColumn<Guid>(DatabaseConstants.ConversationId);
         AddColumn<string>(DatabaseConstants.CorrelationId);
-        AddColumn<string>(DatabaseConstants.SagaId);
         AddColumn<string>(DatabaseConstants.ParentId);
+        AddColumn<string>(DatabaseConstants.SagaId);
         AddColumn(DatabaseConstants.MessageType, "varchar(250)").NotNull();
         AddColumn<string>(DatabaseConstants.ContentType);
         AddColumn(DatabaseConstants.ReplyRequested, "varchar(250)");

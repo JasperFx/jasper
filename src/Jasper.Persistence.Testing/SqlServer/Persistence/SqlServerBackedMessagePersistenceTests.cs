@@ -44,6 +44,9 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
             theEnvelope = ObjectMother.Envelope();
             theEnvelope.Message = new Message1();
             theEnvelope.ScheduledTime = DateTime.Today.ToUniversalTime().AddDays(1);
+            theEnvelope.CorrelationId = Guid.NewGuid().ToString();
+            theEnvelope.ConversationId = Guid.NewGuid();
+            theEnvelope.ParentId = Guid.NewGuid().ToString();
 
             theHost.Get<IEnvelopePersistence>().ScheduleJobAsync(theEnvelope).Wait(3.Seconds());
 
@@ -66,6 +69,14 @@ namespace Jasper.Persistence.Testing.SqlServer.Persistence
         public void should_be_in_scheduled_status()
         {
             persisted.Status.ShouldBe(EnvelopeStatus.Scheduled);
+        }
+
+        [Fact]
+        public void should_bring_across_correlation_information()
+        {
+            persisted.CorrelationId.ShouldBe(theEnvelope.CorrelationId);
+            persisted.ParentId.ShouldBe(theEnvelope.ParentId);
+            persisted.ConversationId.ShouldBe(theEnvelope.ConversationId);
         }
 
         [Fact]

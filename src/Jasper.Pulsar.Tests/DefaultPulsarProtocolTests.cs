@@ -134,10 +134,18 @@ namespace Jasper.Pulsar.Tests
         }
 
         [Fact]
-        public void parent_id()
+        public void conversation_id()
         {
             theOriginal.ConversationId = Guid.NewGuid();
             theEnvelope.ConversationId.ShouldBe(theOriginal.ConversationId);
+        }
+
+
+        [Fact]
+        public void parent_id()
+        {
+            theOriginal.ParentId = Guid.NewGuid().ToString();
+            theEnvelope.ParentId.ShouldBe(theOriginal.ParentId);
         }
 
 

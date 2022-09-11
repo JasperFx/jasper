@@ -17,6 +17,7 @@ internal class DeadLettersTable : Table
 
         AddColumn<Guid>(DatabaseConstants.ConversationId);
         AddColumn<string>(DatabaseConstants.CorrelationId);
+        AddColumn<string>(DatabaseConstants.ParentId);
         AddColumn<string>(DatabaseConstants.SagaId);
         AddColumn<string>(DatabaseConstants.MessageType).NotNull();
         AddColumn<string>(DatabaseConstants.ContentType);

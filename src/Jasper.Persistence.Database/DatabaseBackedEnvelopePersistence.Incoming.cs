@@ -98,20 +98,21 @@ public abstract partial class DatabaseBackedEnvelopePersistence<T>
         envelope.Data = await reader.GetFieldValueAsync<byte[]>(3, _cancellation);
         envelope.ConversationId = await reader.MaybeReadAsync<Guid>(4, _cancellation);
         envelope.CorrelationId = await reader.MaybeReadAsync<string>(5, _cancellation);
-        envelope.SagaId = await reader.MaybeReadAsync<string>(6, _cancellation);
-        envelope.MessageType = await reader.GetFieldValueAsync<string>(7, _cancellation);
-        envelope.ContentType = await reader.GetFieldValueAsync<string>(8, _cancellation);
-        envelope.ReplyRequested = await reader.MaybeReadAsync<string>(9, _cancellation);
-        envelope.AckRequested = await reader.GetFieldValueAsync<bool>(10, _cancellation);
-        envelope.ReplyUri = await reader.ReadUriAsync(11, _cancellation);
-        envelope.Source = await reader.MaybeReadAsync<string>(12, _cancellation);
+        envelope.ParentId = await reader.MaybeReadAsync<string>(6, _cancellation);
+        envelope.SagaId = await reader.MaybeReadAsync<string>(7, _cancellation);
+        envelope.MessageType = await reader.GetFieldValueAsync<string>(8, _cancellation);
+        envelope.ContentType = await reader.GetFieldValueAsync<string>(9, _cancellation);
+        envelope.ReplyRequested = await reader.MaybeReadAsync<string>(10, _cancellation);
+        envelope.AckRequested = await reader.GetFieldValueAsync<bool>(11, _cancellation);
+        envelope.ReplyUri = await reader.ReadUriAsync(12, _cancellation);
+        envelope.Source = await reader.MaybeReadAsync<string>(13, _cancellation);
 
         var report = new ErrorReport(envelope)
         {
-            Explanation = await reader.GetFieldValueAsync<string>(13, _cancellation),
-            ExceptionText = await reader.GetFieldValueAsync<string>(14, _cancellation),
-            ExceptionType = await reader.GetFieldValueAsync<string>(15, _cancellation),
-            ExceptionMessage = await reader.GetFieldValueAsync<string>(16, _cancellation)
+            Explanation = await reader.GetFieldValueAsync<string>(14, _cancellation),
+            ExceptionText = await reader.GetFieldValueAsync<string>(15, _cancellation),
+            ExceptionType = await reader.GetFieldValueAsync<string>(16, _cancellation),
+            ExceptionMessage = await reader.GetFieldValueAsync<string>(17, _cancellation)
         };
 
         return report;

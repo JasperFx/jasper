@@ -34,11 +34,11 @@ public static class DatabaseConstants
     public const string ReceivedAt = "received_at"; // add to all
 
     public static readonly string IncomingFields =
-        $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {ConversationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
+        $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {ConversationId}, {CorrelationId}, {ParentId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
 
     public static readonly string OutgoingFields =
-        $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}, {Attempts}, {ConversationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
+        $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}, {Attempts}, {ConversationId}, {CorrelationId}, {ParentId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
 
     public static readonly string DeadLetterFields =
-        $"{Id}, {ExecutionTime}, {Attempts}, {Body}, {ConversationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {Source}, {Explanation}, {ExceptionText}, {ExceptionType}, {ExceptionMessage}";
+        $"{Id}, {ExecutionTime}, {Attempts}, {Body}, {ConversationId}, {CorrelationId}, {ParentId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {Source}, {Explanation}, {ExceptionText}, {ExceptionType}, {ExceptionMessage}";
 }

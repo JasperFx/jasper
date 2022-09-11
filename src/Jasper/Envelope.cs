@@ -196,7 +196,7 @@ public partial class Envelope
     /// The open telemetry activity parent id. Jasper uses this to correctly correlate connect
     /// activity across services
     /// </summary>
-    public string ParentId { get; internal set; }
+    public string? ParentId { get; internal set; }
 
     /// <summary>
     ///     Specifies the accepted content types for the requested reply

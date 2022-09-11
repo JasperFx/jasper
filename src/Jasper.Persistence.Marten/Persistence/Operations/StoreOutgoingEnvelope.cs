@@ -38,6 +38,7 @@ public class StoreOutgoingEnvelope : IStorageOperation
             builder.AddParameter(Envelope.Attempts),
             builder.AddParameter(Envelope.ConversationId),
             builder.AddParameter(Envelope.CorrelationId),
+            builder.AddParameter(Envelope.ParentId),
             builder.AddParameter(Envelope.SagaId),
             builder.AddParameter(Envelope.MessageType),
             builder.AddParameter(Envelope.ContentType),

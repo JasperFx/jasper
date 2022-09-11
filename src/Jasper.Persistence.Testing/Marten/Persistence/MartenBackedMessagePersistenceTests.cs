@@ -35,6 +35,9 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
             theEnvelope.Status = EnvelopeStatus.Scheduled;
             theEnvelope.MessageType = "message1";
             theEnvelope.ContentType = EnvelopeConstants.JsonContentType;
+            theEnvelope.ConversationId = Guid.NewGuid();
+            theEnvelope.CorrelationId = Guid.NewGuid().ToString();
+            theEnvelope.ParentId = Guid.NewGuid().ToString();
         }
 
         public async Task InitializeAsync()
@@ -66,6 +69,14 @@ namespace Jasper.Persistence.Testing.Marten.Persistence
         private readonly IHost theHost;
         private readonly Envelope theEnvelope;
         private Envelope persisted;
+
+        [Fact]
+        public void should_bring_across_correlation_information()
+        {
+            persisted.CorrelationId.ShouldBe(theEnvelope.CorrelationId);
+            persisted.ParentId.ShouldBe(theEnvelope.ParentId);
+            persisted.ConversationId.ShouldBe(theEnvelope.ConversationId);
+        }
 
         [Fact]
         public void should_be_in_scheduled_status()
