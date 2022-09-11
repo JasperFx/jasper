@@ -185,7 +185,7 @@ public partial class Envelope
     /// <summary>
     ///     Id of the immediate message or workflow that caused this envelope to be sent
     /// </summary>
-    public string? CausationId { get; internal set; }
+    public Guid CausationId { get; internal set; }
 
     /// <summary>
     ///     Location that this message should be sent

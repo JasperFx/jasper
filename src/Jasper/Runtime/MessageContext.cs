@@ -295,7 +295,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 
         if (Envelope != null)
         {
-            outbound.CausationId = Envelope.Id.ToString();
+            outbound.CausationId = Envelope.Id;
         }
     }
 
@@ -313,7 +313,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 
         trackEnvelopeCorrelation(envelope);
         envelope.SagaId = Envelope.SagaId;
-        // TODO -- reevaluate the metadata. Causation, ORiginator, all that
+        // TODO -- reevaluate the metadata. Causation, Originator, all that
 
         try
         {

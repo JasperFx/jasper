@@ -96,7 +96,7 @@ public abstract partial class DatabaseBackedEnvelopePersistence<T>
 
         envelope.Attempts = await reader.GetFieldValueAsync<int>(2, _cancellation);
         envelope.Data = await reader.GetFieldValueAsync<byte[]>(3, _cancellation);
-        envelope.CausationId = await reader.MaybeReadAsync<string>(4, _cancellation);
+        envelope.CausationId = await reader.MaybeReadAsync<Guid>(4, _cancellation);
         envelope.CorrelationId = await reader.MaybeReadAsync<string>(5, _cancellation);
         envelope.SagaId = await reader.MaybeReadAsync<string>(6, _cancellation);
         envelope.MessageType = await reader.GetFieldValueAsync<string>(7, _cancellation);

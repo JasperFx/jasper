@@ -40,7 +40,10 @@ public static class EnvelopeSerializer
                     break;
 
                 case EnvelopeConstants.CausationIdKey:
-                    env.CausationId = value;
+                    if (Guid.TryParse(value, out var cid))
+                    {
+                        env.CausationId = cid;
+                    }
                     break;
 
                 case EnvelopeConstants.DestinationKey:

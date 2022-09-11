@@ -119,7 +119,7 @@ public static class DatabasePersistence
 
         envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
 
-        envelope.CausationId = await reader.MaybeReadAsync<string>(6, cancellation);
+        envelope.CausationId = await reader.MaybeReadAsync<Guid>(6, cancellation);
         envelope.CorrelationId = await reader.MaybeReadAsync<string>(7, cancellation);
         envelope.SagaId = await reader.MaybeReadAsync<string>(8, cancellation);
 
@@ -183,7 +183,7 @@ public static class DatabasePersistence
         }
 
         envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
-        envelope.CausationId = await reader.MaybeReadAsync<string>(6, cancellation);
+        envelope.CausationId = await reader.MaybeReadAsync<Guid>(6, cancellation);
         envelope.CorrelationId = await reader.MaybeReadAsync<string>(7, cancellation);
         envelope.SagaId = await reader.MaybeReadAsync<string>(8, cancellation);
         envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);

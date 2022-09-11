@@ -15,7 +15,7 @@ internal class DeadLettersTable : Table
         AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
         AddColumn(DatabaseConstants.Body, "bytea").NotNull();
 
-        AddColumn<string>(DatabaseConstants.CausationId);
+        AddColumn<Guid>(DatabaseConstants.CausationId);
         AddColumn<string>(DatabaseConstants.CorrelationId);
         AddColumn<string>(DatabaseConstants.SagaId);
         AddColumn<string>(DatabaseConstants.MessageType).NotNull();

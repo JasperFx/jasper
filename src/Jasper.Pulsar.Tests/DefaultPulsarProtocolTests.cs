@@ -136,7 +136,7 @@ namespace Jasper.Pulsar.Tests
         [Fact]
         public void parent_id()
         {
-            theOriginal.CausationId = Guid.NewGuid().ToString();
+            theOriginal.CausationId = Guid.NewGuid();
             theEnvelope.CausationId.ShouldBe(theOriginal.CausationId);
         }
 

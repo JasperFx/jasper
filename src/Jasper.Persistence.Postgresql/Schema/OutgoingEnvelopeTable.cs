@@ -18,7 +18,7 @@ internal class OutgoingEnvelopeTable : Table
 
         AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
 
-        AddColumn<string>(DatabaseConstants.CausationId);
+        AddColumn<Guid>(DatabaseConstants.CausationId);
         AddColumn<string>(DatabaseConstants.CorrelationId);
         AddColumn<string>(DatabaseConstants.SagaId);
         AddColumn<string>(DatabaseConstants.MessageType).NotNull();

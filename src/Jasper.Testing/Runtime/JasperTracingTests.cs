@@ -15,7 +15,7 @@ public class when_creating_an_execution_activity
     public when_creating_an_execution_activity()
     {
         theEnvelope = ObjectMother.Envelope();
-        theEnvelope.CausationId = Guid.NewGuid().ToString();
+        theEnvelope.CausationId = Guid.NewGuid();
 
         theEnvelope.MessageType = "FooMessage";
         theEnvelope.CorrelationId = Guid.NewGuid().ToString();

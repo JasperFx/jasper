@@ -94,7 +94,7 @@ public partial class Envelope
     {
         var child = ForSend(message);
         child.CorrelationId = CorrelationId;
-        child.CausationId = CorrelationId;
+        child.CausationId = Id;
 
         if (message.GetType().ToMessageTypeName() == ReplyRequested)
         {
@@ -111,7 +111,7 @@ public partial class Envelope
         {
             Message = message,
             CorrelationId = Id.ToString(),
-            CausationId = Id.ToString(),
+            CausationId = Id,
             SagaId = SagaId
         };
     }

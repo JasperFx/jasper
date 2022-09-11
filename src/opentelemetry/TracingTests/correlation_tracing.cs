@@ -61,7 +61,7 @@ public class correlation_tracing : IClassFixture<HostsFixture>, IAsyncLifetime
 
         envelope.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
         envelope.Source.ShouldBe("WebApi");
-        envelope.CausationId.ShouldBe(theOriginalEnvelope.Id.ToString());
+        envelope.CausationId.ShouldBe(theOriginalEnvelope.Id);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class correlation_tracing : IClassFixture<HostsFixture>, IAsyncLifetime
 
         envelope.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
         envelope.Source.ShouldBe("WebApi");
-        envelope.CausationId.ShouldBe(theOriginalEnvelope.Id.ToString());
+        envelope.CausationId.ShouldBe(theOriginalEnvelope.Id);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class correlation_tracing : IClassFixture<HostsFixture>, IAsyncLifetime
 
         envelope.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
         envelope.Source.ShouldBe("WebApi");
-        envelope.CausationId.ShouldBe(theOriginalEnvelope.Id.ToString());
+        envelope.CausationId.ShouldBe(theOriginalEnvelope.Id);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class correlation_tracing : IClassFixture<HostsFixture>, IAsyncLifetime
 
         envelope2.Source.ShouldBe("Subscriber1");
         envelope2.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
-        envelope2.CausationId.ShouldBe(envelope1.Id.ToString());
+        envelope2.CausationId.ShouldBe(envelope1.Id);
     }
 
     [Fact]
@@ -113,8 +113,8 @@ public class correlation_tracing : IClassFixture<HostsFixture>, IAsyncLifetime
         atSubscriber1.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
         atSubscriber2.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
 
-        atSubscriber1.CausationId.ShouldBe(theOriginalEnvelope.Id.ToString());
-        atSubscriber2.CausationId.ShouldBe(theOriginalEnvelope.Id.ToString());
+        atSubscriber1.CausationId.ShouldBe(theOriginalEnvelope.Id);
+        atSubscriber2.CausationId.ShouldBe(theOriginalEnvelope.Id);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class correlation_tracing : IClassFixture<HostsFixture>, IAsyncLifetime
         var rabbit2 = theSession.FindSingleReceivedEnvelopeForMessageType<RabbitMessage2>();
 
         rabbit2.CorrelationId.ShouldBe(theOriginalEnvelope.CorrelationId);
-        rabbit2.CausationId.ShouldBe(atSubscriber2.Id.ToString());
+        rabbit2.CausationId.ShouldBe(atSubscriber2.Id);
         rabbit2.Source.ShouldBe("Subscriber1");
 
     }

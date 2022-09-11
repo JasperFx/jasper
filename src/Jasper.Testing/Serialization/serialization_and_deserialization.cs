@@ -148,9 +148,9 @@ namespace Jasper.Testing.Serialization
         }
 
         [Fact]
-        public void parent_id()
+        public void causation()
         {
-            outgoing.CausationId = Guid.NewGuid().ToString();
+            outgoing.CausationId = Guid.NewGuid();
             incoming.CausationId.ShouldBe(outgoing.CausationId);
         }
 

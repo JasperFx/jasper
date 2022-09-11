@@ -51,7 +51,7 @@ public class NullEnvelopePersistence : IEnvelopePersistence, IEnvelopeStorageAdm
 
     public Task ReleaseIncomingAsync(int ownerId, Uri receivedAt)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public Task<ErrorReport?> LoadDeadLetterEnvelopeAsync(Guid id)
