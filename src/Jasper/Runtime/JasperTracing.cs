@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Baseline;
 
 namespace Jasper.Runtime;
 
@@ -35,7 +36,10 @@ internal static class JasperTracing
     public static Activity? StartExecution(string spanName, Envelope envelope,
         ActivityKind kind = ActivityKind.Internal)
     {
-        var activity = ActivitySource.StartActivity(spanName, kind);
+        var activity = envelope.ParentId.IsNotEmpty()
+            ? ActivitySource.StartActivity(spanName, kind, envelope.ParentId)
+            :ActivitySource.StartActivity(spanName, kind);
+
         if (activity == null) return null;
 
         envelope.WriteTags(activity);

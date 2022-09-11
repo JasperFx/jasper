@@ -2,10 +2,38 @@ using System;
 using System.Diagnostics;
 using Jasper.Runtime;
 using Jasper.Testing.Messaging;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Shouldly;
 using Xunit;
 
 namespace Jasper.Testing.Runtime;
+
+public class JasperTracingTests
+{
+    [Fact]
+    public void use_parent_id_from_envelope_when_exists()
+    {
+        var envelope = ObjectMother.Envelope();
+        envelope.ParentId = "00-25d8f5709b569a1f61bcaf79b9450ed4-f293c0545fc237a1-01";
+
+        using var tracerProvider = Sdk.CreateTracerProviderBuilder()
+            .AddSource("Jasper")
+            .SetResourceBuilder(
+                ResourceBuilder.CreateDefault()
+                    .AddService(serviceName: "Jasper", serviceVersion: "1.0"))
+            .AddConsoleExporter()
+            .Build();
+
+        var activity = JasperTracing.StartExecution("process", envelope);
+        activity.ShouldNotBeNull();
+        activity.Start();
+
+        activity.ParentId.ShouldBe(envelope.ParentId);
+
+    }
+}
 
 public class when_creating_an_execution_activity
 {
