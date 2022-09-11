@@ -17,7 +17,7 @@ internal class IncomingEnvelopeTable : Table
         AddColumn<int>(DatabaseConstants.Attempts).DefaultValue(0);
         AddColumn(DatabaseConstants.Body, "bytea").NotNull();
 
-        AddColumn<Guid>(DatabaseConstants.CausationId);
+        AddColumn<Guid>(DatabaseConstants.ConversationId);
         AddColumn<string>(DatabaseConstants.CorrelationId);
         AddColumn<string>(DatabaseConstants.SagaId);
         AddColumn<string>(DatabaseConstants.MessageType).NotNull();

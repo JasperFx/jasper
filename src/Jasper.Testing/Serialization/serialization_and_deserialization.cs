@@ -148,10 +148,10 @@ namespace Jasper.Testing.Serialization
         }
 
         [Fact]
-        public void causation()
+        public void conversation()
         {
-            outgoing.CausationId = Guid.NewGuid();
-            incoming.CausationId.ShouldBe(outgoing.CausationId);
+            outgoing.ConversationId = Guid.NewGuid();
+            incoming.ConversationId.ShouldBe(outgoing.ConversationId);
         }
 
         [Fact]

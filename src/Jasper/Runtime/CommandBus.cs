@@ -39,7 +39,7 @@ public class CommandBus : ICommandBus
     public IEnumerable<Envelope> Outstanding => _outstanding;
 
     public IEnvelopeOutbox? Outbox { get; protected set; }
-    public Guid CausationId { get; protected set; }
+    public Guid ConversationId { get; protected set; }
 
 
     public Task InvokeAsync(object message, CancellationToken cancellation = default)
@@ -48,7 +48,7 @@ public class CommandBus : ICommandBus
         {
             ReplyUri = TransportConstants.RepliesUri,
             CorrelationId = CorrelationId,
-            CausationId = CausationId,
+            ConversationId = ConversationId,
             Source = Runtime.Advanced.ServiceName
         }, cancellation);
     }
@@ -66,7 +66,7 @@ public class CommandBus : ICommandBus
             ReplyRequested = typeof(T).ToMessageTypeName(),
             ResponseType = typeof(T),
             CorrelationId = CorrelationId,
-            CausationId = CausationId,
+            ConversationId = ConversationId,
             Source = Runtime.Advanced.ServiceName
         };
 
@@ -89,7 +89,7 @@ public class CommandBus : ICommandBus
 
         var envelope = Runtime.RoutingFor(message.GetType()).RouteLocal(message, null); // TODO -- propagate DeliveryOptions
         envelope.CorrelationId = CorrelationId;
-        envelope.CausationId = CausationId;
+        envelope.ConversationId = ConversationId;
         envelope.Source = Runtime.Advanced.ServiceName;
 
         return persistOrSendAsync(envelope);
@@ -104,7 +104,7 @@ public class CommandBus : ICommandBus
 
         var envelope = Runtime.RoutingFor(message.GetType()).RouteLocal(message, workerQueueName, null); // TODO -- propagate DeliveryOptions
         envelope.CorrelationId = CorrelationId;
-        envelope.CausationId = CausationId;
+        envelope.ConversationId = ConversationId;
         envelope.Source = Runtime.Advanced.ServiceName;
 
         return persistOrSendAsync(envelope);
@@ -123,7 +123,7 @@ public class CommandBus : ICommandBus
             ScheduledTime = executionTime,
             Destination = TransportConstants.DurableLocalUri,
             CorrelationId = CorrelationId,
-            CausationId = CausationId,
+            ConversationId = ConversationId,
             Source = Runtime.Advanced.ServiceName
         };
 

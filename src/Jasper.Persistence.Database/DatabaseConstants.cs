@@ -24,7 +24,7 @@ public static class DatabaseConstants
     public const string DeadLetterTable = "jasper_dead_letters";
 
     public const string CorrelationId = "correlation_id"; // add to all
-    public const string CausationId = "causation_id"; // add to all
+    public const string ConversationId = "conversation_id"; // add to all
     public const string SagaId = "saga_id"; // add to all
     public const string ParentId = "parent_id"; // add to all
     public const string ContentType = "content_type"; // add to all
@@ -34,11 +34,11 @@ public static class DatabaseConstants
     public const string ReceivedAt = "received_at"; // add to all
 
     public static readonly string IncomingFields =
-        $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
+        $"{Body}, {Id}, {Status}, {OwnerId}, {ExecutionTime}, {Attempts}, {ConversationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {ReceivedAt}";
 
     public static readonly string OutgoingFields =
-        $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}, {Attempts}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
+        $"{Body}, {Id}, {OwnerId}, {Destination}, {DeliverBy}, {Attempts}, {ConversationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}";
 
     public static readonly string DeadLetterFields =
-        $"{Id}, {ExecutionTime}, {Attempts}, {Body}, {CausationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {Source}, {Explanation}, {ExceptionText}, {ExceptionType}, {ExceptionMessage}";
+        $"{Id}, {ExecutionTime}, {Attempts}, {Body}, {ConversationId}, {CorrelationId}, {SagaId}, {MessageType}, {ContentType}, {ReplyRequested}, {AckRequested}, {ReplyUri}, {Source}, {Explanation}, {ExceptionText}, {ExceptionType}, {ExceptionMessage}";
 }

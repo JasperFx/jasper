@@ -260,7 +260,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
     {
         Envelope = originalEnvelope ?? throw new ArgumentNullException(nameof(originalEnvelope));
         CorrelationId = originalEnvelope.CorrelationId;
-        CausationId = originalEnvelope.Id;
+        ConversationId = originalEnvelope.Id;
         _channel = channel;
         _sagaId = originalEnvelope.SagaId;
 
@@ -295,7 +295,7 @@ public class MessageContext : MessagePublisher, IMessageContext, IEnvelopeOutbox
 
         if (Envelope != null)
         {
-            outbound.CausationId = Envelope.Id;
+            outbound.ConversationId = Envelope.Id;
         }
     }
 

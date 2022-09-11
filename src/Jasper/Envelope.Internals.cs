@@ -94,7 +94,7 @@ public partial class Envelope
     {
         var child = ForSend(message);
         child.CorrelationId = CorrelationId;
-        child.CausationId = Id;
+        child.ConversationId = Id;
 
         if (message.GetType().ToMessageTypeName() == ReplyRequested)
         {
@@ -111,7 +111,7 @@ public partial class Envelope
         {
             Message = message,
             CorrelationId = Id.ToString(),
-            CausationId = Id,
+            ConversationId = Id,
             SagaId = SagaId
         };
     }
@@ -180,6 +180,6 @@ public partial class Envelope
         activity.SetTag(JasperTracing.MessageType, MessageType); // Jasper specific
         activity.MaybeSetTag(JasperTracing.PayloadSizeBytes, MessagePayloadSize);
 
-        activity.MaybeSetTag(JasperTracing.MessagingCausationId, CausationId);
+        activity.MaybeSetTag(JasperTracing.MessagingConversationId, ConversationId);
     }
 }

@@ -39,10 +39,10 @@ public static class EnvelopeSerializer
                     env.SagaId = value;
                     break;
 
-                case EnvelopeConstants.CausationIdKey:
+                case EnvelopeConstants.ConversationIdKey:
                     if (Guid.TryParse(value, out var cid))
                     {
-                        env.CausationId = cid;
+                        env.ConversationId = cid;
                     }
                     break;
 
@@ -185,7 +185,7 @@ public static class EnvelopeSerializer
         writer.WriteProp(ref count, EnvelopeConstants.ReplyUriKey, env.ReplyUri);
         writer.WriteProp(ref count, EnvelopeConstants.ContentTypeKey, env.ContentType);
         writer.WriteProp(ref count, EnvelopeConstants.CorrelationIdKey, env.CorrelationId);
-        writer.WriteProp(ref count, EnvelopeConstants.CausationIdKey, env.CausationId);
+        writer.WriteProp(ref count, EnvelopeConstants.ConversationIdKey, env.ConversationId);
         writer.WriteProp(ref count, EnvelopeConstants.DestinationKey, env.Destination);
         writer.WriteProp(ref count, EnvelopeConstants.SagaIdKey, env.SagaId);
 

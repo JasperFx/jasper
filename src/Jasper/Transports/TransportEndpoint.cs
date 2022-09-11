@@ -38,7 +38,7 @@ public abstract class TransportEndpoint<TIncoming, TOutgoing> : Endpoint
         MapPropertyToHeader(x => x.CorrelationId!, EnvelopeConstants.CorrelationIdKey);
         MapPropertyToHeader(x => x.SagaId!, EnvelopeConstants.SagaIdKey);
         MapPropertyToHeader(x => x.Id, EnvelopeConstants.IdKey);
-        MapPropertyToHeader(x => x.CausationId!, EnvelopeConstants.CausationIdKey);
+        MapPropertyToHeader(x => x.ConversationId!, EnvelopeConstants.ConversationIdKey);
         MapPropertyToHeader(x => x.ContentType!, EnvelopeConstants.ContentTypeKey);
         MapPropertyToHeader(x => x.Source!, EnvelopeConstants.SourceKey);
         MapPropertyToHeader(x => x.ReplyRequested!, EnvelopeConstants.ReplyRequestedKey);

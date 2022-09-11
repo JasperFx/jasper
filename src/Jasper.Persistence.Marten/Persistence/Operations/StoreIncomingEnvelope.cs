@@ -34,7 +34,7 @@ public class StoreIncomingEnvelope : IStorageOperation
             builder.AddParameter(Envelope.OwnerId),
             builder.AddParameter(Envelope.ScheduledTime),
             builder.AddParameter(Envelope.Attempts),
-            builder.AddParameter(Envelope.CausationId),
+            builder.AddParameter(Envelope.ConversationId),
             builder.AddParameter(Envelope.CorrelationId),
             builder.AddParameter(Envelope.SagaId),
             builder.AddParameter(Envelope.MessageType),

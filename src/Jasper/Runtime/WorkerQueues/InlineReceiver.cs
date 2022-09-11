@@ -60,7 +60,7 @@ public class InlineReceiver : IReceiver
             catch (Exception? ex)
             {
                 _logger.LogError(ex,
-                    "Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline ({CausationId})",
+                    "Error when trying to Nack a Rabbit MQ message that failed in the HandlerPipeline ({ConversationId})",
                     envelope.CorrelationId);
             }
         }

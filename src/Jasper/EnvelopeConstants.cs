@@ -6,7 +6,7 @@ public static class EnvelopeConstants
     public const string CorrelationIdKey = "correlation-id";
     public const string SagaIdKey = "saga-id";
     public const string IdKey = "id";
-    public const string CausationIdKey = "parent-id";
+    public const string ConversationIdKey = "parent-id";
     public const string ContentTypeKey = "content-type";
     public const string SourceKey = "source";
     public const string ReplyRequestedKey = "reply-requested";

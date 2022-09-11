@@ -15,7 +15,7 @@ public class when_creating_an_execution_activity
     public when_creating_an_execution_activity()
     {
         theEnvelope = ObjectMother.Envelope();
-        theEnvelope.CausationId = Guid.NewGuid();
+        theEnvelope.ConversationId = Guid.NewGuid();
 
         theEnvelope.MessageType = "FooMessage";
         theEnvelope.CorrelationId = Guid.NewGuid().ToString();
@@ -29,7 +29,7 @@ public class when_creating_an_execution_activity
     public void should_set_the_otel_conversation_id_to_correlation_id()
     {
         theActivity.GetTagItem(JasperTracing.MessagingConversationId)
-            .ShouldBe(theEnvelope.CorrelationId);
+            .ShouldBe(theEnvelope.ConversationId);
     }
 
     [Fact]
@@ -68,9 +68,9 @@ public class when_creating_an_execution_activity
     }
 
     [Fact]
-    public void trace_the_causation_id()
+    public void trace_the_conversation_id()
     {
-        theActivity.GetTagItem(JasperTracing.MessagingCausationId)
-            .ShouldBe(theEnvelope.CausationId);
+        theActivity.GetTagItem(JasperTracing.MessagingConversationId)
+            .ShouldBe(theEnvelope.ConversationId);
     }
 }

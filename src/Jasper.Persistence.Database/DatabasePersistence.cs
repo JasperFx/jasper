@@ -46,7 +46,7 @@ public static class DatabasePersistence
         list.Add(builder.AddParameter(envelope.DeliverBy));
 
         list.Add(builder.AddParameter(envelope.Attempts));
-        list.Add(builder.AddParameter(envelope.CausationId));
+        list.Add(builder.AddParameter(envelope.ConversationId));
         list.Add(builder.AddParameter(envelope.CorrelationId));
         list.Add(builder.AddParameter(envelope.SagaId));
         list.Add(builder.AddParameter(envelope.MessageType));
@@ -82,7 +82,7 @@ public static class DatabasePersistence
             builder.AddParameter(envelope.OwnerId),
             builder.AddParameter(envelope.ScheduledTime),
             builder.AddParameter(envelope.Attempts),
-            builder.AddParameter(envelope.CausationId),
+            builder.AddParameter(envelope.ConversationId),
             builder.AddParameter(envelope.CorrelationId),
             builder.AddParameter(envelope.SagaId),
             builder.AddParameter(envelope.MessageType),
@@ -119,7 +119,7 @@ public static class DatabasePersistence
 
         envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
 
-        envelope.CausationId = await reader.MaybeReadAsync<Guid>(6, cancellation);
+        envelope.ConversationId = await reader.MaybeReadAsync<Guid>(6, cancellation);
         envelope.CorrelationId = await reader.MaybeReadAsync<string>(7, cancellation);
         envelope.SagaId = await reader.MaybeReadAsync<string>(8, cancellation);
 
@@ -144,7 +144,7 @@ public static class DatabasePersistence
             list.Add(builder.AddParameter(error.Envelope.ScheduledTime));
             list.Add(builder.AddParameter(error.Envelope.Attempts));
             list.Add(builder.AddParameter(error.Envelope.Data));
-            list.Add(builder.AddParameter(error.Envelope.CausationId));
+            list.Add(builder.AddParameter(error.Envelope.ConversationId));
             list.Add(builder.AddParameter(error.Envelope.CorrelationId));
             list.Add(builder.AddParameter(error.Envelope.SagaId));
             list.Add(builder.AddParameter(error.Envelope.MessageType));
@@ -183,7 +183,7 @@ public static class DatabasePersistence
         }
 
         envelope.Attempts = await reader.GetFieldValueAsync<int>(5, cancellation);
-        envelope.CausationId = await reader.MaybeReadAsync<Guid>(6, cancellation);
+        envelope.ConversationId = await reader.MaybeReadAsync<Guid>(6, cancellation);
         envelope.CorrelationId = await reader.MaybeReadAsync<string>(7, cancellation);
         envelope.SagaId = await reader.MaybeReadAsync<string>(8, cancellation);
         envelope.MessageType = await reader.GetFieldValueAsync<string>(9, cancellation);

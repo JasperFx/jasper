@@ -18,7 +18,7 @@ internal static class JasperTracing
     public const string MessagingDestinationKind = "messaging.destination_kind"; // Not sure this is going to be helpful. queue or topic. Maybe port if TCP basically.
     public const string MessagingTempDestination = "messaging.temp_destination"; // boolean if this is temporary
     public const string PayloadSizeBytes = "messaging.message_payload_size_bytes";
-    public const string MessagingCausationId = "messaging.causation_id";
+
 
     // Transport specific things
     // messaging.consumer_id
