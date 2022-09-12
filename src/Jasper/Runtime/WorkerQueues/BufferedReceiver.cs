@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Baseline;
@@ -99,7 +100,9 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
             return;
         }
 
+        var activity = JasperTracing.StartExecution("receive", envelope, ActivityKind.Consumer);
         _receivingBlock.Post(envelope);
+        activity?.Stop();
     }
 
     public void ScheduleExecution(Envelope envelope)
