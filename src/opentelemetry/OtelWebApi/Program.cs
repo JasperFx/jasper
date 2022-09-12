@@ -34,16 +34,24 @@ builder.Host.UseJasper(opts =>
 
 builder.Services.AddControllers();
 
+#region sample_enabling_open_telemetry
+
+// builder.Services is an IServiceCollection object
 builder.Services.AddOpenTelemetryTracing(x =>
 {
-    x
-        .SetResourceBuilder(ResourceBuilder
+    x.SetResourceBuilder(ResourceBuilder
             .CreateDefault()
             .AddService("OtelWebApi")) // <-- sets service name
+
         .AddJaegerExporter()
         .AddAspNetCoreInstrumentation()
-        .AddJasper();
+
+        // This is absolutely necessary to collect the Jasper
+        // open telemetry tracing information in your application
+        .AddSource("Jasper");
 });
+
+#endregion
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -27,6 +27,7 @@ return await Host.CreateDefaultBuilder(args)
         // Publish to the other subscriber
         opts.PublishMessage<RabbitMessage2>().ToRabbitQueue(MessagingConstants.Subscriber2Queue);
 
+        // Add Open Telemetry tracing
         opts.Services.AddOpenTelemetryTracing(builder =>
         {
             builder
@@ -34,7 +35,9 @@ return await Host.CreateDefaultBuilder(args)
                     .CreateDefault()
                     .AddService("Subscriber1"))
                 .AddJaegerExporter()
-                .AddJasper();
+
+                // Add Jasper as a source
+                .AddSource("Jasper");
         });
     })
     .RunOaktonCommands(args);

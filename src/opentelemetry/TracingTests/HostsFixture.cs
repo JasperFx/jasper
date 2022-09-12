@@ -48,7 +48,7 @@ public class HostsFixture : IAsyncLifetime
                             .CreateDefault()
                             .AddService("Subscriber1"))
                         .AddJaegerExporter()
-                        .AddJasper();
+                        .AddSource("Jasper");
                 });
 
             }).StartAsync();
@@ -78,7 +78,7 @@ public class HostsFixture : IAsyncLifetime
                             .CreateDefault()
                             .AddService("Subscriber2"))
                         .AddJaegerExporter()
-                        .AddJasper();
+                        .AddSource("Jasper");
                 });
             }).StartAsync();
     }

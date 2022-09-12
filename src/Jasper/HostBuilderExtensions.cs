@@ -19,7 +19,6 @@ using Microsoft.Extensions.ObjectPool;
 using Oakton;
 using Oakton.Descriptions;
 using Oakton.Resources;
-using OpenTelemetry.Trace;
 
 namespace Jasper;
 
@@ -239,13 +238,4 @@ public static class HostBuilderExtensions
         return host.Get<ICommandBus>().InvokeAsync(command!);
     }
 
-    /// <summary>
-    ///     Add Jasper tracing to your Open Telemetry diagnostic publishing
-    /// </summary>
-    /// <param name="builder"></param>
-    /// <returns></returns>
-    public static TracerProviderBuilder AddJasper(this TracerProviderBuilder builder)
-    {
-        return builder.AddSource("Jasper");
-    }
 }

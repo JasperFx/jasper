@@ -26,7 +26,7 @@ For the moment, I’m going to ignore the underlying persistence and just focus 
 <!-- snippet: sample_Order_saga -->
 <a id='snippet-sample_order_saga'></a>
 ```cs
-public record StartOrder(string Id);
+public record StartOrder(string OrderId);
 
 public record CompleteOrder(string Id);
 
@@ -40,11 +40,11 @@ public class Order : Saga
     // to start a new Order
     public OrderTimeout Start(StartOrder order, ILogger<Order> logger)
     {
-        Id = order.Id; // defining the Saga Id.
+        Id = order.OrderId; // defining the Saga Id.
 
-        logger.LogInformation("Got a new order with id {Id}", order.Id);
+        logger.LogInformation("Got a new order with id {Id}", order.OrderId);
         // creating a timeout message for the saga
-        return new OrderTimeout(order.Id);
+        return new OrderTimeout(order.OrderId);
     }
 
     // Apply the CompleteOrder to the saga
@@ -149,7 +149,20 @@ To do that, Jasper determines what public member of the saga message refers to t
 identity. In order of precedence, Jasper first looks for a member decorated with the
 `[SagaIdentity]` attribute like this:
 
-snippet: sample_ToyOnTray
+<!-- snippet: sample_ToyOnTray -->
+<a id='snippet-sample_toyontray'></a>
+```cs
+public class ToyOnTray
+{
+    // There's always *some* reason to deviate,
+    // so you can use this attribute to tell Jasper
+    // that this property refers to the Id of the
+    // Saga state document
+    [SagaIdentity] public int OrderId { get; set; }
+}
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/HappyMealSaga.cs#L248-L257' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_toyontray' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Next, Jasper looks for a member named "{saga type name}Id." In the case of our `Order`
 saga type, that would be a public member named `OrderId` as shown in this code:

@@ -30,7 +30,7 @@ return await Host.CreateDefaultBuilder(args)
                 .SetResourceBuilder(ResourceBuilder
                     .CreateDefault()
                     .AddService("Subscriber2"))
-                .AddJasper()
+                .AddSource("Jasper")
                 .AddJaegerExporter();
         });
     })
