@@ -7,6 +7,8 @@ using OpenTelemetry.Trace;
 using OtelMessages;
 using Subscriber1;
 
+#region sample_bootstrapping_headless_service
+
 return await Host.CreateDefaultBuilder(args)
     .UseJasper(opts =>
     {
@@ -41,3 +43,5 @@ return await Host.CreateDefaultBuilder(args)
         });
     })
     .RunOaktonCommands(args);
+
+#endregion
