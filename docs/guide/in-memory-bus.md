@@ -155,7 +155,7 @@ public async Task ScheduleLocally(IMessageContext bus, Guid invoiceId)
     await bus.ScheduleAsync(message, DateTimeOffset.Now.AddDays(30));
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L117-L132' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_schedule_job_locally' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L140-L155' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_schedule_job_locally' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -198,7 +198,7 @@ using var host = await Host.CreateDefaultBuilder()
         opts.LocalQueue("four").UseDurableInbox();
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L12-L47' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localqueuesapp' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L14-L49' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_localqueuesapp' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -224,7 +224,7 @@ public ValueTask EnqueueToQueue(IMessageContext bus)
     return bus.EnqueueAsync(@event, "highpriority");
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L83-L98' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_iservicebus.enqueue_to_specific_worker_queue' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L106-L121' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_iservicebus.enqueue_to_specific_worker_queue' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

@@ -393,7 +393,7 @@ public class FirstMessage
     public Guid Id { get; set; } = Guid.NewGuid();
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.RabbitMQ.Tests/send_by_topics.cs#L138-L146' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_using_topic_attribute' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.RabbitMQ.Tests/send_by_topics.cs#L152-L160' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_using_topic_attribute' title='Start of snippet'>anchor</a></sup>
 <a id='snippet-sample_using_topic_attribute-1'></a>
 ```cs
 [Topic("one")]
@@ -440,7 +440,7 @@ theSender = Host.CreateDefaultBuilder()
         });
     }).Start();
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.RabbitMQ.Tests/send_by_topics.cs#L22-L36' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_binding_topics_and_topic_patterns_to_queues' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.RabbitMQ.Tests/send_by_topics.cs#L24-L38' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_binding_topics_and_topic_patterns_to_queues' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Managing Rabbit MQ Objects

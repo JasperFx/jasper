@@ -3,7 +3,9 @@ using Jasper;
 
 namespace OrderSagaSample;
 
-public record StartOrder(string Id);
+#region sample_Order_saga
+
+public record StartOrder(string OrderId);
 
 public record CompleteOrder(string Id);
 
@@ -13,15 +15,18 @@ public class Order : Saga
 {
     public string? Id { get; set; }
 
+    // This method would be called when a StartOrder message arrives
+    // to start a new Order
     public OrderTimeout Start(StartOrder order, ILogger<Order> logger)
     {
-        Id = order.Id; // defining the Saga Id.
+        Id = order.OrderId; // defining the Saga Id.
 
-        logger.LogInformation("Got a new order with id {Id}", order.Id);
+        logger.LogInformation("Got a new order with id {Id}", order.OrderId);
         // creating a timeout message for the saga
-        return new OrderTimeout(order.Id);
+        return new OrderTimeout(order.OrderId);
     }
 
+    // Apply the CompleteOrder to the saga
     public void Handle(CompleteOrder complete, ILogger<Order> logger)
     {
         logger.LogInformation("Completing order {Id}", complete.Id);
@@ -30,6 +35,8 @@ public class Order : Saga
         MarkCompleted();
     }
 
+    // Delete this order if it has not already been deleted to enforce a "timeout"
+    // condition
     public void Handle(OrderTimeout timeout, ILogger<Order> logger)
     {
         logger.LogInformation("Applying timeout to order {Id}", timeout.Id);
@@ -38,3 +45,6 @@ public class Order : Saga
         MarkCompleted();
     }
 }
+
+
+#endregion

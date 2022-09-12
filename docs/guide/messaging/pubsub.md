@@ -23,7 +23,7 @@ public ValueTask SendMessage(IMessageContext bus)
     return bus.SendAsync(@event);
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L134-L149' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_sending_message_with_servicebus' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L157-L172' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_sending_message_with_servicebus' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 That by itself will send the `InvoiceCreated` message to whatever subscribers are interested in
@@ -51,7 +51,7 @@ public ValueTask PublishMessage(IMessageContext bus)
     return bus.PublishAsync(@event);
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L152-L167' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_publishing_message_with_servicebus' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L175-L190' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_publishing_message_with_servicebus' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Send Messages to a Specific Endpoint
@@ -63,7 +63,27 @@ programmatic routing as to what downstream system should handle the outgoing mes
 Regardless, that usage is shown below. Just note that you can give a name to any type
 of Jasper endpoint:
 
-snippet: sample_sending_to_endpoint_by_name
+<!-- snippet: sample_sending_to_endpoint_by_name -->
+<a id='snippet-sample_sending_to_endpoint_by_name'></a>
+```cs
+using var host = await Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        opts.PublishAllMessages().ToPort(5555)
+            .Named("One");
+
+        opts.PublishAllMessages().ToPort(5555)
+            .Named("Two");
+    }).StartAsync();
+
+var publisher = host.Services
+    .GetRequiredService<IMessagePublisher>();
+
+// Explicitly send a message to a named endpoint
+await publisher.SendToEndpointAsync("One", new SomeMessage());
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/PublishingSamples.cs#L54-L72' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_sending_to_endpoint_by_name' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 TODO -- link to endpoint configuration. Make sure it explains how to
 
@@ -72,11 +92,36 @@ TODO -- link to endpoint configuration. Make sure it explains how to
 If you're using a transport endpoint that supports publishing messages by topic
 such as this example using Rabbit MQ from the Jasper tests:
 
-snippet: sample_binding_topics_and_topic_patterns_to_queues
+<!-- snippet: sample_binding_topics_and_topic_patterns_to_queues -->
+<a id='snippet-sample_binding_topics_and_topic_patterns_to_queues'></a>
+```cs
+theSender = Host.CreateDefaultBuilder()
+    .UseJasper(opts =>
+    {
+        opts.UseRabbitMq().AutoProvision();
+        opts.PublishAllMessages().ToRabbitTopics("jasper.topics", exchange =>
+        {
+            exchange.BindTopic("color.green").ToQueue("green");
+            exchange.BindTopic("color.blue").ToQueue("blue");
+            exchange.BindTopic("color.*").ToQueue("all");
+        });
+    }).Start();
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.RabbitMQ.Tests/send_by_topics.cs#L24-L38' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_binding_topics_and_topic_patterns_to_queues' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 You can explicitly publish a message to a topic through this syntax:
 
-snippet: sample_send_to_topic
+<!-- snippet: sample_send_to_topic -->
+<a id='snippet-sample_send_to_topic'></a>
+```cs
+var publisher = theSender.Services
+    .GetRequiredService<IMessagePublisher>();
+
+await publisher.SendToTopicAsync("color.purple", new Message1());
+```
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper.RabbitMQ.Tests/send_by_topics.cs#L72-L79' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_send_to_topic' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 ## Customizing Message Delivery
 
