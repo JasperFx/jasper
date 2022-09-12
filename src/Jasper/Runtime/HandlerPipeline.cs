@@ -44,7 +44,7 @@ public class HandlerPipeline : IHandlerPipeline
 
     public Task InvokeAsync(Envelope envelope, IChannelCallback channel)
     {
-        using var activity = JasperTracing.StartExecution("process", envelope);
+        using var activity = JasperTracing.StartExecuting(envelope);
 
         return InvokeAsync(envelope, channel, activity);
     }
@@ -91,7 +91,7 @@ public class HandlerPipeline : IHandlerPipeline
 
         var executor = ExecutorFor(envelope.Message.GetType());
 
-        using var activity = JasperTracing.StartExecution("process", envelope);
+        using var activity = JasperTracing.StartExecuting(envelope);
 
         Logger.ExecutionStarted(envelope);
 

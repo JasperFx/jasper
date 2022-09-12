@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
+using Jasper.Runtime;
 
 namespace Jasper.Transports.Sending;
 
@@ -29,9 +30,13 @@ internal class InlineSendingAgent : ISendingAgent
     {
         setDefaults(envelope);
 
+        using var activity = JasperTracing.StartSending(envelope);
+
         // TODO -- need to harden this for ephemeral failures
         await _sender.SendAsync(envelope);
         _logger.Sent(envelope);
+
+        activity?.Stop();
     }
 
     public ValueTask StoreAndForwardAsync(Envelope envelope)

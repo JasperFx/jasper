@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
@@ -111,8 +113,16 @@ internal class DurableSendingAgent : SendingAgent
 
     protected override async Task storeAndForwardAsync(Envelope envelope)
     {
-        await _persistence.StoreOutgoingAsync(envelope, _settings.UniqueNodeId);
+        using var activity = JasperTracing.StartSending(envelope);
+        try
+        {
+            await _persistence.StoreOutgoingAsync(envelope, _settings.UniqueNodeId);
 
-        await _senderDelegate(envelope);
+            await _senderDelegate(envelope);
+        }
+        finally
+        {
+            activity?.Stop();
+        }
     }
 }

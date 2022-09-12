@@ -26,7 +26,7 @@ public class JasperTracingTests
             .AddConsoleExporter()
             .Build();
 
-        var activity = JasperTracing.StartExecution("process", envelope);
+        using var activity = JasperTracing.StartEnvelopeActivity("process", envelope);
         activity.ShouldNotBeNull();
         activity.Start();
 

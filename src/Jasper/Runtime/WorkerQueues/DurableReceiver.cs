@@ -130,8 +130,7 @@ internal class DurableReceiver : ILocalQueue, IChannelCallback, ISupportNativeSc
             throw new ArgumentNullException(nameof(envelope));
         }
 
-        using var activity = JasperTracing.StartExecution("receive", envelope,
-            ActivityKind.Consumer);
+        using var activity = JasperTracing.StartReceiving(envelope);
         try
         {
             var now = DateTimeOffset.UtcNow;

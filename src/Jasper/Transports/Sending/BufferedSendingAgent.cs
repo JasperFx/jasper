@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Configuration;
 using Jasper.Logging;
+using Jasper.Runtime;
 using Microsoft.Extensions.Logging;
 
 namespace Jasper.Transports.Sending;
@@ -50,8 +52,17 @@ internal class BufferedSendingAgent : SendingAgent
         return MarkSuccessAsync();
     }
 
-    protected override Task storeAndForwardAsync(Envelope envelope)
+    protected override async Task storeAndForwardAsync(Envelope envelope)
     {
-        return _senderDelegate(envelope);
+        using var activity = JasperTracing.StartSending(envelope);
+        try
+        {
+            await _senderDelegate(envelope);
+        }
+        finally
+        {
+            activity?.Stop();
+        }
+
     }
 }

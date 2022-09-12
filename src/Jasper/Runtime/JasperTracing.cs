@@ -31,9 +31,23 @@ internal static class JasperTracing
         "Jasper",
         typeof(JasperTracing).Assembly.GetName().Version!.ToString());
 
+    public static Activity? StartSending(Envelope envelope)
+    {
+        return StartEnvelopeActivity("send", envelope, ActivityKind.Producer);
+    }
+
+    public static Activity? StartReceiving(Envelope envelope)
+    {
+        return StartEnvelopeActivity("receive", envelope, ActivityKind.Consumer);
+    }
+
+    public static Activity? StartExecuting(Envelope envelope)
+    {
+        return StartEnvelopeActivity("process", envelope, ActivityKind.Internal);
+    }
 
 
-    public static Activity? StartExecution(string spanName, Envelope envelope,
+    public static Activity? StartEnvelopeActivity(string spanName, Envelope envelope,
         ActivityKind kind = ActivityKind.Internal)
     {
         var activity = envelope.ParentId.IsNotEmpty()

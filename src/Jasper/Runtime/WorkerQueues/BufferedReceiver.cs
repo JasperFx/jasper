@@ -100,7 +100,7 @@ internal class BufferedReceiver : ILocalQueue, IChannelCallback, ISupportNativeS
             return;
         }
 
-        var activity = JasperTracing.StartExecution("receive", envelope, ActivityKind.Consumer);
+        var activity = JasperTracing.StartReceiving(envelope);
         _receivingBlock.Post(envelope);
         activity?.Stop();
     }

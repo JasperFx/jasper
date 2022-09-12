@@ -37,8 +37,7 @@ public class InlineReceiver : IReceiver
 
     public async ValueTask ReceivedAsync(IListener listener, Envelope envelope)
     {
-        using var activity = JasperTracing.StartExecution("receive", envelope,
-            ActivityKind.Consumer);
+        using var activity = JasperTracing.StartReceiving(envelope);
 
         try
         {
