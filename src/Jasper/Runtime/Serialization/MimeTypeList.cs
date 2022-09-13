@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 
-namespace Jasper.Serialization;
+namespace Jasper.Runtime.Serialization;
 
 internal class MimeTypeList : IEnumerable<string>
 {

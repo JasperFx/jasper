@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Transports.Sending;
 using Jasper.Transports.Util;
 using Microsoft.Extensions.Logging;

@@ -3,7 +3,6 @@ using System.Linq;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Scheduled;
-using Jasper.Serialization;
 using Lamar;
 using LamarCodeGeneration;
 using LamarCodeGeneration.Frames;

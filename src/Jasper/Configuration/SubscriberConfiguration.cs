@@ -1,6 +1,6 @@
 using System;
 using Baseline;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Newtonsoft.Json;
 using TypeExtensions = LamarCodeGeneration.Util.TypeExtensions;
 

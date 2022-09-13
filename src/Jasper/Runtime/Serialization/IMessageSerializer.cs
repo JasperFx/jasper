@@ -1,6 +1,6 @@
 using System;
 
-namespace Jasper.Serialization;
+namespace Jasper.Runtime.Serialization;
 
 public interface IMessageSerializer
 {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using InteropMessages;
 using Jasper;
 
-namespace InteroperabilityTests
+namespace InteroperabilityTests.MassTransit
 {
     public class ResponseHandler
     {

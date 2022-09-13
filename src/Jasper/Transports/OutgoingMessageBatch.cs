@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 
 namespace Jasper.Transports;
 

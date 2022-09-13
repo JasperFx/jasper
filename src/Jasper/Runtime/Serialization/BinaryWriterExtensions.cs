@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Jasper.Serialization;
+namespace Jasper.Runtime.Serialization;
 
 internal static class BinaryWriterExtensions
 {

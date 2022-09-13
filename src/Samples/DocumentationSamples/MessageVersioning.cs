@@ -1,6 +1,6 @@
 using Jasper;
 using Jasper.Attributes;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Shouldly;

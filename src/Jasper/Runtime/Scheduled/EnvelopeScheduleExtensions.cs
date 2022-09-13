@@ -1,4 +1,4 @@
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 

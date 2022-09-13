@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Baseline;
 using InteropMessages;
 using Jasper;
-using Jasper.Configuration;
 using Jasper.RabbitMQ;
+using Jasper.Runtime.Interop.MassTransit;
 using Jasper.Tracking;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +13,7 @@ using Shouldly;
 using Xunit;
 using IHost = Microsoft.Extensions.Hosting.IHost;
 
-namespace InteroperabilityTests
+namespace InteroperabilityTests.MassTransit
 {
     public class MassTransitFixture : IAsyncLifetime
     {

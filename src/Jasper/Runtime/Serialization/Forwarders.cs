@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using BaselineTypeDiscovery;
 
-namespace Jasper.Serialization;
+namespace Jasper.Runtime.Serialization;
 
 internal class Forwarders
 {

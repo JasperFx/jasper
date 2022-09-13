@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 
-namespace Jasper.Serialization;
+namespace Jasper.Runtime.Serialization;
 
 /// <summary>
 ///     Use System.Text.Json as the JSON serialization

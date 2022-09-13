@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Jasper.Runtime;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;

@@ -11,7 +11,6 @@ using Jasper.Runtime;
 using Jasper.Runtime.Handlers;
 using Jasper.Runtime.Routing;
 using Jasper.Runtime.Scheduled;
-using Jasper.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;

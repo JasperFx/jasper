@@ -8,7 +8,7 @@ using Baseline.ImTools;
 using Jasper.ErrorHandling;
 using Jasper.Runtime;
 using Jasper.Runtime.Routing;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Oakton.Descriptions;

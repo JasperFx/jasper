@@ -4,8 +4,8 @@ using Jasper.Configuration;
 using Jasper.Logging;
 using Jasper.Persistence.Durability;
 using Jasper.Runtime;
+using Jasper.Runtime.Serialization;
 using Jasper.Runtime.WorkerQueues;
-using Jasper.Serialization;
 using Jasper.Transports.Sending;
 using Microsoft.Extensions.Logging;
 

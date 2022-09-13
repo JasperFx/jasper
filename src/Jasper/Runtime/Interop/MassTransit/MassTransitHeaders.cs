@@ -1,4 +1,4 @@
-namespace Jasper.Configuration;
+namespace Jasper.Runtime.Interop.MassTransit;
 
 // Taken from MassTransit code
 public static class MassTransitHeaders

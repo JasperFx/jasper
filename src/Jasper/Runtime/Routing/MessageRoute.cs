@@ -7,7 +7,7 @@ using Baseline.Reflection;
 using Jasper.Attributes;
 using Jasper.Configuration;
 using Jasper.Runtime.Scheduled;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Transports.Sending;
 
 namespace Jasper.Runtime.Routing;

@@ -8,7 +8,7 @@ using Baseline.Dates;
 using Jasper;
 using Jasper.ErrorHandling;
 using Jasper.Runtime;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Tracking;
 using Jasper.Transports;
 using Microsoft.Extensions.DependencyInjection;

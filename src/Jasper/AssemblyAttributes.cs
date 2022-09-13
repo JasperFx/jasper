@@ -23,5 +23,5 @@ using Oakton;
 [assembly: InternalsVisibleTo("Jasper.Persistence.EntityFrameworkCore")]
 [assembly: InternalsVisibleTo("Jasper.Pulsar")]
 [assembly: InternalsVisibleTo("Jasper.Pulsar.Tests")]
-[assembly: InternalsVisibleTo("StorytellerSpecs")]
+[assembly: InternalsVisibleTo("InteroperabilityTests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

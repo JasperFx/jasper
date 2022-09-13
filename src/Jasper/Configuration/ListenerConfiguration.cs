@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks.Dataflow;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using LamarCodeGeneration.Util;
 using Newtonsoft.Json;
 

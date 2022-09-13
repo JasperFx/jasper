@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Reflection;
 using DotPulsar.Abstractions;
 using DotPulsar.Internal.PulsarApi;
-using Jasper.Serialization;
 using Jasper.Util;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using NSubstitute;

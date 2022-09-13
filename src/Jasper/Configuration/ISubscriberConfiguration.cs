@@ -1,5 +1,5 @@
 using System;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Jasper.Configuration;

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Shouldly;
 using TestingSupport;
 using Xunit;

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Jasper.Runtime;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

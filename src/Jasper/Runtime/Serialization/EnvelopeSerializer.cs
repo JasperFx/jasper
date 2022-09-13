@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
-namespace Jasper.Serialization;
+namespace Jasper.Runtime.Serialization;
 
 public static class EnvelopeSerializer
 {

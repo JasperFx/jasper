@@ -8,7 +8,7 @@ using Jasper.Configuration;
 using Jasper.ErrorHandling;
 using Jasper.Persistence.Sagas;
 using Jasper.Runtime.Scheduled;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Util;
 using Lamar;
 using LamarCodeGeneration;

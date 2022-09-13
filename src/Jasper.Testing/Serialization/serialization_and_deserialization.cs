@@ -2,7 +2,7 @@
 using System.Reflection;
 using Baseline;
 using Baseline.ImTools;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Util;
 using Shouldly;
 using TestingSupport;

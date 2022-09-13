@@ -1,6 +1,6 @@
 using System;
 using Baseline;
-using Jasper.Serialization;
+using Jasper.Runtime.Serialization;
 using Jasper.Transports;
 
 namespace Jasper.Runtime.Scheduled;
