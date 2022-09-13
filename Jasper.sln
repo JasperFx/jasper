@@ -117,7 +117,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircuitBreakingTests", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduledJobTests", "src\ScheduledJobTests\ScheduledJobTests.csproj", "{E7ADDDBB-947C-4A5D-A4EA-483289F9F821}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiWithMarten", "src\samples\WebApiWithMarten\WebApiWithMarten.csproj", "{CF1771C0-D258-4E3D-8F93-841B4A194B7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiWithMarten", "src\Samples\WebApiWithMarten\WebApiWithMarten.csproj", "{CF1771C0-D258-4E3D-8F93-841B4A194B7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderEventSourcingSample", "src\Samples\OrderEventSourcingSample\OrderEventSourcingSample.csproj", "{956BEE37-051A-4B8A-9DD6-91147C2C076A}"
 EndProject
