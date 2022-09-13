@@ -31,7 +31,6 @@ namespace MassTransitService
                     });
                 });
             });
-            services.AddMassTransitHostedService(true);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
