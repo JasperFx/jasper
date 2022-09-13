@@ -33,8 +33,8 @@ At the command line, the build script can be executed:
 
 The default build task will run the basic unit tests along with the *Jasper.Http* tests. These other tasks may be helpful:
 
-* `test-persistence* - runs the *Jasper.Persistence.Tests*
-* `test-rabbitmq* - runs the Rabbit MQ transport tests
+* `test-persistence` - runs the *Jasper.Persistence.Tests*
+* `test-rabbitmq` - runs the Rabbit MQ transport tests
 * `test-pulsar` - runs the Pulsar transport tests
 * `test-tcp` - runs the TCP transport tests
 * `storyteller`- runs the Storyteller specifications (think big, slow integration tests)
