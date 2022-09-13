@@ -15,15 +15,19 @@ public class MassTransitJsonSerializer : IMessageSerializer
     private readonly IMessageSerializer _inner = new NewtonsoftSerializer(new JsonSerializerSettings());
 
     public string ContentType { get; } = "application/vnd.masstransit+json";
-    public byte[] Write(object message)
+    public byte[] Write(Envelope envelope)
     {
         throw new NotImplementedException();
     }
 
-    public object ReadFromData(Type messageType, byte[] data)
+    public object ReadFromData(Type messageType, Envelope envelope)
     {
         var wrappedType = typeof(JsonMessageEnvelope<>).MakeGenericType(messageType);
-        return _inner.ReadFromData(wrappedType, data);
+
+        // TODO -- map envelope properties
+        var wrapped = (IMessageEnvelope)_inner.ReadFromData(wrappedType, envelope);
+
+        return wrapped.Body;
     }
 
     public object ReadFromData(byte[] data)
@@ -31,8 +35,13 @@ public class MassTransitJsonSerializer : IMessageSerializer
         throw new NotImplementedException();
     }
 
+    internal interface IMessageEnvelope
+    {
+        object? Body { get; }
+    }
+
     [Serializable]
-    public class JsonMessageEnvelope<T>
+    public class JsonMessageEnvelope<T> : IMessageEnvelope
     {
         Dictionary<string, object?>? _headers;
 
@@ -50,6 +59,9 @@ public class MassTransitJsonSerializer : IMessageSerializer
         public string? ResponseAddress { get; set; }
         public string? FaultAddress { get; set; }
         public string[]? MessageType { get; set; }
+
+        public object? Body => Message;
+
         public T? Message { get; set; }
         public DateTime? ExpirationTime { get; set; }
         public DateTime? SentTime { get; set; }

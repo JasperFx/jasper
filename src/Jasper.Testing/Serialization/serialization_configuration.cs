@@ -59,12 +59,12 @@ namespace Jasper.Testing.Serialization
         public class FooSerializer : IMessageSerializer
         {
             public string? ContentType { get; } = "text/foo";
-            public byte[] Write(object message)
+            public byte[] Write(Envelope envelope)
             {
                 throw new NotImplementedException();
             }
 
-            public object? ReadFromData(Type messageType, byte[]? data)
+            public object ReadFromData(Type messageType, Envelope envelope)
             {
                 throw new NotImplementedException();
             }

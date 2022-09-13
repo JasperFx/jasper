@@ -131,7 +131,7 @@ public class CommandBus : ICommandBus
         var endpoint = Runtime.EndpointFor(TransportConstants.DurableLocalUri);
 
         var writer = endpoint!.DefaultSerializer;
-        envelope.Data = writer!.Write(message);
+        envelope.Data = writer!.Write(envelope);
         envelope.ContentType = writer.ContentType;
 
         envelope.Status = EnvelopeStatus.Scheduled;

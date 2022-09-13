@@ -17,14 +17,14 @@ public class SystemTextJsonSerializer : IMessageSerializer
 
     public string ContentType { get; } = EnvelopeConstants.JsonContentType;
 
-    public byte[] Write(object message)
+    public byte[] Write(Envelope envelope)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(message, _options);
+        return JsonSerializer.SerializeToUtf8Bytes(envelope, _options);
     }
 
-    public object ReadFromData(Type messageType, byte[] data)
+    public object ReadFromData(Type messageType, Envelope envelope)
     {
-        return JsonSerializer.Deserialize(data, messageType)!;
+        return JsonSerializer.Deserialize(envelope.Data, messageType)!;
     }
 
     public object ReadFromData(byte[]? data)

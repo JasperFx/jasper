@@ -516,14 +516,14 @@ namespace TestingSupport.Compliance
         }
 
         public string ContentType { get; } = "text/plain";
-        public byte[] Write(object message)
+        public byte[] Write(Envelope envelope)
         {
             throw new NotImplementedException();
         }
 
-        public object? ReadFromData(Type messageType, byte[]? data)
+        public object ReadFromData(Type messageType, Envelope envelope)
         {
-            return ReadFromData(data);
+            return ReadFromData(envelope.Data);
         }
 
         public object? ReadFromData(byte[]? data)
@@ -539,7 +539,7 @@ namespace TestingSupport.Compliance
         {
             public string? ContentType { get; } = "text/plain";
 
-            public object? ReadFromData(Type messageType, byte[]? data)
+            public object ReadFromData(Type messageType, Envelope envelope)
             {
                 throw new NotImplementedException();
             }
@@ -549,9 +549,9 @@ namespace TestingSupport.Compliance
                 throw new NotImplementedException();
             }
 
-            public byte[] Write(object model)
+            public byte[] Write(Envelope model)
             {
-                if (model is GreenMessage green) return Encoding.UTF8.GetBytes(green.Name);
+                if (model.Message is GreenMessage green) return Encoding.UTF8.GetBytes(green.Name);
 
                 throw new NotSupportedException("This serializer only writes GreenMessage");
             }

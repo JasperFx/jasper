@@ -133,9 +133,14 @@ public class HandlerPipeline : IHandlerPipeline
                 throw new ArgumentOutOfRangeException(nameof(envelope),
                     "The envelope has no Message or MessageType name");
 
-            envelope.Message = _graph.TryFindMessageType(envelope.MessageType, out var messageType)
-                ? serializer.ReadFromData(messageType, envelope.Data)
-                : serializer.ReadFromData(envelope.Data);
+            if (_graph.TryFindMessageType(envelope.MessageType, out var messageType))
+            {
+                envelope.Message = serializer.ReadFromData(messageType, envelope);
+            }
+            else
+            {
+                envelope.Message = serializer.ReadFromData(envelope.Data);
+            }
 
             if (envelope.Message == null)
             {

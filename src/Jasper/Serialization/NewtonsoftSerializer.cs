@@ -30,7 +30,7 @@ public class NewtonsoftSerializer : IMessageSerializer
 
     public string ContentType { get; } = EnvelopeConstants.JsonContentType;
 
-    public byte[] Write(object message)
+    public byte[] Write(Envelope envelope)
     {
         var bytes = _bytePool.Rent(_bufferSize); // TODO -- should this be configurable?
         var stream = new MemoryStream(bytes);
@@ -46,7 +46,7 @@ public class NewtonsoftSerializer : IMessageSerializer
                 //AutoCompleteOnClose = false // TODO -- put this in if we upgrad Newtonsoft
             };
 
-            _serializer.Serialize(jsonWriter, message);
+            _serializer.Serialize(jsonWriter, envelope.Message);
             return stream.Position < _bufferSize
                 ? bytes.Take((int)stream.Position).ToArray()
                 : stream.ToArray();
@@ -56,7 +56,7 @@ public class NewtonsoftSerializer : IMessageSerializer
         {
             if (e.Message.Contains("Memory stream is not expandable"))
             {
-                var data = writeWithNoBuffer(message, _serializer);
+                var data = writeWithNoBuffer(envelope.Message, _serializer);
 
                 var bufferSize = 1024;
                 while (bufferSize < data.Length)
@@ -78,9 +78,9 @@ public class NewtonsoftSerializer : IMessageSerializer
         }
     }
 
-    public object ReadFromData(Type messageType, byte[] data)
+    public object ReadFromData(Type messageType, Envelope envelope)
     {
-        using var stream = new MemoryStream(data)
+        using var stream = new MemoryStream(envelope.Data!)
         {
             Position = 0
         };

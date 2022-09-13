@@ -10,14 +10,14 @@ public class EnvelopeReaderWriter : IMessageSerializer
     public static IMessageSerializer Instance { get; } = new EnvelopeReaderWriter();
     public string ContentType => TransportConstants.SerializedEnvelope;
 
-    public object ReadFromData(Type messageType, byte[] data)
+    public object ReadFromData(Type messageType, Envelope envelope)
     {
         if (messageType != typeof(Envelope))
         {
             throw new ArgumentOutOfRangeException(nameof(messageType), "This serializer only supports envelopes");
         }
 
-        return ReadFromData(data);
+        return ReadFromData(envelope.Data!);
     }
 
     public object ReadFromData(byte[] data)
@@ -27,7 +27,7 @@ public class EnvelopeReaderWriter : IMessageSerializer
         return envelope;
     }
 
-    public byte[] Write(object model)
+    public byte[] Write(Envelope model)
     {
         return EnvelopeSerializer.Serialize(model.As<Envelope>());
     }

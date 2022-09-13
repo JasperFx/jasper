@@ -119,7 +119,7 @@ public partial class Envelope
             }
 
             // TODO -- this is messy!
-            _data = Serializer.Write(_message);
+            _data = Serializer.Write(this);
 
             return _data;
         }

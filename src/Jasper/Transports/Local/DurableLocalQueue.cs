@@ -85,7 +85,7 @@ internal class DurableLocalQueue : DurableReceiver, ISendingAgent
 
         if (envelope.Data == null || envelope.Data.Length == 0)
         {
-            envelope.Data = _serializer.Write(envelope.Message);
+            _serializer.Write(envelope);
             envelope.ContentType = _serializer.ContentType;
         }
     }

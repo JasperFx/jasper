@@ -134,12 +134,12 @@ namespace DocumentationSamples
         public Type DotNetType { get; }
         public string? ContentType { get; }
 
-        public byte[] Write(object model)
+        public byte[] Write(Envelope model)
         {
             throw new NotImplementedException();
         }
 
-        public object? ReadFromData(Type messageType, byte[]? data)
+        public object ReadFromData(Type messageType, Envelope envelope)
         {
             throw new NotImplementedException();
         }

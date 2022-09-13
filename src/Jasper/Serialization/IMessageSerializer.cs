@@ -8,8 +8,9 @@ public interface IMessageSerializer
 
     // TODO -- use read only memory later, and let it go back to the pool later.
     // "rent memory"
-    byte[] Write(object message);
+    byte[] Write(Envelope envelope);
 
-    object ReadFromData(Type messageType, byte[] data);
+    object ReadFromData(Type messageType, Envelope envelope);
+
     object ReadFromData(byte[] data);
 }
