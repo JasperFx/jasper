@@ -1,5 +1,6 @@
 namespace Jasper.Configuration;
 
+// Taken from MassTransit code
 public static class MassTransitHeaders
 {
     /// <summary>
@@ -41,6 +42,11 @@ public static class MassTransitHeaders
     ///     The number of times the message was retried
     /// </summary>
     public const string FaultRetryCount = "MT-Fault-RetryCount";
+
+    /// <summary>
+    ///     The number of times the message was redelivered
+    /// </summary>
+    public const string FaultRedeliveryCount = "MT-Fault-RedeliveryCount";
 
     /// <summary>
     ///     The endpoint that forwarded the message to the new destination
@@ -128,9 +134,19 @@ public static class MassTransitHeaders
     public const string TransportMessageId = "TransportMessageId";
 
     /// <summary>
+    ///     When the message is redelivered or scheduled, and a new MessageId was generated, the original messageId
+    /// </summary>
+    public const string OriginalMessageId = "MT-OriginalMessageId";
+
+    /// <summary>
     ///     When a transport header is used, this is the name
     /// </summary>
     public const string ContentType = "Content-Type";
+
+    /// <summary>
+    ///     Used in routing slip variables to store the correlationId of a future
+    /// </summary>
+    public const string FutureId = "FutureId";
 
 
     public static class Host
@@ -149,8 +165,6 @@ public static class MassTransitHeaders
 
     public static class Request
     {
-        public const string Remaining = "MT-Request-Remaining";
-
         public const string Accept = "MT-Request-AcceptType";
     }
 

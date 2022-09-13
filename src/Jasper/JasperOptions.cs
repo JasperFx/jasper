@@ -55,6 +55,9 @@ public sealed partial class JasperOptions
     {
         _serializers.Add(EnvelopeReaderWriter.Instance.ContentType, EnvelopeReaderWriter.Instance);
 
+        // TODO -- temporary
+        _serializers.Add("application/vnd.masstransit+json", new MassTransitJsonSerializer());
+
         UseNewtonsoftForSerialization();
 
         Add(new StubTransport());
