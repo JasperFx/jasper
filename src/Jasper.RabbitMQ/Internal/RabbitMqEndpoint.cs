@@ -5,6 +5,7 @@ using System.Text;
 using Baseline;
 using Jasper.Configuration;
 using Jasper.Runtime;
+using Jasper.Runtime.Interop.MassTransit;
 using Jasper.Transports;
 using Jasper.Transports.Sending;
 using Jasper.Util;
@@ -12,7 +13,7 @@ using RabbitMQ.Client;
 
 namespace Jasper.RabbitMQ.Internal
 {
-    public class RabbitMqEndpoint : TransportEndpoint<IBasicProperties>
+    public class RabbitMqEndpoint : TransportEndpoint<IBasicProperties>, IMassTransitInteropEndpoint
     {
         public const string QueueSegment = "queue";
         public const string ExchangeSegment = "exchange";
@@ -220,6 +221,31 @@ namespace Jasper.RabbitMQ.Internal
             foreach (var pair in incoming.Headers)
                 envelope.Headers[pair.Key] =
                     pair.Value is byte[] b ? Encoding.Default.GetString(b) : pair.Value?.ToString();
+        }
+
+        public Uri? ToMassTransitUri()
+        {
+            var segments = new List<string>();
+            var virtualHost = _parent.ConnectionFactory.VirtualHost;
+            if (virtualHost.IsNotEmpty() && virtualHost != "/")
+            {
+                segments.Add(virtualHost);
+            }
+
+            if (QueueName.IsNotEmpty())
+            {
+                segments.Add(QueueName);
+            }
+            else if (ExchangeName.IsNotEmpty())
+            {
+                segments.Add(ExchangeName);
+            }
+            else
+            {
+                return null;
+            }
+
+            return $"rabbitmq://{_parent.ConnectionFactory.HostName}/{segments.Join("/")}".ToUri();
         }
     }
 }

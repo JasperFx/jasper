@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Jasper.RabbitMQ.Tests.Internals
 {
-    public class RabbitMqEndpointTester
+    public class RabbitMqEndpointTests
     {
 
         [Fact]
@@ -176,6 +176,47 @@ namespace Jasper.RabbitMQ.Tests.Internals
             }.CorrectedUriForReplies().ShouldBe(new Uri("rabbitmq://exchange/ex1/routing/key1/durable"));
 
 
+        }
+
+
+        [Fact]
+        public void map_to_rabbit_mq_uri_with_queue()
+        {
+            var transport = new RabbitMqTransport();
+            transport.ConnectionFactory.HostName = "rabbitserver";
+
+            var endpoint = new RabbitMqEndpoint(transport);
+            endpoint.QueueName = "foo";
+
+            // No virtual host
+
+            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/foo".ToUri());
+
+            // With virtual host
+
+            transport.ConnectionFactory.VirtualHost = "v1";
+
+            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/v1/foo".ToUri());
+        }
+
+        [Fact]
+        public void map_to_rabbit_mq_uri_with_exchange()
+        {
+            var transport = new RabbitMqTransport();
+            transport.ConnectionFactory.HostName = "rabbitserver";
+
+            var endpoint = new RabbitMqEndpoint(transport);
+            endpoint.ExchangeName = "bar";
+
+            // No virtual host
+
+            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/bar".ToUri());
+
+            // With virtual host
+
+            transport.ConnectionFactory.VirtualHost = "v1";
+
+            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/v1/bar".ToUri());
         }
 
 
