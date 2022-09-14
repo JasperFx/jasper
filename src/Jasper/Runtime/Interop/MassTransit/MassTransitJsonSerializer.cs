@@ -13,6 +13,7 @@ public class MassTransitJsonSerializer : IMessageSerializer
     public byte[] Write(Envelope envelope)
     {
         throw new NotImplementedException();
+        //var body = new MassTransitEnvelope{Body = }
     }
 
     public object ReadFromData(Type messageType, Envelope envelope)

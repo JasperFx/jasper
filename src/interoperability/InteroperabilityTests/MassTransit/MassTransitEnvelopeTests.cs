@@ -1,5 +1,4 @@
 using System;
-using Baseline.Dates;
 using Jasper;
 using Jasper.Runtime.Interop.MassTransit;
 using Shouldly;
@@ -31,6 +30,29 @@ public class MassTransitEnvelopeTests
         theMassTransitEnvelope.TransferData(theEnvelope);
 
         // TODO -- how to map the ResponseAddress to Jasper?
+
+    }
+
+    [Fact]
+    public void create_masstransit_envelope_from_envelope()
+    {
+        var envelope = new Envelope
+        {
+            Id = Guid.NewGuid(),
+            CorrelationId = Guid.NewGuid().ToString(),
+            ConversationId = Guid.NewGuid(),
+            DeliverBy = new DateTimeOffset(new DateTime(2022, 9, 14)),
+
+        };
+
+        var mtEnvelope = new MassTransitEnvelope(envelope);
+
+        mtEnvelope.MessageId.ShouldBe(envelope.Id.ToString());
+        mtEnvelope.CorrelationId.ShouldBe(envelope.CorrelationId);
+        mtEnvelope.ConversationId.ShouldBe(envelope.ConversationId.ToString());
+        mtEnvelope.SentTime.ShouldNotBeNull();
+
+        mtEnvelope.ExpirationTime.Value.ShouldBe(envelope.DeliverBy.Value.DateTime);
 
     }
 

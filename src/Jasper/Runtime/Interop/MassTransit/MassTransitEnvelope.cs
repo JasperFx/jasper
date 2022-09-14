@@ -10,6 +10,22 @@ internal class MassTransitEnvelope
     {
     }
 
+    public MassTransitEnvelope(Envelope envelope)
+    {
+        MessageId = envelope.Id.ToString();
+        CorrelationId = envelope.CorrelationId;
+        ConversationId = envelope.ConversationId.ToString();
+        SentTime = DateTime.UtcNow;
+
+        if (envelope.DeliverBy != null)
+        {
+            ExpirationTime = envelope.DeliverBy.Value.UtcDateTime;
+        }
+
+        // Destination Address needs to be mapped
+        // Response needs to be set
+    }
+
     public string? MessageId { get; set; }
     public string? RequestId { get; set; }
     public string? CorrelationId { get; set; }
