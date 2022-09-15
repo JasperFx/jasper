@@ -1,11 +1,11 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Baseline.Dates;
-using Jasper;
 using Jasper.Tracking;
 using OtelMessages;
-using TracingTests;
 using Xunit.Abstractions;
 
-namespace IntegrationTests;
+namespace TracingTests;
 
 [Collection("otel")]
 public class interoperability_tests : IClassFixture<HostsFixture>

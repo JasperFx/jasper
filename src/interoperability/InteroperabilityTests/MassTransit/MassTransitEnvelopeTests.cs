@@ -29,8 +29,6 @@ public class MassTransitEnvelopeTests
 
         theMassTransitEnvelope.TransferData(theEnvelope);
 
-        // TODO -- how to map the ResponseAddress to Jasper?
-
     }
 
     [Fact]

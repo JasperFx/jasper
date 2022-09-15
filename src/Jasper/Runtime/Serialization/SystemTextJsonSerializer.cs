@@ -1,4 +1,5 @@
 using System;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Jasper.Runtime.Serialization;
@@ -8,6 +9,18 @@ namespace Jasper.Runtime.Serialization;
 /// </summary>
 public class SystemTextJsonSerializer : IMessageSerializer
 {
+    public static JsonSerializerOptions DefaultOptions()
+    {
+        return new JsonSerializerOptions
+        {
+            AllowTrailingCommas = true,
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
+    }
+
     private readonly JsonSerializerOptions _options;
 
     public SystemTextJsonSerializer(JsonSerializerOptions options)
@@ -19,16 +32,21 @@ public class SystemTextJsonSerializer : IMessageSerializer
 
     public byte[] Write(Envelope envelope)
     {
-        return JsonSerializer.SerializeToUtf8Bytes(envelope, _options);
+        return JsonSerializer.SerializeToUtf8Bytes(envelope.Message, _options);
     }
 
     public object ReadFromData(Type messageType, Envelope envelope)
     {
-        return JsonSerializer.Deserialize(envelope.Data, messageType)!;
+        return JsonSerializer.Deserialize(envelope.Data, messageType, _options)!;
     }
 
     public object ReadFromData(byte[]? data)
     {
         throw new NotSupportedException("System.Text.Json requires a known message type");
+    }
+
+    public byte[] WriteMessage(object message)
+    {
+        return JsonSerializer.SerializeToUtf8Bytes(message, _options);
     }
 }

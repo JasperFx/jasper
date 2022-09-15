@@ -91,5 +91,10 @@ namespace Jasper.RabbitMQ
             return this;
         }
 
+        public RabbitMqListenerConfiguration UseMassTransitInterop()
+        {
+            endpoint.UseMassTransitInterop();
+            return this;
+        }
     }
 }

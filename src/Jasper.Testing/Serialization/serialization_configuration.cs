@@ -73,6 +73,11 @@ namespace Jasper.Testing.Serialization
             {
                 throw new NotImplementedException();
             }
+
+            public byte[] WriteMessage(object message)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Fact]

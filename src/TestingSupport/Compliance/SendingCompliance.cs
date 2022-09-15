@@ -531,6 +531,11 @@ namespace TestingSupport.Compliance
             var name = Encoding.UTF8.GetString(data);
             return new BlueMessage {Name = name};
         }
+
+        public byte[] WriteMessage(object message)
+        {
+            throw new NotImplementedException();
+        }
     }
     #endregion
 
@@ -545,6 +550,11 @@ namespace TestingSupport.Compliance
             }
 
             public object? ReadFromData(byte[]? data)
+            {
+                throw new NotImplementedException();
+            }
+
+            public byte[] WriteMessage(object message)
             {
                 throw new NotImplementedException();
             }

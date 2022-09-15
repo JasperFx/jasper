@@ -27,6 +27,11 @@ public class EnvelopeReaderWriter : IMessageSerializer
         return envelope;
     }
 
+    public byte[] WriteMessage(object message)
+    {
+        throw new NotSupportedException();
+    }
+
     public byte[] Write(Envelope model)
     {
         return EnvelopeSerializer.Serialize(model.As<Envelope>());

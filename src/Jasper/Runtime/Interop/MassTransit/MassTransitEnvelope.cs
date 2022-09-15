@@ -1,10 +1,17 @@
 using System;
 using System.Collections.Generic;
+using LamarCodeGeneration;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Jasper.Runtime.Interop.MassTransit;
 
-internal class MassTransitEnvelope
+internal interface IMassTransitEnvelope
+{
+    object? Body { get; }
+    void TransferData(Envelope envelope);
+}
+
+internal class MassTransitEnvelope<T> : IMassTransitEnvelope where T : class
 {
     public MassTransitEnvelope()
     {
@@ -12,19 +19,32 @@ internal class MassTransitEnvelope
 
     public MassTransitEnvelope(Envelope envelope)
     {
+        if (envelope.Message is T m)
+        {
+            Message = m;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(envelope.Message),
+                $"Message cannot be cast to {typeof(T).FullNameInCode()}");
+        }
+
         MessageId = envelope.Id.ToString();
         CorrelationId = envelope.CorrelationId;
         ConversationId = envelope.ConversationId.ToString();
         SentTime = DateTime.UtcNow;
+        Message = (T)envelope.Message!;
+
+        var messageType = envelope.Message.GetType();
+        MessageType = new[] { $"urn:message:{messageType.Namespace}:{messageType.NameInCode()}" };
 
         if (envelope.DeliverBy != null)
         {
             ExpirationTime = envelope.DeliverBy.Value.UtcDateTime;
         }
-
-        // Destination Address needs to be mapped
-        // Response needs to be set
     }
+
+    public object? Body => Message;
 
     public string? MessageId { get; set; }
     public string? RequestId { get; set; }
@@ -37,7 +57,7 @@ internal class MassTransitEnvelope
     public string? FaultAddress { get; set; }
     public string[]? MessageType { get; set; }
 
-    public object? Body { get; set; }
+    public T? Message { get; set; }
 
 
     public DateTime? ExpirationTime { get; set; }
@@ -74,18 +94,19 @@ internal class MassTransitEnvelope
             envelope.SentAt = SentTime.Value.ToUniversalTime();
         }
     }
-}
-
-[Serializable]
-internal class MassTransitEnvelope<T> : MassTransitEnvelope where T : class
-{
-    public T? Message
-    {
-        get => Body as T;
-        set => Body = value;
-    }
 
     // Jasper doesn't care about this, so don't bother deserializing it
     public BusHostInfo? Host => BusHostInfo.Instance;
+}
 
+[Serializable]
+internal class MassTransitEnvelope : MassTransitEnvelope<object>
+{
+    public MassTransitEnvelope()
+    {
+    }
+
+    public MassTransitEnvelope(Envelope envelope) : base(envelope)
+    {
+    }
 }

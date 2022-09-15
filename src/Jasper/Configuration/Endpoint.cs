@@ -104,7 +104,11 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
 
             return _defaultSerializer ??= Runtime?.Options.DefaultSerializer;
         }
-        set => _defaultSerializer = value;
+        set
+        {
+            RegisterSerializer(value);
+            _defaultSerializer = value;
+        }
     }
 
 
@@ -190,7 +194,7 @@ public abstract class Endpoint :  ICircuitParameters, IDescribesProperties
             return serializer;
         }
 
-        serializer = Runtime?.Options.FindSerializer(contentType);
+        serializer = Runtime?.Options.TryFindSerializer(contentType);
         _serializers = _serializers!.AddOrUpdate(contentType, serializer)!;
 
         return serializer;

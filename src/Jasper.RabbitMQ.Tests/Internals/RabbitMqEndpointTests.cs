@@ -190,13 +190,13 @@ namespace Jasper.RabbitMQ.Tests.Internals
 
             // No virtual host
 
-            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/foo".ToUri());
+            endpoint.MassTransitUri().ShouldBe("rabbitmq://rabbitserver/foo".ToUri());
 
             // With virtual host
 
             transport.ConnectionFactory.VirtualHost = "v1";
 
-            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/v1/foo".ToUri());
+            endpoint.MassTransitUri().ShouldBe("rabbitmq://rabbitserver/v1/foo".ToUri());
         }
 
         [Fact]
@@ -210,13 +210,13 @@ namespace Jasper.RabbitMQ.Tests.Internals
 
             // No virtual host
 
-            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/bar".ToUri());
+            endpoint.MassTransitUri().ShouldBe("rabbitmq://rabbitserver/bar".ToUri());
 
             // With virtual host
 
             transport.ConnectionFactory.VirtualHost = "v1";
 
-            endpoint.ToMassTransitUri().ShouldBe("rabbitmq://rabbitserver/v1/bar".ToUri());
+            endpoint.MassTransitUri().ShouldBe("rabbitmq://rabbitserver/v1/bar".ToUri());
         }
 
 

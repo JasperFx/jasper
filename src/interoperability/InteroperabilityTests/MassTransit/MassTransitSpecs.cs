@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Baseline.Dates;
 using InteropMessages;
 using Jasper;
 using Jasper.RabbitMQ;
@@ -33,17 +34,11 @@ namespace InteroperabilityTests.MassTransit
                 opts.PublishAllMessages().ToRabbitExchange("masstransit")
                     .Advanced(endpoint =>
                     {
-                        // TODO -- will need access to the RabbitMqTransport to get the reply endpoint, then
-                        // write out the MT version of the Uri
-                        endpoint.MapOutgoingProperty(x => x.ReplyUri, (e, p) =>
-                        {
-                            // TODO -- this will need to be cached somehow
-                            p.Headers[MassTransitHeaders.ResponseAddress] = "rabbitmq://localhost/jasper";
-                        });
+                        endpoint.UseMassTransitInterop();
                     });
 
-                opts.ListenToRabbitQueue("jasper")
-                    .DefaultIncomingMessage<ResponseMessage>();
+                opts.ListenToRabbitQueue("jasper").UseMassTransitInterop()
+                    .DefaultIncomingMessage<ResponseMessage>().UseForReplies();
 
             }).StartAsync();
 
@@ -86,7 +81,7 @@ namespace InteroperabilityTests.MassTransit
                 var sender = theFixture.MassTransit.Services.GetRequiredService<ISendEndpointProvider>();
                 var endpoint = await sender.GetSendEndpoint(new Uri("rabbitmq://localhost/jasper"));
                 await endpoint.Send(new ResponseMessage {Id = id});
-            });
+            }, 60000);
 
             var envelope = ResponseHandler.Received.FirstOrDefault();
             envelope.Message.ShouldBeOfType<ResponseMessage>().Id.ShouldBe(id);
@@ -100,7 +95,7 @@ namespace InteroperabilityTests.MassTransit
 
             var id = Guid.NewGuid();
 
-            var session = await theFixture.Jasper.TrackActivity()
+            var session = await theFixture.Jasper.TrackActivity().Timeout(10.Minutes())
                 .WaitForMessageToBeReceivedAt<ResponseMessage>(theFixture.Jasper)
                 .SendMessageAndWaitAsync(new InitialMessage {Id = id});
 

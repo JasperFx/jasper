@@ -13,4 +13,7 @@ public interface IMessageSerializer
     object ReadFromData(Type messageType, Envelope envelope);
 
     object ReadFromData(byte[] data);
+
+    byte[] WriteMessage(object message);
 }
+

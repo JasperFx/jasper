@@ -223,7 +223,7 @@ namespace Jasper.RabbitMQ.Internal
                     pair.Value is byte[] b ? Encoding.Default.GetString(b) : pair.Value?.ToString();
         }
 
-        public Uri? ToMassTransitUri()
+        public Uri? MassTransitUri()
         {
             var segments = new List<string>();
             var virtualHost = _parent.ConnectionFactory.VirtualHost;
@@ -246,6 +246,31 @@ namespace Jasper.RabbitMQ.Internal
             }
 
             return $"rabbitmq://{_parent.ConnectionFactory.HostName}/{segments.Join("/")}".ToUri();
+        }
+
+        public Uri? MassTransitReplyUri()
+        {
+            if (_parent.ReplyEndpoint() is RabbitMqEndpoint r)
+            {
+                return r.MassTransitUri();
+            }
+
+            return null;
+        }
+
+        // TODO -- this will be bigger later, more JSON serialization alternatives
+        public void UseMassTransitInterop()
+        {
+            DefaultSerializer = new MassTransitJsonSerializer(this);
+
+            var replyUri = new Lazy<string>(() => MassTransitReplyUri()?.ToString());
+
+            MapOutgoingProperty(x => x.ReplyUri, (e, p) =>
+            {
+                p.Headers[MassTransitHeaders.ResponseAddress] = replyUri.Value;
+            });
+
+            MapPropertyToHeader(x => x.MessageType, MassTransitHeaders.MessageType);
         }
     }
 }

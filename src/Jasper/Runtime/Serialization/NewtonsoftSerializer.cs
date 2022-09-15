@@ -15,6 +15,19 @@ public class NewtonsoftSerializer : IMessageSerializer
     private readonly JsonSerializer _serializer;
     private int _bufferSize = 1024;
 
+    public static JsonSerializerSettings DefaultSettings()
+    {
+        #region sample_default_newtonsoft_settings
+
+        return new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        };
+
+        #endregion
+    }
+
     public NewtonsoftSerializer(JsonSerializerSettings settings)
     {
         _serializer = JsonSerializer.Create(settings);
@@ -32,50 +45,8 @@ public class NewtonsoftSerializer : IMessageSerializer
 
     public byte[] Write(Envelope envelope)
     {
-        var bytes = _bytePool.Rent(_bufferSize); // TODO -- should this be configurable?
-        var stream = new MemoryStream(bytes);
-
-        try
-        {
-            using var textWriter = new StreamWriter(stream) { AutoFlush = true };
-            using var jsonWriter = new JsonTextWriter(textWriter)
-            {
-                ArrayPool = _jsonCharPool,
-                CloseOutput = false
-
-                //AutoCompleteOnClose = false // TODO -- put this in if we upgrad Newtonsoft
-            };
-
-            _serializer.Serialize(jsonWriter, envelope.Message);
-            return stream.Position < _bufferSize
-                ? bytes.Take((int)stream.Position).ToArray()
-                : stream.ToArray();
-        }
-
-        catch (NotSupportedException e)
-        {
-            if (e.Message.Contains("Memory stream is not expandable"))
-            {
-                var data = writeWithNoBuffer(envelope.Message, _serializer);
-
-                var bufferSize = 1024;
-                while (bufferSize < data.Length)
-                {
-                    bufferSize = bufferSize * 2;
-                }
-
-                _bufferSize = bufferSize;
-
-                return data;
-            }
-
-            throw;
-        }
-
-        finally
-        {
-            _bytePool.Return(bytes);
-        }
+        var message = envelope.Message;
+        return WriteMessage(message);
     }
 
     public object ReadFromData(Type messageType, Envelope envelope)
@@ -110,6 +81,55 @@ public class NewtonsoftSerializer : IMessageSerializer
         };
 
         return _serializer.Deserialize(jsonReader)!;
+    }
+
+    public byte[] WriteMessage(object message)
+    {
+        var bytes = _bytePool.Rent(_bufferSize); // TODO -- should this be configurable?
+        var stream = new MemoryStream(bytes);
+
+
+        try
+        {
+            using var textWriter = new StreamWriter(stream) { AutoFlush = true };
+            using var jsonWriter = new JsonTextWriter(textWriter)
+            {
+                ArrayPool = _jsonCharPool,
+                CloseOutput = false
+
+                //AutoCompleteOnClose = false // TODO -- put this in if we upgrad Newtonsoft
+            };
+
+            _serializer.Serialize(jsonWriter, message);
+            return stream.Position < _bufferSize
+                ? bytes.Take((int)stream.Position).ToArray()
+                : stream.ToArray();
+        }
+
+        catch (NotSupportedException e)
+        {
+            if (e.Message.Contains("Memory stream is not expandable"))
+            {
+                var data = writeWithNoBuffer(message, _serializer);
+
+                var bufferSize = 1024;
+                while (bufferSize < data.Length)
+                {
+                    bufferSize = bufferSize * 2;
+                }
+
+                _bufferSize = bufferSize;
+
+                return data;
+            }
+
+            throw;
+        }
+
+        finally
+        {
+            _bytePool.Return(bytes);
+        }
     }
 
     private byte[] writeWithNoBuffer(object? model, JsonSerializer serializer)

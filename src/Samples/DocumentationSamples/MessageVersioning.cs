@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Jasper;
 using Jasper.Attributes;
 using Jasper.Runtime.Serialization;
@@ -147,6 +149,11 @@ namespace DocumentationSamples
         public object? ReadFromData(byte[]? data)
         {
             throw new NotImplementedException();
+        }
+
+        public byte[] WriteMessage(object message)
+        {
+            throw new System.NotImplementedException();
         }
     }
 

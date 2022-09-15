@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Baseline;
 using Baseline.Dates;
 using BaselineTypeDiscovery;
 using Jasper.Configuration;
 using Jasper.Runtime.Handlers;
-using Jasper.Runtime.Interop.MassTransit;
 using Jasper.Runtime.Scheduled;
 using Jasper.Runtime.Serialization;
 using Jasper.Transports.Local;
@@ -17,6 +17,7 @@ using Jasper.Transports.Stub;
 using Jasper.Transports.Tcp;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("Jasper.Testing")]
@@ -55,9 +56,6 @@ public sealed partial class JasperOptions
     public JasperOptions(string? assemblyName)
     {
         _serializers.Add(EnvelopeReaderWriter.Instance.ContentType, EnvelopeReaderWriter.Instance);
-
-        // TODO -- temporary
-        _serializers.Add("application/vnd.masstransit+json", new MassTransitJsonSerializer());
 
         UseNewtonsoftForSerialization();
 
@@ -254,15 +252,7 @@ public sealed partial class JasperOptions
     /// <param name="configuration"></param>
     public void UseNewtonsoftForSerialization(Action<JsonSerializerSettings>? configuration = null)
     {
-        #region sample_default_newtonsoft_settings
-
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-        };
-
-        #endregion
+        var settings = NewtonsoftSerializer.DefaultSettings();
 
         configuration?.Invoke(settings);
 
@@ -277,7 +267,7 @@ public sealed partial class JasperOptions
     /// <param name="configuration"></param>
     public void UseSystemTextJsonForSerialization(Action<JsonSerializerOptions>? configuration = null)
     {
-        var options = new JsonSerializerOptions();
+        var options = SystemTextJsonSerializer.DefaultOptions();
 
         configuration?.Invoke(options);
 
@@ -299,6 +289,16 @@ public sealed partial class JasperOptions
         }
 
         throw new ArgumentOutOfRangeException(nameof(contentType));
+    }
+
+    internal IMessageSerializer? TryFindSerializer(string contentType)
+    {
+        if (_serializers.TryGetValue(contentType, out var s))
+        {
+            return s;
+        }
+
+        return null;
     }
 
     /// <summary>
