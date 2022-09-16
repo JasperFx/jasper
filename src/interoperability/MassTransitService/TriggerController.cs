@@ -14,5 +14,12 @@ namespace MassTransitService
             var endpoint = await sender.GetSendEndpoint(new Uri("rabbitmq://localhost/jasper"));
             await endpoint.Send(new ResponseMessage {Id = id});
         }
+
+        [HttpPost("/roundtrip/{id}")]
+        public async Task RoundTrip(Guid id, [FromServices] ISendEndpointProvider sender)
+        {
+            var endpoint = await sender.GetSendEndpoint(new Uri("rabbitmq://localhost/jasper"));
+            await endpoint.Send(new ToJasper() {Id = id});
+        }
     }
 }

@@ -24,10 +24,10 @@ namespace MassTransitService
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    //cfg.UseRawJsonSerializer();
                     cfg.ReceiveEndpoint("masstransit", e =>
                     {
                         e.Consumer<InitialMessageResponder>();
+                        e.Consumer<ToMassTransitConsumer>();
                     });
                 });
             });

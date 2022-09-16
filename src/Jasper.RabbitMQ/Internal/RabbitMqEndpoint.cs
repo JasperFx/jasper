@@ -258,10 +258,23 @@ namespace Jasper.RabbitMQ.Internal
             return null;
         }
 
-        // TODO -- this will be bigger later, more JSON serialization alternatives
-        public void UseMassTransitInterop()
+        public Uri? TranslateMassTransitToJasperUri(Uri uri)
         {
-            DefaultSerializer = new MassTransitJsonSerializer(this);
+            var lastSegment = uri.Segments.LastOrDefault();
+            if (lastSegment.IsNotEmpty())
+            {
+                return $"rabbitmq://queue/{lastSegment}".ToUri();
+            }
+
+            return null;
+        }
+
+        public void UseMassTransitInterop(Action<IMassTransitInterop>? configure = null)
+        {
+            var serializer = new MassTransitJsonSerializer(this);
+            configure?.Invoke(serializer);
+
+            DefaultSerializer = serializer;
 
             var replyUri = new Lazy<string>(() => MassTransitReplyUri()?.ToString());
 

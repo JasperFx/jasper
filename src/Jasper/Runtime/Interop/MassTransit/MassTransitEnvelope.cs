@@ -8,6 +8,8 @@ namespace Jasper.Runtime.Interop.MassTransit;
 internal interface IMassTransitEnvelope
 {
     object? Body { get; }
+    string? ResponseAddress { get; set; }
+    string? SourceAddress { get; set; }
     void TransferData(Envelope envelope);
 }
 

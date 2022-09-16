@@ -2,6 +2,7 @@ using System;
 using Jasper.Configuration;
 using Jasper.ErrorHandling;
 using Jasper.RabbitMQ.Internal;
+using Jasper.Runtime.Interop.MassTransit;
 
 namespace Jasper.RabbitMQ
 {
@@ -91,9 +92,14 @@ namespace Jasper.RabbitMQ
             return this;
         }
 
-        public RabbitMqListenerConfiguration UseMassTransitInterop()
+        /// <summary>
+        /// Add MassTransit interoperability to this Rabbit MQ listening endpoint
+        /// </summary>
+        /// <param name="configure">Optionally configure the JSON serialization on this endpoint</param>
+        /// <returns></returns>
+        public RabbitMqListenerConfiguration UseMassTransitInterop(Action<IMassTransitInterop>? configure = null)
         {
-            endpoint.UseMassTransitInterop();
+            endpoint.UseMassTransitInterop(configure);
             return this;
         }
     }

@@ -6,4 +6,6 @@ public interface IMassTransitInteropEndpoint
 {
     Uri? MassTransitUri();
     Uri? MassTransitReplyUri();
+
+    Uri? TranslateMassTransitToJasperUri(Uri uri);
 }

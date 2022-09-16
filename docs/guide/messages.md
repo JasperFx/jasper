@@ -29,7 +29,7 @@ public class PersonBorn
     public int Year { get; set; }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L13-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personborn1' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L15-L29' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personborn1' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 By default, Jasper will identify this type by just using the .NET full name like so:
@@ -44,7 +44,7 @@ public void message_alias_is_fullname_by_default()
         .MessageType.ShouldBe(typeof(PersonBorn).FullName);
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L32-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_ootb_message_alias' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L34-L43' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_ootb_message_alias' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 However, if you want to explicitly control the message type because you aren't sharing the DTO types or for some
@@ -63,7 +63,7 @@ public class PersonBorn
     public int Year { get; set; }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L47-L59' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_override_message_alias' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L49-L61' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_override_message_alias' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Which now gives you different behavior:
@@ -78,7 +78,7 @@ public void message_alias_is_fullname_by_default()
         .MessageType.ShouldBe("person-born");
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L63-L72' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_explicit_message_alias' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L65-L74' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_explicit_message_alias' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ## Versioning
@@ -98,7 +98,7 @@ public class PersonBornV2
     public DateTime Birthday { get; set; }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L78-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personborn_v2' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L80-L90' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personborn_v2' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 The `[Version("V2")]` attribute usage tells Jasper that this class is "V2" for the `message-type` = "person-born."
@@ -118,13 +118,13 @@ When using Newtonsoft.Json, the default configuration is:
 <!-- snippet: sample_default_newtonsoft_settings -->
 <a id='snippet-sample_default_newtonsoft_settings'></a>
 ```cs
-var settings = new JsonSerializerSettings
+return new JsonSerializerSettings
 {
     TypeNameHandling = TypeNameHandling.Auto,
     PreserveReferencesHandling = PreserveReferencesHandling.Objects
 };
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper/JasperOptions.cs#L253-L261' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_default_newtonsoft_settings' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Jasper/Runtime/Serialization/NewtonsoftSerializer.cs#L20-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_default_newtonsoft_settings' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 To customize the Newtonsoft.Json serialization, use this option:
@@ -141,7 +141,7 @@ using var host = await Host.CreateDefaultBuilder()
         });
     }).StartAsync();
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L157-L168' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_customizingjsonserialization' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L164-L175' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_customizingjsonserialization' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 And to instead opt into using System.Text.Json -- which can give you better performance but with
@@ -179,7 +179,7 @@ public class PersonCreatedHandler
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L113-L128' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personcreatedhandler' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L115-L130' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personcreatedhandler' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Or you could use a custom `IMessageDeserializer` to read incoming messages from V1 into the new V2 message type, or you can take advantage of message forwarding
@@ -207,7 +207,7 @@ public class PersonBorn : IForwardsTo<PersonBornV2>
     }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L90-L111' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_iforwardsto_personbornv2' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L92-L113' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_iforwardsto_personbornv2' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Which forwards to the current message type:
@@ -223,7 +223,7 @@ public class PersonBornV2
     public DateTime Birthday { get; set; }
 }
 ```
-<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L78-L88' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personborn_v2' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/alba/blob/master/src/Samples/DocumentationSamples/MessageVersioning.cs#L80-L90' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_personborn_v2' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Using this strategy, other systems could still send your system the original `application/vnd.person-born.v1+json` formatted

@@ -5,7 +5,6 @@ using Baseline.Dates;
 using InteropMessages;
 using Jasper;
 using Jasper.RabbitMQ;
-using Jasper.Runtime.Interop.MassTransit;
 using Jasper.Tracking;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,25 +21,33 @@ namespace InteroperabilityTests.MassTransit
 
         public async Task InitializeAsync()
         {
+            #region sample_MassTransit_interoperability
+
             Jasper = await Host.CreateDefaultBuilder().UseJasper(opts =>
             {
-                // application/vnd.masstransit+json
-
                 opts.UseRabbitMq()
                     .AutoProvision().AutoPurgeOnStartup()
                     .BindExchange("jasper").ToQueue("jasper")
                     .BindExchange("masstransit").ToQueue("masstransit");
 
                 opts.PublishAllMessages().ToRabbitExchange("masstransit")
-                    .Advanced(endpoint =>
-                    {
-                        endpoint.UseMassTransitInterop();
-                    });
 
-                opts.ListenToRabbitQueue("jasper").UseMassTransitInterop()
+                    // Tell Jasper to make this endpoint send messages out in a format
+                    // for MassTransit
+                    .UseMassTransitInterop();
+
+                opts.ListenToRabbitQueue("jasper")
+
+                    // Tell Jasper to make this endpoint interoperable with MassTransit
+                    .UseMassTransitInterop(mt =>
+                    {
+                        // optionally customize the inner JSON serialization
+                    })
                     .DefaultIncomingMessage<ResponseMessage>().UseForReplies();
 
             }).StartAsync();
+
+                #endregion
 
             _massTransit = await MassTransitService.Program.CreateHostBuilder(Array.Empty<string>())
                 .StartAsync();
@@ -74,7 +81,6 @@ namespace InteroperabilityTests.MassTransit
 
             var id = Guid.NewGuid();
 
-            // TODO -- set up a missing handler
 
             var session = await theFixture.Jasper.ExecuteAndWaitAsync(async () =>
             {
